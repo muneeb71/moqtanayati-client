@@ -14,7 +14,7 @@ const AuthLayout = ({ children }) => {
           className="rounded-[10px]"
         />
       </div>
-      <div className="z-20 flex w-full max-w-[450px] flex-col px-5 py-10">
+      <div className="z-20 flex w-full max-w-[450px] flex-col px-5 py-10 mt-[115px] md:mt-0">
         {children}
       </div>
       <div className="absolute left-0 top-0 z-[1]">
