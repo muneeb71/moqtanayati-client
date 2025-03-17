@@ -22,6 +22,7 @@ const SellerTypePage = () => {
                     onClick={() => setSelectedType("Individual Owner")}
                     isSelected={selectedType === "Individual Owner"}
                     imageClassName="w-[140px] h-[60px]"
+                    showIcon={selectedType === "Individual Owner"}
                 />
                 <SellerTypeCard
                     className={`bg-[#FCF3FB] ${selectedType === "Business Owner" ? "border-2 border-moonstone" : "border-2 border-white"}`}
@@ -31,6 +32,7 @@ const SellerTypePage = () => {
                     onClick={() => setSelectedType("Business Owner")}
                     isSelected={selectedType === "Business Owner"}
                     imageClassName="w-[150px] h-[60px]"
+                    showIcon={selectedType === "Business Owner"}
                 />
                 <SellerTypeCard
                     className={`bg-[#EEFCF5] ${selectedType === "Productive Family Owner" ? "border-2 border-moonstone" : "border-2 border-white"}`}
@@ -40,6 +42,7 @@ const SellerTypePage = () => {
                     onClick={() => setSelectedType("Productive Family Owner")}
                     isSelected={selectedType === "Productive Family Owner"}
                     imageClassName="w-[110px] h-[60px]"
+                    showIcon={selectedType === "Productive Family Owner"}
                 />
             </div>
 
