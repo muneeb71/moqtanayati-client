@@ -1,0 +1,72 @@
+export const recentPurchases = [
+    {
+        "id": 9876543,
+        "product": "MacBook Air M3",
+        "price": "$1450.00",
+        "status": "Delivered",
+        "date": "26 June, 2024",
+    },
+    {
+        "id": 6543210,
+        "product": "iPhone 15 Pro",
+        "price": "$1199.00",
+        "status": "Processing",
+        "date": "22 June, 2024",
+    },
+    {
+        "id": 3456789,
+        "product": "Samsung Galaxy S24 Ultra",
+        "price": "$1399.00",
+        "status": "Processing",
+        "date": "25 June, 2024",
+    },
+    {
+        "id": 1234567,
+        "product": "Sony WH-1000XM5",
+        "price": "$399.00",
+        "status": "Delivered",
+        "date": "18 June, 2024",
+    },
+    {
+        "id": 7654321,
+        "product": "Apple Watch Ultra 2",
+        "price": "$799.00",
+        "status": "Processing",
+        "date": "27 June, 2024",
+    },
+    {
+        "id": 2345678,
+        "product": "Nintendo Switch OLED",
+        "price": "$349.00",
+        "status": "Delivered",
+        "date": "20 June, 2024",
+    },
+    {
+        "id": 8765432,
+        "product": "Bose QuietComfort Earbuds II",
+        "price": "$279.00",
+        "status": "Delivered",
+        "date": "21 June, 2024",
+    },
+    {
+        "id": 5678901,
+        "product": "GoPro Hero 12 Black",
+        "price": "$399.00",
+        "status": "Delivered",
+        "date": "19 June, 2024",
+    },
+    {
+        "id": 4321098,
+        "product": "Dyson V15 Detect",
+        "price": "$699.00",
+        "status": "Processing",
+        "date": "23 June, 2024",
+    },
+    {
+        "id": 2109876,
+        "product": "Apple iPad Pro 12.9-inch",
+        "price": "$1099.00",
+        "status": "Delivered",
+        "date": "17 June, 2024",
+    }
+];

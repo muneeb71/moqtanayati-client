@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+#custom-slider .range-slider__range {
+  background: #25a5b4;
+  transition: height 0.3s;
+}
+
+#custom-slider .range-slider__thumb {
+  background: #25a5b4;
+  transition: height 0.3s;
+  border: 4px solid white;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
