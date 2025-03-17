@@ -1,11 +1,15 @@
 import Image from "next/image";
+import { FaCheckCircle } from "react-icons/fa";
 
-const SellerTypeCard = ({ title, description, image, className, onClick, imageClassName }) => {
+const SellerTypeCard = ({ title, description, image, className, onClick, imageClassName, showIcon  }) => {
     return (
         <div 
-            className={`flex flex-row gap-5 rounded-2xl px-6 cursor-pointer py-6 ${className}`}
+            className={`relative flex flex-row gap-5 rounded-2xl px-6 cursor-pointer py-6 ${className}`}
             onClick={onClick}
         >
+            {showIcon && (
+                <FaCheckCircle className="absolute top-2 right-2 text-moonstone" size={23} />
+            )}
             <div className={`rounded-full flex items-center justify-center ${imageClassName} bg-white`}>
                 <Image
                     src={image}

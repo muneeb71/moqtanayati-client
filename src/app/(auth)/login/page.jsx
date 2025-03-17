@@ -10,6 +10,7 @@ const RoleSelectionLoginPage = () => {
   const roles = ["buyer", "seller"];
   const [selectedRole, setSelectedRole] = useState("");
   const router = useRouter();
+  localStorage.setItem("role", selectedRole);
   return (
     <div className="flex w-full flex-col gap-10 md:gap-[66px] pt-20 md:pt-10 lg:pt-0">
       <div className="flex w-full flex-col gap-1">
