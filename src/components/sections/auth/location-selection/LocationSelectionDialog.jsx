@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 
 const LocationSelectionDialog = ({ trigger }) => {
   const router = useRouter();
-
+  const role = localStorage.getItem("role");
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -46,7 +46,7 @@ const LocationSelectionDialog = ({ trigger }) => {
             title="Confirm"
             showIcon
             className="h-12 w-[182px] self-center text-sm"
-            onClick={() => router.push("/login")}
+            onClick={() => (role === "seller" ? router.push("/seller-type") : router.push("/"))}
             icon={
               <svg
                 width="8"

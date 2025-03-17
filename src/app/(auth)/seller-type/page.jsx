@@ -1,12 +1,13 @@
 "use client"
 import RoundedButton from "@/components/buttons/RoundedButton";
 import SellerTypeCard from "@/components/cards/SellerType";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const SellerTypePage = () => {
     // Initialize with Individual Owner selected
     const [selectedType, setSelectedType] = useState("Individual Owner");
-
+    const router = useRouter();
     return (
         <div className="flex flex-col gap-12">
             <p className="text-[20px] font-medium text-center">
@@ -46,7 +47,8 @@ const SellerTypePage = () => {
                 title="Get Started"
                 showIcon
                 className="w-fit self-center px-16"
-                onClick={() => console.log("Getting Started", selectedType)}
+                // onClick={() => console.log("Getting Started", selectedType)}
+                onClick={() => router.push("/seller")}
             />
         </div>
     )

@@ -54,7 +54,7 @@ const LoginForm = ({ role = "seller" }) => {
       </div>
       <div className="flex flex-col items-center gap-5 self-center pt-16">
         <RoundedButton
-          onClick={() => router.push("/")}
+          onClick={() => { role === 'seller' ? router.push("/seller") : router.push("/") }}
           title="Log into your account"
           className="w-fit px-10"
         />
