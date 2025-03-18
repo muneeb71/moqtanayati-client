@@ -189,9 +189,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 </span>
               </div>
               <button
-                onClick={() => {
-                  handlePayNow();
-                }}
+                onClick={handlePayNow}
                 className="rounded-lg bg-moonstone/80 px-10 py-3 text-white hover:bg-moonstone"
               >
                 Pay Now
