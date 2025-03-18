@@ -34,7 +34,7 @@ export default function AuctionRegisterSlider({ onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-end bg-black bg-opacity-40">
-      <div className="absolute bottom-0 right-0 flex h-[90vh] w-[500px] flex-col overflow-hidden rounded-tl-3xl bg-white shadow-lg">
+      <div className="absolute bottom-0 right-0 flex h-[90vh] w-full max-w-[500px] flex-col overflow-hidden rounded-tl-3xl bg-white shadow-lg md:w-[500px]">
         <div className={`flex items-center justify-between p-4 ${step !== 2 && "border-b" }`}>
           <button onClick={onClose} className="text-gray-600">
             <svg
@@ -60,7 +60,7 @@ export default function AuctionRegisterSlider({ onClose }) {
         </div>
 
         {/* Content */}
-        <div className="flex-grow overflow-y-auto p-4">
+        <div className="flex-grow overflow-y-auto p-4 sm:p-6">
           {step === 1 && (
             <div className="space-y-4">
               <div
@@ -218,12 +218,12 @@ export default function AuctionRegisterSlider({ onClose }) {
                   <span className="text-xs text-davyGray font-medium">22 Comments</span>
                 </div>
                 <div className="relative">
-                  <select className="text-eerieBlack font-medium text-xs appearance-none border-none focus:outline-none outline-none bg-white rounded-full px-3 py-1">
+                  <select className="text-eerieBlack font-medium text-xs appearance-none border-none focus:outline-none outline-none bg-white rounded-full px-3 py-1 pr-6">
                     <option>Newest</option>
                     <option>Oldest</option>
                     <option>Most Relevant</option>
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center px-2 text-gray-700">
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
@@ -231,12 +231,12 @@ export default function AuctionRegisterSlider({ onClose }) {
                 </div>
               </div>
 
-              <div className="flex-grow space-y-4 overflow-y-auto p-4 pb-20">
+              <div className="flex-grow space-y-4 overflow-y-auto p-4 pb-20 sm:p-6">
                 {comments.map((comment, index) => (
                   <div key={index} className="space-y-2">
                     {/* Original Question */}
                     <div className="flex items-start space-x-3">
-                      <div className="h-10 w-10 overflow-hidden rounded-full">
+                      <div className="h-10 w-10 min-w-[2.5rem] overflow-hidden rounded-full">
                         <Image
                           src={comment.image || "/default-avatar.png"}
                           alt={comment.name}
@@ -245,9 +245,9 @@ export default function AuctionRegisterSlider({ onClose }) {
                           className="object-cover"
                         />
                       </div>
-                      <div>
-                        <p className="font-medium">{comment.name}</p>
-                        <p className="text-sm text-gray-600">
+                      <div className="flex-grow">
+                        <p className="font-medium text-sm sm:text-base">{comment.name}</p>
+                        <p className="text-xs sm:text-sm text-gray-600">
                           {comment.question}
                         </p>
                         <p className="text-xs text-gray-400 mt-1">4 hours ago</p>
@@ -261,7 +261,7 @@ export default function AuctionRegisterSlider({ onClose }) {
                         <div className="absolute left-4 top-0 bottom-0 w-0.5 border-l-2 border-dashed border-gray-300"></div>
                         
                         <div className="flex items-start space-x-3 ml-4">
-                          <div className="h-8 w-8 overflow-hidden rounded-full">
+                          <div className="h-8 w-8 min-w-[2rem] overflow-hidden rounded-full">
                             <Image
                               src={reply.image || "/default-avatar.png"}
                               alt={reply.name}
@@ -270,12 +270,12 @@ export default function AuctionRegisterSlider({ onClose }) {
                               className="object-cover"
                             />
                           </div>
-                          <div>
-                            <p className="font-medium">
+                          <div className="flex-grow">
+                            <p className="font-medium text-sm">
                               {reply.name} 
-                              <span className="text-gray-500 text-sm ml-1">{reply.role}</span>
+                              <span className="text-gray-500 text-xs ml-1">{reply.role}</span>
                             </p>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-xs sm:text-sm text-gray-600">
                               {reply.response}
                             </p>
                             <p className="text-xs text-gray-400 mt-1">2 min ago</p>
@@ -288,10 +288,10 @@ export default function AuctionRegisterSlider({ onClose }) {
               </div>
 
               {/* Message Input */}
-              <div className="border-t bg-white p-4">
+              <div className="border-t bg-white p-4 sm:p-6">
                 <div className="relative">
                   <input
-                    className="w-full rounded-full bg-gray-300 border p-2 pl-4 pr-10"
+                    className="w-full rounded-full bg-gray-300 border p-2 pl-4 pr-10 text-xs sm:text-sm"
                     placeholder="Type your message..."
                   />
                   <button className="absolute right-2 top-1/2 -translate-y-1/2 transform text-teal-500">

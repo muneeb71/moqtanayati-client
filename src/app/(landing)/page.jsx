@@ -4,6 +4,7 @@ import CategoriesSliderSection from "@/components/sections/landing/home/Categori
 import RecommendedSection from "@/components/sections/landing/home/RecommendedSection";
 import FurnitureSection from "@/components/sections/landing/home/FurnitureSection";
 import AuctionSection from "@/components/sections/landing/home/AuctionSection";
+import AuctionRegisterSlider from "@/components/slider/AuctionRegisterSlider";
 
 const BuyerPage = () => {
   return (
@@ -13,6 +14,7 @@ const BuyerPage = () => {
       <AuctionSection />
       <RecommendedSection />
       <FurnitureSection />
+      <AuctionRegisterSlider />
     </div>
   );
 };
