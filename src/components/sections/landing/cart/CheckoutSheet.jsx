@@ -41,6 +41,11 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
     shippingOptions[0],
   );
 
+  const handlePayNow = () => {
+    setSelectedTab(tabs[1]);
+    orderPlaced(true);
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -185,8 +190,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
               </div>
               <button
                 onClick={() => {
-                  setSelectedTab(tabs[1])
-                  orderPlaced(true)
+                  handlePayNow();
                 }}
                 className="rounded-lg bg-moonstone/80 px-10 py-3 text-white hover:bg-moonstone"
               >
