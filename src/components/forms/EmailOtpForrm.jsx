@@ -5,8 +5,9 @@ import Label from "@/components/form-fields/Label";
 import EmailOtpInput from "@/components/form-fields/EmailOtpInput";
 import CustomLink from "@/components/link/CustomLink";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-const EmailOtpForm = ({ role }) => {
+const EmailOtpContent = ({ role }) => {
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
   const router = useRouter();
@@ -15,12 +16,10 @@ const EmailOtpForm = ({ role }) => {
     <div className="flex w-full flex-col gap-10 pt-20 md:gap-[66px] md:pt-10 lg:pt-0">
       <div className="flex w-full flex-col gap-16">
         <div className="flex w-full flex-col gap-2">
-          <h1 className="text-2xl mt-20">
-            Verify Your Email Address
-          </h1>
+          <h1 className="text-2xl mt-20">Verify Your Email Address</h1>
           <p className="text-darkBlue/50 md:text-[19px] md:leading-[29px]">
             We’ve sent a 6-digit verification code to your email:{" "}
-            <span className="text-delftBlue">{email}</span>{" "}. Enter the code below to verify your email and
+            <span className="text-delftBlue">{email}</span>. Enter the code below to verify your email and
             continue.
           </p>
         </div>
@@ -33,9 +32,7 @@ const EmailOtpForm = ({ role }) => {
             title="Verify & Continue"
             showIcon
             className="w-fit self-center px-16"
-            onClick={() =>
-              router.push(`/sign-up/id-proof`)
-            }
+            onClick={() => router.push(`/sign-up/id-proof`)}
           />
           <div className="flex items-center gap-1 text-sm font-medium text-battleShipGray">
             Didn't receive the code?
@@ -46,5 +43,11 @@ const EmailOtpForm = ({ role }) => {
     </div>
   );
 };
+
+const EmailOtpForm = (props) => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <EmailOtpContent {...props} />
+  </Suspense>
+);
 
 export default EmailOtpForm;

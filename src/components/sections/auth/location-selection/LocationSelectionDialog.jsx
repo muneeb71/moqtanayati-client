@@ -11,10 +11,17 @@ import {
 } from "@/components/ui/dialog";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 const LocationSelectionDialog = ({ trigger }) => {
   const router = useRouter();
-  const role = localStorage.getItem("role");
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem("role");
+    setRole(storedRole);
+  }, []);
+
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
