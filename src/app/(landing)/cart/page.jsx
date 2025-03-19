@@ -5,9 +5,13 @@ import { dummyCart } from "@/lib/dummyCart";
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import OrderPlacedPopup from "@/components/popup/OrderPlacedPopup";
 
 const CartPage = () => {
   const [cart, setCart] = useState(dummyCart);
+  const [isOrderPlaced, setOrderPlaced] = useState(true)
+
+  const placeOrder = () => setOrderPlaced(!isOrderPlaced)
 
   const getItemsCount = () => {
     let count = 0;
@@ -101,10 +105,11 @@ const CartPage = () => {
               <span className="text-xl text-black/40">Grand Total</span>
               <h1 className="text-4xl font-medium">$3040.00</h1>
             </div>
-            <CheckoutSheet itemCount={getItemsCount()} />
+            <CheckoutSheet itemCount={getItemsCount()} orderPlaced={placeOrder}/>
           </div>
         </div>
       </div>
+      {isOrderPlaced && <OrderPlacedPopup orderPlaced={placeOrder}/>}
     </div>
   );
 };

@@ -38,7 +38,7 @@ const PersonalDetailsStepPage = () => {
       </div>
       <div className="flex flex-col items-center gap-8 self-center">
         <RoundedButton
-          onClick={() => router.push("/sign-up/id-proof")}
+          onClick={() => router.push("/sign-up/verify-email")}
           title="Next"
           showIcon
           className="min-w-72"
