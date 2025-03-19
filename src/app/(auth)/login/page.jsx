@@ -4,13 +4,19 @@ import RoundedButton from "@/components/buttons/RoundedButton";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const RoleSelectionLoginPage = () => {
   const roles = ["buyer", "seller"];
   const [selectedRole, setSelectedRole] = useState("");
   const router = useRouter();
-  localStorage.setItem("role", selectedRole);
+
+  useEffect(() => {
+    if (selectedRole && typeof window !== 'undefined') {
+      localStorage.setItem("role", selectedRole);
+    }
+  }, [selectedRole]);
+
   return (
     <div className="flex w-full flex-col gap-10 md:gap-[66px] pt-20 md:pt-10 lg:pt-0">
       <div className="flex w-full flex-col gap-1">
