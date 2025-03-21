@@ -14,6 +14,7 @@ const AuthLayout = ({ children }) => {
           className="rounded-[10px]"
         />
       </div>
+      
       <div className="z-20 flex w-full max-w-[450px] flex-col px-5 py-10 mt-[115px] md:mt-0">
         {children}
       </div>
@@ -28,7 +29,7 @@ const AuthLayout = ({ children }) => {
       </div>
       <div className="absolute right-0 z-[1] hidden h-screen w-full max-w-[457px] items-end justify-end bg-[#D3EDF0] xl:flex">
         <Image
-          src="/bg/login.svg"
+          src="/newlogo.svg"
           width={712}
           height={712}
           loading="lazy"
