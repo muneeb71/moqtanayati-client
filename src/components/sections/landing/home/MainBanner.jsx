@@ -26,29 +26,16 @@ const MainBanner = () => {
           </div>
         </div>
         <div className="flex h-full w-full items-end justify-end lg:relative">
-          <div className="right-5 top-[150px] lg:absolute">
-            <div className="relative">
-              <Image
-                src="/bg/home/main-banner.png"
-                width={712}
-                height={839}
-                quality={100}
-                alt="banner"
-                loading="lazy"
-                className="md:min-w-[50vw] lg:min-w-[600px]"
-              />
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                <Image
-                  src="/newlogo.png"
-                  width={50}
-                  height={50}
-                  quality={100}
-                  alt="logo"
-                  loading="lazy"
-                   className="md:min-w-[150px]  min-w-[100px]  lg:min-w-[150px]"
-                />
-              </div>
-            </div>
+          <div className="right-5 lg:absolute">
+            <Image
+              src="/newlogo.svg"
+              width={612}
+              height={539}
+              quality={100}
+              alt="blob"
+              loading="lazy"
+              className="md:min-w-[50vw] lg:min-w-[300px]"
+            />
           </div>
         </div>
       </div>
