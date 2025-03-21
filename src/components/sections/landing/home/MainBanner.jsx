@@ -26,15 +26,15 @@ const MainBanner = () => {
           </div>
         </div>
         <div className="flex h-full w-full items-end justify-end lg:relative">
-          <div className="right-5 lg:absolute">
+          <div className="-right-10 lg:absolute">
             <Image
-              src="/newlogo.svg"
+              src="/newlogo2.svg"
               width={612}
               height={539}
               quality={100}
               alt="blob"
               loading="lazy"
-              className="md:min-w-[50vw] lg:min-w-[300px]"
+              className="md:min-w-[50vw] lg:min-w-[600px]"
             />
           </div>
         </div>
