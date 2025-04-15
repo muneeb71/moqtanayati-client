@@ -42,9 +42,9 @@ const AutoBidDialog = ({ className = "", bidAmount, setBidAmount }) => {
             without constant monitoring
           </span>
           <div className="flex w-full flex-col gap-3">
-            <Label text="Max Bid Amount" className="text-[19.2px]" />
+            {/* <Label text="Max Bid Amount" className="text-[19.2px]" /> */}
             <InputField
-              placeholder="Enter Amount (SAR)"
+              placeholder="Enter Bid Amount (SAR)"
               type="number"
               value={newAmount}
               onChange={(e) => setNewAmount(e.target.value)}

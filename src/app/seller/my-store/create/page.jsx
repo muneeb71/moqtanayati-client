@@ -29,29 +29,29 @@ const CreateStorePage = () => {
         <div className="grid w-full gap-5 md:grid-cols-2 md:gap-10">
           <div className="flex w-full flex-col gap-5">
             <div className="flex flex-col gap-1">
-              <Label text="Store name" />
-              <InputField type="text" placeholder="Tarragon" />
+              {/* <Label text="Store name" /> */}
+              <InputField type="text" placeholder="Enter store name" />
             </div>
             <div className="flex flex-col gap-1">
-              <Label text="Owner name" />
+              {/* <Label text="Owner name" /> */}
               <InputField type="text" placeholder="Enter owner name" />
             </div>
             <div className="flex flex-col gap-1">
-              <Label text="Business Email" />
+              {/* <Label text="Business Email" /> */}
               <InputField type="text" placeholder="tarragon@gmail.com" />
             </div>
             <div className="flex flex-col gap-1">
-              <Label text="Phone Number" />
+              {/* <Label text="Phone Number" /> */}
               <InputField type="text" placeholder="Enter phone number" />
             </div>
           </div>
           <div className="flex w-full flex-col gap-5">
             <div className="flex flex-col gap-1">
-              <Label text="Address Location" />
-              <InputField type="text" placeholder="Islamabad" />
+              {/* <Label text="Address Location" /> */}
+              <InputField type="text" placeholder="Enter location" />
             </div>
             <div className="flex flex-col gap-1">
-              <Label text="Store description" />
+              {/* <Label text="Store description" /> */}
               <TextareaField
                 className="h-[8.8rem]"
                 type="text"
@@ -59,7 +59,7 @@ const CreateStorePage = () => {
               />
             </div>
             <div className="flex flex-col gap-1">
-              <Label text="Store Category" />
+              {/* <Label text="Store Category" /> */}
               <InputField
                 type="text"
                 placeholder="Add category of your store"

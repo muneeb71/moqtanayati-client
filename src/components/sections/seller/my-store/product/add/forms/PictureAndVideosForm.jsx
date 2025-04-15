@@ -87,7 +87,7 @@ const PictureAndVideosForm = ({
         </div>
       </div>
       <div className="flex flex-col gap-1">
-        <Label text="Product title" />
+        {/* <Label text="Product title" /> */}
         <InputField
           type="text"
           placeholder="Add product title"
@@ -96,7 +96,7 @@ const PictureAndVideosForm = ({
         />
       </div>
       <div className="flex flex-col gap-1">
-        <Label text="Product description" />
+        {/* <Label text="Product description" /> */}
         <TextareaField
           className="h-40"
           type="text"

@@ -37,7 +37,7 @@ const ChangePasswordDialog = () => {
           <div className="flex flex-col items-center gap-40 py-5">
             <div className="flex w-full flex-col gap-3 px-2">
               <div className="flex w-full flex-col gap-1">
-                <Label text="Current Password" />
+                {/* <Label text="Current Password" /> */}
                 <InputField
                   icon={lockIcon}
                   placeholder="Enter current password"
@@ -48,7 +48,7 @@ const ChangePasswordDialog = () => {
                 />
               </div>
               <div className="flex w-full flex-col gap-1">
-                <Label text="New Password" />
+                {/* <Label text="New Password" /> */}
                 <InputField
                   icon={lockIcon}
                   placeholder="Enter new password"
@@ -59,7 +59,7 @@ const ChangePasswordDialog = () => {
                 />
               </div>
               <div className="flex w-full flex-col gap-1">
-                <Label text="Confirm Password" />
+                {/* <Label text="Confirm Password" /> */}
                 <InputField
                   icon={lockIcon}
                   placeholder="Re-enter new password"

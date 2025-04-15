@@ -35,7 +35,7 @@ const UnitsAndDimensionsForm = ({
       <div className="grid w-full gap-5 md:grid-cols-2 md:gap-10">
         <div className="flex w-full flex-col gap-5">
           <div className="flex flex-col gap-1">
-            <Label text="Number of Units available" />
+            {/* <Label text="Number of Units available" /> */}
             <InputField
               type="text"
               placeholder="Available units"
@@ -44,37 +44,37 @@ const UnitsAndDimensionsForm = ({
             />
           </div>
           <div className="flex flex-col gap-1">
-            <Label text="Length(in)" />
+            {/* <Label text="Length(in)" /> */}
             <InputField
               type="text"
-              placeholder="0.00 in"
+              placeholder="Length 0.00 in"
               value={length}
               onChange={(e) => setLength(e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-1">
-            <Label text="Width(in)" />
+            {/* <Label text="Width(in)" /> */}
             <InputField
               type="text"
-              placeholder="0.00 in"
+              placeholder="Width 0.00 in"
               value={width}
               onChange={(e) => setWidth(e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-1">
-            <Label text="Height(in)" />
+            {/* <Label text="Height(in)" /> */}
             <InputField
               type="text"
-              placeholder="0.00 in"
+              placeholder="Height 0.00 in"
               value={height}
               onChange={(e) => setHeight(e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-1">
-            <Label text="Weight(kg)" />
+            {/* <Label text="Weight(kg)" /> */}
             <InputField
               type="text"
-              placeholder="0.00 kg"
+              placeholder="Weight 0.00 kg"
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
             />
@@ -101,16 +101,16 @@ const UnitsAndDimensionsForm = ({
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <Label text="Condition Rating" />
+            {/* <Label text="Condition Rating" /> */}
             <InputField
               type="text"
-              placeholder="0/10"
+              placeholder="Condition Rating (0/10)"
               value={conditionRating}
               onChange={(e) => setConditionRating(e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-1">
-            <Label text="Product Categories" />
+            {/* <Label text="Product Categories" /> */}
             <InputField
               type="text"
               placeholder="Add category of your product"
