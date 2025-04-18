@@ -9,7 +9,7 @@ import OrderPlacedPopup from "@/components/popup/OrderPlacedPopup";
 
 const CartPage = () => {
   const [cart, setCart] = useState(dummyCart);
-  const [isOrderPlaced, setOrderPlaced] = useState(true)
+  const [isOrderPlaced, setOrderPlaced] = useState(false)
 
   const placeOrder = () => setOrderPlaced(!isOrderPlaced)
 

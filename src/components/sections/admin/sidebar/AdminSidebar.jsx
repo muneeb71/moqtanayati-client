@@ -1,10 +1,13 @@
 import Image from "next/image";
 import SidebarLinks from "./SidebarLinks";
+import { logoutIcon } from "@/assets/icons/admin-icons";
 
 const AdminSidebar = () => {
   return (
-    <div className="flex h-full w-full max-w-[287px] flex-col justify-between rounded-[40px] bg-[#1C1C1C] px-3.5 py-16">
-      <div className="flex w-full flex-col gap-16">
+    <div className="flex overflow-auto max-h-screen w-full max-w-[287px] flex-col justify-between rounded-[40px] bg-[#1C1C1C] px-3.5 py-16"
+    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+    >
+      <div className="flex w-full flex-col gap-16 mb-10">
         <Image
           src="/logo.png"
           width={143}
@@ -15,6 +18,10 @@ const AdminSidebar = () => {
           quality={100}
         />
     <SidebarLinks />
+      </div>
+      <div className="flex items-center gap-2 mt-auto px-3.5 cursor-pointer">
+        {logoutIcon}
+        <p className="text-[#DA6D75CC]">Logout</p>
       </div>
     </div>
   );

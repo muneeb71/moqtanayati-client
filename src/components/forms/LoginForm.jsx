@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 const LoginForm = ({ role = "seller" }) => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState();
-  const [username, setUsername] = useState("");
+  const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const router = useRouter();
@@ -45,11 +45,11 @@ const LoginForm = ({ role = "seller" }) => {
               }}
             />
             <input
-              className={`h-10 cursor-pointer rounded-lg px-8 text-sm ${selectedOption === "username" && "bg-white font-medium text-moonstone"}`}
+              className={`h-10 cursor-pointer rounded-lg px-8 text-sm ${selectedOption === "id" && "bg-white font-medium text-moonstone"}`}
               type="button"
-              value={"Username"}
+              value={"Id"}
               onClick={() => {
-                setSelectedOption("username");
+                setSelectedOption("id");
               }}
             />
           </div>
@@ -91,15 +91,15 @@ const LoginForm = ({ role = "seller" }) => {
                 />
               </>
             )}
-            {selectedOption === "username" && (
+            {selectedOption === "id" && (
               <>
-                <Label htmlFor="username" text="Username" />
+                <Label htmlFor="Id" text="Id" />
                 <InputField
                   icon={profileUserIcon}
                   type="text"
-                  placeholder="Enter your username"
-                  value={email}
-                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your Id"
+                  value={id}
+                  onChange={(e) => setId(e.target.value)}
                 />
               </>
             )}
@@ -115,7 +115,7 @@ const LoginForm = ({ role = "seller" }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <div className="flex items-center justify-between py-2">
+        <div className="flex items-center justify-between pt-2">
           <div className="flex items-center gap-2">
             <CustomCheckBox
               checked={keepLoggedIn}
@@ -131,7 +131,7 @@ const LoginForm = ({ role = "seller" }) => {
           </CustomLink>
         </div>
       </div>
-      <div className="flex flex-col items-center gap-5 self-center pt-16">
+      <div className="flex flex-col items-center gap-5 self-center pt-8">
         <RoundedButton
           onClick={() => {
             role === "seller" ? router.push("/seller") : router.push("/");
@@ -139,10 +139,12 @@ const LoginForm = ({ role = "seller" }) => {
           title="Log into your account"
           className="w-fit px-10"
         />
-        <div className="flex items-center gap-1 text-sm font-medium text-battleShipGray">
+        <div className="flex items-center gap-1 text-sm font-medium text-delftBlue">
           New to {appName}?
           <CustomLink href="/sign-up">Create Account</CustomLink>
         </div>
+        <p className="text-center text-delftBlue -mb-3 -mt-3">or</p>
+        <p className="text-moonstone font-semibold cursor-pointer">Continue as Guest</p>
       </div>
     </div>
   );

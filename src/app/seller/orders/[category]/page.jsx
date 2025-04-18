@@ -12,7 +12,7 @@ const OrdersPage = async ({ params }) => {
           <span className="text-sm text-battleShipGray">(1)</span>
         </div>
         <div className="flex w-full flex-col gap-6">
-          <OrderCard />
+          <OrderCard item={category}/>
         </div>
       </div>
       <div className="flex w-full flex-col pt-5">
@@ -21,8 +21,8 @@ const OrdersPage = async ({ params }) => {
           <span className="text-sm text-battleShipGray">(2)</span>
         </div>
         <div className="flex w-full flex-col gap-6">
-          <OrderCard />
-          <OrderCard />
+          <OrderCard item={category}/>
+          <OrderCard item={category}/>
         </div>
       </div>
     </div>
@@ -35,8 +35,8 @@ const OrdersPage = async ({ params }) => {
         </span>
       </div>
       <div className="flex w-full flex-col gap-6">
-        <OrderCard />
-        <OrderCard />
+        <OrderCard item={category}/>
+        <OrderCard item={category}/>
       </div>
     </div>
   );
