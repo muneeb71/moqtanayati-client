@@ -5,6 +5,8 @@ import {
   reviewsIcon,
   settingsIcon,
   usersIcon,
+  reportIcon,
+  paymentIcon
 } from "@/assets/icons/admin-icons";
 import {
   githubIcon,
@@ -166,6 +168,19 @@ export const sellerHeaderLinks = [
   },
 ];
 
+export const sellerDropdownList = [
+  {
+    title: "Customer Support",
+    icon: customerSupportIcon,
+    href: "/seller/profile/settings/customer-support",
+  },
+  {
+    title: "Help Center",
+    icon: helpCenterIcon,
+    href: "/seller/help-center/faqs/all",
+  },
+]
+
 export const adminLinks = [
   {
     title: "Dashboard",
@@ -174,8 +189,11 @@ export const adminLinks = [
   },
   {
     title: "Users",
-    href: "/admin/users",
     icon: usersIcon,
+    subLinks: [
+      { title: "Buyers", href: "/admin/users/buyer" },
+      { title: "Sellers", href: "/admin/users/seller" },
+    ],
   },
   {
     title: "Orders",
@@ -188,8 +206,32 @@ export const adminLinks = [
     icon: hammerIcon,
   },
   {
+    title: "Payments",
+    href: "/admin/payments",
+    icon: paymentIcon, 
+    subLinks: [
+      { title: "Cash", href: "/admin/payment/cod" },
+      { title: "Third Party", href: "/admin/payment/online" },
+    ],
+  },
+  {
+    title: "Reports",
+    href: "/admin/reports",
+    icon: reportIcon, 
+    subLinks: [
+      { title: "Buyer Reports", href: "/admin/reports/buyer" },
+      { title: "Seller Reports", href: "/admin/reports/seller" },
+    ],
+  },
+  {
     title: "Reviews",
     href: "/admin/reviews/buyer-reviews-sellers",
     icon: reviewsIcon,
   },
+  {
+    title: "Settings",
+    href: "/admin/settings",
+    icon: settingsIcon, 
+  },
 ];
+

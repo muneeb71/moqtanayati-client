@@ -5,6 +5,7 @@ import {
   masterCardIcon,
   payPalIcon,
   visaIcon,
+  tamaraIcon,
 } from "@/assets/icons/payment-icons";
 import RoundedButton from "@/components/buttons/RoundedButton";
 import InputField from "@/components/form-fields/InputField";
@@ -43,8 +44,13 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
 
   const handlePayNow = () => {
     setSelectedTab(tabs[1]);
-    orderPlaced(true);
+    //orderPlaced(true);
   };
+
+  const handleOrderPlace = () => {
+    setSelectedTab(tabs[0])
+    orderPlaced()
+  }
 
   return (
     <Sheet>
@@ -229,7 +235,31 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 )}
               >
                 <div className="flex items-center gap-2">
+                  Apple Pay {applePayIcon}
+                </div>
+                <ChevronRight />
+              </button>
+              {/* <button
+                onClick={() => setSelectedTab(tabs[2])}
+                className={cn(
+                  "flex items-center justify-between rounded-xl border border-delftBlue/10 bg-[#F8F7FB] px-4 py-5 text-start text-darkBlue",
+                  "transition-all duration-200 ease-in hover:border-moonstone",
+                )}
+              >
+                <div className="flex items-center gap-2">
                   Paypal {payPalIcon}
+                </div>
+                <ChevronRight />
+              </button> */}
+              <button
+                onClick={() => setSelectedTab(tabs[2])}
+                className={cn(
+                  "flex items-center justify-between rounded-xl border border-delftBlue/10 bg-[#F8F7FB] px-4 py-5 text-start text-darkBlue",
+                  "transition-all duration-200 ease-in hover:border-moonstone",
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  Tabby <Image width={50} height={33} alt="icon" src={"tabbyIcon.svg"} />
                 </div>
                 <ChevronRight />
               </button>
@@ -241,7 +271,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 )}
               >
                 <div className="flex items-center gap-2">
-                  Apple Pay {applePayIcon}
+                  Tamara <Image width={25} height={25} alt="icon" src={"tamaraIcon.svg"} />
                 </div>
                 <ChevronRight />
               </button>
@@ -284,6 +314,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                           ? "relative rounded-2xl bg-moonstone p-[1px]"
                           : "",
                       )}
+                      key={index}
                       onClick={() => setSelectedCard(card)}
                     >
                       <CreditCard
@@ -321,7 +352,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 </div>
                 <SheetClose asChild>
                   <button
-                    onClick={() => setSelectedTab(tabs[0])}
+                    onClick={() => handleOrderPlace()}
                     className="rounded-lg bg-moonstone/80 px-10 py-3 text-white hover:bg-moonstone"
                   >
                     Place Order

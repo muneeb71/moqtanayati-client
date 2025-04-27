@@ -1,11 +1,42 @@
+import { BiSearch } from "react-icons/bi";
+import Image from "next/image";
+
 const AdminHeader = () => {
   return (
-    <div className="flex items-center justify-between w-full bg-white rounded-l-[18px] rounded-r-[39px] h-full max-h-[76px]">
-      <div className="flex items-center gap-2">
+    <div className="flex items-center justify-between w-full bg-white rounded-l-[18px] rounded-r-[39px] h-full max-h-[76px] px-4">
+      <div className="flex items-center gap-2 w-full max-w-md">
+        <div className="relative w-full">
+          <input
+            type="text"
+            placeholder="Search"
+            className="h-10 pl-10 pr-4 bg-gray-100 rounded-lg text-gray-700 focus:outline-none focus:ring-1 focus:ring-moonstone"
+          />
+          <BiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xl" />
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-4">
+        <div className="relative cursor-pointer">
+          <Image src="/notifs.svg" alt="notifications" width={16} height={16} />
+        </div>
         
+        <div className="flex items-center gap-2">
+          <div className="h-10 w-10 overflow-hidden rounded-full">
+            <Image 
+              src="/dummy-user/1.jpeg" 
+              alt="User profile" 
+              width={40} 
+              height={40}
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <div>
+            <h3 className="font-medium text-sm">Mr Alex Jhons</h3>
+          </div>
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AdminHeader
+export default AdminHeader;

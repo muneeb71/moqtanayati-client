@@ -28,9 +28,7 @@ const AddProductFlow = () => {
   );
 
   const pricingFormats = ["Fixed Price", "Auctions"];
-  const [selectedPricingFormat, setSelectedPricingFormat] = useState(
-    pricingFormats[0],
-  );
+  const [selectedPricingFormat, setSelectedPricingFormat] = useState();
   const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const shippingMethods = [

@@ -1,28 +1,32 @@
 "use client";
-import { usersData } from "@/lib/users-data";
+import { paymentData } from "@/lib/payment-data.js";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import UsersTable from "./UsersTable";
+import PaymentTable from "./PaymentTable.jsx";
 import { leftChipIcon, rightChipIcon } from "@/assets/icons/admin-icons";
 
-const Users = ({ role="" }) => { 
+const Payment = ({ role }) => { 
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState([]);
   const rowsPerPage = 10;
-  const roleData = usersData.filter(user => user.role === role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()) || ""
-  const totalPages = Math.ceil(roleData.length / rowsPerPage);
+  console.log(role);
   
-  const currentData = roleData.slice(
+  const methodData = paymentData.filter(payment => payment.paymentMethod.toLowerCase() == role)
+  const totalPages = Math.ceil(methodData.length / rowsPerPage);
+  console.log(paymentData[5]?.paymentMethod.toLowerCase())
+  const currentData = methodData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage,
   );
+  console.log(methodData);
+  
 
-  const toggleRowSelection = (email) => {
+  const toggleRowSelection = (orderId) => {
     setSelectedRows((prev) =>
-      prev.includes(email)
-        ? prev.filter((item) => item !== email)
-        : [...prev, email],
+      prev.includes(orderId)
+        ? prev.filter((item) => item !== orderId)
+        : [...prev, orderId],
     );
   };
 
@@ -33,7 +37,7 @@ const Users = ({ role="" }) => {
     <div className="flex h-full max-h-full flex-col overflow-hidden py-6">
       <div className="flex flex-col gap-3 pb-5">
         <p className="text-[24px] font-semibold leading-none text-russianViolet">
-          Users
+          Payments
         </p>
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-row items-center gap-5">
@@ -48,7 +52,7 @@ const Users = ({ role="" }) => {
         </div>
       </div>
       <div className="no-scrollbar flex h-full max-h-full w-full max-w-full flex-col overflow-auto rounded-lg">
-        <UsersTable
+        <PaymentTable
           setSelectedRows={setSelectedRows}
           selectedRows={selectedRows}
           currentData={currentData}
@@ -59,8 +63,8 @@ const Users = ({ role="" }) => {
       <div className="flex md:h-20 flex-col md:flex-row md:items-center gap-1 justify-between bg-white py-5 pl-8">
         <p className="text-sm text-customGray">
           Showing {1 + (currentPage - 1) * rowsPerPage} -{" "}
-          {Math.min(currentPage * rowsPerPage, roleData.length)} from{" "}
-          {roleData.length}
+          {Math.min(currentPage * rowsPerPage, methodData.length)} from{" "}
+          {methodData.length}
         </p>
         <div className="mr-10 flex items-center gap-2">
           <button
@@ -116,4 +120,4 @@ const Users = ({ role="" }) => {
   );
 };
 
-export default Users;
+export default Payment;

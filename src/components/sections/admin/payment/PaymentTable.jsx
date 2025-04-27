@@ -5,13 +5,15 @@ import { BiSolidTrash } from "react-icons/bi";
 import { BsFillEyeFill } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
 
-const UsersTable = ({
+const PaymentTable = ({
   selectedRows,
   setSelectedRows,
   currentData,
   toggleRowSelection,
   onViewClick,
 }) => {
+    console.log(currentData);
+    
   return (
     <table className="min-w-[1200px] rounded-lg">
       <thead className="sticky top-0 bg-white">
@@ -24,21 +26,25 @@ const UsersTable = ({
               }
               setChecked={(checked) =>
                 setSelectedRows(
-                  checked ? currentData.map((user) => user.email) : [],
+                  checked ? currentData.map((user) => user.orderId) : [],
                 )
               }
             />
           </th>
-          <th className="text-customeBlue py-5 font-semibold">Name</th>
-          {/* <th className="text-customeBlue py-5 pl-8 font-semibold">Role</th> */}
+          <th className="text-customeBlue py-5 font-semibold px-3">Order ID</th>
+          <th className="text-customeBlue py-5 font-semibold">Seller</th>
+          {currentData[0].paymentGateway !== "Cash on Delivery" && <th className="text-customeBlue py-5 pl-8 font-semibold">Payment Gateway</th>}
           <th className="text-customeBlue py-5 pl-8 font-semibold">
-            Account Status
+            Amount
           </th>
           <th className="text-customeBlue py-5 pl-8 font-semibold">
-            Verification Status
+            Collection
           </th>
           <th className="text-customeBlue py-5 pl-8 font-semibold">
-            Registration Date
+            Confirmation Date
+          </th>
+          <th className="text-customeBlue py-5 pl-8 font-semibold">
+            Payment Status
           </th>
           <th className="text-customeBlue py-5 pl-8 font-semibold">Action</th>
         </tr>
@@ -48,19 +54,22 @@ const UsersTable = ({
           <tr
             key={index}
             className={`border-b ${
-              selectedRows.includes(user.email) ? "bg-[#F9F9FC]" : "bg-white"
+              selectedRows.includes(user.orderId) ? "bg-[#F9F9FC]" : "bg-white"
             }`}
           >
             <td className="py-5 pl-8">
               <CustomCheckBox
-                checked={selectedRows.includes(user.email)}
-                setChecked={() => toggleRowSelection(user.email)}
+                checked={selectedRows.includes(user.orderId)}
+                setChecked={() => toggleRowSelection(user.orderId)}
               />
+            </td>
+            <td className="py-5 px-3 text-[16px] text-customGray">
+              {user.orderId}
             </td>
             <td className="py-5">
               <div className="flex items-center gap-2">
                 <Image
-                  src={user.image}
+                  src={user.seller.avatar}
                   width={50}
                   height={50}
                   alt="Profile Image"
@@ -70,41 +79,36 @@ const UsersTable = ({
                 />
                 <div>
                   <p className="text-[16px] font-semibold text-customBlue">
-                    {user.name}
+                    {user.seller.name}
                   </p>
                   <p className="text-[14px] text-battleShipGray">
-                    {user.email}
+                    {user.seller.email}
                   </p>
                 </div>
               </div>
             </td>
-            {/* <td className="py-5 pl-8 text-[16px] text-customGray">
-              {user.role}
-            </td> */}
-            <td className="py-5 pl-8">
-              <span
-                className={`rounded-lg px-5 py-1 text-[14px] font-semibold ${
-                  user.account_status === "Active"
-                    ? "bg-customGreen/10 text-customGreen"
-                    : "bg-faluRed/10 text-faluRed"
-                }`}
-              >
-                {user.account_status}
-              </span>
-            </td>
-            <td className="py-5 pl-8">
-              <span
-                className={`rounded-lg px-5 py-1 text-[14px] font-semibold ${
-                  user.verification_status === "Approved"
-                    ? "bg-customGreen/10 text-customGreen"
-                    : "bg-lightBlue/10 text-lightBlue"
-                }`}
-              >
-                {user.verification_status}
-              </span>
+            {user.paymentGateway !== "Cash on Delivery" && <td className="py-5 pl-8 text-[16px] text-customGray">
+              {user.paymentGateway}
+            </td>}
+            <td className="py-5 pl-8 text-[16px] text-customGray">
+              {user.amount}
             </td>
             <td className="py-5 pl-8 text-[16px] text-customGray">
-              {user.registration_date}
+              {user.collection}
+            </td>
+            <td className="py-5 pl-8 text-[16px] text-customGray">
+              {user.confirmationDate}
+            </td>
+            <td className="py-5 pl-8">
+              <span
+                className={`rounded-lg px-5 py-1 text-[14px] font-semibold ${
+                  user.paymentStatus === "Completed"
+                    ? "bg-customGreen/10 text-customGreen"
+                    : "bg-[#0770AD]/10 text-[#0770AD]"
+                }`}
+              >
+                {user.paymentStatus}
+              </span>
             </td>
             <td className="py-5 pl-8">
               <div className="flex flex-row gap-2">
@@ -123,4 +127,4 @@ const UsersTable = ({
   );
 };
 
-export default UsersTable;
+export default PaymentTable;

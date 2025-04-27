@@ -4,6 +4,7 @@ import NavLinks from "./SellerNavLinks";
 import Link from "next/link";
 import { searchIconSmall } from "@/assets/icons/common-icons";
 import SellerMobileSheet from "./SellerMobileSheet";
+import HeaderDropdown from "./HeaderDropdown";
 
 const SellerHeader = () => {
   return (
@@ -47,6 +48,7 @@ const SellerHeader = () => {
               alt="user image"
             />
           </Link>
+          <HeaderDropdown />
         </div>
         <div className="flex items-center gap-3 md:hidden">
           <Link
