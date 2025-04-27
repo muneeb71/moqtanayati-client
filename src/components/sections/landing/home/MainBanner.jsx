@@ -26,11 +26,11 @@ const MainBanner = () => {
           </div>
         </div>
         <div className="flex h-full w-full items-end justify-end lg:relative">
-          <div className="right-5 lg:absolute">
+          <div className="-right-10 lg:absolute">
             <Image
-              src="/bg/home/main-banner.png"
-              width={712}
-              height={839}
+              src="/newlogo2.svg"
+              width={612}
+              height={539}
               quality={100}
               alt="blob"
               loading="lazy"

@@ -43,45 +43,50 @@ const EditProfileCard = () => {
         </div>
         <div className="flex w-full flex-col gap-5 px-2 py-10">
           <div className="flex w-full flex-col gap-1">
-            <Label className="text-normal leading-[25px]" text="First Name" />
+            {/* <Label className="text-normal leading-[25px]" text="First Name" /> */}
             <InputField
               icon={profileUserIcon}
               value={firstName}
+              placeholder="First Name"
               onChange={(e) => setFirstName(e.target.value)}
             />
           </div>
           <div className="flex w-full flex-col gap-1">
-            <Label className="text-normal leading-[25px]" text="Last Name" />
+            {/* <Label className="text-normal leading-[25px]" text="Last Name" /> */}
             <InputField
               icon={profileUserIcon}
               value={lastName}
+              placeholder="Last Name"
               onChange={(e) => setLastName(e.target.value)}
             />
           </div>
           <div className="flex w-full flex-col gap-1">
-            <Label className="text-normal leading-[25px]" text="Email" />
+            {/* <Label className="text-normal leading-[25px]" text="Email" /> */}
             <InputField
               icon={profileEmailIcon}
               type="email"
               value={email}
+              placeholder="Email"
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="flex w-full flex-col gap-1">
-            <Label className="text-normal leading-[25px]" text="Phone" />
+            {/* <Label className="text-normal leading-[25px]" text="Phone" /> */}
             <InputField
               icon={profilePhoneIcon}
               value={phone}
+              placeholder="Phone"
               onChange={(e) => setPhone(e.target.value)}
             />
           </div>
           <div className="flex w-full flex-col gap-1">
-            <Label className="text-normal leading-[25px]" text="Social Media" />
+            {/* <Label className="text-normal leading-[25px]" text="Social Media" /> */}
             <InputField
               icon={<TiSocialAtCircular />
               }
               iconClassName="text-moonstone text-[23px]"
               value={socialMedia}
+              placeholder="Social Media"
               onChange={(e) => setSocialMedia(e.target.value)}
               customIcon={true}
             />

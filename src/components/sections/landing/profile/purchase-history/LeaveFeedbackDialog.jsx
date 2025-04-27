@@ -70,7 +70,7 @@ const LeaveFeedbackDialog = ({ item }) => {
             </div>
           </div>
           <div className="flex w-full flex-col gap-2">
-            <Label text="Write a Review" />
+            {/* <Label text="Write a Review" /> */}
             <TextareaField
               placeholder="Share your thoughts about the product or seller…"
               className="h-44"

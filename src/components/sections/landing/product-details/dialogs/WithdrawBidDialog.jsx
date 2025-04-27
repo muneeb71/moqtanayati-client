@@ -54,10 +54,10 @@ const WithdrawBidDialog = ({ className = "", bidAmount, setBidAmount }) => {
             </div>
           </div>
           <div className="flex w-full flex-col gap-2">
-            <Label
+            {/* <Label
               text="Reason for retraction"
               className="text-sm text-darkBlue"
-            />
+            /> */}
             <textarea
               className="h-[144px] rounded-[8px] bg-[#F8F7FB] px-3 py-3 focus:outline-moonstone"
               onChange={(e) => setRetractionReason(e.target.value)}

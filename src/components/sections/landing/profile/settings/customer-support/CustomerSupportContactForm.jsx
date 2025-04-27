@@ -16,30 +16,30 @@ const CustomerSupportContactForm = () => {
       <div className="grid w-full gap-10 sm:grid-cols-2">
         <div className="flex h-full w-full flex-col gap-5">
           <div className="flex flex-col gap-1">
-            <Label text="Name" />
-            <InputField placeholder="Alex" />
+            {/* <Label text="Name" /> */}
+            <InputField placeholder="Name" />
           </div>
           <div className="flex flex-col gap-1">
-            <Label text="Category" />
+            {/* <Label text="Category" /> */}
             <CustomSelect
-              placeholder="Alex"
+              placeholder="Category"
               options={categories}
               selectedOption={selectedCategory}
               setSelectedOption={setSelectedCategory}
             />
           </div>
           <div className="flex h-full flex-col gap-1">
-            <Label text="Attachments" />
+            {/* <Label text="Attachments" /> */}
             <FileUpload className="h-full" />
           </div>
         </div>
         <div className="flex w-full flex-col gap-5">
           <div className="flex flex-col gap-1">
-            <Label text="Email" />
+            {/* <Label text="Email" /> */}
             <InputField type="email" placeholder="alex@oqtanayati.com" />
           </div>
           <div className="flex flex-col gap-1">
-            <Label text="Description" />
+            {/* <Label text="Description" /> */}
             <TextareaField
               placeholder="Enter Issue Description"
               className="h-60"

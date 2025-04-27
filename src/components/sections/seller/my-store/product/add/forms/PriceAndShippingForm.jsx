@@ -60,18 +60,20 @@ const PriceAndShippingForm = ({
         </div>
         <div className="grid w-full grid-cols-2 gap-4">
           <div className="flex flex-col gap-1">
-            <Label text="Price" />
+            {/* <Label text="Price" /> */}
             <InputField
               type="number"
               value={price}
+              placeholder="Price"
               onChange={(e) => setPrice(e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-1">
-            <Label text="Quantity" />
+            {/* <Label text="Quantity" /> */}
             <InputField
               type="number"
               value={quantity}
+              placeholder="Quantity"
               onChange={(e) => setQuantity(e.target.value)}
             />
           </div>

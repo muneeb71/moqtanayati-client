@@ -31,11 +31,11 @@ const LocationSelectionDialog = ({ trigger }) => {
         </DialogHeader>
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-5">
-            <Label text="Location" />
+            {/* <Label text="Location" /> */}
             <input
               type="text"
               className="h-10 min-w-60 rounded-md border border-[#F8F7FB] bg-[#F8F7FB] px-3 text-sm outline-none focus:border-moonstone"
-              placeholder="Islamabad, Pakistan"
+              placeholder="Location (Islamabad, Pakistan)"
             />
           </div>
           <div className="h-[400px] w-full overflow-hidden rounded-xl md:h-[539px]">
