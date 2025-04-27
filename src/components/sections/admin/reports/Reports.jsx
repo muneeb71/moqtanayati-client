@@ -1,16 +1,16 @@
 "use client";
-import { usersData } from "@/lib/users-data";
+import { reportData } from "@/lib/report-data";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import UsersTable from "./UsersTable";
+import ReportTable from "./ReportsTable";
 import { leftChipIcon, rightChipIcon } from "@/assets/icons/admin-icons";
 
-const Users = ({ role="" }) => { 
+const Reports = ({ role }) => { 
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState([]);
   const rowsPerPage = 10;
-  const roleData = usersData.filter(user => user.role === role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()) || ""
+  const roleData = reportData.filter(user => user.role === role)
   const totalPages = Math.ceil(roleData.length / rowsPerPage);
   
   const currentData = roleData.slice(
@@ -27,13 +27,13 @@ const Users = ({ role="" }) => {
   };
 
   const onViewClick = (id) => {
-    router.push(`/admin/users/${role}/${id}`);
+    router.push(`/admin/reports/${role}/${id}`);
   };
   return (
     <div className="flex h-full max-h-full flex-col overflow-hidden py-6">
       <div className="flex flex-col gap-3 pb-5">
         <p className="text-[24px] font-semibold leading-none text-russianViolet">
-          Users
+          Reports
         </p>
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-row items-center gap-5">
@@ -48,12 +48,13 @@ const Users = ({ role="" }) => {
         </div>
       </div>
       <div className="no-scrollbar flex h-full max-h-full w-full max-w-full flex-col overflow-auto rounded-lg">
-        <UsersTable
+        <ReportTable
           setSelectedRows={setSelectedRows}
           selectedRows={selectedRows}
           currentData={currentData}
           toggleRowSelection={toggleRowSelection}
           onViewClick={onViewClick}
+          role={role}
         />
       </div>
       <div className="flex md:h-20 flex-col md:flex-row md:items-center gap-1 justify-between bg-white py-5 pl-8">
@@ -116,4 +117,4 @@ const Users = ({ role="" }) => {
   );
 };
 
-export default Users;
+export default Reports;
