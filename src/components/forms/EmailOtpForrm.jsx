@@ -24,7 +24,7 @@ const EmailOtpContent = ({ role }) => {
           </p>
         </div>
         <div className="flex flex-col gap-2 self-center">
-          <Label text="Enter 6-digit Code" className="text-[19px] text-eerieBlack" />
+          {/* <Label text="Enter 6-digit Code" className="text-[19px] text-eerieBlack" /> */}
           <EmailOtpInput />
         </div>
         <div className="flex flex-col items-center gap-5 self-center">

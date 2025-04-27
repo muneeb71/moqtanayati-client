@@ -16,7 +16,7 @@ const ForgetPasswordForm = ({ role }) => {
       action={`/login/${role}/forget-password/otp`}
     >
       <div className="flex w-full flex-col">
-        <Label htmlFor="emailOrPhone" text="Email Or Phone" />
+        {/* <Label htmlFor="emailOrPhone" text="Email Or Phone" /> */}
         <InputField
           type="text"
           name="emailOrPhone"

@@ -6,7 +6,7 @@ import Image from "next/image";
 
 const LocationSelectionPage = () => {
   return (
-    <div className="flex w-full max-w-96 flex-col gap-10 px-2 py-10">
+    <div className="flex w-full max-w-96 flex-col gap-10 px-2">
       <Image
         src="/bg/location.svg"
         width={312}
@@ -25,7 +25,7 @@ const LocationSelectionPage = () => {
           location for buying or selling.
         </span>
       </div>
-      <div className="flex flex-col gap-2 pt-20">
+      <div className="flex flex-col gap-2">
         <LocationSelectionDialog
           trigger={<PrimaryButton title="Exact Location" icon={locationIcon} />}
         />

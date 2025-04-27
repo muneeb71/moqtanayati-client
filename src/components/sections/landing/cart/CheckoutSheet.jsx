@@ -375,20 +375,20 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
               </div>
               <div className="flex w-full flex-col gap-3 px-10 py-5">
                 <div className="flex w-full flex-col gap-1">
-                  <Label text="Card Number" />
+                  {/* <Label text="Card Number" /> */}
                   <InputField placeholder="Enter card number" />
                 </div>
                 <div className="flex w-full flex-col gap-1">
-                  <Label text="Cardholder Name" />
+                  {/* <Label text="Cardholder Name" /> */}
                   <InputField placeholder="Enter cardholder name" />
                 </div>
                 <div className="flex w-full items-center gap-2">
                   <div className="flex w-full flex-col gap-1">
-                    <Label text="Expiry Date" />
+                    {/* <Label text="Expiry Date" /> */}
                     <InputField placeholder="01/01/2000" />
                   </div>
                   <div className="flex w-full flex-col gap-1">
-                    <Label text="CVV" />
+                    {/* <Label text="CVV" /> */}
                     <InputField placeholder="CVV" />
                   </div>
                 </div>

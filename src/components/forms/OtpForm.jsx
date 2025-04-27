@@ -24,7 +24,7 @@ const OtpForm = ({ role }) => {
           </p>
         </div>
         <div className="flex flex-col gap-2 self-center">
-          <Label text="Enter OTP" className="text-[19px] text-eerieBlack" />
+          {/* <Label text="Enter OTP" className="text-[19px] text-eerieBlack" /> */}
           <OtpInput />
         </div>
         <div className="flex flex-col items-center gap-5 self-center">

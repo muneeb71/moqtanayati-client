@@ -56,7 +56,7 @@ const LoginForm = ({ role = "seller" }) => {
         )}
         {role === "seller" ? (
           <>
-            <Label htmlFor="email" text="Email" />
+            {/* <Label htmlFor="email" text="Email" /> */}
             <InputField
               icon={envelopeIcon}
               type="email"
@@ -69,7 +69,7 @@ const LoginForm = ({ role = "seller" }) => {
           <>
             {selectedOption === "email" && (
               <>
-                <Label htmlFor="email" text="Email" />
+                {/* <Label htmlFor="email" text="Email" /> */}
                 <InputField
                   icon={profileEmailIcon}
                   type="email"
@@ -81,7 +81,7 @@ const LoginForm = ({ role = "seller" }) => {
             )}
             {selectedOption === "phone" && (
               <>
-                <Label htmlFor="phone" text="Phone" />
+                {/* <Label htmlFor="phone" text="Phone" /> */}
                 <InputField
                   icon={profilePhoneIcon}
                   type="tel"
@@ -93,7 +93,8 @@ const LoginForm = ({ role = "seller" }) => {
             )}
             {selectedOption === "id" && (
               <>
-                <Label htmlFor="Id" text="Id" />
+                {/* <Label htmlFor="username" text="Username" /> */}
+
                 <InputField
                   icon={profileUserIcon}
                   type="text"
@@ -107,7 +108,7 @@ const LoginForm = ({ role = "seller" }) => {
         )}
       </div>
       <div className="flex w-full flex-col">
-        <Label htmlFor="password" text="Password" />
+        {/* <Label htmlFor="password" text="Password" /> */}
         <InputField
           icon={lockIcon}
           placeholder="Enter your password"

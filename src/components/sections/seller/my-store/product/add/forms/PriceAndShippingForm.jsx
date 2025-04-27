@@ -168,20 +168,20 @@ const PriceAndShippingForm = ({
                 // Fixed Price Inputs
                 <>
           <div className="flex flex-col gap-1">
-                    <Label text="Price" className="text-base text-darkBlue"/>
+            {/* <Label text="Price" /> */}
             <InputField
               type="number"
               value={price}
-                      placeholder="$0.00"
+              placeholder="Price"
               onChange={(e) => setPrice(e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-1">
-                    <Label text="Quantity" className="text-base text-darkBlue"/>
+            {/* <Label text="Quantity" /> */}
             <InputField
               type="number"
               value={quantity}
-                      placeholder="1"
+              placeholder="Quantity"
               onChange={(e) => setQuantity(e.target.value)}
             />
           </div>

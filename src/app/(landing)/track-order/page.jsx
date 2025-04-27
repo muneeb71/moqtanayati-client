@@ -28,6 +28,7 @@ const page = () => {
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-10 px-3 pb-20">
+
       <PageHeading>
         <span className="text-">Track Order</span>
       </PageHeading>

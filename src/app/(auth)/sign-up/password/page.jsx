@@ -19,7 +19,7 @@ const PasswordStepPage = () => {
       <div className="flex w-full flex-col gap-5 px-2 py-10">
         <h1 className="text-lg md:text-2xl">Tell us about yourself</h1>
         <div className="flex w-full flex-col">
-          <Label text="Password" />
+          {/* <Label text="Password" /> */}
           <InputField
             type="password"
             placeholder="Enter your Password"
@@ -27,7 +27,7 @@ const PasswordStepPage = () => {
           />
         </div>
         <div className="flex w-full flex-col">
-          <Label text="Confirm Password" />
+          {/* <Label text="Confirm Password" /> */}
           <InputField
             type="password"
             placeholder="Re-enter your Password"
