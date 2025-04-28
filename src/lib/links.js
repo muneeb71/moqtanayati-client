@@ -52,7 +52,7 @@ export const userFeatureLinks = [
   },
   {
     title: "Start Selling",
-    href: "#",
+    href: "/seller/my-store",
   },
   {
     title: "Saved Items",
