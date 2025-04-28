@@ -24,14 +24,12 @@ const HelpCenterBar = () => {
       <div className="flex w-full items-center gap-2 border-b-[1.5px] border-[#F0F1F4] pb-5 md:gap-[18px]">
         {helpCenterCategories.map((helpCenterCategory, index) => (
           <button
-            onClick={() =>
+            onClick={() => {
+              const basePath = pathname.includes("seller") ? "/seller" : "";
               router.push(
-                "/help-center/" +
-                  helpCenterCategory.href +
-                  "/" +
-                  helpCenterSubCategories[0].href,
-              )
-            }
+                `${basePath}/help-center/${helpCenterCategory.href}/${helpCenterSubCategories[0].href}`,
+              );
+            }}
             key={index}
             className={cn(
               "flex items-center justify-center rounded-[12px] border-[1.5px] px-3 py-1.5 md:px-5 md:py-2.5",
