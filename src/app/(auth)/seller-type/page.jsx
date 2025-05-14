@@ -51,7 +51,7 @@ const SellerTypePage = () => {
                 showIcon
                 className="w-fit self-center px-16"
                 // onClick={() => console.log("Getting Started", selectedType)}
-                onClick={() => router.push("/seller")}
+                onClick={() => router.push("/upload-document")}
             />
         </div>
     )
