@@ -8,7 +8,7 @@ const BidRetractionCard = () => {
       <div className="flex w-full items-center justify-between">
         <div className="flex items-center gap-3">
           <Image
-            src="/dummy-user/1.jpeg"
+            src="/static/dummy-user/1.jpeg"
             width={57}
             height={57}
             alt="Profile Image"

@@ -33,7 +33,7 @@ const EditOtpDialog = () => {
             </span>
           </div>
           <div className="flex flex-col items-center gap-3">
-            {/* <Label text="Enter OTP" className="text-[19.2px]" /> */}
+            <Label text="Enter OTP" className="text-[19.2px]" />
             <OtpInput />
           </div>
           <div className="flex flex-col items-center gap-5">

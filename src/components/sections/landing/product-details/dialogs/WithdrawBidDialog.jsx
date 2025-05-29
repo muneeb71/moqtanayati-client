@@ -35,7 +35,7 @@ const WithdrawBidDialog = ({ className = "", bidAmount, setBidAmount }) => {
           <div className="flex w-full items-start gap-3">
             <div className="grid aspect-square size-[80px] min-w-[80px] place-items-center overflow-hidden rounded-[8px] border border-black/5 bg-black/10">
               <Image
-                src="/dummy-items/2.jpeg"
+                src="/static/dummy-items/2.jpeg"
                 width={500}
                 height={500}
                 alt="item"
@@ -54,10 +54,10 @@ const WithdrawBidDialog = ({ className = "", bidAmount, setBidAmount }) => {
             </div>
           </div>
           <div className="flex w-full flex-col gap-2">
-            {/* <Label
+            <Label
               text="Reason for retraction"
               className="text-sm text-darkBlue"
-            /> */}
+            />
             <textarea
               className="h-[144px] rounded-[8px] bg-[#F8F7FB] px-3 py-3 focus:outline-moonstone"
               onChange={(e) => setRetractionReason(e.target.value)}

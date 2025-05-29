@@ -51,7 +51,7 @@ const AuctionCard = ({
             <span className="text-xl font-medium">${price.toFixed(2)}</span>
             <span className="text-xs text-black/30">by</span>
             <Image
-              src="/dummy-user/1.jpeg"
+              src="/static/dummy-user/1.jpeg"
               width={20}
               height={20}
               alt="user"

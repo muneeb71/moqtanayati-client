@@ -48,7 +48,7 @@ const AuctionsDescriptionCard = ({ item }) => {
                 <span className="text-[10px] text-battleShipGray">by</span>
                 <div className="flex items-center gap-1">
                   <Image
-                    src="/dummy-user/1.jpeg"
+                    src="/static/dummy-user/1.jpeg"
                     width={18}
                     height={18}
                     alt="seller"

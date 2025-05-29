@@ -1,20 +1,22 @@
-"use client"
-import { motion } from 'framer-motion';
+"use client";
+
+import { motion } from "framer-motion";
 import { dummyItems } from "@/lib/dummy-items";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 const AuctionSlider = () => {
   const [selectedItemIndex, setSelectedIndex] = useState(3);
+  const [items, setItems] = useState(dummyItems);
   const sliderRef = useRef(null);
   const autoSlideRef = useRef(null);
-  const router = useRouter()
+  const router = useRouter();
 
   const goToNextSlide = () => {
     setSelectedIndex((prevIndex) =>
-      prevIndex === dummyItems.length - 1 ? 0 : prevIndex + 1,
+      prevIndex === items.length - 1 ? 0 : prevIndex + 1,
     );
   };
 
@@ -24,7 +26,9 @@ const AuctionSlider = () => {
   }, []);
 
   useEffect(() => {
-    const handleDrag = (e) => { /* Drag functionality as is */ };
+    const handleDrag = (e) => {
+      /* Drag functionality as is */
+    };
     handleDrag();
   }, []);
 
@@ -33,12 +37,12 @@ const AuctionSlider = () => {
     animate: { rotateY: 180 },
     exit: { rotateY: 0 },
     transition: {
-      duration: 1, 
-      ease: "easeInOut" 
-    }
+      duration: 1,
+      ease: "easeInOut",
+    },
   };
   const handleProductClick = () => {
-    router.push(`/product-details/${dummyItems[selectedItemIndex].id}`);
+    router.push(`/product-details/${items[selectedItemIndex].id}`);
   };
 
   return (
@@ -53,7 +57,7 @@ const AuctionSlider = () => {
             variants={flipAnimation}
           >
             <Image
-              src={dummyItems[selectedItemIndex].image}
+              src={items[selectedItemIndex].image}
               width={500}
               height={500}
               alt="item"
@@ -64,7 +68,7 @@ const AuctionSlider = () => {
           </motion.div>
         </div>
         <div className="flex items-center gap-1">
-          {dummyItems.map((item, index) => (
+          {items.map((item, index) => (
             <button
               onClick={() => setSelectedIndex(index)}
               key={index}
@@ -80,7 +84,7 @@ const AuctionSlider = () => {
         ref={sliderRef}
         className="no-scrollbar flex h-full max-h-[420px] min-w-[84px] max-w-[94vw] justify-between gap-[21px] self-center overflow-scroll sm:max-w-[400px] md:max-w-full lg:flex-col"
       >
-        {dummyItems.map((item, index) => (
+        {items.map((item, index) => (
           <button
             onClick={() => setSelectedIndex(index)}
             className="grid size-[84px] min-h-[84px] min-w-[84px] place-items-center overflow-hidden rounded-[10px] border border-transparent bg-black/10 transition-all duration-200 ease-in hover:border-moonstone"

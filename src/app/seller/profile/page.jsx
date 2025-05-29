@@ -24,7 +24,7 @@ const SellerProfilePage = () => {
             <Pencil className="size-8 rounded-lg border border-black/10 p-1 text-black/60 transition-all duration-100 ease-in hover:border-black hover:text-black" />
           </Link>
           <Image
-            src="/dummy-user/1.jpeg"
+            src="/static/dummy-user/1.jpeg"
             width={151}
             height={151}
             alt="Profile Image"

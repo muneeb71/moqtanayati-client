@@ -5,7 +5,7 @@ const StoreWallpaperContainer = () => {
   return (
     <div className="relative flex max-h-96 w-full items-center justify-center overflow-hidden rounded-3xl">
       <Image
-        src="/store/wallpaper.jpeg"
+        src="/static/store/wallpaper.jpeg"
         width={1248}
         height={397}
         alt="wallpaper"

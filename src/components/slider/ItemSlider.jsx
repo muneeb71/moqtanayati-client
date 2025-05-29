@@ -1,10 +1,6 @@
 "use client";
 
 import {
-  sliderLeftButtonIcon,
-  sliderRightButtonIcon,
-} from "@/assets/icons/category-slider-icons";
-import {
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -16,12 +12,20 @@ import { dummyItems } from "@/lib/dummy-items";
 
 const ItemSlider = ({ items }) => {
   const [api, setApi] = useState();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!api) {
       return;
     }
   }, [api]);
+
+  if (!mounted) return null;
+
   return (
     <Carousel
       plugins={[

@@ -31,7 +31,7 @@ const SellerProfileEditPage = () => {
         <div className="relative flex w-fit items-center justify-center">
           <Image
             className="size-32 min-w-32 rounded-full"
-            src="/dummy-user/3.jpeg"
+            src="/static/dummy-user/3.jpeg"
             width={150}
             height={150}
             alt="user"

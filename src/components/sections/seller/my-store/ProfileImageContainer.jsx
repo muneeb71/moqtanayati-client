@@ -8,7 +8,7 @@ const ProfileImageContainer = () => {
       <div className="relative">
         <div className="size-44 overflow-hidden rounded-full border-4 border-white">
           <Image
-            src="/store/profile.jpeg"
+            src="/static/store/profile.jpeg"
             width={200}
             height={200}
             alt="wallpaper"

@@ -5,15 +5,14 @@ import { useRouter } from "next/navigation";
 import UsersTable from "./UsersTable";
 import { leftChipIcon, rightChipIcon } from "@/assets/icons/admin-icons";
 
-const Users = ({ role="" }) => { 
+const Users = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState([]);
   const rowsPerPage = 10;
-  const roleData = usersData.filter(user => user.role === role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()) || ""
-  const totalPages = Math.ceil(roleData.length / rowsPerPage);
-  
-  const currentData = roleData.slice(
+  const totalPages = Math.ceil(usersData.length / rowsPerPage);
+
+  const currentData = usersData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage,
   );
@@ -27,7 +26,7 @@ const Users = ({ role="" }) => {
   };
 
   const onViewClick = (id) => {
-    router.push(`/admin/users/${role}/${id}`);
+    router.push(`/admin/users/${id}`);
   };
   return (
     <div className="flex h-full max-h-full flex-col overflow-hidden py-6">
@@ -37,7 +36,7 @@ const Users = ({ role="" }) => {
         </p>
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-row items-center gap-5">
-            <p className="text-[18px] font-normal text-davyGray">All {role == "buyer" ? "Buyers" : "Sellers"}</p>
+            <p className="text-[18px] font-normal text-davyGray">All Users</p>
             {selectedRows.length > 0 && (
               <p className="text-[13px] font-normal text-davyGray">
                 ({selectedRows.length}{" "}
@@ -59,8 +58,8 @@ const Users = ({ role="" }) => {
       <div className="flex md:h-20 flex-col md:flex-row md:items-center gap-1 justify-between bg-white py-5 pl-8">
         <p className="text-sm text-customGray">
           Showing {1 + (currentPage - 1) * rowsPerPage} -{" "}
-          {Math.min(currentPage * rowsPerPage, roleData.length)} from{" "}
-          {roleData.length}
+          {Math.min(currentPage * rowsPerPage, usersData.length)} from{" "}
+          {usersData.length}
         </p>
         <div className="mr-10 flex items-center gap-2">
           <button

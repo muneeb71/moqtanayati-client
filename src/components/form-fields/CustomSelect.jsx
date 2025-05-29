@@ -52,19 +52,17 @@ const CustomSelect = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute left-0 top-full z-[101] mt-2 w-full rounded-[9.6px] border border-[#F8F7FB] bg-[#F8F7FB] shadow-md"
+            className="absolute left-0 top-full mt-2 w-full rounded-[9.6px] border border-[#F8F7FB] bg-[#F8F7FB] shadow-md"
           >
-            <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-              {options.map((option, index) => (
-                <div
-                  key={index}
-                  className="cursor-pointer px-5 py-3 text-[16.8px] hover:bg-gray-200"
-                  onClick={() => handleSelect(option)}
-                >
-                  {option}
-                </div>
-              ))}
-            </div>
+            {options.map((option, index) => (
+              <div
+                key={index}
+                className="cursor-pointer px-5 py-3 text-[16.8px] hover:bg-gray-200"
+                onClick={() => handleSelect(option)}
+              >
+                {option}
+              </div>
+            ))}
           </motion.div>
         )}
       </AnimatePresence>

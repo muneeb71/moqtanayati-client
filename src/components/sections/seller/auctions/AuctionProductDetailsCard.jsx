@@ -45,7 +45,7 @@ const AuctionProductDetailsCard = ({ item }) => {
               <span className="text-xl font-medium">$500.00</span>
               <span className="text-xs text-black/30">by</span>
               <Image
-                src="/dummy-user/1.jpeg"
+                src="/static/dummy-user/1.jpeg"
                 width={20}
                 height={20}
                 alt="user"

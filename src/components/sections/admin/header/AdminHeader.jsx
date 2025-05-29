@@ -17,13 +17,13 @@ const AdminHeader = () => {
       
       <div className="flex items-center gap-4">
         <div className="relative cursor-pointer">
-          <Image src="/notifs.svg" alt="notifications" width={16} height={16} />
+          <Image src="/static/notifs.svg" alt="notifications" width={16} height={16} />
         </div>
         
         <div className="flex items-center gap-2">
           <div className="h-10 w-10 overflow-hidden rounded-full">
             <Image 
-              src="/dummy-user/1.jpeg" 
+              src="/static/dummy-user/1.jpeg" 
               alt="User profile" 
               width={40} 
               height={40}

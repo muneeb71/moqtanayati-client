@@ -7,12 +7,24 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { logoutUser } from "@/lib/api/auth/logout";
 import { headerDropdownLinks } from "@/lib/links";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const HeaderDropdown = () => {
   const router = useRouter();
+
+  const handleLogout = async () => {
+    const response = await logoutUser();
+    if (response.success) {
+      router.push("/auth");
+    } else {
+      toast.error(response.message || "Logout failed");
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>{barsIcon}</DropdownMenuTrigger>
@@ -36,7 +48,10 @@ const HeaderDropdown = () => {
             </DropdownMenuItem>
           ))}
         </div>
-        <DropdownMenuItem className="flex items-center justify-end gap-1 px-3 text-[13px]">
+        <DropdownMenuItem
+          className="flex cursor-pointer items-center justify-end gap-1 px-3 text-[13px]"
+          onClick={() => handleLogout()}
+        >
           {logoutIcon}
           Logout
         </DropdownMenuItem>

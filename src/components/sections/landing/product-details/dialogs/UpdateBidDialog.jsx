@@ -37,9 +37,9 @@ const UpdateBidDialog = ({ className = "", bidAmount, setBidAmount }) => {
         </DialogHeader>
         <div className="flex flex-col items-center gap-20 pt-20">
           <div className="flex w-full flex-col gap-3">
-            {/* <Label text="Bid Amount" className="text-[19.2px]" /> */}
+            <Label text="Bid Amount" className="text-[19.2px]" />
             <InputField
-              placeholder="Enter New Nid Amount"
+              placeholder="Enter New Amount"
               type="number"
               value={newAmount}
               onChange={(e) => setNewAmount(e.target.value)}

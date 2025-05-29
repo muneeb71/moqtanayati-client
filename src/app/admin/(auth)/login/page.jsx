@@ -5,7 +5,7 @@ const AdminLoginPage = () => {
   return (
     <div className="relative flex h-screen w-screen items-center justify-center bg-[#ECF1F5] px-4">
       <Image
-        src="/bg/blob.svg"
+        src="/static/bg/blob.svg"
         width={441}
         height={384}
         alt="blob"
@@ -14,7 +14,7 @@ const AdminLoginPage = () => {
       />
       <AdminLoginForm />
       <Image
-        src="/logo.png"
+        src="/static/logo.png"
         width={161}
         height={81}
         alt="logo"

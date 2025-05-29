@@ -35,7 +35,7 @@ const BidCard = ({ item }) => {
               <div className="flex items-center gap-1">
                 <div className="size-[19.1px] min-h-[19.1px] min-w-[19.1px] overflow-hidden rounded-full">
                   <Image
-                    src="/dummy-user/1.jpeg"
+                    src="/static/dummy-user/1.jpeg"
                     width={100}
                     height={100}
                     className="h-full w-full object-cover"

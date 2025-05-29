@@ -32,7 +32,7 @@ const ProfileCard = () => {
       <div className="flex flex-col items-center">
         <div className="mb-2 grid size-[128px] place-items-center overflow-hidden rounded-full">
           <Image
-            src="/dummy-user/1.jpeg"
+            src="/static/dummy-user/1.jpeg"
             width={100}
             height={100}
             alt="User profile image"

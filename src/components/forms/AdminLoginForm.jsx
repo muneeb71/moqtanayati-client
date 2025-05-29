@@ -22,7 +22,7 @@ const AdminLoginForm = () => {
       </div>
       <div className="flex w-full flex-col gap-5">
         <div className="flex flex-col gap-1">
-          {/* <Label text="Email" /> */}
+          <Label text="Email" />
           <InputField
             type="email"
             icon={envelopeIcon}
@@ -30,7 +30,7 @@ const AdminLoginForm = () => {
           />
         </div>
         <div className="flex flex-col gap-1">
-          {/* <Label text="Password" /> */}
+          <Label text="Password" />
           <InputField
             type="password"
             icon={lockIcon}

@@ -9,7 +9,7 @@ const AdminSidebar = () => {
     >
       <div className="flex w-full flex-col gap-16 mb-10">
         <Image
-          src="/logo.png"
+          src="/static/logo.png"
           width={143}
           height={72}
           alt="logo"

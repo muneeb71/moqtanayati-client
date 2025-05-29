@@ -4,19 +4,19 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const RegisterSteps = () => {
+const RegisterSteps = ({ role }) => {
   const steps = [
     {
       title: "Personal Details",
-      href: "/sign-up",
+      href: "/auth/" + role + "/sign-up",
     },
     {
       title: "ID Proof",
-      href: "/sign-up/id-proof",
+      href: "/auth/" + role + "/sign-up/id-proof",
     },
     {
       title: "Password",
-      href: "/sign-up/password",
+      href: "/auth/" + role + "/sign-up/password",
     },
   ];
 
@@ -32,8 +32,11 @@ const RegisterSteps = () => {
           const isActive =
             index === 0 || // Personal Details always active
             (index === 1 &&
-              ["/sign-up/id-proof", "/sign-up/password"].includes(pathname)) ||
-            (index === 2 && pathname === "/sign-up/password");
+              [
+                "/auth/" + role + "/sign-up/id-proof",
+                "/auth/" + role + "/sign-up/password",
+              ].includes(pathname)) ||
+            (index === 2 && pathname === "/auth/" + role + "/sign-up/password");
 
           return (
             <Link href={step.href} className="flex flex-col gap-1" key={index}>

@@ -38,7 +38,7 @@ const NewPasswordForm = ({ role }) => {
     <form className="flex w-full flex-col gap-20" onSubmit={handleSubmit}>
       <div className="flex flex-col items-center gap-5">
         <div className="flex w-full flex-col">
-          {/* <Label htmlFor="password" text="Password" /> */}
+          <Label htmlFor="password" text="Password" />
           <InputField
             type="password"
             name="password"
@@ -49,7 +49,7 @@ const NewPasswordForm = ({ role }) => {
           />
         </div>
         <div className="flex w-full flex-col">
-          {/* <Label htmlFor="confirmPassword" text="Confirm Password" /> */}
+          <Label htmlFor="confirmPassword" text="Confirm Password" />
           <InputField
             type="password"
             name="confirmPassword"

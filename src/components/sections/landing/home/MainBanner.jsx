@@ -17,7 +17,7 @@ const MainBanner = () => {
           </span>
           <div className="absolute left-0 top-0 z-[1]">
             <Image
-              src="/bg/blob.svg"
+              src="/static/bg/blob.svg"
               width={400}
               height={500}
               alt="blob"
@@ -26,11 +26,11 @@ const MainBanner = () => {
           </div>
         </div>
         <div className="flex h-full w-full items-end justify-end lg:relative">
-          <div className="-right-10 lg:absolute">
+          <div className="right-5 lg:absolute">
             <Image
-              src="/newlogo2.svg"
-              width={612}
-              height={539}
+              src="/static/bg/home/main-banner.png"
+              width={712}
+              height={839}
               quality={100}
               alt="blob"
               loading="lazy"

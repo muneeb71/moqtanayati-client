@@ -8,7 +8,7 @@ const SellerReviewCard = () => {
         <div className="flex items-center gap-2">
           <div className="grid size-[57.6px] place-items-center overflow-hidden rounded-full">
             <Image
-              src="/dummy-user/1.jpeg"
+              src="/static/dummy-user/1.jpeg"
               width={100}
               height={100}
               alt="notification"

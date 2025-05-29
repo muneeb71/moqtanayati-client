@@ -30,7 +30,7 @@ const UsersTable = ({
             />
           </th>
           <th className="text-customeBlue py-5 font-semibold">Name</th>
-          {/* <th className="text-customeBlue py-5 pl-8 font-semibold">Role</th> */}
+          <th className="text-customeBlue py-5 pl-8 font-semibold">Role</th>
           <th className="text-customeBlue py-5 pl-8 font-semibold">
             Account Status
           </th>
@@ -78,9 +78,9 @@ const UsersTable = ({
                 </div>
               </div>
             </td>
-            {/* <td className="py-5 pl-8 text-[16px] text-customGray">
+            <td className="py-5 pl-8 text-[16px] text-customGray">
               {user.role}
-            </td> */}
+            </td>
             <td className="py-5 pl-8">
               <span
                 className={`rounded-lg px-5 py-1 text-[14px] font-semibold ${

@@ -5,7 +5,7 @@ const OrderDetailsCard = () => {
     <div className="flex w-full items-center gap-4">
       <div className="size-36 min-w-36 overflow-hidden rounded-2xl border border-black/5">
         <Image
-          src="/dummy-items/2.jpeg"
+          src="/static/dummy-items/2.jpeg"
           width={140}
           height={140}
           quality={100}

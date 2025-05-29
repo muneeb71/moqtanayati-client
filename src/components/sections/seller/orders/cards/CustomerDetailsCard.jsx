@@ -7,7 +7,7 @@ const CustomerDetailsCard = () => {
     <div className="flex w-full max-w-sm flex-col gap-4 rounded-xl bg-[#F8F7FB] p-4">
       <div className="flex items-center gap-2">
         <Image
-          src="/dummy-user/2.jpeg"
+          src="/static/dummy-user/2.jpeg"
           width={48}
           height={48}
           alt="user"

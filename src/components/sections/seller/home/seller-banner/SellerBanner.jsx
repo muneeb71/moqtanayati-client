@@ -19,7 +19,7 @@ const SellerBanner = () => {
       </div>
       <div className="absolute left-0 top-0 z-[1]">
         <Image
-          src="/bg/blob.svg"
+          src="/static/bg/blob.svg"
           width={400}
           height={500}
           alt="blob"

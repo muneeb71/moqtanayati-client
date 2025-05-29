@@ -5,7 +5,6 @@ import {
   masterCardIcon,
   payPalIcon,
   visaIcon,
-  tamaraIcon,
 } from "@/assets/icons/payment-icons";
 import RoundedButton from "@/components/buttons/RoundedButton";
 import InputField from "@/components/form-fields/InputField";
@@ -26,7 +25,7 @@ import Image from "next/image";
 import { useState } from "react";
 import CreditCard from "../payment-methods/CreditCard";
 
-const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
+const CheckoutSheet = ({ itemCount = 0 }) => {
   const tabs = [
     "Items",
     "Select Payment Methods",
@@ -41,16 +40,6 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
   const [selectedShippingOption, setSelectedShippingOption] = useState(
     shippingOptions[0],
   );
-
-  const handlePayNow = () => {
-    setSelectedTab(tabs[1]);
-    //orderPlaced(true);
-  };
-
-  const handleOrderPlace = () => {
-    setSelectedTab(tabs[0])
-    orderPlaced()
-  }
 
   return (
     <Sheet>
@@ -72,7 +61,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
           <X className="absolute left-5 top-5 size-7 cursor-pointer" />
         </SheetClose>
         {selectedTab === tabs[0] ? (
-          <div className="flex h-[93%] flex-col overflow-auto pb-10">
+          <div className="flex h-[93%] flex-col">
             <div className="flex flex-col gap-2 px-10 py-5">
               <h1 className="text-lg font-medium text-delftBlue">
                 {selectedTab}
@@ -195,7 +184,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 </span>
               </div>
               <button
-                onClick={handlePayNow}
+                onClick={() => setSelectedTab(tabs[1])}
                 className="rounded-lg bg-moonstone/80 px-10 py-3 text-white hover:bg-moonstone"
               >
                 Pay Now
@@ -235,33 +224,9 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 )}
               >
                 <div className="flex items-center gap-2">
-                  Apple Pay {applePayIcon}
-                </div>
-                <ChevronRight />
-              </button>
-              {/* <button
-                onClick={() => setSelectedTab(tabs[2])}
-                className={cn(
-                  "flex items-center justify-between rounded-xl border border-delftBlue/10 bg-[#F8F7FB] px-4 py-5 text-start text-darkBlue",
-                  "transition-all duration-200 ease-in hover:border-moonstone",
-                )}
-              >
-                <div className="flex items-center gap-2">
                   Paypal {payPalIcon}
                 </div>
                 <ChevronRight />
-              </button> */}
-              <button
-                onClick={() => setSelectedTab(tabs[2])}
-                className={cn(
-                  "flex items-center justify-between rounded-xl border border-delftBlue/10 bg-[#F8F7FB] px-4 py-5 text-start text-darkBlue",
-                  "transition-all duration-200 ease-in hover:border-moonstone",
-                )}
-              >
-                <div className="flex items-center gap-2">
-                  Tabby <Image width={50} height={33} alt="icon" src={"tabbyIcon.svg"} />
-                </div>
-                <ChevronRight />
               </button>
               <button
                 onClick={() => setSelectedTab(tabs[2])}
@@ -271,7 +236,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 )}
               >
                 <div className="flex items-center gap-2">
-                  Tamara <Image width={25} height={25} alt="icon" src={"tamaraIcon.svg"} />
+                  Apple Pay {applePayIcon}
                 </div>
                 <ChevronRight />
               </button>
@@ -314,7 +279,6 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                           ? "relative rounded-2xl bg-moonstone p-[1px]"
                           : "",
                       )}
-                      key={index}
                       onClick={() => setSelectedCard(card)}
                     >
                       <CreditCard
@@ -352,7 +316,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 </div>
                 <SheetClose asChild>
                   <button
-                    onClick={() => handleOrderPlace()}
+                    onClick={() => setSelectedTab(tabs[0])}
                     className="rounded-lg bg-moonstone/80 px-10 py-3 text-white hover:bg-moonstone"
                   >
                     Place Order
@@ -375,20 +339,20 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
               </div>
               <div className="flex w-full flex-col gap-3 px-10 py-5">
                 <div className="flex w-full flex-col gap-1">
-                  {/* <Label text="Card Number" /> */}
+                  <Label text="Card Number" />
                   <InputField placeholder="Enter card number" />
                 </div>
                 <div className="flex w-full flex-col gap-1">
-                  {/* <Label text="Cardholder Name" /> */}
+                  <Label text="Cardholder Name" />
                   <InputField placeholder="Enter cardholder name" />
                 </div>
                 <div className="flex w-full items-center gap-2">
                   <div className="flex w-full flex-col gap-1">
-                    {/* <Label text="Expiry Date" /> */}
+                    <Label text="Expiry Date" />
                     <InputField placeholder="01/01/2000" />
                   </div>
                   <div className="flex w-full flex-col gap-1">
-                    {/* <Label text="CVV" /> */}
+                    <Label text="CVV" />
                     <InputField placeholder="CVV" />
                   </div>
                 </div>
