@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Poppins } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { appName } from "@/lib/app-name";
 import { Toaster } from "react-hot-toast";
