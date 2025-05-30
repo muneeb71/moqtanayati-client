@@ -3,7 +3,7 @@ import LoginForm from "@/components/forms/LoginForm";
 const RoleBasedLoginPage = async ({ params }) => {
   const role = (await params).role;
   return (
-    <div className="flex w-full flex-col gap-8 md:gap-12">
+    <div className="flex w-full flex-col gap-8 md:gap-12 pt-28 pb-10 justify-center">
       <div className="flex w-full flex-col gap-1">
         <h1 className="text-xl md:text-[33px] md:leading-[50px]">
           Welcome back

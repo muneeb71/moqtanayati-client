@@ -17,7 +17,11 @@ const CategorySelection = ({ setFormData, setStep, goBack }) => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
       <div className="flex w-full justify-start">
-        <img src="/auth/moneybag.svg" alt="" className="mb-6 h-12 w-12" />
+        <img
+          src="/static/auth/moneybag.svg"
+          alt=""
+          className="mb-6 h-12 w-12"
+        />
       </div>
       <h1 className="mb-2 w-full text-start text-2xl font-semibold text-darkBlue">
         Products and Services
@@ -57,13 +61,6 @@ const CategorySelection = ({ setFormData, setStep, goBack }) => {
       </div>
 
       <div className="flex w-full justify-center">
-        <button
-          className="mr-2 flex items-center rounded-full bg-grayishWhite p-2 text-xs"
-          onClick={goBack}
-        >
-          <ChevronLeft />
-          Go Back
-        </button>
         <button
           className={`flex w-full max-w-xs items-center justify-center gap-2 rounded-full bg-moonstone py-3 text-base font-medium text-white transition ${
             !selected

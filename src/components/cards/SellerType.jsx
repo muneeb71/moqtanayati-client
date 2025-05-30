@@ -16,9 +16,15 @@ const SellerTypeCard = ({
     >
       {isSelected && <div className="absolute right-2 top-2">{tickGreen}</div>}
       <div
-        className={`flex items-center justify-center rounded-full ${imageClassName} bg-white`}
+        className={`flex size-[50px] max-h-[50px] min-h-[50px] min-w-[50px] max-w-[50px] items-center justify-center rounded-full bg-white`}
       >
-        <Image src={image} width={30} height={30} alt="User profile image" />
+        <Image
+          src={image}
+          width={30}
+          height={30}
+          className="size-[24px] max-h-[30px] max-w-[30px]"
+          alt="User profile image"
+        />
       </div>
       <div className="flex flex-col">
         <p className="text-[18px] font-medium">{title}</p>

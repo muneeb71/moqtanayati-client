@@ -1,34 +1,29 @@
-"use client";
+"use client"
 import { useState } from "react";
-import { ChevronRight, ChevronLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const options = [
-  { label: "Discover", value: "discover" },
-  { label: "Increase Profit", value: "increase profit" },
-  { label: "Start New Business", value: "start new business" },
-  { label: "Explore", value: "explore" },
+  { label: "Yes, I have products", value: "yes" },
+  { label: "No, I am still working on it", value: "no" },
 ];
 
-const Purpose = ({ setFormData, setStep, goBack }) => {
+const StartSelling = ({ setFormData, setStep, goBack }) => {
   const [selected, setSelected] = useState("");
 
   const handleSelect = (value) => {
     setSelected(value);
     setFormData((prev) => ({
       ...prev,
-      whatBringsYouHere: value,
+      haveProductToSell: value,
     }));
   };
 
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-white px-4">
-      <img src="/auth/flag.svg" alt="" className="mb-6 h-12 w-12" />
-      <h1 className="mb-2 text-start text-2xl text-black">
-        What Brings You Here?
-      </h1>
+    <div className="flex flex-col justify-center bg-white px-4">
+      <img src="/static/auth/box.svg" alt="" className="mb-6 h-12 w-12" />
+      <h1 className="mb-2 text-start text-2xl text-black">Start Selling</h1>
       <p className="mb-7 text-xl text-darkBlue/50">
-        We would love to know your main goal. How do you plan on using this
-        platform?
+        Do you have a product ready to sell?
       </p>
       <div className="mb-10 flex w-full flex-col gap-3">
         {options.map((opt) => (
@@ -51,16 +46,9 @@ const Purpose = ({ setFormData, setStep, goBack }) => {
       </div>
       <div className="flex w-full justify-center">
         <button
-          className="mr-2 flex items-center rounded-full bg-grayishWhite p-2 text-xs"
-          onClick={goBack}
-        >
-          <ChevronLeft />
-          Go Back
-        </button>
-        <button
           className={`flex w-full max-w-xs items-center justify-center gap-2 rounded-full bg-moonstone py-3 text-base font-medium text-white transition ${!selected ? "cursor-not-allowed opacity-50" : "hover:bg-moonstone/90"} `}
           disabled={!selected}
-          onClick={() => setStep((prev) => prev + 1)}
+          onClick={()=>setStep(prev => prev+1)}
         >
           Next
           <ChevronRight className="h-5 w-5" />
@@ -70,4 +58,4 @@ const Purpose = ({ setFormData, setStep, goBack }) => {
   );
 };
 
-export default Purpose;
+export default StartSelling;

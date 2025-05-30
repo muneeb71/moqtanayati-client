@@ -99,13 +99,6 @@ const SubcategorySelection = ({ formData, setFormData, setStep, goBack }) => {
       </div>
       <div className="flex w-full justify-center">
         <button
-          className="mr-2 flex items-center rounded-full bg-grayishWhite p-2 text-xs"
-          onClick={goBack}
-        >
-          <ChevronLeft />
-          Go Back
-        </button>
-        <button
           className={`flex w-full max-w-xs items-center justify-center gap-2 rounded-full bg-moonstone py-3 text-base font-medium text-white transition ${
             selectedSubcategories.length === 0
               ? "cursor-not-allowed opacity-50"

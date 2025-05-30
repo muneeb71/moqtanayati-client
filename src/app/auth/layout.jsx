@@ -3,8 +3,8 @@ import Image from "next/image";
 
 const AuthLayout = ({ children }) => {
   return (
-    <div className="relative flex h-screen w-full items-center justify-center bg-[#FFFFFE]">
-      <div className="absolute top-0 z-10 flex h-screen w-full flex-col items-start justify-between px-10 py-10">
+    <div className="relative flex h-full w-full justify-center bg-[#FFFFFE]">
+      <div className="absolute top-0 z-10 flex w-full flex-col items-start justify-between px-10 py-10">
         <Image
           src="/static/logo.png"
           width={161}
@@ -15,13 +15,13 @@ const AuthLayout = ({ children }) => {
           className="rounded-[10px]"
         />
       </div>
-      <div className="z-20 flex w-full max-w-[450px] flex-col px-5 py-10">
+      <div className="no-scrollbar z-20 flex h-full min-h-screen justify-center w-full max-w-[450px] flex-col overflow-auto px-5 py-10">
         <RegisterStoreProvider>{children}</RegisterStoreProvider>
       </div>
 
       <div className="absolute left-0 top-0 z-[1]">
         <Image
-          src="/bg/blob.svg"
+          src="/static/bg/blob.svg"
           width={500}
           height={500}
           alt="blob"

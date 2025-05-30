@@ -15,7 +15,7 @@ const Consent = ({ setStep, setFormData, goBack }) => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
       <img
-        src="/auth/check.svg"
+        src="/static/auth/check.svg"
         className="mb-8 h-14 w-14 text-moonstone"
         strokeWidth={2.5}
       />
@@ -35,13 +35,6 @@ const Consent = ({ setStep, setFormData, goBack }) => {
       </Link>
       <button className="flex w-full max-w-xs items-center justify-center rounded-full border border-moonstone py-3 text-base font-medium text-moonstone transition hover:bg-moonstone/10">
         Discover all Features
-      </button>
-      <button
-        className="mr-2 mt-2 flex items-center rounded-full bg-grayishWhite p-2 text-xs"
-        onClick={goBack}
-      >
-        <ChevronLeft />
-        Go Back
       </button>
     </div>
   );

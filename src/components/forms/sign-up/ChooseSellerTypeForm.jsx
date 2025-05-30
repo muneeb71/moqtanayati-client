@@ -21,11 +21,10 @@ const ChooseSellerTypeForm = ({ role }) => {
             key={type.value}
             className={`bg-[#EEF4FF] ${sellerType === type.value ? "border-2 border-moonstone" : "border-2 border-transparent"}`}
             title={type.label}
-            description="Perfect for displaying singular items. No inventory management or auction access required."
+            description={type.desc}
             image={type.image}
             onClick={() => setSellerType(type.value)}
             isSelected={sellerType === type.value}
-            imageClassName="w-[140px] h-[60px]"
           />
         ))}
       </div>

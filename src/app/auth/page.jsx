@@ -11,7 +11,7 @@ const RoleSelectionLoginPage = () => {
   const [selectedRole, setSelectedRole] = useState("");
   const router = useRouter();
   return (
-    <div className="flex w-full flex-col gap-10 pt-20 md:gap-[66px] md:pt-10 lg:pt-0">
+    <div className="flex w-full flex-col gap-10 justify-center pt-28 pb-10 md:gap-[66px]">
       <div className="flex w-full flex-col gap-1">
         <h1 className="text-xl font-medium leading-[36px] md:text-2xl">
           Are you here to buy or sell?

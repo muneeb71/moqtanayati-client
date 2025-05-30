@@ -9,7 +9,7 @@ import SubcategorySelection from "./pages/SubCategorySelection";
 import Consent from "./pages/Consent";
 import { useRouter } from "next/navigation";
 
-const page = () => {
+const QuestionsPage = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     haveProductToSell: "",
@@ -40,4 +40,4 @@ const page = () => {
   </div>;
 };
 
-export default page;
+export default QuestionsPage;
