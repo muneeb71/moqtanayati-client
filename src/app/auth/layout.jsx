@@ -4,7 +4,7 @@ import Image from "next/image";
 const AuthLayout = ({ children }) => {
   return (
     <div className="relative flex h-screen w-full items-center justify-center bg-[#FFFFFE]">
-      <div className="absolute top-0 z-10 flex w-full px-10 py-10">
+      <div className="absolute top-0 z-10 flex h-screen w-full flex-col items-start justify-between px-10 py-10">
         <Image
           src="/static/logo.png"
           width={161}
@@ -18,15 +18,17 @@ const AuthLayout = ({ children }) => {
       <div className="z-20 flex w-full max-w-[450px] flex-col px-5 py-10">
         <RegisterStoreProvider>{children}</RegisterStoreProvider>
       </div>
+
       <div className="absolute left-0 top-0 z-[1]">
         <Image
-          src="/static/bg/blob.svg"
-          width={600}
-          height={600}
+          src="/bg/blob.svg"
+          width={500}
+          height={500}
           alt="blob"
           loading="eager"
         />
       </div>
+
       <div className="absolute right-0 z-[1] hidden h-screen w-full max-w-[457px] items-end justify-end bg-[#D3EDF0] xl:flex">
         <Image
           src="/static/bg/login.svg"
