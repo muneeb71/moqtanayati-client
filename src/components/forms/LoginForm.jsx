@@ -24,7 +24,11 @@ const LoginForm = ({ role = "seller" }) => {
     startTransition(async () => {
       const response = await loginUser(email, password, role);
       if (response.success) {
-        router.push("/" + response.data.user.role.toLowerCase());
+        if (response.data.user.sellerSuvery) {
+          router.push("/" + response.data.user.role.toLowerCase());
+        } else {
+          router.push("/" + response.data.user.role.toLowerCase());
+        }
       } else {
         toast.error(response.message || "Login failed");
       }

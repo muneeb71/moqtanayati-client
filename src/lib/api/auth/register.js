@@ -1,6 +1,6 @@
 import api from "../axios";
 
-export async function loginBuyerUser({
+export async function signUpUser({
   role,
   name,
   email,
@@ -10,18 +10,23 @@ export async function loginBuyerUser({
   password,
   latitude,
   longitude,
+  sellerType,
 }) {
-  const response = await api.post("sellers/register", {
-    role,
-    name,
-    email,
-    phone,
-    address,
-    nationalId,
-    password,
-    latitude,
-    longitude,
-  });
-
-  return response.data;
+  try {
+    const response = await api.post("sellers/register", {
+      role,
+      name,
+      email,
+      phone,
+      address,
+      nationalId,
+      password,
+      latitude,
+      longitude,
+      sellerType,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 }

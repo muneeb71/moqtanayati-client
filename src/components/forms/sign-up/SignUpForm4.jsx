@@ -4,7 +4,7 @@ import { locationIcon } from "@/assets/icons/common-icons";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
 import LocationSelectionDialog from "@/components/sections/auth/location-selection/LocationSelectionDialog";
-import { loginBuyerUser } from "@/lib/api/auth/register";
+import { signUpUser } from "@/lib/api/auth/register";
 import { useRegisterStore } from "@/providers/register-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -20,12 +20,13 @@ const SignUpForm4 = ({ role = "" }) => {
     password,
     latitude,
     longitude,
+    sellerType,
   } = useRegisterStore((state) => state);
 
   const handleRegisterUser = async () => {
     const roleUppercase = role.toUpperCase();
 
-    const response = await loginBuyerUser({
+    console.log({
       role: roleUppercase,
       name,
       email,
@@ -35,6 +36,20 @@ const SignUpForm4 = ({ role = "" }) => {
       password,
       latitude,
       longitude,
+      sellerType,
+    });
+
+    const response = await signUpUser({
+      role: roleUppercase,
+      name,
+      email,
+      phone,
+      address,
+      nationalId,
+      password,
+      latitude,
+      longitude,
+      sellerType,
     });
 
     if (response.success) {
