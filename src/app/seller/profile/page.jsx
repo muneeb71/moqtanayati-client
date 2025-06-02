@@ -5,17 +5,28 @@ import {
 } from "@/assets/icons/profile-icons";
 import GoBackButton from "@/components/buttons/GoBackButton";
 import PageHeading from "@/components/headings/PageHeading";
+import { getUserProfile } from "@/lib/api/profile/getProfile";
 import { Pencil } from "lucide-react";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
-const SellerProfilePage = () => {
+const SellerProfilePage = async () => {
+  const cookiesStore = await cookies();
+  const userJson = cookiesStore.get("user").value;
+  const user = JSON.parse(userJson);
+  
+  const userData = await getUserProfile(user.id);
+  const date = new Date(user.createdAt);
+  const options = { year: "numeric", month: "short" };
+  const joinedDate = date.toLocaleString("en-US", options);
+
   return (
     <div className="flex w-full flex-col items-center justify-center px-3">
       <PageHeading>
         <div className="flex flex-col gap-12">
           <GoBackButton />
-          Alex Jhons
+          {user?.name}
         </div>
       </PageHeading>
       <div className="grid w-full max-w-4xl gap-16 pb-28 pt-10 md:grid-cols-[4fr_6fr]">
@@ -34,10 +45,10 @@ const SellerProfilePage = () => {
           />
           <div className="flex flex-col items-center gap-1">
             <span className="text-2xl font-medium text-darkBlue">
-              Alex Jhons
+              {user?.name}
             </span>
             <span className="font-medium text-battleShipGray">
-              Joined Jan, 2024
+              Joined {joinedDate}
             </span>
           </div>
           <div className="flex w-full max-w-52 gap-8 py-3">
@@ -62,11 +73,11 @@ const SellerProfilePage = () => {
           <div className="mt-5 flex w-full flex-col gap-4">
             <div className="flex items-center gap-4">
               {profileEmailIcon}
-              <span className="text-">alexjhons@moqtanayati.com</span>
+              <span className="text-">{user?.email}</span>
             </div>
             <div className="flex items-center gap-4">
               {profilePhoneIcon}
-              <span className="text-">+92 3336613900</span>
+              <span className="text-">{user?.phone}</span>
             </div>
           </div>
         </div>

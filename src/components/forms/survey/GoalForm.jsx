@@ -7,11 +7,11 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import OptionButton from "./OptionButton";
 
-const GoalForm = ({ role }) => {
+const GoalForm = () => {
   const options = [
-    { label: "Discover", value: "  DISCOVER" },
-    { label: "Increase Profit", value: "  PROFIT" },
-    { label: "Start New Business", value: "  NEWBUSINESS" },
+    { label: "Discover", value: "DISCOVER" },
+    { label: "Increase Profit", value: "PROFIT" },
+    { label: "Start New Business", value: "NEWBUSINESS" },
     { label: "Explore", value: "EXPLORE" },
   ];
 
@@ -50,7 +50,7 @@ const GoalForm = ({ role }) => {
         title="Next"
         showIcon
         onClick={() =>
-          router.push("/auth/" + role + "/survey/product-and-services")
+          router.push("/survey/product-and-services")
         }
       />
     </div>

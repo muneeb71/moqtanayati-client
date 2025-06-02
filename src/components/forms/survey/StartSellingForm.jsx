@@ -44,7 +44,7 @@ const StartSellingForm = ({ role }) => {
       <RoundedButton
         title="Next"
         showIcon
-        onClick={() => router.push("/auth/" + role + "/survey/experience")}
+        onClick={() => router.push("/survey/experience")}
       />
     </div>
   );

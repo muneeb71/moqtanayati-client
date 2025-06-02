@@ -49,7 +49,7 @@ const ExperienceForm = ({ role }) => {
       <RoundedButton
         title="Next"
         showIcon
-        onClick={() => router.push("/auth/" + role + "/survey/goal")}
+        onClick={() => router.push("/survey/goal")}
       />
     </div>
   );

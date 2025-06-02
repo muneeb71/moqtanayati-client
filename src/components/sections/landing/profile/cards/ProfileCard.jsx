@@ -1,7 +1,6 @@
 "use client";
 
 import InputField from "@/components/form-fields/InputField";
-import Label from "@/components/form-fields/Label";
 import Image from "next/image";
 import {
   profileEmailIcon,

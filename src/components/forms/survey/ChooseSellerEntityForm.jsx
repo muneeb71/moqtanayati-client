@@ -40,7 +40,7 @@ const ChooseSellerEntityForm = ({ role }) => {
         title="Get Started"
         showIcon
         className="w-fit self-center px-16"
-        onClick={() => router.push("/auth/" + role + "/survey/start-selling")}
+        onClick={() => router.push("/survey/start-selling")}
       />
     </div>
   );

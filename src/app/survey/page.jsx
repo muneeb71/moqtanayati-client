@@ -2,11 +2,9 @@ import { ChevronRight } from "lucide-react/dist/cjs/lucide-react";
 import Link from "next/link";
 import React from "react";
 
-const SurveyPage = async ({ params }) => {
-  const { role } = await params;
-
+const SurveyPage = async () => {
   return (
-    <div className="flex flex-col h-full pt-28 pb-10">
+    <div className="flex h-full flex-col pb-10 pt-28">
       <h1 className="text-center text-4xl">👋</h1>
       <h2 className="mt-4 text-center text-3xl text-darkBlue">
         Welcome Ahsan Khan

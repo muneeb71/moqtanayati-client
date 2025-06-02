@@ -53,7 +53,7 @@ const HomeSuppliesForm = ({ role }) => {
       <RoundedButton
         title="Next"
         showIcon
-        onClick={() => router.push("/auth/" + role + "/survey/consent")}
+        onClick={() => router.push("/survey/consent")}
       />
     </div>
   );

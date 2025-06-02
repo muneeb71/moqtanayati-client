@@ -5,8 +5,8 @@ export function middleware(request) {
   const user = request.cookies.get("user")?.value;
   const { pathname } = new URL(request.url);
 
-  if (!token) {
-    if (pathname !== "/auth") {
+  if (!token && !user) {
+    if (!pathname.startsWith("/auth")) {
       return NextResponse.redirect(new URL("/auth", request.url));
     }
     return NextResponse.next();
@@ -14,14 +14,15 @@ export function middleware(request) {
 
   if (user) {
     let parsedUser;
-    try {
-      parsedUser = JSON.parse(user);
-    } catch (e) {
-      return NextResponse.redirect(new URL("/auth", request.url));
-    }
+    parsedUser = JSON.parse(user);
 
-    if (parsedUser.role === "SELLER" && !pathname.startsWith("/seller")) {
-      return NextResponse.redirect(new URL("/seller", request.url));
+    if (parsedUser.role === "SELLER") {
+      if (!parsedUser.sellerSurvey && !pathname.startsWith("/survey")) {
+        return NextResponse.redirect(new URL("/survey", request.url));
+      }
+      if (parsedUser.sellerSurvey && !pathname.startsWith("/seller")) {
+        return NextResponse.redirect(new URL("/seller", request.url));
+      }
     }
 
     if (parsedUser.role === "BUYER" && !pathname.startsWith("/buyer")) {
@@ -34,5 +35,5 @@ export function middleware(request) {
 
 export const config = {
   matcher:
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|auth|static|leaflet).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|static|leaflet).*)",
 };

@@ -2,12 +2,13 @@
 
 import RoundedButton from "@/components/buttons/RoundedButton";
 import SecondaryButton from "@/components/buttons/SecondaryButton";
+import { saveSellerSurvey } from "@/lib/api/seller-survey/save";
 import { useSurveyStore } from "@/providers/survey-store-provider";
-import { ChevronRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
-const ConsentForm = ({ role }) => {
+const ConsentForm = ({ user }) => {
   const {
     sellerEntity,
     haveProducts,
@@ -19,17 +20,26 @@ const ConsentForm = ({ role }) => {
     setConsent,
   } = useSurveyStore((state) => state);
 
-  const handleAgreeButton = () => {
+  const router = useRouter();
+
+  const handleAgreeButton = async () => {
     setConsent(true);
-    console.log({
-      sellerEntity,
-      haveProducts,
-      haveExperience,
+    const surveyData = {
+      userId: user.id,
+      entity: sellerEntity,
+      hasProducts: haveProducts,
+      hasExperience: haveExperience,
       goal,
-      productsAndServices,
+      productAndServices: productsAndServices,
       homeSupplies,
       consent,
-    });
+    };
+    const response = await saveSellerSurvey(surveyData);
+    if (response.success) {
+      router.push("/seller");
+    } else {
+      toast.error(response.message);
+    }
   };
   return (
     <div className="flex flex-col items-center justify-center bg-white px-4">
