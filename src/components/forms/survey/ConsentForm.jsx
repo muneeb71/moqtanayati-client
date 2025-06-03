@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-const ConsentForm = ({ user }) => {
+const ConsentForm = ({ userId }) => {
   const {
     sellerEntity,
     haveProducts,
@@ -25,7 +25,7 @@ const ConsentForm = ({ user }) => {
   const handleAgreeButton = async () => {
     setConsent(true);
     const surveyData = {
-      userId: user.id,
+      userId: userId,
       entity: sellerEntity,
       hasProducts: haveProducts,
       hasExperience: haveExperience,
@@ -34,6 +34,7 @@ const ConsentForm = ({ user }) => {
       homeSupplies,
       consent,
     };
+    console.log("USER", surveyData);
     const response = await saveSellerSurvey(surveyData);
     if (response.success) {
       router.push("/seller");

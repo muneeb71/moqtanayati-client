@@ -25,7 +25,15 @@ export async function loginUser(email, password, role) {
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
     });
 
-    cookiesStore.set("user", JSON.stringify(data.user), {
+    cookiesStore.set("userId", data.user.id, {
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    });
+
+    cookiesStore.set("role", data.user.role, {
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    });
+
+    cookiesStore.set("survey", JSON.stringify(data.user.sellerSurvey), {
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
     });
 
@@ -33,7 +41,8 @@ export async function loginUser(email, password, role) {
   } catch (error) {
     return {
       success: false,
-      message: error?.response?.data?.message || error.message || "Login failed",
+      message:
+        error?.response?.data?.message || error.message || "Login failed",
     };
   }
 }

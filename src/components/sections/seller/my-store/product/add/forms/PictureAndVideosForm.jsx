@@ -2,7 +2,6 @@ import { camera2Icon, videoCameraIcon } from "@/assets/icons/seller-icons";
 import RoundedButton from "@/components/buttons/RoundedButton";
 import TextareaField from "@/components/form-fields/CustomTextArea";
 import InputField from "@/components/form-fields/InputField";
-import Label from "@/components/form-fields/Label";
 import { cn } from "@/lib/utils";
 
 const PictureAndVideosForm = ({

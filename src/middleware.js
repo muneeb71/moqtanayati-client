@@ -2,30 +2,30 @@ import { NextResponse } from "next/server";
 
 export function middleware(request) {
   const token = request.cookies.get("token")?.value;
-  const user = request.cookies.get("user")?.value;
+  const userId = request.cookies.get("userId")?.value;
+  const surveyJson = request.cookies.get("survey")?.value;
+  const survey = typeof surveyJson === "string" ? JSON.parse(surveyJson) : null;
+  const role = request.cookies.get("role")?.value;
   const { pathname } = new URL(request.url);
 
-  if (!token && !user) {
+  if (!token && !userId) {
     if (!pathname.startsWith("/auth")) {
       return NextResponse.redirect(new URL("/auth", request.url));
     }
     return NextResponse.next();
   }
 
-  if (user) {
-    let parsedUser;
-    parsedUser = JSON.parse(user);
-
-    if (parsedUser.role === "SELLER") {
-      if (!parsedUser.sellerSurvey && !pathname.startsWith("/survey")) {
+  if (userId) {
+    if (role === "SELLER") {
+      if (!survey && !pathname.startsWith("/survey")) {
         return NextResponse.redirect(new URL("/survey", request.url));
       }
-      if (parsedUser.sellerSurvey && !pathname.startsWith("/seller")) {
+      if (survey && !pathname.startsWith("/seller")) {
         return NextResponse.redirect(new URL("/seller", request.url));
       }
     }
 
-    if (parsedUser.role === "BUYER" && !pathname.startsWith("/buyer")) {
+    if (role === "BUYER" && !pathname.startsWith("/buyer")) {
       return NextResponse.redirect(new URL("/buyer", request.url));
     }
   }

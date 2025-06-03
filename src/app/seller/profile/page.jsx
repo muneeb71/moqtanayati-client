@@ -1,3 +1,5 @@
+"use client";
+
 import { sellerChatIcon, starIcon } from "@/assets/icons/common-icons";
 import {
   profileEmailIcon,
@@ -5,28 +7,30 @@ import {
 } from "@/assets/icons/profile-icons";
 import GoBackButton from "@/components/buttons/GoBackButton";
 import PageHeading from "@/components/headings/PageHeading";
-import { getUserProfile } from "@/lib/api/profile/getProfile";
+import { useProfileStore } from "@/providers/profile-store-provider";
 import { Pencil } from "lucide-react";
-import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
-const SellerProfilePage = async () => {
-  const cookiesStore = await cookies();
-  const userJson = cookiesStore.get("user").value;
-  const user = JSON.parse(userJson);
-  
-  const userData = await getUserProfile(user.id);
-  const date = new Date(user.createdAt);
-  const options = { year: "numeric", month: "short" };
-  const joinedDate = date.toLocaleString("en-US", options);
-
+const SellerProfilePage = () => {
+  const {
+    name,
+    email,
+    avatar,
+    joinedDate,
+    averageRating,
+    auctions,
+    reviews,
+    phone,
+    orders,
+    products,
+  } = useProfileStore((state) => state);
   return (
     <div className="flex w-full flex-col items-center justify-center px-3">
       <PageHeading>
         <div className="flex flex-col gap-12">
           <GoBackButton />
-          {user?.name}
+          {name}
         </div>
       </PageHeading>
       <div className="grid w-full max-w-4xl gap-16 pb-28 pt-10 md:grid-cols-[4fr_6fr]">
@@ -35,7 +39,7 @@ const SellerProfilePage = async () => {
             <Pencil className="size-8 rounded-lg border border-black/10 p-1 text-black/60 transition-all duration-100 ease-in hover:border-black hover:text-black" />
           </Link>
           <Image
-            src="/static/dummy-user/1.jpeg"
+            src={avatar || "/static/dummy-user/1.jpeg"}
             width={151}
             height={151}
             alt="Profile Image"
@@ -44,9 +48,7 @@ const SellerProfilePage = async () => {
             className="rounded-full"
           />
           <div className="flex flex-col items-center gap-1">
-            <span className="text-2xl font-medium text-darkBlue">
-              {user?.name}
-            </span>
+            <span className="text-2xl font-medium text-darkBlue">{name}</span>
             <span className="font-medium text-battleShipGray">
               Joined {joinedDate}
             </span>
@@ -58,41 +60,51 @@ const SellerProfilePage = async () => {
             </div>
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-0.5 text-[#F3B95A]">
-                {starIcon}
-                {starIcon}
-                {starIcon}
-                {starIcon}
-                <span className="text-battleShipGray/40">{starIcon}</span>
+                {Array.from({ length: 5 }).map((_, i) =>
+                  i < Math.round(averageRating) ? (
+                    <span key={i}>{starIcon}</span>
+                  ) : (
+                    <span key={i} className="text-battleShipGray/40">
+                      {starIcon}
+                    </span>
+                  ),
+                )}
               </div>
               <div className="5 flex items-baseline gap-0">
-                <span className="text-sm">3.9</span>
-                <span className="text-xs">(12 Reviews)</span>
+                <span className="text-sm">{averageRating}</span>
+                <span className="text-xs">({reviews?.length} Reviews)</span>
               </div>
             </div>
           </div>
           <div className="mt-5 flex w-full flex-col gap-4">
             <div className="flex items-center gap-4">
               {profileEmailIcon}
-              <span className="text-">{user?.email}</span>
+              <span className="text-">{email}</span>
             </div>
             <div className="flex items-center gap-4">
               {profilePhoneIcon}
-              <span className="text-">{user?.phone}</span>
+              <span className="text-">{phone}</span>
             </div>
           </div>
         </div>
         <div className="grid h-fit grid-cols-2 gap-3">
           <div className="flex h-fit w-full flex-col gap-2 rounded-2xl bg-[#BEC8F9] px-5 pb-12 pt-4">
-            <span className="text-lg text-delftBlue/60">Bids Placed</span>
-            <span className="text-4xl font-semibold text-delftBlue">42</span>
+            <span className="text-lg text-delftBlue/60">Orders Recieved</span>
+            <span className="text-4xl font-semibold text-delftBlue">
+              {orders?.length}
+            </span>
           </div>
           <div className="flex h-fit w-full flex-col gap-2 rounded-2xl bg-[#EFDB88] px-5 pb-12 pt-4">
-            <span className="text-lg text-delftBlue/60">Bids Won</span>
-            <span className="text-4xl font-semibold text-delftBlue">04</span>
+            <span className="text-lg text-delftBlue/60">Auctions</span>
+            <span className="text-4xl font-semibold text-delftBlue">
+              {auctions?.length}
+            </span>
           </div>
           <div className="flex h-fit w-full flex-col gap-2 rounded-2xl bg-[#C9DFDD] px-5 pb-12 pt-4">
-            <span className="text-lg text-delftBlue/60">Purchases</span>
-            <span className="text-4xl font-semibold text-delftBlue">15</span>
+            <span className="text-lg text-delftBlue/60">Products</span>
+            <span className="text-4xl font-semibold text-delftBlue">
+              {products?.length}
+            </span>
           </div>
         </div>
       </div>

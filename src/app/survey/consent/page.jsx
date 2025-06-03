@@ -4,10 +4,9 @@ import React from "react";
 
 const ConsentPage = async () => {
   const cookiesStore = await cookies();
-  const userJson = cookiesStore.get("user");
-  const user = JSON.parse(userJson.value);
+  const userId = cookiesStore.get("userId").value;
 
-  return <ConsentForm user={user} />;
+  return <ConsentForm userId={userId} />;
 };
 
 export default ConsentPage;

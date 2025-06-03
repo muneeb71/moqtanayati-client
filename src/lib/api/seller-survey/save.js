@@ -27,9 +27,7 @@ export async function saveSellerSurvey({
     });
 
     if (response.data.success) {
-      const userJson = cookiesStore.get("user").value;
-      let user = JSON.parse(userJson);
-      user.sellerSurvey = {
+      const sellerSurvey = {
         userId,
         entity,
         hasProducts,
@@ -39,8 +37,8 @@ export async function saveSellerSurvey({
         homeSupplies,
         consent,
       };
-      cookiesStore.set("user", JSON.stringify(user));
-      console.log("sellerSurve", user.sellerSurvey);
+      cookiesStore.set("survey", JSON.stringify(sellerSurvey));
+      console.log("sellerSurve", sellerSurvey);
     }
 
     return response.data;

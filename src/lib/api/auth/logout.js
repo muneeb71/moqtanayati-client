@@ -7,7 +7,9 @@ export async function logoutUser() {
   const cookiesStore = await cookies();
 
   cookiesStore.delete("token");
-  cookiesStore.delete("user");
+  cookiesStore.delete("userId");
+  cookiesStore.delete("role");
+  cookiesStore.delete("survey");
 
   try {
     await api.post("auth/logout");
@@ -17,5 +19,3 @@ export async function logoutUser() {
 
   return { success: true, message: "Logged out successfully" };
 }
-
-

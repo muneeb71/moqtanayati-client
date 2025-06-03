@@ -3,6 +3,7 @@ export const houseIcon = (
     width="38"
     height="36"
     viewBox="0 0 38 36"
+    className="size-6 lg:size-9"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >

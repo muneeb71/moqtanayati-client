@@ -9,7 +9,7 @@ const PageHeading = ({ children }) => {
           "md:h-[200px] md:px-8 md:py-10 md:text-3xl",
         )}
         style={{
-          background: "url(/bg/heading-bg.svg)",
+          background: "url(/static/bg/heading-bg.svg)",
         }}
       >
         {children}
