@@ -53,8 +53,8 @@ const ProfileImageContainer = () => {
         />
       </div>
       <div className="flex flex-col items-center justify-center gap-1">
-        <span className="text-3xl font-medium">{store.name}</span>
-        <span className="text-xl text-black/40">Created Jan, 2024</span>
+        <span className="text-xl md:text-3xl font-medium text-center">{store.name}</span>
+        <span className="md:text-xl text-black/40">Created Jan, 2024</span>
       </div>
     </div>
   );

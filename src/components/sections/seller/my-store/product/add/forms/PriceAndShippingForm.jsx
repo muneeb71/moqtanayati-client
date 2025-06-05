@@ -6,43 +6,86 @@ import CustomSelect from "@/components/form-fields/CustomSelect";
 import InputField from "@/components/form-fields/InputField";
 import Label from "@/components/form-fields/Label";
 import { cn } from "@/lib/utils";
+import { useProductStore } from "@/providers/product-store-provider";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { Country, City } from "country-state-city";
 import Switch from "react-switch";
 
-const PriceAndShippingForm = ({
-  pricingFormats,
-  selectedPricingFormat,
-  setSelectedPricingFormat,
-  price,
-  setPrice,
-  quantity,
-  setQuantity,
-  shippingMethods,
-  selectedShippingMethod,
-  setSelectedShippingMethod,
-}) => {
+const PriceAndShippingForm = () => {
   const router = useRouter();
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
+  const {
+    pricingFormat,
+    price,
+    quantity,
+    shippingMethod,
+    shippingType,
+    domesticShippingType,
+    handlingTime,
+    selectedCategories,
+    auctionDuration,
+    auctionLaunchDate,
+    startingBid,
+    buyItNow,
+    minimumOffer,
+    autoAccept,
+    selectedCountry,
+    selectedCity,
+    domesticReturns,
+    internationalReturns,
+    domesticShipping,
+    localPickup,
+    setPricingFormat,
+    setPrice,
+    setQuantity,
+    setShippingMethod,
+    setShippingType,
+    setDomesticShippingType,
+    setHandlingTime,
+    setSelectedCategories,
+    setAuctionDuration,
+    setAuctionLaunchDate,
+    setStartingBid,
+    setBuyItNow,
+    setMinimumOffer,
+    setAutoAccept,
+    setSelectedCountry,
+    setSelectedCity,
+    setDomesticReturns,
+    setInternationalReturns,
+    setDomesticShipping,
+    setLocalPickup,
+    submitForm,
+  } = useProductStore();
+
   const [countryOptions, setCountryOptions] = useState([]);
   const [cityOptions, setCityOptions] = useState([]);
-  const [domesticReturns, setDomesticReturns] = useState(false);
-  const [internationalReturns, setInternationalReturns] = useState(false);
-  const [domesticShipping, setDomesticShipping] = useState(false);
-  const [localPickup, setLocalPickup] = useState(false);
-  const [shippingType, setShippingType] = useState("");
-  const [domesticShippingType, setDomesticShippingType] = useState("");
-  const [handlingTime, setHandlingTime] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]);
   const [searchCategory, setSearchCategory] = useState("");
-  const [auctionDuration, setAuctionDuration] = useState("7 Days");
-  const [auctionLaunchDate, setAuctionLaunchDate] = useState("");
-  const [startingBid, setStartingBid] = useState("");
-  const [buyItNow, setBuyItNow] = useState("");
-  const [minimumOffer, setMinimumOffer] = useState("");
-  const [autoAccept, setAutoAccept] = useState("");
+
+  const pricingFormats = ["Fixed Price", "Auctions"];
+  const shippingMethods = [
+    "Freight: Oversized items",
+    "Local pickup only: Sell to Buyers near you",
+  ];
+  const shippingOptions = [
+    "Standard Shipping: Small to Medium Products",
+    "Express Shipping: 1-2 Business Days",
+    "Freight: Oversized items",
+  ];
+  const domesticShippingOptions = [
+    "Flat rate: Same cost regardless of buyer location",
+  ];
+  const handlingTimeOptions = [
+    "Flat rate: Same cost regardless of buyer location",
+  ];
+  const allCategories = [
+    "electronics",
+    "lamp",
+    "furniture",
+    "clothing",
+    "books",
+    "sports",
+  ];
 
   // Initialize country options on component mount
   useEffect(() => {
@@ -62,7 +105,7 @@ const PriceAndShippingForm = ({
           label: city.name,
         })) || [];
       setCityOptions(cities);
-      setSelectedCity(""); // Reset selected city when country changes
+      setSelectedCity("");
     } else {
       setCityOptions([]);
     }
@@ -81,32 +124,6 @@ const PriceAndShippingForm = ({
       setSelectedCity(city.value);
     }
   };
-
-  console.log(countryOptions);
-
-  const shippingOptions = [
-    "Standard Shipping: Small to Medium Products",
-    "Express Shipping: 1-2 Business Days",
-    "Freight: Oversized items",
-  ];
-
-  const domesticShippingOptions = [
-    "Flat rate: Same cost regardless of buyer location",
-  ];
-
-  const handlingTimeOptions = [
-    "Flat rate: Same cost regardless of buyer location",
-  ];
-
-  // Example categories - replace with your actual categories
-  const allCategories = [
-    "electronics",
-    "lamp",
-    "furniture",
-    "clothing",
-    "books",
-    "sports",
-  ];
 
   const handleAddCategory = (category) => {
     if (!selectedCategories.includes(category)) {
@@ -128,14 +145,19 @@ const PriceAndShippingForm = ({
     }
   };
 
+  const handleSubmit = () => {
+    submitForm();
+    router.push("/seller/my-store");
+  };
+
   return (
     <div className="flex w-full flex-col gap-5 px-8 py-10">
       <div
         className={cn(
           "flex w-full transition-all duration-300 ease-out",
-          selectedPricingFormat === "Fixed Price"
+          pricingFormat === "Fixed Price"
             ? "justify-evenly gap-10"
-            : selectedPricingFormat === "Auctions"
+            : pricingFormat === "Auctions"
               ? "justify-around"
               : "justify-center",
         )}
@@ -157,15 +179,15 @@ const PriceAndShippingForm = ({
                   key={index}
                   className={cn(
                     "flex items-center gap-3 rounded-lg p-4",
-                    format === selectedPricingFormat
+                    format === pricingFormat
                       ? "border-[1.2px] border-moonstone bg-moonstone/5 font-medium text-moonstone"
                       : "bg-[#CCCCCC40]",
                   )}
-                  onClick={() => setSelectedPricingFormat(format)}
+                  onClick={() => setPricingFormat(format)}
                 >
                   <span
                     className={
-                      selectedPricingFormat === format
+                      pricingFormat === format
                         ? "text-moonstone"
                         : "text-battleShipGray"
                     }
@@ -179,9 +201,9 @@ const PriceAndShippingForm = ({
           </div>
 
           {/* Price/Quantity/Shipping Section - Only shows when a pricing format is selected */}
-          {selectedPricingFormat && (
+          {pricingFormat && (
             <div className="grid w-full grid-cols-2 gap-4">
-              {selectedPricingFormat === "Fixed Price" ? (
+              {pricingFormat === "Fixed Price" ? (
                 // Fixed Price Inputs
                 <>
                   <div className="flex flex-col gap-1">
@@ -210,14 +232,14 @@ const PriceAndShippingForm = ({
                     />
                     <CustomSelect
                       options={shippingMethods}
-                      selectedOption={selectedShippingMethod}
-                      setSelectedOption={setSelectedShippingMethod}
+                      selectedOption={shippingMethod}
+                      setSelectedOption={setShippingMethod}
                       placeholder="Freight: Oversized items"
                       className="text-base text-darkBlue"
                     />
                   </div>
                 </>
-              ) : selectedPricingFormat === "Auctions" ? (
+              ) : pricingFormat === "Auctions" ? (
                 // Auction Inputs
                 <>
                   <div className="flex flex-col gap-1">
@@ -302,7 +324,7 @@ const PriceAndShippingForm = ({
         <div
           className={cn(
             "w-[404px] transition-all duration-300",
-            selectedPricingFormat === "Auctions"
+            pricingFormat === "Auctions"
               ? "translate-x-0 opacity-100"
               : "w-0 -translate-x-full overflow-hidden opacity-0",
           )}
@@ -414,7 +436,7 @@ const PriceAndShippingForm = ({
         <div
           className={cn(
             "grid grid-cols-2 gap-16 transition-all duration-300",
-            selectedPricingFormat === "Fixed Price"
+            pricingFormat === "Fixed Price"
               ? "w-full translate-x-0 opacity-100"
               : "w-0 -translate-x-full overflow-hidden opacity-0",
           )}
@@ -651,9 +673,9 @@ const PriceAndShippingForm = ({
 
       <RoundedButton
         className="my-10 w-full max-w-60 self-center"
-        title="Next"
+        title="Submit"
         showIcon
-        onClick={() => router.push("/seller/my-store")}
+        onClick={handleSubmit}
       />
     </div>
   );

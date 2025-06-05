@@ -23,7 +23,7 @@ const SellerProfilePage = () => {
     reviews,
     phone,
     orders,
-    products,
+    store,
   } = useProfileStore((state) => state);
   return (
     <div className="flex w-full flex-col items-center justify-center px-3">
@@ -103,7 +103,7 @@ const SellerProfilePage = () => {
           <div className="flex h-fit w-full flex-col gap-2 rounded-2xl bg-[#C9DFDD] px-5 pb-12 pt-4">
             <span className="text-lg text-delftBlue/60">Products</span>
             <span className="text-4xl font-semibold text-delftBlue">
-              {products?.length}
+              {store.products ? store?.products?.length : 0}
             </span>
           </div>
         </div>

@@ -52,7 +52,7 @@ const CustomSelect = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute left-0 top-full mt-2 w-full rounded-[9.6px] border border-[#F8F7FB] bg-[#F8F7FB] shadow-md"
+            className="absolute left-0 top-full mt-2 w-full max-h-[300px] overflow-auto rounded-[9.6px] border border-[#F8F7FB] bg-[#F8F7FB] shadow-md"
           >
             {options.map((option, index) => (
               <div

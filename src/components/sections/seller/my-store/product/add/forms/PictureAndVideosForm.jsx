@@ -3,29 +3,33 @@ import RoundedButton from "@/components/buttons/RoundedButton";
 import TextareaField from "@/components/form-fields/CustomTextArea";
 import InputField from "@/components/form-fields/InputField";
 import { cn } from "@/lib/utils";
+import { useProductStore } from "@/providers/product-store-provider";
 
 const PictureAndVideosForm = ({
   nextTab = () => {},
   prevTab = () => {},
-  images,
-  setImages,
-  video,
-  setVideo,
-  productTitle,
-  setProductTitle,
-  productDescription,
-  setProductDescription,
 }) => {
+  const {
+    images,
+    video,
+    productTitle,
+    productDescription,
+    setImages,
+    setVideo,
+    setProductTitle,
+    setProductDescription,
+  } = useProductStore();
 
   const handleImageUpload = (event) => {
     const files = Array.from(event.target.files);
-    setImages((prev) => [...prev, ...files].slice(0, 12)); // Limit to 12 images
+    setImages([...images, ...files].slice(0, 12)); // Limit to 12 images
   };
 
   const handleVideoUpload = (event) => {
     const file = event.target.files[0];
     setVideo(file); // Only one video allowed
   };
+
   return (
     <div className="flex w-full max-w-md flex-col gap-5 py-10">
       <div className="flex w-full flex-col gap-3">
@@ -86,7 +90,6 @@ const PictureAndVideosForm = ({
         </div>
       </div>
       <div className="flex flex-col gap-1">
-        {/* <Label text="Product title" /> */}
         <InputField
           type="text"
           placeholder="Add product title"
@@ -95,7 +98,6 @@ const PictureAndVideosForm = ({
         />
       </div>
       <div className="flex flex-col gap-1">
-        {/* <Label text="Product description" /> */}
         <TextareaField
           className="h-40"
           type="text"

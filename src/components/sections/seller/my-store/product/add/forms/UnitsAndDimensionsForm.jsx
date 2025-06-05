@@ -2,28 +2,33 @@ import RoundedButton from "@/components/buttons/RoundedButton";
 import InputField from "@/components/form-fields/InputField";
 import Label from "@/components/form-fields/Label";
 import { cn } from "@/lib/utils";
+import { useProductStore } from "@/providers/product-store-provider";
 
 const UnitsAndDimensionsForm = ({
   nextTab = () => {},
   prevTab = () => {},
-  unitsAvailable,
-  setUnitsAvailable,
-  length,
-  setLength,
-  width,
-  setWidth,
-  height,
-  setHeight,
-  weight,
-  setWeight,
-  conditionRating,
-  setConditionRating,
-  productCategories,
-  setProductCategories,
-  productConditionsList,
-  productCondition,
-  setProductCondition,
 }) => {
+  const {
+    unitsAvailable,
+    length,
+    width,
+    height,
+    weight,
+    conditionRating,
+    productCategories,
+    productCondition,
+    setUnitsAvailable,
+    setLength,
+    setWidth,
+    setHeight,
+    setWeight,
+    setConditionRating,
+    setProductCategories,
+    setProductCondition,
+  } = useProductStore();
+
+  const productConditionsList = ["New", "Old"];
+
   return (
     <div className="flex w-full max-w-4xl flex-col items-center justify-center gap-5 py-10">
       <div className="flex w-full flex-col gap-1">
