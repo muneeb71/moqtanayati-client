@@ -28,7 +28,8 @@ const AddProductFlow = () => {
             onClick={() => prevTab()}
             className="flex w-fit items-center gap-1 text-start text-xl font-normal md:pb-10"
           >
-            <ChevronLeft className="size-6" /> Back
+            <ChevronLeft className="size-6" />
+            <span className="hidden md:inline">Back</span>
           </button>
         )}
         My Store {">"} Add Product

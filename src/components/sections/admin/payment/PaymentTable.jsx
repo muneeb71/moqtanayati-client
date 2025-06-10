@@ -12,7 +12,6 @@ const PaymentTable = ({
   toggleRowSelection,
   onViewClick,
 }) => {
-    console.log(currentData);
     
   return (
     <table className="min-w-[1200px] rounded-lg">

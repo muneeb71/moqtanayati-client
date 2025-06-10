@@ -38,7 +38,6 @@ export async function saveSellerSurvey({
         consent,
       };
       cookiesStore.set("survey", JSON.stringify(sellerSurvey));
-      console.log("sellerSurve", sellerSurvey);
     }
 
     return response.data;

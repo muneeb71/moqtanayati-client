@@ -26,19 +26,6 @@ const SignUpForm4 = ({ role = "" }) => {
   const handleRegisterUser = async () => {
     const roleUppercase = role.toUpperCase();
 
-    console.log({
-      role: roleUppercase,
-      name,
-      email,
-      phone,
-      address,
-      nationalId,
-      password,
-      latitude,
-      longitude,
-      sellerType,
-    });
-
     const response = await signUpUser({
       role: roleUppercase,
       name,

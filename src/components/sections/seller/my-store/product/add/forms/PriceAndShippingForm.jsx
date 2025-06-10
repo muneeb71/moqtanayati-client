@@ -8,21 +8,22 @@ import Label from "@/components/form-fields/Label";
 import { cn } from "@/lib/utils";
 import { useProductStore } from "@/providers/product-store-provider";
 import { useRouter } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Country, City } from "country-state-city";
 import Switch from "react-switch";
+import { useProfileStore } from "@/providers/profile-store-provider";
+import { addProduct } from "@/lib/api/product/add";
 
 const PriceAndShippingForm = () => {
   const router = useRouter();
   const {
+    productTitle,
+    productDescription,
     pricingFormat,
     price,
-    quantity,
     shippingMethod,
-    shippingType,
     domesticShippingType,
     handlingTime,
-    selectedCategories,
     auctionDuration,
     auctionLaunchDate,
     startingBid,
@@ -33,16 +34,22 @@ const PriceAndShippingForm = () => {
     selectedCity,
     domesticReturns,
     internationalReturns,
-    domesticShipping,
     localPickup,
+    images,
+    video,
+    weight,
+    length,
+    width,
+    height,
+    productCondition,
+    conditionRating,
+    productCategories,
+    unitsAvailable,
     setPricingFormat,
     setPrice,
-    setQuantity,
     setShippingMethod,
-    setShippingType,
     setDomesticShippingType,
     setHandlingTime,
-    setSelectedCategories,
     setAuctionDuration,
     setAuctionLaunchDate,
     setStartingBid,
@@ -53,14 +60,15 @@ const PriceAndShippingForm = () => {
     setSelectedCity,
     setDomesticReturns,
     setInternationalReturns,
-    setDomesticShipping,
     setLocalPickup,
-    submitForm,
-  } = useProductStore();
+  } = useProductStore((state) => state);
+
+  const { store } = useProfileStore((state) => state);
 
   const [countryOptions, setCountryOptions] = useState([]);
   const [cityOptions, setCityOptions] = useState([]);
-  const [searchCategory, setSearchCategory] = useState("");
+  const [errors, setErrors] = useState({});
+  const errorTimeoutRef = useRef();
 
   const pricingFormats = ["Fixed Price", "Auctions"];
   const shippingMethods = [
@@ -74,9 +82,12 @@ const PriceAndShippingForm = () => {
   ];
   const domesticShippingOptions = [
     "Flat rate: Same cost regardless of buyer location",
+    "Variable rate: Cost according to location",
   ];
   const handlingTimeOptions = [
-    "Flat rate: Same cost regardless of buyer location",
+    "1-2 business days",
+    "3-5 business days",
+    "5-7 business days",
   ];
   const allCategories = [
     "electronics",
@@ -85,6 +96,14 @@ const PriceAndShippingForm = () => {
     "clothing",
     "books",
     "sports",
+  ];
+
+  // Add this constant for the auction duration options
+  const auctionDurationOptions = [
+    { value: 3, label: "3 Days" },
+    { value: 5, label: "5 Days" },
+    { value: 7, label: "7 Days" },
+    { value: 10, label: "10 Days" }
   ];
 
   // Initialize country options on component mount
@@ -125,45 +144,116 @@ const PriceAndShippingForm = () => {
     }
   };
 
-  const handleAddCategory = (category) => {
-    if (!selectedCategories.includes(category)) {
-      setSelectedCategories([...selectedCategories, category]);
+  const validateFixedPrice = () => {
+    const newErrors = {};
+    if (!pricingFormat) newErrors.pricingFormat = "Pricing format is required.";
+    if (!price || isNaN(parseFloat(price)))
+      newErrors.price = "Valid price is required.";
+    if (!shippingMethod)
+      newErrors.shippingMethod = "Shipping method is required.";
+    if (!handlingTime) newErrors.handlingTime = "Handling time is required.";
+    if (!selectedCountry) newErrors.selectedCountry = "Country is required.";
+    if (!selectedCity) newErrors.selectedCity = "City is required.";
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+      errorTimeoutRef.current = setTimeout(() => setErrors({}), 3000);
     }
-    setSearchCategory("");
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleRemoveCategory = (category) => {
-    setSelectedCategories(selectedCategories.filter((c) => c !== category));
+  const validateAuctions = () => {
+    const newErrors = {};
+    if (!pricingFormat) newErrors.pricingFormat = "Pricing format is required.";
+    if (!auctionDuration)
+      newErrors.auctionDuration = "Auction duration is required.";
+    if (!auctionLaunchDate)
+      newErrors.auctionLaunchDate = "Auction launch date is required.";
+    if (!startingBid || isNaN(parseFloat(startingBid)))
+      newErrors.startingBid = "Valid starting bid is required.";
+    if (!buyItNow || isNaN(parseFloat(buyItNow)))
+      newErrors.buyItNow = "Valid buy it now price is required.";
+    if (!minimumOffer || isNaN(parseFloat(minimumOffer)))
+      newErrors.minimumOffer = "Valid minimum offer is required.";
+    if (!autoAccept || isNaN(parseFloat(autoAccept)))
+      newErrors.autoAccept = "Valid auto-accept price is required.";
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+      errorTimeoutRef.current = setTimeout(() => setErrors({}), 3000);
+    }
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleSearchKeyDown = (e) => {
-    if (e.key === "Enter" && searchCategory.trim()) {
-      if (!selectedCategories.includes(searchCategory.trim())) {
-        setSelectedCategories([...selectedCategories, searchCategory.trim()]);
-        setSearchCategory("");
-      }
-    }
+  const submitForm = async () => {
+    console.log("STORE", store)
+    const productData = {
+      name: productTitle,
+      description: productDescription,
+      price: price ? parseFloat(price) : 0,
+      images: images,
+      pricingFormat: pricingFormat,
+      video: video,
+      auctionDuration: auctionDuration,
+      auctionLaunchDate: auctionLaunchDate,
+      startingBid: startingBid ? parseFloat(startingBid) : 0,
+      buyItNow: buyItNow ? parseFloat(buyItNow) : 0,
+      minimumOffer: minimumOffer ? parseFloat(minimumOffer) : 0,
+      autoAccept: autoAccept ? parseFloat(autoAccept) : 0,
+      shippingMethod: shippingMethod,
+      country: selectedCountry,
+      city: selectedCity,
+      handlingTime: handlingTime,
+      weight: weight,
+      length: length,
+      width: width,
+      height: height,
+      domesticReturns: domesticReturns,
+      internationalReturns: internationalReturns,
+      condition: productCondition,
+      conditionRating: conditionRating,
+      categories: productCategories,
+      stock: unitsAvailable,
+      domesticShippingType: domesticShippingType,
+      localPickup: localPickup,
+      isAuction: pricingFormat === "Auctions",
+      category: productCategories[0],
+      storeId: store.id
+    };
+
+    const res = await addProduct(productData);
+
+    console.log("RES", res);
   };
 
   const handleSubmit = () => {
-    submitForm();
-    router.push("/seller/my-store");
+    if (pricingFormat == "") {
+      setErrors({ pricingFormat: "Please select a pricing format" });
+      if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
+      errorTimeoutRef.current = setTimeout(() => setErrors({}), 3000);
+      return;
+    }
+    if (pricingFormat === "Fixed Price") {
+      if (validateFixedPrice()) {
+        submitForm();
+      }
+    } else if (pricingFormat === "Auctions") {
+      if (validateAuctions()) {
+        submitForm();
+      }
+    }
   };
 
   return (
     <div className="flex w-full flex-col gap-5 px-8 py-10">
       <div
         className={cn(
-          "flex w-full transition-all duration-300 ease-out",
-          pricingFormat === "Fixed Price"
-            ? "justify-evenly gap-10"
-            : pricingFormat === "Auctions"
-              ? "justify-around"
-              : "justify-center",
+          "flex h-fit flex-wrap justify-center gap-16 transition-all duration-300 ease-out",
         )}
       >
         {/* Pricing Section */}
-        <div className="flex w-[550px] flex-col gap-5">
+        <div className="flex h-fit max-w-sm flex-col gap-5">
           <div className="flex flex-col">
             <span className="text-lg font-medium text-delftBlue">Pricing</span>
             <span className="text-sm font-light text-battleShipGray">
@@ -202,41 +292,26 @@ const PriceAndShippingForm = () => {
 
           {/* Price/Quantity/Shipping Section - Only shows when a pricing format is selected */}
           {pricingFormat && (
-            <div className="grid w-full grid-cols-2 gap-4">
+            <div className="grid w-full gap-4 md:grid-cols-2">
               {pricingFormat === "Fixed Price" ? (
                 // Fixed Price Inputs
                 <>
-                  <div className="flex flex-col gap-1">
-                    {/* <Label text="Price" /> */}
+                  <div className="col-span-2 flex flex-col gap-1">
+                    <Label text="Price" />
                     <InputField
                       type="number"
                       value={price}
                       placeholder="Price"
-                      onChange={(e) => setPrice(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setPrice(val);
+                      }}
                     />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    {/* <Label text="Quantity" /> */}
-                    <InputField
-                      type="number"
-                      value={quantity}
-                      placeholder="Quantity"
-                      onChange={(e) => setQuantity(e.target.value)}
-                    />
-                  </div>
-                  {/* Moved Shipping here - spans full width */}
-                  <div className="col-span-2 flex flex-col gap-1">
-                    <Label
-                      text="Shipping"
-                      className="text-base text-darkBlue"
-                    />
-                    <CustomSelect
-                      options={shippingMethods}
-                      selectedOption={shippingMethod}
-                      setSelectedOption={setShippingMethod}
-                      placeholder="Freight: Oversized items"
-                      className="text-base text-darkBlue"
-                    />
+                    {errors.price && (
+                      <span className="text-sm text-red-500">
+                        {errors.price}
+                      </span>
+                    )}
                   </div>
                 </>
               ) : pricingFormat === "Auctions" ? (
@@ -248,11 +323,21 @@ const PriceAndShippingForm = () => {
                       className="text-base text-darkBlue"
                     />
                     <CustomSelect
-                      options={["3 Days", "5 Days", "7 Days", "10 Days"]}
-                      selectedOption={auctionDuration}
-                      setSelectedOption={setAuctionDuration}
+                      options={auctionDurationOptions.map(option => option.label)}
+                      selectedOption={auctionDurationOptions.find(opt => opt.value === auctionDuration)?.label || ""}
+                      setSelectedOption={(label) => {
+                        const option = auctionDurationOptions.find(opt => opt.label === label);
+                        if (option) {
+                          setAuctionDuration(option.value);
+                        }
+                      }}
                       placeholder="7 Days"
                     />
+                    {errors.auctionDuration && (
+                      <span className="text-sm text-red-500">
+                        {errors.auctionDuration}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1">
                     <Label
@@ -261,10 +346,25 @@ const PriceAndShippingForm = () => {
                     />
                     <InputField
                       type="datetime-local"
-                      value={auctionLaunchDate}
-                      onChange={(e) => setAuctionLaunchDate(e.target.value)}
+                      value={auctionLaunchDate ? new Date(auctionLaunchDate).toISOString().slice(0, 16) : ''}
+                      onChange={(e) => {
+                        // Get the local datetime string and convert to UTC
+                        const localDateTime = e.target.value;
+                        if (localDateTime) {
+                          // Create a date object in local timezone
+                          const date = new Date(localDateTime + 'Z');
+                          setAuctionLaunchDate(date.toISOString());
+                        } else {
+                          setAuctionLaunchDate('');
+                        }
+                      }}
                       className="px-3 py-[14px]"
                     />
+                    {errors.auctionLaunchDate && (
+                      <span className="text-sm text-red-500">
+                        {errors.auctionLaunchDate}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1">
                     <Label
@@ -275,8 +375,16 @@ const PriceAndShippingForm = () => {
                       type="number"
                       value={startingBid}
                       placeholder="$0.00"
-                      onChange={(e) => setStartingBid(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setStartingBid(val);
+                      }}
                     />
+                    {errors.startingBid && (
+                      <span className="text-sm text-red-500">
+                        {errors.startingBid}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1">
                     <Label
@@ -287,7 +395,10 @@ const PriceAndShippingForm = () => {
                       type="number"
                       value={buyItNow}
                       placeholder="$0.00"
-                      onChange={(e) => setBuyItNow(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setBuyItNow(val);
+                      }}
                     />
                   </div>
                   <div className="flex flex-col gap-1">
@@ -299,7 +410,10 @@ const PriceAndShippingForm = () => {
                       type="number"
                       value={minimumOffer}
                       placeholder="$0.00"
-                      onChange={(e) => setMinimumOffer(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setMinimumOffer(val);
+                      }}
                     />
                   </div>
                   <div className="flex flex-col gap-1">
@@ -311,7 +425,10 @@ const PriceAndShippingForm = () => {
                       type="number"
                       value={autoAccept}
                       placeholder="$0.00"
-                      onChange={(e) => setAutoAccept(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setAutoAccept(val);
+                      }}
                     />
                   </div>
                 </>
@@ -320,129 +437,17 @@ const PriceAndShippingForm = () => {
           )}
         </div>
 
-        {/* Categories Section - Only visible for Auctions */}
-        <div
-          className={cn(
-            "w-[404px] transition-all duration-300",
-            pricingFormat === "Auctions"
-              ? "translate-x-0 opacity-100"
-              : "w-0 -translate-x-full overflow-hidden opacity-0",
-          )}
-        >
-          <div className="flex flex-col gap-5">
-            <div className="flex flex-col">
-              <span className="text-lg font-medium text-[#3D3D5D]">
-                All Categories
-              </span>
-              <span className="text-sm font-light text-battleShipGray">
-                Add the shipping details
-              </span>
-            </div>
-
-            {/* Search input */}
-            <div className="relative">
-              <input
-                type="text"
-                value={searchCategory}
-                onChange={(e) => setSearchCategory(e.target.value)}
-                onKeyDown={handleSearchKeyDown}
-                placeholder="Add category of your product"
-                className="w-full rounded-[9.6px] border border-[#F8F7FB] bg-[#F8F7FB] px-4 py-3 pr-10 text-[16.8px] focus:border-moonstone focus:outline-none"
-              />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M9.16667 15.8333C12.8486 15.8333 15.8333 12.8486 15.8333 9.16667C15.8333 5.48477 12.8486 2.5 9.16667 2.5C5.48477 2.5 2.5 5.48477 2.5 9.16667C2.5 12.8486 5.48477 15.8333 9.16667 15.8333Z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M17.5 17.5L13.875 13.875"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            {/* Selected categories */}
-            <div className="flex flex-wrap gap-2">
-              {selectedCategories.map((category) => (
-                <div
-                  key={category}
-                  className="flex items-center gap-2 rounded-full bg-moonstone/10 px-3 py-1.5 text-sm text-moonstone"
-                >
-                  <span>{category}</span>
-                  <button
-                    onClick={() => handleRemoveCategory(category)}
-                    className="text-moonstone hover:text-moonstone/80"
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M18 6L6 18M6 6L18 18"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            {/* Suggested categories */}
-            {searchCategory && (
-              <div className="mt-2 rounded-lg border border-gray-100 bg-white shadow-sm">
-                {allCategories
-                  .filter(
-                    (category) =>
-                      category
-                        .toLowerCase()
-                        .includes(searchCategory.toLowerCase()) &&
-                      !selectedCategories.includes(category),
-                  )
-                  .map((category) => (
-                    <button
-                      key={category}
-                      onClick={() => handleAddCategory(category)}
-                      className="w-full px-4 py-2 text-left text-sm first:rounded-t-lg last:rounded-b-lg hover:bg-gray-50"
-                    >
-                      {category}
-                    </button>
-                  ))}
-              </div>
-            )}
-          </div>
-        </div>
-
         {/* Shipping and Location Sections */}
         <div
           className={cn(
-            "grid grid-cols-2 gap-16 transition-all duration-300",
+            "grid gap-16 transition-all duration-300 md:grid-cols-2",
             pricingFormat === "Fixed Price"
-              ? "w-full translate-x-0 opacity-100"
-              : "w-0 -translate-x-full overflow-hidden opacity-0",
+              ? "translate-x-0 opacity-100"
+              : "hidden -translate-x-full overflow-hidden opacity-0",
           )}
         >
           {/* Shipping Section */}
-          <div className="flex flex-col gap-5">
+          <div className="flex max-w-sm flex-col gap-5">
             <div className="flex flex-col">
               <span className="text-lg font-medium text-delftBlue">
                 Shipping
@@ -460,117 +465,79 @@ const PriceAndShippingForm = () => {
                   className="text-base text-darkBlue"
                 />
                 <CustomSelect
-                  options={shippingOptions}
-                  selectedOption={shippingType}
-                  setSelectedOption={setShippingType}
+                  options={shippingMethods}
+                  selectedOption={shippingMethod}
+                  setSelectedOption={setShippingMethod}
                   placeholder="Select shipping type"
+                />
+                {errors.shippingMethod && (
+                  <span className="text-sm text-red-500">
+                    {errors.shippingMethod}
+                  </span>
+                )}
+              </div>
+
+              {/* Domestic Shipping */}
+              <div className="flex flex-col gap-1">
+                <Label
+                  text="Domestic Shipping"
+                  className="text-base text-darkBlue"
+                />
+                <CustomSelect
+                  options={domesticShippingOptions}
+                  selectedOption={domesticShippingType}
+                  setSelectedOption={setDomesticShippingType}
+                  placeholder="Select domestic shipping type"
                 />
               </div>
 
-              {/* Weight and Dimensions */}
-              <div className="flex flex-col gap-4">
+              {/* Local Pickup */}
+              <div className="flex items-center justify-between border-t border-gray-100 pt-4">
                 <div className="flex flex-col gap-1">
-                  <Label
-                    text="Weight(kg)"
-                    className="text-base text-darkBlue"
-                  />
-                  <InputField type="number" placeholder="0.00 kg" />
+                  <span className="text-base font-medium text-darkBlue">
+                    Local pickup
+                  </span>
+                  <span className="text-sm text-battleShipGray">
+                    Buyers near you can pick the product from the location of
+                    your choice
+                  </span>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1">
-                    <Label
-                      text="Length(in)"
-                      className="text-base text-darkBlue"
-                    />
-                    <InputField type="number" placeholder="0.00 in" />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <Label
-                      text="Width(in)"
-                      className="text-base text-darkBlue"
-                    />
-                    <InputField type="number" placeholder="0.00 in" />
-                  </div>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <Label
-                    text="Height(in)"
-                    className="text-base text-darkBlue"
-                  />
-                  <InputField type="number" placeholder="0.00 in" />
-                </div>
+                <Switch
+                  checked={localPickup}
+                  onChange={setLocalPickup}
+                  onColor="#00A9B5"
+                  offColor="#D1D1D1"
+                  height={24}
+                  width={44}
+                  handleDiameter={20}
+                  uncheckedIcon={false}
+                  checkedIcon={false}
+                />
               </div>
 
-              {/* Expandable Shipping Details - Only show for Standard Shipping */}
-              {shippingType ===
-                "Standard Shipping: Small to Medium Products" && (
-                <div className="flex flex-col gap-4">
-                  {/* Domestic Shipping */}
-                  <div className="flex flex-col gap-1">
-                    <Label
-                      text="Domestic Shipping"
-                      className="text-base text-darkBlue"
-                    />
-                    <CustomSelect
-                      options={domesticShippingOptions}
-                      selectedOption={domesticShippingType}
-                      setSelectedOption={setDomesticShippingType}
-                      placeholder="Select domestic shipping type"
-                    />
-                  </div>
-
-                  {/* Add Primary Service Button */}
-                  <button className="flex w-56 items-center gap-2 rounded-full bg-moonstone px-4 py-3 text-sm text-white">
-                    <span className="text-lg">+</span> Add Primary Service
-                  </button>
-
-                  {/* Local Pickup */}
-                  <div className="flex items-center justify-between border-t border-gray-100 pt-4">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-base font-medium text-darkBlue">
-                        Local pickup
-                      </span>
-                      <span className="text-sm text-delftBlue">
-                        Add local pickup
-                      </span>
-                      <span className="text-sm text-iconGray">
-                        Buyers near you can pick the product from the location
-                        of your choice
-                      </span>
-                    </div>
-                    <Switch
-                      checked={localPickup}
-                      onChange={setLocalPickup}
-                      onColor="#00A9B5"
-                      offColor="#D1D1D1"
-                      height={24}
-                      width={44}
-                      handleDiameter={20}
-                      uncheckedIcon={false}
-                      checkedIcon={false}
-                    />
-                  </div>
-
-                  {/* Handling Time */}
-                  <div className="flex flex-col gap-1 border-t border-gray-100 pt-4">
-                    <Label
-                      text="Handling time"
-                      className="text-base font-medium text-darkBlue"
-                    />
-                    <CustomSelect
-                      options={handlingTimeOptions}
-                      selectedOption={handlingTime}
-                      setSelectedOption={setHandlingTime}
-                      placeholder="Select handling time"
-                    />
-                  </div>
-                </div>
-              )}
+              {/* Handling Time */}
+              <div className="flex flex-col gap-1 border-t border-gray-100 pt-4">
+                <Label
+                  text="Handling time"
+                  className="text-base font-medium text-darkBlue"
+                />
+                <CustomSelect
+                  options={handlingTimeOptions}
+                  selectedOption={handlingTime}
+                  setSelectedOption={setHandlingTime}
+                  placeholder="Select handling time"
+                />
+                {errors.handlingTime && (
+                  <span className="text-sm text-red-500">
+                    {errors.handlingTime}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Location Section */}
-          <div className="flex flex-col gap-5">
+          <div className="flex max-w-sm flex-col gap-5">
             <div className="flex flex-col">
               <span className="text-lg font-medium text-delftBlue">
                 Location
@@ -593,9 +560,13 @@ const PriceAndShippingForm = () => {
                     }
                     setSelectedOption={handleCountrySelect}
                     placeholder="Select country"
-                    className="border-gray-200 bg-white"
                   />
                 </div>
+                {errors.selectedCountry && (
+                  <span className="text-sm text-red-500">
+                    {errors.selectedCountry}
+                  </span>
+                )}
               </div>
 
               {/* City Select */}
@@ -612,10 +583,14 @@ const PriceAndShippingForm = () => {
                     }
                     setSelectedOption={handleCitySelect}
                     placeholder="Select city"
-                    className="border-gray-200 bg-white"
                     isDisabled={!selectedCountry}
                   />
                 </div>
+                {errors.selectedCity && (
+                  <span className="text-sm text-red-500">
+                    {errors.selectedCity}
+                  </span>
+                )}
               </div>
 
               {/* Returns Sections */}
@@ -672,7 +647,7 @@ const PriceAndShippingForm = () => {
       </div>
 
       <RoundedButton
-        className="my-10 w-full max-w-60 self-center"
+        className="mt-5 w-full max-w-60 self-center"
         title="Submit"
         showIcon
         onClick={handleSubmit}
