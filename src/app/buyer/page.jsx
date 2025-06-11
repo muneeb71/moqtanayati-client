@@ -1,5 +1,5 @@
 import MainBanner from "@/components/sections/landing/home/MainBanner";
-import React from "react";
+
 import CategoriesSliderSection from "@/components/sections/landing/home/CategoriesSliderSection";
 import RecommendedSection from "@/components/sections/landing/home/RecommendedSection";
 import FurnitureSection from "@/components/sections/landing/home/FurnitureSection";

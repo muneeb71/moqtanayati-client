@@ -12,10 +12,10 @@ const StoreProductDetailsCard = ({ item }) => {
             <div className="flex w-full items-end justify-between md:gap-[33px]">
               <div className="flex flex-col">
                 <h2 className="max-w-[258px] truncate font-medium md:text-[19.2px] md:leading-[29px]">
-                  {item.title}
+                  {item?.name}
                 </h2>
                 <h1 className="text-[24px] font-medium leading-[40px] md:text-[28.8px] md:leading-[43px]">
-                  ${item.price.toFixed(2)}
+                  ${item?.price?.toFixed(2)}
                 </h1>
               </div>
               <div className="flex flex-col justify-end gap-2.5">
@@ -36,9 +36,7 @@ const StoreProductDetailsCard = ({ item }) => {
           <div className="flex w-full flex-col gap-2">
             <h1 className="font-medium text-black/70">Product Description</h1>
             <p className="text-[14.4px] leading-[21px] text-black/40">
-              This device is pre-owned and fully functional, with minor signs of
-              use (if any). Available in multiple storage options and colors,
-              it's a budget-friendly choice for staying connected.
+              {item?.description}
             </p>
           </div>
           <div className="flex w-fit flex-col gap-2">
@@ -47,7 +45,7 @@ const StoreProductDetailsCard = ({ item }) => {
               <button className="grid size-10 place-items-center rounded-md bg-moonstone/10">
                 <Plus className="size-6 text-moonstone" />
               </button>
-              <span className="text-2xl font-medium text-darkBlue">10</span>
+              <span className="text-2xl font-medium text-darkBlue">{item?.stock}</span>
               <button className="grid size-10 place-items-center rounded-md bg-moonstone/10">
                 <Minus className="size-6 text-moonstone" />
               </button>

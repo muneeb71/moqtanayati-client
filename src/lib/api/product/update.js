@@ -1,0 +1,110 @@
+"use server";
+
+import api from "../axios";
+
+export async function updateProductUnitAndDimensions(id, data) {
+  console.log("ID", id, data);
+  try {
+    const formData = new FormData();
+    
+    formData.append("stock", data.stock);
+    formData.append("length", data.length);
+    formData.append("width", data.width);
+    formData.append("height", data.height);
+    formData.append("weight", data.weight);
+    formData.append("conditionRating", data.conditionRating);
+    formData.append("condition", data.productCondition);
+    formData.append("isDraft", data.isDraft);
+    formData.append(
+      "categories",
+      JSON.stringify(data.productCategories),
+    );
+
+    const response = await api.patch(`products/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (!response.data) {
+      return {
+        success: false,
+        data: null,
+        message: "Invalid response from server",
+      };
+    }
+
+    return {
+      success: true,
+      data: response.data.data || response.data,
+      message: "Product updated successfully",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      data: null,
+      message:
+        error?.response?.data?.message ||
+        error.message ||
+        "Could not update product data.",
+    };
+  }
+}
+
+export async function updateProductPriceAndShipping(id, data) {
+  try {
+    const formData = new FormData();
+    
+    formData.append("pricingFormat", data.pricingFormat);
+    formData.append("price", data.price);
+    formData.append("shippingMethod", data.shippingMethod);
+    formData.append("country", data.country);
+    formData.append("city", data.city);
+    formData.append("handlingTime", data.handlingTime);
+    formData.append("domesticReturns", data.domesticReturns);
+    formData.append("internationalReturns", data.internationalReturns);
+    formData.append("domesticShippingType", data.domesticShippingType);
+    formData.append("localPickup", data.localPickup);
+    formData.append("isAuction", data.isAuction);
+    formData.append("isDraft", data.isDraft);
+    
+    // Auction specific fields
+    if (data.isAuction) {
+      formData.append("auctionDuration", data.auctionDuration);
+      formData.append("auctionLaunchDate", data.auctionLaunchDate);
+      formData.append("startingBid", data.startingBid);
+      formData.append("buyItNow", data.buyItNow);
+      formData.append("minimumOffer", data.minimumOffer);
+      formData.append("autoAccept", data.autoAccept);
+    }
+
+    const response = await api.patch(`products/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (!response.data) {
+      return {
+        success: false,
+        data: null,
+        message: "Invalid response from server",
+      };
+    }
+
+    return {
+      success: true,
+      data: response.data.data || response.data,
+      message: "Product updated successfully",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      data: null,
+      message:
+        error?.response?.data?.message ||
+        error.message ||
+        "Could not update product data.",
+    };
+  }
+}

@@ -2,15 +2,18 @@
 
 import RoundedButton from "@/components/buttons/RoundedButton";
 import InputField from "@/components/form-fields/InputField";
-import Label from "@/components/form-fields/Label";
 import { cn } from "@/lib/utils";
 import { useProductStore } from "@/providers/product-store-provider";
 import { XIcon } from "lucide-react/dist/cjs/lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
+import { updateProductUnitAndDimensions } from "@/lib/api/product/update";
+import { addProduct } from "@/lib/api/product/add";
+import { useProfileStore } from "@/providers/profile-store-provider";
 
-const UnitsAndDimensionsForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
+const UnitsAndDimensionsForm = () => {
   const {
-    unitsAvailable,
+    stock,
     length,
     width,
     height,
@@ -18,7 +21,7 @@ const UnitsAndDimensionsForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
     conditionRating,
     productCategories,
     productCondition,
-    setUnitsAvailable,
+    setStock,
     setLength,
     setWidth,
     setHeight,
@@ -28,20 +31,31 @@ const UnitsAndDimensionsForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
     setProductCondition,
   } = useProductStore();
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
+  if (!id || id == "") {
+    router.back();
+  }
+
+  const { store } = useProfileStore((state) => state);
+
   const [errors, setErrors] = useState({});
   const errorTimeoutRef = useRef();
 
   const [categoryInput, setCategoryInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const productConditionsList = ["New", "Old"];
 
   const validate = () => {
     const newErrors = {};
-    if (!unitsAvailable || isNaN(parseFloat(unitsAvailable)))
-      newErrors.unitsAvailable = "Units available is required.";
+    if (!stock || isNaN(parseFloat(stock)))
+      newErrors.stock = "Units available is required.";
     if (!length || isNaN(parseFloat(length)))
       newErrors.length = "Length is required.";
-    if (!width || isNaN(parseFloat(width))) 
+    if (!width || isNaN(parseFloat(width)))
       newErrors.width = "Width is required.";
     if (!height || isNaN(parseFloat(height)))
       newErrors.height = "Height is required.";
@@ -61,15 +75,43 @@ const UnitsAndDimensionsForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (validate()) {
-      setUnitsAvailable(parseFloat(unitsAvailable));
-      setLength(parseFloat(length));
-      setWidth(parseFloat(width));
-      setHeight(parseFloat(height));
-      setWeight(parseFloat(weight));
-      setConditionRating(parseFloat(conditionRating));
-      nextTab();
+      try {
+        setIsLoading(true);
+
+        const productData = {
+          stock: parseFloat(stock),
+          length: parseFloat(length),
+          width: parseFloat(width),
+          height: parseFloat(height),
+          weight: parseFloat(weight),
+          conditionRating: parseFloat(conditionRating),
+          productCategories,
+          productCondition,
+          storeId: store.id,
+          isDraft: true,
+        };
+
+        const response = await updateProductUnitAndDimensions(id, productData);
+
+        if (response.success) {
+          router.push(
+            `/seller/my-store/product/add/price-and-shipping?id=${response.data.id}`,
+          );
+        } else {
+          setErrors({
+            submit:
+              response.message || "Failed to save product. Please try again.",
+          });
+        }
+      } catch (error) {
+        setErrors({
+          submit: "An unexpected error occurred. Please try again." + error,
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -87,16 +129,14 @@ const UnitsAndDimensionsForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
             <InputField
               type="text"
               placeholder="Available units"
-              value={unitsAvailable}
+              value={stock}
               onChange={(e) => {
                 const val = e.target.value;
-                setUnitsAvailable(val);
+                setStock(val);
               }}
             />
-            {errors.unitsAvailable && (
-              <span className="text-xs text-red-500">
-                {errors.unitsAvailable}
-              </span>
+            {errors.stock && (
+              <span className="text-xs text-red-500">{errors.stock}</span>
             )}
           </div>
           <div className="flex flex-col gap-1">
@@ -194,8 +234,11 @@ const UnitsAndDimensionsForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
               step="0.1"
               onChange={(e) => {
                 const val = e.target.value;
-                if (val === '' || (parseFloat(val) >= 1 && parseFloat(val) <= 10)) {
-                  setConditionRating(val === '' ? '' : parseFloat(val));
+                if (
+                  val === "" ||
+                  (parseFloat(val) >= 1 && parseFloat(val) <= 10)
+                ) {
+                  setConditionRating(val === "" ? "" : parseFloat(val));
                 }
               }}
             />
@@ -217,7 +260,9 @@ const UnitsAndDimensionsForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
                     .split(",")
                     .map((c) => c.trim())
                     .filter(Boolean);
-                  const merged = Array.from(new Set([...productCategories, ...parts]));
+                  const merged = Array.from(
+                    new Set([...productCategories, ...parts]),
+                  );
                   setProductCategories(merged);
                   setCategoryInput("");
                 } else {
@@ -230,7 +275,9 @@ const UnitsAndDimensionsForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
                     .split(",")
                     .map((c) => c.trim())
                     .filter(Boolean);
-                  const merged = Array.from(new Set([...productCategories, ...parts]));
+                  const merged = Array.from(
+                    new Set([...productCategories, ...parts]),
+                  );
                   setProductCategories(merged);
                   setCategoryInput("");
                   e.preventDefault();
@@ -269,12 +316,18 @@ const UnitsAndDimensionsForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
           </div>
         </div>
       </div>
+      {errors.submit && (
+        <span className="text-center text-xs text-red-500">
+          {errors.submit}
+        </span>
+      )}
       <div className="flex items-center justify-center pb-20 pt-8">
         <RoundedButton
           onClick={handleNext}
-          title="Next"
+          title={isLoading ? "Loading..." : "Next"}
           showIcon
           className="w-64"
+          disabled={isLoading}
         />
       </div>
     </div>

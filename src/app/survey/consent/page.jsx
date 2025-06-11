@@ -1,6 +1,6 @@
 import ConsentForm from "@/components/forms/survey/ConsentForm";
 import { cookies } from "next/headers";
-import React from "react";
+
 
 const ConsentPage = async () => {
   const cookiesStore = await cookies();

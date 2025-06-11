@@ -5,20 +5,15 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const DraftCard = ({
-  id = 1,
-  title = "",
-  price = 0,
-  createdAt = "",
-  image,
-  address = "",
-}) => {
+const DraftCard = ({ draft }) => {
   const router = useRouter();
 
   const getHourAgo = () => {
     const now = new Date();
     return now.getHours() - 1 + "hr ago";
   };
+
+  console.log(draft)
 
   return (
     <div
@@ -29,31 +24,36 @@ const DraftCard = ({
     >
       <div className="rounded-top relative h-[250px] cursor-pointer overflow-hidden sm:h-[188px]">
         <Image
-          src={image}
+          src={
+            draft.images[0]
+              ? process.env.NEXT_PUBLIC_BACKEND_BASE_URL + draft.images[0]
+              : "/static/dummy-items/7.jpeg"
+          }
           width={800}
           height={200}
-          alt={title}
+          alt={draft.name}
           loading="lazy"
-          onClick={() => router.push("/product-details/" + id)}
+          onClick={() => router.push("/product-details/" + draft.id)}
         />
       </div>
       <div
         className="flex w-full cursor-pointer flex-col px-2.5 py-2"
-        onClick={() => router.push("/product-details/" + id)}
+        onClick={() => router.push("/product-details/" + draft.id)}
       >
         <div className="flex items-center justify-between">
           <span className="text-[21px] font-medium leading-[32px]">
-            ${price.toFixed(2)}
+            $
+            {draft.price ? draft.price?.toFixed(2) : draft.buyItNow?.toFixed(2)}
           </span>
           <span className="text-[15px] leading-[23px] text-black/30">
-            {getHourAgo(createdAt)}
+            {getHourAgo(draft.createdAt)}
           </span>
         </div>
         <span className="max-w-[241px] truncate text-nowrap text-[18px] leading-[27px] text-black/70">
-          {title}
+          {draft.name}
         </span>
         <span className="max-w-[241px] truncate text-nowrap text-[15px] leading-[23px] text-black/30">
-          {address}
+          {draft.address}
         </span>
       </div>
     </div>

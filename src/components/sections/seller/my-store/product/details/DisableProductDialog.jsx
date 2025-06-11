@@ -35,7 +35,7 @@ const DisableProductDialog = () => {
               </DialogClose>
               <DialogClose asChild>
                 <button className="border-t border-black/10 py-3 font-medium text-[#F94144] transition-all duration-200 ease-in hover:bg-black/10">
-                  Disable Account
+                  Disable Product
                 </button>
               </DialogClose>
             </div>

@@ -4,14 +4,17 @@ import { createStore } from "zustand/vanilla";
 
 export const initProductStore = () => {
   return {
+    id: "",
+
     // Picture & Videos Form
     images: [],
     video: null,
     productTitle: "",
     productDescription: "",
+    isLoading: false,
 
     // Units & Dimensions Form
-    unitsAvailable: "",
+    stock: "",
     length: "",
     width: "",
     height: "",
@@ -44,12 +47,14 @@ export const initProductStore = () => {
 export const createProductStore = (initState = initProductStore()) => {
   return createStore((set, get) => ({
     ...initState,
+    setId: (id) => set({ id }),
     setImages: (images) => set({ images }),
     setVideo: (video) => set({ video }),
     setProductTitle: (title) => set({ productTitle: title }),
     setProductDescription: (description) =>
       set({ productDescription: description }),
-    setUnitsAvailable: (units) => set({ unitsAvailable: units }),
+    setIsLoading: (isLoading) => set({ isLoading }),
+    setStock: (units) => set({ stock: units }),
     setLength: (length) => set({ length }),
     setWidth: (width) => set({ width }),
     setHeight: (height) => set({ height }),

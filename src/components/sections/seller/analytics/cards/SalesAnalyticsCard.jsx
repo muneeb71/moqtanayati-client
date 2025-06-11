@@ -1,5 +1,5 @@
 import { arrowUpRightIcon } from "@/assets/icons/seller-icons";
-import React from "react";
+
 
 const SalesAnalyticsCard = () => {
   return (

@@ -1,6 +1,6 @@
 import { ChevronRight } from "lucide-react/dist/cjs/lucide-react";
 import Link from "next/link";
-import React from "react";
+
 
 const SurveyPage = async () => {
   return (

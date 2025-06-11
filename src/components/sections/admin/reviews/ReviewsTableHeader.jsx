@@ -2,7 +2,7 @@ import { filterIcon } from "@/assets/icons/admin-icons";
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+
 
 const ReviewsTableHeader = ({ reviewCategories, reviewCategory }) => {
   return (

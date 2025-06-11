@@ -4,24 +4,54 @@ import { camera2Icon, videoCameraIcon } from "@/assets/icons/seller-icons";
 import RoundedButton from "@/components/buttons/RoundedButton";
 import TextareaField from "@/components/form-fields/CustomTextArea";
 import InputField from "@/components/form-fields/InputField";
+import { addProduct } from "@/lib/api/product/add";
 import { cn } from "@/lib/utils";
 import { useProductStore } from "@/providers/product-store-provider";
-import { useState, useRef } from "react";
+import { useProfileStore } from "@/providers/profile-store-provider";
+import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
 
-const PictureAndVideosForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
+const PictureAndVideosForm = () => {
   const {
     images,
     video,
     productTitle,
     productDescription,
+    isLoading,
+    setId,
     setImages,
     setVideo,
     setProductTitle,
     setProductDescription,
+    setIsLoading,
   } = useProductStore();
 
+  const { store } = useProfileStore((state) => state);
+
+  const imageInputRef = useRef(null);
+  const videoInputRef = useRef(null);
+
   const [errors, setErrors] = useState({});
+  const [previewUrls, setPreviewUrls] = useState([]);
+  const [videoPreview, setVideoPreview] = useState(null);
   const errorTimeoutRef = useRef();
+  const router = useRouter();
+
+  // Cleanup preview URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+      if (videoPreview) URL.revokeObjectURL(videoPreview);
+    };
+  }, [previewUrls, videoPreview]);
+
+  // Handle form submission on Enter key
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleNext();
+    }
+  };
 
   const validate = () => {
     const newErrors = {};
@@ -40,20 +70,56 @@ const PictureAndVideosForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (validate()) {
-      nextTab();
+      try {
+        setIsLoading(true);
+        const response = await addProduct({
+          images,
+          video,
+          name: productTitle,
+          description: productDescription,
+          storeId: store.id,
+          isDraft: true,
+        });
+        console.log("RESPONSE", response)
+        setId(response.data.id);
+        if (response.success) {
+          router.push(`/seller/my-store/product/add/units-and-dimensions?id=${response.data.id}`);
+        } else {
+          setErrors({
+            submit:
+              response.message || "Failed to add product. Please try again.",
+          });
+        }
+      } catch (error) {
+        setErrors({
+          submit: "An unexpected error occurred. Please try again."+ error,
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
   const handleImageUpload = (event) => {
     const files = Array.from(event.target.files);
-    setImages([...images, ...files].slice(0, 12));
+    if (files.length > 0) {
+      // Create preview URLs for new images
+      const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
+      setPreviewUrls((prev) => [...prev, ...newPreviewUrls]);
+      setImages([...images, ...files].slice(0, 5));
+    }
   };
 
   const handleVideoUpload = (event) => {
     const file = event.target.files[0];
-    setVideo(file);
+    if (file) {
+      // Create preview URL for video
+      const videoUrl = URL.createObjectURL(file);
+      setVideoPreview(videoUrl);
+      setVideo(file);
+    }
   };
 
   return (
@@ -62,26 +128,26 @@ const PictureAndVideosForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
         <div className="flex w-full flex-col gap-1">
           <h1 className="text-xl font-medium">Pictures & Videos</h1>
           <span className="text-sm text-battleShipGray">
-            You can upload up to 12 photos and a 1-minute video to cover every
+            You can upload up to 5 photos and a 1-minute video to cover every
             angle of the product.
           </span>
         </div>
-        {images && images.length > 0 && (
+        {previewUrls.length > 0 && (
           <div className="mb-2 flex flex-wrap gap-2">
-            {images.map((img, idx) => (
+            {previewUrls.map((url, idx) => (
               <img
                 key={idx}
-                src={URL.createObjectURL(img)}
+                src={url}
                 alt={`uploaded-img-${idx}`}
                 className="h-20 w-20 rounded border object-cover"
               />
             ))}
           </div>
         )}
-        {video && (
+        {videoPreview && (
           <div className="mb-2">
             <video
-              src={URL.createObjectURL(video)}
+              src={videoPreview}
               controls
               className="w-full rounded border object-cover"
             />
@@ -90,19 +156,20 @@ const PictureAndVideosForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
         <div className="grid grid-cols-[2fr_1fr] gap-4">
           {/* Image Upload */}
           <div className="flex w-full flex-col gap-1">
-            <span className="text-sm">{images.length}/12</span>
+            <span className="text-sm">{images.length}/5</span>
             <button
               className={cn(
                 "flex h-32 w-full flex-col items-center justify-center rounded-xl border border-dashed border-moonstone",
                 "transition-all duration-100 ease-in hover:border-2 hover:border-solid hover:bg-moonstone/5",
               )}
-              onClick={() => document.getElementById("imageInput").click()}
+              onClick={() => imageInputRef.current?.click()}
             >
               {camera2Icon}
               <span className="mt-1 text-sm">Capture images</span>
               <span className="text-xs text-moonstone">or Upload images</span>
             </button>
             <input
+              ref={imageInputRef}
               id="imageInput"
               type="file"
               accept="image/*"
@@ -120,13 +187,14 @@ const PictureAndVideosForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
                 "flex h-32 w-full flex-col items-center justify-center rounded-xl border border-dashed border-moonstone",
                 "transition-all duration-100 ease-in hover:border-2 hover:border-solid hover:bg-moonstone/5",
               )}
-              onClick={() => document.getElementById("videoInput").click()}
+              onClick={() => videoInputRef.current?.click()}
             >
               {videoCameraIcon}
               <span className="mt-1 text-sm">Make Video</span>
               <span className="text-xs text-moonstone">or Upload video</span>
             </button>
             <input
+              ref={videoInputRef}
               id="videoInput"
               type="file"
               accept="video/*"
@@ -145,6 +213,8 @@ const PictureAndVideosForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
           placeholder="Add product title"
           value={productTitle}
           onChange={(e) => setProductTitle(e.target.value)}
+          onKeyPress={handleKeyPress}
+          disabled={isLoading}
         />
         {errors.title && (
           <span className="text-xs text-red-500">{errors.title}</span>
@@ -157,17 +227,25 @@ const PictureAndVideosForm = ({ nextTab = () => {}, prevTab = () => {} }) => {
           placeholder="The product is of the ..."
           value={productDescription}
           onChange={(e) => setProductDescription(e.target.value)}
+          onKeyPress={handleKeyPress}
+          disabled={isLoading}
         />
         {errors.description && (
           <span className="text-xs text-red-500">{errors.description}</span>
         )}
       </div>
+      {errors.submit && (
+        <span className="text-center text-xs text-red-500">
+          {errors.submit}
+        </span>
+      )}
       <div className="flex items-center justify-center pb-20 pt-8">
         <RoundedButton
           onClick={handleNext}
-          title="Next"
+          title={isLoading ? "Loading..." : "Next"}
           showIcon
           className="w-64"
+          disabled={isLoading}
         />
       </div>
     </div>

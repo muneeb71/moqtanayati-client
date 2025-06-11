@@ -7,18 +7,19 @@ import InputField from "@/components/form-fields/InputField";
 import Label from "@/components/form-fields/Label";
 import { cn } from "@/lib/utils";
 import { useProductStore } from "@/providers/product-store-provider";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import { Country, City } from "country-state-city";
 import Switch from "react-switch";
 import { useProfileStore } from "@/providers/profile-store-provider";
-import { addProduct } from "@/lib/api/product/add";
+import { updateProductPriceAndShipping } from "@/lib/api/product/update";
 
 const PriceAndShippingForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const [isLoading, setIsLoading] = useState(false);
   const {
-    productTitle,
-    productDescription,
     pricingFormat,
     price,
     shippingMethod,
@@ -35,16 +36,6 @@ const PriceAndShippingForm = () => {
     domesticReturns,
     internationalReturns,
     localPickup,
-    images,
-    video,
-    weight,
-    length,
-    width,
-    height,
-    productCondition,
-    conditionRating,
-    productCategories,
-    unitsAvailable,
     setPricingFormat,
     setPrice,
     setShippingMethod,
@@ -89,21 +80,13 @@ const PriceAndShippingForm = () => {
     "3-5 business days",
     "5-7 business days",
   ];
-  const allCategories = [
-    "electronics",
-    "lamp",
-    "furniture",
-    "clothing",
-    "books",
-    "sports",
-  ];
 
   // Add this constant for the auction duration options
   const auctionDurationOptions = [
     { value: 3, label: "3 Days" },
     { value: 5, label: "5 Days" },
     { value: 7, label: "7 Days" },
-    { value: 10, label: "10 Days" }
+    { value: 10, label: "10 Days" },
   ];
 
   // Initialize country options on component mount
@@ -186,62 +169,61 @@ const PriceAndShippingForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const submitForm = async () => {
-    console.log("STORE", store)
-    const productData = {
-      name: productTitle,
-      description: productDescription,
-      price: price ? parseFloat(price) : 0,
-      images: images,
-      pricingFormat: pricingFormat,
-      video: video,
-      auctionDuration: auctionDuration,
-      auctionLaunchDate: auctionLaunchDate,
-      startingBid: startingBid ? parseFloat(startingBid) : 0,
-      buyItNow: buyItNow ? parseFloat(buyItNow) : 0,
-      minimumOffer: minimumOffer ? parseFloat(minimumOffer) : 0,
-      autoAccept: autoAccept ? parseFloat(autoAccept) : 0,
-      shippingMethod: shippingMethod,
-      country: selectedCountry,
-      city: selectedCity,
-      handlingTime: handlingTime,
-      weight: weight,
-      length: length,
-      width: width,
-      height: height,
-      domesticReturns: domesticReturns,
-      internationalReturns: internationalReturns,
-      condition: productCondition,
-      conditionRating: conditionRating,
-      categories: productCategories,
-      stock: unitsAvailable,
-      domesticShippingType: domesticShippingType,
-      localPickup: localPickup,
-      isAuction: pricingFormat === "Auctions",
-      category: productCategories[0],
-      storeId: store.id
-    };
-
-    const res = await addProduct(productData);
-
-    console.log("RES", res);
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (pricingFormat == "") {
       setErrors({ pricingFormat: "Please select a pricing format" });
       if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
       errorTimeoutRef.current = setTimeout(() => setErrors({}), 3000);
       return;
     }
-    if (pricingFormat === "Fixed Price") {
-      if (validateFixedPrice()) {
-        submitForm();
+
+    try {
+      setIsLoading(true);
+      const isValid =
+        pricingFormat === "Fixed Price"
+          ? validateFixedPrice()
+          : validateAuctions();
+
+      if (isValid) {
+        const productData = {
+          pricingFormat: pricingFormat,
+          price: price ? parseFloat(price) : 0,
+          shippingMethod: shippingMethod,
+          country: selectedCountry,
+          city: selectedCity,
+          handlingTime: handlingTime,
+          domesticReturns: domesticReturns,
+          internationalReturns: internationalReturns,
+          domesticShippingType: domesticShippingType,
+          localPickup: localPickup,
+          isAuction: pricingFormat === "Auctions",
+          auctionDuration: auctionDuration,
+          auctionLaunchDate: auctionLaunchDate,
+          startingBid: startingBid ? parseFloat(startingBid) : 0,
+          buyItNow: buyItNow ? parseFloat(buyItNow) : 0,
+          minimumOffer: minimumOffer ? parseFloat(minimumOffer) : 0,
+          autoAccept: autoAccept ? parseFloat(autoAccept) : 0,
+          storeId: store.id,
+          isDraft: false,
+        };
+
+        const response = await updateProductPriceAndShipping(id, productData);
+
+        if (response.success) {
+          router.push(`/seller/my-store`);
+        } else {
+          setErrors({
+            submit:
+              response.message || "Failed to save product. Please try again.",
+          });
+        }
       }
-    } else if (pricingFormat === "Auctions") {
-      if (validateAuctions()) {
-        submitForm();
-      }
+    } catch (error) {
+      setErrors({
+        submit: "An unexpected error occurred. Please try again." + error,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -323,10 +305,18 @@ const PriceAndShippingForm = () => {
                       className="text-base text-darkBlue"
                     />
                     <CustomSelect
-                      options={auctionDurationOptions.map(option => option.label)}
-                      selectedOption={auctionDurationOptions.find(opt => opt.value === auctionDuration)?.label || ""}
+                      options={auctionDurationOptions.map(
+                        (option) => option.label,
+                      )}
+                      selectedOption={
+                        auctionDurationOptions.find(
+                          (opt) => opt.value === auctionDuration,
+                        )?.label || ""
+                      }
                       setSelectedOption={(label) => {
-                        const option = auctionDurationOptions.find(opt => opt.label === label);
+                        const option = auctionDurationOptions.find(
+                          (opt) => opt.label === label,
+                        );
                         if (option) {
                           setAuctionDuration(option.value);
                         }
@@ -346,16 +336,22 @@ const PriceAndShippingForm = () => {
                     />
                     <InputField
                       type="datetime-local"
-                      value={auctionLaunchDate ? new Date(auctionLaunchDate).toISOString().slice(0, 16) : ''}
+                      value={
+                        auctionLaunchDate
+                          ? new Date(auctionLaunchDate)
+                              .toISOString()
+                              .slice(0, 16)
+                          : ""
+                      }
                       onChange={(e) => {
                         // Get the local datetime string and convert to UTC
                         const localDateTime = e.target.value;
                         if (localDateTime) {
                           // Create a date object in local timezone
-                          const date = new Date(localDateTime + 'Z');
+                          const date = new Date(localDateTime + "Z");
                           setAuctionLaunchDate(date.toISOString());
                         } else {
-                          setAuctionLaunchDate('');
+                          setAuctionLaunchDate("");
                         }
                       }}
                       className="px-3 py-[14px]"
@@ -646,11 +642,18 @@ const PriceAndShippingForm = () => {
         </div>
       </div>
 
+      {errors.submit && (
+        <span className="text-center text-xs text-red-500">
+          {errors.submit}
+        </span>
+      )}
+
       <RoundedButton
         className="mt-5 w-full max-w-60 self-center"
-        title="Submit"
+        title={isLoading ? "Loading..." : "Submit"}
         showIcon
         onClick={handleSubmit}
+        disabled={isLoading}
       />
     </div>
   );

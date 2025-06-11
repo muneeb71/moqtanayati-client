@@ -5,7 +5,7 @@ import { productAndServicesCategories } from "@/lib/categories";
 import { useSurveyStore } from "@/providers/survey-store-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
+
 
 const ProductAndServicesForm = ({ role }) => {
   const router = useRouter();

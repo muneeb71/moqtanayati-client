@@ -7,6 +7,7 @@ import { useProfileStore } from "@/providers/profile-store-provider";
 
 const StoreWallpaperContainer = () => {
   const store = useProfileStore((state) => state.store);
+  
   const [preview, setPreview] = useState(
     store.image || "/static/store/wallpaper.jpeg",
   );

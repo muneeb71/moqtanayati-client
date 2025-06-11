@@ -1,6 +1,6 @@
 import { sellerChatIcon } from "@/assets/icons/common-icons";
 import Image from "next/image";
-import React from "react";
+
 
 const BidRetractionCard = () => {
   return (

@@ -1,6 +1,6 @@
 import OrderCard from "@/components/cards/OrderCard";
 import { unslugify } from "@/utils/slugify";
-import React from "react";
+
 
 const OrdersPage = async ({ params }) => {
   const category = (await params).category;

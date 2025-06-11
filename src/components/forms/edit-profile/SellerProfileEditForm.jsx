@@ -13,7 +13,7 @@ import InputField from "@/components/form-fields/InputField";
 import PageHeading from "@/components/headings/PageHeading";
 import { PenLine } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { updateUserProfile } from "@/lib/api/profile/updateProfile";

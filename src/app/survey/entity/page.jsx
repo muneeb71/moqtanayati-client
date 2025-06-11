@@ -1,5 +1,5 @@
 import ChooseSellerEntityForm from "@/components/forms/survey/ChooseSellerEntityForm";
-import React from "react";
+
 
 const EntityPage = async ({ params }) => {
   const { role } = await params;

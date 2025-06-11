@@ -4,7 +4,7 @@ import RoundedButton from "@/components/buttons/RoundedButton";
 import { useSurveyStore } from "@/providers/survey-store-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
+
 import OptionButton from "./OptionButton";
 
 const ExperienceForm = ({ role }) => {

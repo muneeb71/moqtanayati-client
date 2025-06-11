@@ -11,7 +11,11 @@ const StoreProductCard = ({ item }) => {
       >
         <div className="size-36 min-w-36 overflow-hidden rounded-2xl border border-black/10">
           <Image
-            src={item.image}
+            src={
+              item.images && item.images[0] !== ""
+                ? process.env.NEXT_PUBLIC_BACKEND_BASE_URL + item.images[0]
+                : "/static/dummy-items/1.jpeg"
+            }
             alt="image"
             width={200}
             height={200}
@@ -21,17 +25,28 @@ const StoreProductCard = ({ item }) => {
           />
         </div>
         <div className="flex h-full flex-1 flex-col justify-between py-1">
-          <h1 className="max-w-[80%] truncate pr-5 text-2xl font-medium text-davyGray">
-            {item.title}
-          </h1>
-          <h1 className="text-3xl font-medium">${item.price.toFixed(2)}</h1>
+          <div className="flex items-center">
+            <h1 className="max-w-[80%] truncate pr-5 text-2xl font-medium text-davyGray">
+              {item.name}
+            </h1>
+            {item.isDraft && (
+              <div className="w-fit rounded-full bg-moonstone px-2 py-1 text-xs text-white">
+                Draft
+              </div>
+            )}
+          </div>
+          {item.price ? (
+            <h1 className="text-3xl font-medium">${item.price?.toFixed(2)}</h1>
+          ) : (
+            <h1 className="text-3xl">${item.buyItNow?.toFixed(2)}</h1>
+          )}
         </div>
       </Link>
       <div className="flex h-full flex-col items-center justify-between py-1">
         <button className="grid size-10 place-items-center rounded-md bg-moonstone/10">
           <Plus className="size-6 text-moonstone" />
         </button>
-        <span className="text-2xl font-medium text-darkBlue">10</span>
+        <span className="text-2xl font-medium text-darkBlue">{item.stock}</span>
         <button className="grid size-10 place-items-center rounded-md bg-moonstone/10">
           <Minus className="size-6 text-moonstone" />
         </button>
