@@ -1,7 +1,11 @@
+"use client";
+
 import ProductDetailsAuctionTimer from "@/components/timers/ProductDetailsAuctionTimer";
 import QaSectionSheet from "../../../../landing/product-details/dialogs/qa-sheet/QaSectionSheet";
 import { productHeartIcon } from "@/assets/icons/seller-icons";
 import { Minus, Plus } from "lucide-react";
+import { useState } from "react";
+import { updateProductStock } from "@/lib/api/product/updateStock";
 
 const formatTimeAgo = (dateString) => {
   const date = new Date(dateString);
@@ -36,9 +40,46 @@ const formatTimeAgo = (dateString) => {
   return `${diffInYears}year${diffInYears === 1 ? "" : "s"} ago`;
 };
 
-
 const StoreProductDetailsCard = ({ item }) => {
-  console.log("ITEM", item);
+  const [stock, setStock] = useState(item?.stock || 0);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(stock);
+
+  const handleStockUpdate = async (newStock) => {
+    if (newStock < 0 || isUpdating) return;
+
+    setIsUpdating(true);
+    try {
+      const response = await updateProductStock(item.id, newStock);
+      if (response) {
+        setStock(newStock);
+      }
+    } catch (error) {
+      console.error("Error updating stock:", error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      const newValue = parseInt(editValue);
+      if (!isNaN(newValue) && newValue >= 0) {
+        handleStockUpdate(newValue);
+        setIsEditing(false);
+      }
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+      setEditValue(stock);
+    }
+  };
+
+  const handleBlur = () => {
+    setIsEditing(false);
+    setEditValue(stock);
+  };
+
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full max-w-[404px] flex-col gap-[52px]">
@@ -52,8 +93,8 @@ const StoreProductDetailsCard = ({ item }) => {
                 <h1 className="text-[24px] font-medium leading-[40px] md:text-[28.8px] md:leading-[43px]">
                   $
                   {item?.price
-                    ? item.price.toFixed(2)
-                    : item.buyItNow.toFixed(2)}
+                    ? item?.price.toFixed(2)
+                    : item?.buyItNow.toFixed(2)}
                 </h1>
               </div>
               <div className="flex flex-col justify-end gap-2.5">
@@ -64,14 +105,14 @@ const StoreProductDetailsCard = ({ item }) => {
               </div>
             </div>
             <div className="flex w-full items-end justify-between gap-5">
-              {item.price ? (
+              {item?.price ? (
                 "Fixed Price"
               ) : (
                 <ProductDetailsAuctionTimer item={item} />
               )}
               <div className="flex items-center gap-2 text-2xl font-semibold text-[#F16D6F]">
                 {productHeartIcon}
-                112
+                {item?.favorites?.length}
               </div>
             </div>
           </div>
@@ -84,13 +125,39 @@ const StoreProductDetailsCard = ({ item }) => {
           <div className="flex w-fit flex-col gap-2">
             <span className="text-2xl font-medium text-black/70">Stock</span>
             <div className="flex items-center justify-between gap-2 py-1">
-              <button className="grid size-10 place-items-center rounded-md bg-moonstone/10">
+              <button
+                onClick={() => handleStockUpdate(stock + 1)}
+                disabled={isUpdating}
+                className="grid size-10 place-items-center rounded-md bg-moonstone/10 transition-colors hover:bg-moonstone/20 disabled:cursor-not-allowed disabled:opacity-50"
+              >
                 <Plus className="size-6 text-moonstone" />
               </button>
-              <span className="text-2xl font-medium text-darkBlue">
-                {item?.stock}
-              </span>
-              <button className="grid size-10 place-items-center rounded-md bg-moonstone/10">
+              {isEditing ? (
+                <input
+                  type="number"
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  onBlur={handleBlur}
+                  className="w-20 text-center text-2xl font-medium text-darkBlue border border-moonstone rounded-md px-2"
+                  autoFocus
+                />
+              ) : (
+                <span 
+                  className="text-2xl font-medium text-darkBlue cursor-pointer"
+                  onClick={() => {
+                    setIsEditing(true);
+                    setEditValue(stock);
+                  }}
+                >
+                  {stock}
+                </span>
+              )}
+              <button
+                onClick={() => handleStockUpdate(stock - 1)}
+                disabled={isUpdating || stock <= 0}
+                className="grid size-10 place-items-center rounded-md bg-moonstone/10 transition-colors hover:bg-moonstone/20 disabled:cursor-not-allowed disabled:opacity-50"
+              >
                 <Minus className="size-6 text-moonstone" />
               </button>
             </div>

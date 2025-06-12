@@ -82,7 +82,6 @@ const PictureAndVideosForm = () => {
           storeId: store.id,
           status: "DRAFT",
         });
-        console.log("RESPONSE", response)
         setId(response.data.id);
         if (response.success) {
           router.push(`/seller/my-store/product/add/units-and-dimensions?id=${response.data.id}`);

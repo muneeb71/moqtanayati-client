@@ -5,7 +5,6 @@ import api from "../axios";
 
 export async function updateUserProfile({ userId, data }) {
   try {
-    console.log("USER ID", userId);
     const response = await api.put("sellers/profile/" + userId, data);
     const userData = response.data.data;
 

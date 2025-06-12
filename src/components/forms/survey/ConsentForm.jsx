@@ -34,7 +34,6 @@ const ConsentForm = ({ userId }) => {
       homeSupplies,
       consent,
     };
-    console.log("USER", surveyData);
     const response = await saveSellerSurvey(surveyData);
     if (response.success) {
       router.push("/seller");

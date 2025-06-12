@@ -3,7 +3,6 @@
 import api from "../axios";
 
 export async function updateProductUnitAndDimensions(id, data) {
-  console.log("ID", id, data);
   try {
     const formData = new FormData();
 
