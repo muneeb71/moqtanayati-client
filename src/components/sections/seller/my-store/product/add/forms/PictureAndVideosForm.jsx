@@ -80,7 +80,7 @@ const PictureAndVideosForm = () => {
           name: productTitle,
           description: productDescription,
           storeId: store.id,
-          isDraft: true,
+          status: "DRAFT",
         });
         console.log("RESPONSE", response)
         setId(response.data.id);

@@ -3,10 +3,27 @@ import Image from "next/image";
 import Link from "next/link";
 
 const StoreProductCard = ({ item }) => {
+  let url = "/seller/my-store/product/" + item.id;
+  if (item.status === "DRAFT") {
+    if (
+      item.stock === 0 ||
+      item.weight === null ||
+      item.length === null ||
+      item.width === null ||
+      item.categories.length === 0 ||
+      item.condition === null ||
+      item.conditionRating === null
+    ) {
+      url = "/seller/my-store/product/add/units-and-dimensions?id=" + item.id;
+    } else {
+      url = "/seller/my-store/product/add/price-and-shipping?id=" + item.id;
+    }
+  }
+
   return (
     <div className="flex w-full items-center justify-between gap-5">
       <Link
-        href={"/seller/my-store/product/" + item.id}
+        href={url}
         className="flex h-full w-full items-center gap-3 text-start"
       >
         <div className="size-36 min-w-36 overflow-hidden rounded-2xl border border-black/10">
@@ -29,11 +46,9 @@ const StoreProductCard = ({ item }) => {
             <h1 className="max-w-[80%] truncate pr-5 text-2xl font-medium text-davyGray">
               {item.name}
             </h1>
-            {item.isDraft && (
-              <div className="w-fit rounded-full bg-moonstone px-2 py-1 text-xs text-white">
-                Draft
-              </div>
-            )}
+            <div className="w-fit rounded-full bg-moonstone px-2 py-1 text-xs text-white">
+              {item.status === "DRAFT" ? "Draft" : item.pricingFormat}
+            </div>
           </div>
           {item.price ? (
             <h1 className="text-3xl font-medium">${item.price?.toFixed(2)}</h1>
@@ -46,7 +61,9 @@ const StoreProductCard = ({ item }) => {
         <button className="grid size-10 place-items-center rounded-md bg-moonstone/10">
           <Plus className="size-6 text-moonstone" />
         </button>
-        <span className="text-2xl font-medium text-darkBlue">{item.stock}</span>
+        <span className="text-2xl font-medium text-darkBlue">
+          {item?.stock ? item?.stock : 0}
+        </span>
         <button className="grid size-10 place-items-center rounded-md bg-moonstone/10">
           <Minus className="size-6 text-moonstone" />
         </button>

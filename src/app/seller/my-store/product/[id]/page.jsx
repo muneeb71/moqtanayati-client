@@ -25,8 +25,8 @@ const ProductDetailsPage = async ({ params }) => {
         </div>
         <div className="grid w-full gap-10 py-10 md:grid-cols-2">
           <div className="flex flex-col gap-5">
-            <ProductDetailsSlider />
-            <DisableProductDialog />
+            <ProductDetailsSlider images={product.images} />
+            <DisableProductDialog product={product} />
           </div>
           <StoreProductDetailsCard item={product} />
         </div>

@@ -204,7 +204,7 @@ const PriceAndShippingForm = () => {
           minimumOffer: minimumOffer ? parseFloat(minimumOffer) : 0,
           autoAccept: autoAccept ? parseFloat(autoAccept) : 0,
           storeId: store.id,
-          isDraft: false,
+          status: "ACTIVE"
         };
 
         const response = await updateProductPriceAndShipping(id, productData);

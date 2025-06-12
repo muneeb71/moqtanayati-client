@@ -19,7 +19,7 @@ export async function addProduct(data) {
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("storeId", data.storeId);
-    formData.append("isDraft", data.isDraft);
+    formData.append("status", data.status);
 
     const response = await api.post("products/", formData, {
       headers: {

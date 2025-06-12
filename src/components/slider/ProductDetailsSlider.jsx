@@ -1,18 +1,16 @@
 "use client";
 
-import { dummyItems } from "@/lib/dummy-items";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 
-const ProductDetailsSlider = () => {
+const ProductDetailsSlider = ({ images }) => {
   const [selectedItemIndex, setSelectedIndex] = useState(3);
   const sliderRef = useRef(null);
   const autoSlideRef = useRef(null);
 
   const goToNextSlide = () => {
     setSelectedIndex((prevIndex) =>
-      prevIndex === dummyItems.length - 1 ? 0 : prevIndex + 1,
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1,
     );
   };
 
@@ -87,14 +85,14 @@ const ProductDetailsSlider = () => {
         ref={sliderRef}
         className="no-scrollbar flex h-full max-h-[461px] min-w-[103px] max-w-[94vw] justify-between gap-2.5 self-center overflow-scroll sm:max-w-[400px] md:max-w-full lg:flex-col"
       >
-        {dummyItems.map((item, index) => (
+        {images.map((image, index) => (
           <button
             onClick={() => setSelectedIndex(index)}
             className="grid min-h-[84px] w-[103px] min-w-[103px] place-items-center overflow-hidden rounded-[10px] border border-transparent bg-black/10 transition-all duration-200 ease-in hover:border-moonstone"
             key={index}
           >
             <Image
-              src={item.image}
+              src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image}
               width={500}
               height={500}
               alt="item"
@@ -107,7 +105,10 @@ const ProductDetailsSlider = () => {
       <div className="flex w-full flex-col items-start gap-2">
         <div className="grid aspect-square w-full max-w-[470px] place-items-center overflow-hidden rounded-[20px] border border-gray-200/5 bg-black/10">
           <Image
-            src={dummyItems[selectedItemIndex].image}
+            src={
+              process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
+              images[selectedItemIndex]
+            }
             width={500}
             height={500}
             alt="item"

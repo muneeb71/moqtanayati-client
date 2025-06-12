@@ -3,7 +3,42 @@ import QaSectionSheet from "../../../../landing/product-details/dialogs/qa-sheet
 import { productHeartIcon } from "@/assets/icons/seller-icons";
 import { Minus, Plus } from "lucide-react";
 
+const formatTimeAgo = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now - date) / 1000);
+
+  if (diffInSeconds < 60) {
+    return "just now";
+  }
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes}min ago`;
+  }
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    return `${diffInHours}hr ago`;
+  }
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 30) {
+    return `${diffInDays}day${diffInDays === 1 ? "" : "s"} ago`;
+  }
+
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (diffInMonths < 12) {
+    return `${diffInMonths}month${diffInMonths === 1 ? "" : "s"} ago`;
+  }
+
+  const diffInYears = Math.floor(diffInMonths / 12);
+  return `${diffInYears}year${diffInYears === 1 ? "" : "s"} ago`;
+};
+
+
 const StoreProductDetailsCard = ({ item }) => {
+  console.log("ITEM", item);
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full max-w-[404px] flex-col gap-[52px]">
@@ -15,18 +50,25 @@ const StoreProductDetailsCard = ({ item }) => {
                   {item?.name}
                 </h2>
                 <h1 className="text-[24px] font-medium leading-[40px] md:text-[28.8px] md:leading-[43px]">
-                  ${item?.price?.toFixed(2)}
+                  $
+                  {item?.price
+                    ? item.price.toFixed(2)
+                    : item.buyItNow.toFixed(2)}
                 </h1>
               </div>
               <div className="flex flex-col justify-end gap-2.5">
                 <span className="text-right text-[14.4px] leading-[21px] text-battleShipGray">
-                  1hr ago
+                  {formatTimeAgo(item?.createdAt)}
                 </span>
                 <QaSectionSheet />
               </div>
             </div>
             <div className="flex w-full items-end justify-between gap-5">
-              <ProductDetailsAuctionTimer />
+              {item.price ? (
+                "Fixed Price"
+              ) : (
+                <ProductDetailsAuctionTimer item={item} />
+              )}
               <div className="flex items-center gap-2 text-2xl font-semibold text-[#F16D6F]">
                 {productHeartIcon}
                 112
@@ -41,11 +83,13 @@ const StoreProductDetailsCard = ({ item }) => {
           </div>
           <div className="flex w-fit flex-col gap-2">
             <span className="text-2xl font-medium text-black/70">Stock</span>
-            <div className="flex items-center gap-2 justify-between py-1">
+            <div className="flex items-center justify-between gap-2 py-1">
               <button className="grid size-10 place-items-center rounded-md bg-moonstone/10">
                 <Plus className="size-6 text-moonstone" />
               </button>
-              <span className="text-2xl font-medium text-darkBlue">{item?.stock}</span>
+              <span className="text-2xl font-medium text-darkBlue">
+                {item?.stock}
+              </span>
               <button className="grid size-10 place-items-center rounded-md bg-moonstone/10">
                 <Minus className="size-6 text-moonstone" />
               </button>

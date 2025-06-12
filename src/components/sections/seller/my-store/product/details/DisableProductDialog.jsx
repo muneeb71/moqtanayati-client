@@ -7,7 +7,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 
-const DisableProductDialog = () => {
+const DisableProductDialog = ({ product }) => {
   return (
     <div className="flex h-[72px] w-fit items-center justify-between gap-10 rounded-[15px] border border-delftBlue/10 px-4 py-3.5">
       <span className="text-[17px] font-medium text-battleShipGray">

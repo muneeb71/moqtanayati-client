@@ -6,7 +6,7 @@ export async function updateProductUnitAndDimensions(id, data) {
   console.log("ID", id, data);
   try {
     const formData = new FormData();
-    
+
     formData.append("stock", data.stock);
     formData.append("length", data.length);
     formData.append("width", data.width);
@@ -14,11 +14,8 @@ export async function updateProductUnitAndDimensions(id, data) {
     formData.append("weight", data.weight);
     formData.append("conditionRating", data.conditionRating);
     formData.append("condition", data.productCondition);
-    formData.append("isDraft", data.isDraft);
-    formData.append(
-      "categories",
-      JSON.stringify(data.productCategories),
-    );
+    formData.append("status", data.status);
+    formData.append("categories", JSON.stringify(data.productCategories));
 
     const response = await api.patch(`products/${id}`, formData, {
       headers: {
@@ -54,7 +51,7 @@ export async function updateProductUnitAndDimensions(id, data) {
 export async function updateProductPriceAndShipping(id, data) {
   try {
     const formData = new FormData();
-    
+
     formData.append("pricingFormat", data.pricingFormat);
     formData.append("price", data.price);
     formData.append("shippingMethod", data.shippingMethod);
@@ -66,8 +63,8 @@ export async function updateProductPriceAndShipping(id, data) {
     formData.append("domesticShippingType", data.domesticShippingType);
     formData.append("localPickup", data.localPickup);
     formData.append("isAuction", data.isAuction);
-    formData.append("isDraft", data.isDraft);
-    
+    formData.append("status", data.status);
+
     // Auction specific fields
     if (data.isAuction) {
       formData.append("auctionDuration", data.auctionDuration);

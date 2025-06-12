@@ -13,7 +13,23 @@ const DraftCard = ({ draft }) => {
     return now.getHours() - 1 + "hr ago";
   };
 
-  console.log(draft)
+  const handleRedirect = () => {
+    let url = "";
+    if (
+      draft.stock === 0 ||
+      draft.weight === null ||
+      draft.length === null ||
+      draft.width === null ||
+      draft.categories.length === 0 ||
+      draft.condition === null ||
+      draft.conditionRating === null
+    ) {
+      url = "/seller/my-store/product/add/units-and-dimensions?id=" + draft.id;
+    } else {
+      url = "/seller/my-store/product/add/price-and-shipping?id=" + draft.id;
+    }
+    router.push(url);
+  };
 
   return (
     <div
@@ -33,12 +49,12 @@ const DraftCard = ({ draft }) => {
           height={200}
           alt={draft.name}
           loading="lazy"
-          onClick={() => router.push("/product-details/" + draft.id)}
+          onClick={() => handleRedirect()}
         />
       </div>
       <div
         className="flex w-full cursor-pointer flex-col px-2.5 py-2"
-        onClick={() => router.push("/product-details/" + draft.id)}
+        onClick={() => handleRedirect()}
       >
         <div className="flex items-center justify-between">
           <span className="text-[21px] font-medium leading-[32px]">

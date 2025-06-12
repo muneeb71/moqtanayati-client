@@ -90,7 +90,7 @@ const UnitsAndDimensionsForm = () => {
           productCategories,
           productCondition,
           storeId: store.id,
-          isDraft: true,
+          status: "DRAFT",
         };
 
         const response = await updateProductUnitAndDimensions(id, productData);
