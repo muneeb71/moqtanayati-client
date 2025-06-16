@@ -102,42 +102,42 @@ export const headerDropdownLinks = [
   {
     title: "My Bids",
     icon: myBidsIcon,
-    href: "/my-bids/all",
+    href: "/buyer/my-bids/all",
   },
   {
     title: "Purchase History",
     icon: purchaseHistoryIcon,
-    href: "/profile/purchase-history/all",
+    href: "/buyer/profile/purchase-history/all",
   },
   {
     title: "Watchlist",
     icon: watchListIcon,
-    href: "/watchlist",
+    href: "/buyer/watchlist",
   },
   {
     title: "Auction Preferences",
     icon: auctionPreferencesIcon,
-    href: "/profile/auction-preferences",
+    href: "/buyer/profile/auction-preferences",
   },
   {
     title: "Payment Methods",
     icon: paymentMethodsIcon,
-    href: "/payment-methods/cards",
+    href: "/buyer/payment-methods/cards",
   },
   // {
   //   title: "Shipping Address",
   //   icon: shippingAddressIcon,
-  //   href: "/shipping-address",
+  //   href: "/buyer/shipping-address",
   // },
   {
     title: "Customer Support",
     icon: customerSupportIcon,
-    href: "/profile/settings/customer-support",
+    href: "/buyer/profile/settings/customer-support",
   },
   {
     title: "Help Center",
     icon: helpCenterIcon,
-    href: "/help-center/faqs/all",
+    href: "/buyer/help-center/faqs/all",
   },
 ];
 
