@@ -6,7 +6,7 @@ import {
   settingsIcon,
   usersIcon,
   reportIcon,
-  paymentIcon
+  paymentIcon,
 } from "@/assets/icons/admin-icons";
 import {
   githubIcon,
@@ -26,15 +26,15 @@ import {
 
 export const headerLinks = [
   {
-    href: "/",
+    href: "/buyer",
     title: "Home",
   },
   {
-    href: "/chats",
+    href: "/buyer/chats",
     title: "Chats",
   },
   {
-    href: "/auctions",
+    href: "/buyer/auctions",
     title: "Auctions",
   },
 ];
@@ -179,7 +179,7 @@ export const sellerDropdownList = [
     icon: helpCenterIcon,
     href: "/seller/help-center/faqs/all",
   },
-]
+];
 
 export const adminLinks = [
   {
@@ -208,7 +208,7 @@ export const adminLinks = [
   {
     title: "Payments",
     href: "/admin/payments",
-    icon: paymentIcon, 
+    icon: paymentIcon,
     subLinks: [
       { title: "Cash", href: "/admin/payment/cod" },
       { title: "Third Party", href: "/admin/payment/online" },
@@ -217,7 +217,7 @@ export const adminLinks = [
   {
     title: "Reports",
     href: "/admin/reports",
-    icon: reportIcon, 
+    icon: reportIcon,
     subLinks: [
       { title: "Buyer Reports", href: "/admin/reports/buyer" },
       { title: "Seller Reports", href: "/admin/reports/seller" },
@@ -231,7 +231,6 @@ export const adminLinks = [
   {
     title: "Settings",
     href: "/admin/settings",
-    icon: settingsIcon, 
+    icon: settingsIcon,
   },
 ];
-

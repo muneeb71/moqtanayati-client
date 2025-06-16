@@ -10,6 +10,7 @@ export async function logoutUser() {
   cookiesStore.delete("userId");
   cookiesStore.delete("role");
   cookiesStore.delete("survey");
+  cookiesStore.delete("storeId");
 
   try {
     await api.post("auth/logout");

@@ -12,6 +12,9 @@ export async function loginUser(email, password, role) {
 
     const data = response.data.data;
 
+    const responseProfile = await api.get("sellers/profile/" + data.user.id);
+    const profileData = responseProfile.data.data;
+
     const cookiesStore = await cookies();
 
     if (data.user.role.toLowerCase() !== role.toLowerCase()) {
@@ -36,6 +39,12 @@ export async function loginUser(email, password, role) {
     cookiesStore.set("survey", JSON.stringify(data.user.sellerSurvey), {
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
     });
+
+    if (profileData.store) {
+      cookiesStore.set("storeId", profileData.store.id, {
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      });
+    }
 
     return response.data;
   } catch (error) {

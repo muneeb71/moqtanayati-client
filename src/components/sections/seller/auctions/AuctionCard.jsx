@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -9,13 +8,23 @@ import { useState } from "react";
 const AuctionCard = ({
   id = 1,
   title = "",
-  price = 0,
+  bids = [],
   image,
   user = "test user",
   address = "",
   isFavourite = false,
 }) => {
   const router = useRouter();
+
+  const getHighestBid = () => {
+    return bids.reduce(
+      (highest, current) =>
+        !highest || current.amount > highest.amount ? current : highest,
+      null,
+    );
+  };
+
+  const [highestBid, setHighestBid] = useState(getHighestBid());
 
   return (
     <div
@@ -26,7 +35,7 @@ const AuctionCard = ({
     >
       <div className="rounded-top relative size-32 min-w-32 cursor-pointer">
         <Image
-          src={image}
+          src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image}
           width={800}
           height={200}
           alt={title}
@@ -43,27 +52,35 @@ const AuctionCard = ({
           12 <span className="text-xs text-russianViolet/70">Bidders</span>
         </div>
         <p className="max-w-36 truncate text-nowrap text-black/70">{title}</p>
-        <div className="flex flex-col justify-between">
+        {bids.length === 0 ? (
           <span className="text-[15px] leading-[23px] text-black/30">
-            Highest Bid
+            No Bids
           </span>
-          <div className="flex items-center gap-1.5">
-            <span className="text-xl font-medium">${price.toFixed(2)}</span>
-            <span className="text-xs text-black/30">by</span>
-            <Image
-              src="/static/dummy-user/1.jpeg"
-              width={20}
-              height={20}
-              alt="user"
-              quality={100}
-              loading="lazy"
-              className="rounded-full"
-            />
-            <span className="text-xs font-medium text-black/80">
-              Kathryn Murphy
+        ) : (
+          <div className="flex flex-col justify-between">
+            <span className="text-[15px] leading-[23px] text-black/30">
+              Highest Bid
             </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xl font-medium">
+                ${highestBid.amount.toFixed(2)}
+              </span>
+              <span className="text-xs text-black/30">by</span>
+              <Image
+                src="/static/dummy-user/1.jpeg"
+                width={20}
+                height={20}
+                alt="user"
+                quality={100}
+                loading="lazy"
+                className="rounded-full"
+              />
+              <span className="text-xs font-medium text-black/80">
+                {highestBid.bidder.name}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
         <div className="flex w-full items-center justify-end gap-1 px-2 pt-3">
           <span className="text-sm font-medium text-russianViolet">
             Review Auction
