@@ -1,7 +1,40 @@
 import { sellerChatIcon, starIcon } from "@/assets/icons/common-icons";
 import Image from "next/image";
 
-const SellerReviewCard = () => {
+const SellerReviewCard = ({seller}) => {
+  const calculateAverageRating = () => {
+    if (!seller?.reviews || !Array.isArray(seller.reviews) || seller.reviews.length === 0) {
+      return { average: 0, count: 0 };
+    }
+    
+    const totalRating = seller.reviews.reduce((sum, review) => sum + (review.rating || 0), 0);
+    const average = totalRating / seller.reviews.length;
+    return { average: Math.round(average * 10) / 10, count: seller.reviews.length };
+  };
+
+  const { average, count } = calculateAverageRating();
+  
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<span key={i} className="text-[#F3B95A]">{starIcon}</span>);
+    }
+    
+    if (hasHalfStar) {
+      stars.push(<span key="half" className="text-[#F3B95A]">{starIcon}</span>);
+    }
+    
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<span key={`empty-${i}`} className="text-silver">{starIcon}</span>);
+    }
+    
+    return stars;
+  };
+  
   return (
     <div className="flex w-full max-w-[404px] flex-col gap-3.5 rounded-[14px] bg-[#F8F7FB] p-3">
       <div className="flex justify-between gap-2">
@@ -19,20 +52,16 @@ const SellerReviewCard = () => {
           <div className="flex flex-col">
             <span className="text-[14.4px] text-black/50">Seller</span>
             <span className="text-[17px] font-medium leading-[25px] text-black/70">
-              Alex Jhons
+              {seller?.name}
             </span>
           </div>
         </div>
         <div className="flex flex-col">
           <div className="flex items-center gap-0.5">
-            <span className="text-[#F3B95A]">{starIcon}</span>
-            <span className="text-[#F3B95A]">{starIcon}</span>
-            <span className="text-[#F3B95A]">{starIcon}</span>
-            <span className="text-[#F3B95A]">{starIcon}</span>
-            <span className="text-silver">{starIcon}</span>
+            {renderStars(average)}
           </div>
           <p className="text-sm text-davyGray">
-            3.9 <span className="text-[10px]">(12 reviews)</span>
+            {average > 0 ? `${average} (${count} reviews)` : "No reviews yet"}
           </p>
         </div>
       </div>

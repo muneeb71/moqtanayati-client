@@ -42,7 +42,7 @@ const DraftCard = ({ draft }) => {
         <Image
           src={
             draft.images[0]
-              ? process.env.NEXT_PUBLIC_BACKEND_BASE_URL + draft.images[0]
+              ? draft.images[0] //process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
               : "/static/dummy-items/7.jpeg"
           }
           width={800}

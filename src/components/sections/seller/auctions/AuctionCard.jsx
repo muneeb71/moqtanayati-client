@@ -35,7 +35,7 @@ const AuctionCard = ({
     >
       <div className="rounded-top relative size-32 min-w-32 cursor-pointer">
         <Image
-          src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image}
+          src={image} //{process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image}
           width={800}
           height={200}
           alt={title}

@@ -20,6 +20,7 @@ const HeaderDropdown = () => {
     const response = await logoutUser();
     if (response.success) {
       router.push("/auth");
+      toast.success("Logged out successfully.")
     } else {
       toast.error(response.message || "Logout failed");
     }

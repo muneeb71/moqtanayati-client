@@ -4,8 +4,14 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useState } from "react";
 
-const BidCard = ({ item }) => {
+const BidCard = ({ item }) => {  
   const [favourite, setFavourite] = useState(item.isFavourite);
+  const highestBid = Math.max(...item.auction.bids.map(bid => bid.amount));
+  const myBidIsHighest = item.amount === highestBid;
+  let displayStatus = item.bidStatus;
+  if (item.auction.status === 'ENDED') {
+    displayStatus = myBidIsHighest ? 'Won' : 'Ongoing';
+  }
   return (
     <div
       className="grid h-full max-h-[138px] grid-cols-[96px_1fr] overflow-hidden rounded-[12px] bg-white sm:grid-cols-[126px_1fr]"
@@ -15,7 +21,7 @@ const BidCard = ({ item }) => {
     >
       <div className="h-full w-full overflow-hidden">
         <Image
-          src={item.image}
+          src={item?.auction?.product?.images[0]}
           width={200}
           height={200}
           className="h-full w-full object-cover"
@@ -26,7 +32,7 @@ const BidCard = ({ item }) => {
         <div className="flex justify-between gap-2">
           <div className="flex flex-col px-1.5">
             <span className="max-w-[200px] truncate text-[16.72px] font-medium leading-[25px]">
-              Iphone 6 plus
+              {item?.auction?.product?.name}
             </span>
             <div className="flex items-center gap-2">
               <span className="text-[11.9px] font-medium leading-[18px] text-black/30">
@@ -35,7 +41,7 @@ const BidCard = ({ item }) => {
               <div className="flex items-center gap-1">
                 <div className="size-[19.1px] min-h-[19.1px] min-w-[19.1px] overflow-hidden rounded-full">
                   <Image
-                    src="/static/dummy-user/1.jpeg"
+                    src={item?.auction?.seller?.avatar || '/static/user.jpeg'}
                     width={100}
                     height={100}
                     className="h-full w-full object-cover"
@@ -43,7 +49,7 @@ const BidCard = ({ item }) => {
                   />
                 </div>
                 <span className="text-[11.9px] font-medium leading-[18px] text-black/70">
-                  Kathryn Murphy
+                  {item?.auction?.seller?.name}
                 </span>
               </div>
             </div>
@@ -65,21 +71,21 @@ const BidCard = ({ item }) => {
               Highest Bid
             </span>
             <span className="sm:text-lg font-medium">
-              $350.00
+              ${highestBid}
             </span>
           </div>
           <div
             className={cn(
-              item.bidStatus == "Won"
+              displayStatus == "Won"
                 ? "bg-moonstone/10 text-moonstone"
-                : item.bidStatus == "Active"
+                : displayStatus == "Active"
                   ? "bg-[#E8F5FF] text-[#1B97FC]"
                   : "bg-faluRed bg-faluRed/10",
               "h-fit rounded-[8px] px-3 py-1 sm:px-5 sm:py-2 text-sm font-medium leading-[21px]",
               "transition-all duration-150 ease-in",
             )}
           >
-            {item.bidStatus}
+            {displayStatus}
           </div>
         </div>
       </div>

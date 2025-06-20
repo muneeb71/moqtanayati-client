@@ -14,7 +14,7 @@ const FurnitureSection = () => {
           <CustomLink className="md:text-[21.8px]">See All</CustomLink>
         </div>
       </div>
-      <ItemSlider items={dummyItems} />
+      <ItemSlider items={dummyItems} section={"furniture"}/>
     </div>
   );
 };

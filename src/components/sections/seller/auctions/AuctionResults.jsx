@@ -41,7 +41,7 @@ const AuctionResults = ({ auctionType }) => {
         </button>
       </div>
       <div className="grid w-full grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 md:grid-cols-3">
-        {filteredAuctions.map((auction, index) => (
+        {filteredAuctions?.map((auction, index) => (
           <AuctionCard
             key={index}
             id={auction.id}

@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -25,7 +26,7 @@ import Image from "next/image";
 import { useState } from "react";
 import CreditCard from "../payment-methods/CreditCard";
 
-const CheckoutSheet = ({ itemCount = 0 }) => {
+const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
   const tabs = [
     "Items",
     "Select Payment Methods",
@@ -40,6 +41,11 @@ const CheckoutSheet = ({ itemCount = 0 }) => {
   const [selectedShippingOption, setSelectedShippingOption] = useState(
     shippingOptions[0],
   );
+
+  const handlePayNow = () => {
+    setSelectedTab(tabs[1]);
+    orderPlaced(true);
+  };
 
   return (
     <Sheet>
@@ -61,7 +67,7 @@ const CheckoutSheet = ({ itemCount = 0 }) => {
           <X className="absolute left-5 top-5 size-7 cursor-pointer" />
         </SheetClose>
         {selectedTab === tabs[0] ? (
-          <div className="flex h-[93%] flex-col">
+          <div className="flex h-[93%] flex-col overflow-auto pb-10">
             <div className="flex flex-col gap-2 px-10 py-5">
               <h1 className="text-lg font-medium text-delftBlue">
                 {selectedTab}
@@ -184,7 +190,7 @@ const CheckoutSheet = ({ itemCount = 0 }) => {
                 </span>
               </div>
               <button
-                onClick={() => setSelectedTab(tabs[1])}
+                onClick={handlePayNow}
                 className="rounded-lg bg-moonstone/80 px-10 py-3 text-white hover:bg-moonstone"
               >
                 Pay Now

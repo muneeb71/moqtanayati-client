@@ -2,15 +2,59 @@
 
 import BidderCard from "@/components/cards/BidderCard";
 import AutoBidDialog from "./dialogs/AutoBidDialog";
-import { dummyBidders } from "@/lib/dummy-bidders";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import UpdateBidDialog from "./dialogs/UpdateBidDialog";
 import WithdrawBidDialog from "./dialogs/WithdrawBidDialog";
+import { usePathname } from "next/navigation";
+import getBidById from "@/lib/api/auctions/getBid";
+import bidOnAuction from "@/lib/api/auctions/bid";
+import toast from "react-hot-toast";
 
 const BiddersSection = () => {
   const [selectedBidder, setSelectedBidder] = useState(null);
   const [bidAmount, setBidAmount] = useState(0);
+  const [bids, setBids] = useState(null);
+  const path = usePathname();
+  const id = path.split("/").splice(-1)[0];
+
+  const getProductData = async () => {
+    try {
+      const res = await getBidById(id);
+
+      if (res?.success) {
+        setBids(res.data);
+      } else {
+        console.error(
+          "Failed to fetch bid data:",
+          res?.message || "Unknown error",
+        );
+      }
+    } catch (error) {
+      console.error("Error in getProductData:", error);
+    }
+  };
+
+  const handlePlaceBid = async () => {
+    try {
+      const res = await bidOnAuction({ productId: id, amount: Number(bidAmount) });
+      if (res.success) {
+        toast.success(res.message || "Bid placed successfully!");
+        getProductData();
+      } else {
+        toast.error(res.message || "Failed to place bid.");
+      }
+    } catch (err) {
+      toast.error(
+        err?.response?.data?.message || err.message || "Failed to place bid.",
+      );
+      console.error("Failed to place bid:", err);
+    }
+  };
+
+  useEffect(() => {
+    getProductData();
+  }, []);
 
   useEffect(() => {
     if (selectedBidder) {
@@ -50,6 +94,7 @@ const BiddersSection = () => {
                 className="w-full text-nowrap text-sm"
                 bidAmount={bidAmount}
                 setBidAmount={setBidAmount}
+                updateBid={handlePlaceBid}
               />
             </div>
             <WithdrawBidDialog />
@@ -66,18 +111,18 @@ const BiddersSection = () => {
           <h1 className="text-[32px] font-medium text-black/80">
             Bidders{" "}
             <span className="text-[18px] text-moonstone">
-              ({dummyBidders.length})
+              ({bids?.length || 0})
             </span>
           </h1>
           <div className="grid gap-2 sm:grid-cols-2 sm:gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-5">
-            {dummyBidders.map((bidder, index) => (
+            {bids?.length > 0 ? bids?.map((bidder, index) => (
               <BidderCard
                 key={index}
                 bidder={bidder}
                 selectedBidder={selectedBidder}
                 setSelectedBidder={setSelectedBidder}
               />
-            ))}
+            )) : <p className="w-full text-red-400">No Bids Yet!</p>}
           </div>
         </div>
       </div>
@@ -97,11 +142,19 @@ const BiddersSection = () => {
                 onChange={(e) => setBidAmount(e.target.value)}
                 className="h-[55px] w-full rounded-[6.7px] bg-[#F8F7FB] px-4 focus:outline-moonstone"
               />
-              <button className="flex h-[55px] items-center justify-center rounded-[6.7px] bg-moonstone px-8 text-[17px] font-medium text-white transition-all duration-200 ease-in hover:bg-delftBlue">
+              <button
+                type="button"
+                className="flex h-[55px] items-center justify-center rounded-[6.7px] bg-moonstone px-8 text-[17px] font-medium text-white transition-all duration-200 ease-in hover:bg-delftBlue"
+                onClick={()=>handlePlaceBid()}
+              >
                 Bid
               </button>
             </div>
-            <AutoBidDialog bidAmount={bidAmount} setBidAmount={setBidAmount} />
+            <AutoBidDialog
+              bidAmount={bidAmount}
+              setBidAmount={setBidAmount}
+              handlePlaceBid={() => {}}
+            />
           </div>
         </div>
       )}

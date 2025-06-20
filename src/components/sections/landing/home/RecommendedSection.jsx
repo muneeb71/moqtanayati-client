@@ -14,7 +14,7 @@ const RecommendedSection = ({ title = "Recommended For You" }) => {
           <CustomLink className="md:text-[21.8px]">See All</CustomLink>
         </div>
       </div>
-      <ItemSlider items={dummyItems} />
+      <ItemSlider items={dummyItems} section={"recommendations"}/>
     </div>
   );
 };

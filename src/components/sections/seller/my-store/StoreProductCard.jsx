@@ -71,7 +71,7 @@ const StoreProductCard = ({ item }) => {
           <Image
             src={
               item.images && item.images[0] !== ""
-                ? process.env.NEXT_PUBLIC_BACKEND_BASE_URL + item.images[0]
+                ? item.images[0] //{/*process.env.NEXT_PUBLIC_BACKEND_BASE_URL +*/}
                 : "/static/dummy-items/1.jpeg"
             }
             alt="image"

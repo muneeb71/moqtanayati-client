@@ -3,7 +3,10 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import BidPopup from "../popup/BidPopup";
+import bidOnAuctionApi from "@/lib/api/auctions/bid";
+import toast from "react-hot-toast";
 
 const MenuCard = ({
   id = 1,
@@ -17,69 +20,96 @@ const MenuCard = ({
 }) => {
   const router = useRouter();
   const [favourite, setFavourite] = useState(isFavourite);
+  const [bidPopup, setBidPopup] = useState(false);
+  const [bidAmount, setBidAmount] = useState(price);
+  const [latestBid, setLatestBid] = useState(price);
 
   const getHourAgo = () => {
     const now = new Date();
     return now.getHours() - 1 + "hr ago";
   };
 
-  return (
-    <div
-      className="flex w-full overflow-hidden rounded-[12px]"
-      style={{
-        boxShadow: "0px 0px 10px 2px #0000001A",
-      }}
-    >
-      <div className="rounded-top relative w-1/4 cursor-pointer">
-        <Image
-          src={image}
-          width={800}
-          height={200}
-          alt={title}
-          loading="lazy"
-          className="h-full w-full object-cover"
-          onClick={() => router.push("/product-details/" + id)}
-        />
-      </div>
-      <div
-        className="flex w-3/4 cursor-pointer flex-col px-2.5 py-2"
-        onClick={() => router.push("/product-details/" + id)}
-      >
-        <div className="flex flex-col border-b border-black border-opacity-[0.02] pb-1">
-          <p className="max-w-[241px] truncate text-nowrap text-[18px] leading-[27px] text-black/70">
-            {title}
-          </p>
-          <div className="flex gap-2 text-xs">
-            <p>By</p>
-            <p>{user}</p>
-          </div>
-        </div>
-        <div className="flex items-center justify-between pt-1">
-          <div className="flex flex-col items-center justify-between">
-            <span className="text-[15px] leading-[23px] text-black/30">
-              Highest Bid
-            </span>
-            <span className="text-[21px] font-medium leading-[32px]">
-              ${price.toFixed(2)}
-            </span>
-            {/* <button
-          className={cn(
-            "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
-            favourite ? "text-[#F16D6F]" : "text-white",
-            )}
-            onClick={() => setFavourite(!favourite)}
-            >
-            {heartIcon}
-            </button> */}
-          </div>
-          <button> Bid Now </button>
-        </div>
+  const bidOnAuction = async () => {
+    try {
+      const res = await bidOnAuctionApi({ productId: id, amount: bidAmount });
+      if (res.success) {
+        setLatestBid(res.data.amount);
+        setBidPopup(false);
+        toast.success(res.message || "Bid placed successfully!");
+      } else {
+        toast.error(res.message || "Failed to place bid.");
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message || err.message || "Failed to place bid.");
+      console.error("Failed to place bid:", err);
+    }
+  };
 
-        {/* <span className="max-w-[241px] truncate text-nowrap text-[15px] leading-[23px] text-black/30">
-          {address}
-        </span> */}
+  useEffect(() => {
+    if (!bidPopup) setBidAmount(latestBid);
+  }, [bidPopup, latestBid]);
+
+  return (
+    <>
+      <div
+        className="flex w-full overflow-hidden rounded-[12px] cursor-pointer"
+        style={{
+          boxShadow: "0px 0px 10px 2px #0000001A",
+        }}
+        onClick={() => router.push("/buyer/product-details/" + id)}
+      >
+        <div className="rounded-top relative w-1/4">
+          <Image
+            src={image}
+            width={800}
+            height={200}
+            alt={title}
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
+        </div>
+        <div className="flex w-3/4 flex-col px-2.5 py-2">
+          <div className="flex flex-col border-b border-black border-opacity-[0.02] pb-1">
+            <p className="max-w-[241px] truncate text-nowrap text-[18px] leading-[27px] text-black/70">
+              {title}
+            </p>
+            <div className="flex gap-2 text-xs">
+              <p>By</p>
+              <p>{user}</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between pt-1">
+            <div className="flex flex-col items-center justify-between">
+              <span className="text-[15px] leading-[23px] text-black/30">
+                Highest Bid
+              </span>
+              <span className="text-[21px] font-medium leading-[32px]">
+                ${latestBid?.toFixed(2)}
+              </span>
+            </div>
+            <button
+              className="bg-moonstone text-white px-4 py-2 rounded-lg hover:bg-moonstone/80 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                setBidPopup(true);
+              }}
+              tabIndex={0}
+            >
+              Bid Now
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+      {bidPopup && (
+        <BidPopup
+          open={bidPopup}
+          handleBid={bidOnAuction}
+          bidAmount={bidAmount}
+          onBidChange={setBidAmount}
+          onOpenChange={()=>setBidPopup(false)}
+        />
+      )}
+    </>
   );
 };
 

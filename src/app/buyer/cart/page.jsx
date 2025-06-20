@@ -1,13 +1,35 @@
 "use client";
 
+import OrderPlacedPopup from "@/components/popup/OrderPlacedPopup";
 import CheckoutSheet from "@/components/sections/landing/cart/CheckoutSheet";
+import { getCart } from "@/lib/api/cart/getCart";
 import { dummyCart } from "@/lib/dummyCart";
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const CartPage = () => {
   const [cart, setCart] = useState(dummyCart);
+  const [isOrderPlaced, setOrderPlaced] = useState(false);
+
+  const getCartData = async () => {
+    try {
+      const res = await getCart();
+      if (res.success) {
+        setCart(res.data);
+      } else {
+        console.error('Failed to fetch cart:', res.error);
+      }
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+    }
+  }
+
+  useEffect(() => {
+    getCartData();
+  }, []);
+  
+  const placeOrder = () => setOrderPlaced(!isOrderPlaced)
 
   const getItemsCount = () => {
     let count = 0;
@@ -101,10 +123,11 @@ const CartPage = () => {
               <span className="text-xl text-black/40">Grand Total</span>
               <h1 className="text-4xl font-medium">$3040.00</h1>
             </div>
-            <CheckoutSheet itemCount={getItemsCount()} />
+              <CheckoutSheet itemCount={getItemsCount()} orderPlaced={placeOrder}/>
           </div>
         </div>
       </div>
+      {isOrderPlaced && <OrderPlacedPopup orderPlaced={placeOrder}/>}
     </div>
   );
 };

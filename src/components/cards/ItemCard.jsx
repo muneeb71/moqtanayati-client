@@ -36,7 +36,7 @@ const ItemCard = ({
           height={200}
           alt={title}
           loading="lazy"
-          onClick={() => router.push("/product-details/" + id)}
+          onClick={() => router.push("/buyer/product-details/" + id)}
         />
         <button
           className={cn(
@@ -50,7 +50,7 @@ const ItemCard = ({
       </div>
       <div
         className="flex w-full cursor-pointer flex-col px-2.5 py-2"
-        onClick={() => router.push("/product-details/" + id)}
+        onClick={() => router.push("/buyer/product-details/" + id)}
       >
         <div className="flex items-center justify-between">
           <span className="text-[21px] font-medium leading-[32px]">

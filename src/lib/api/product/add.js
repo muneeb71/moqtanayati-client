@@ -27,8 +27,6 @@ export async function addProduct(data) {
       },
     });
 
-    console.log("RESPONSE", response)
-
     if (!response.data) {
       return {
         success: false,

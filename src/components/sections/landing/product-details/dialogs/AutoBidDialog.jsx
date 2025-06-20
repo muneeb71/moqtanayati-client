@@ -14,10 +14,11 @@ import InputField from "@/components/form-fields/InputField";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-const AutoBidDialog = ({ className = "", bidAmount, setBidAmount }) => {
+const AutoBidDialog = ({ className = "", bidAmount, setBidAmount, handlePlaceBid }) => {
   const [newAmount, setNewAmount] = useState(0);
   const handleConfirm = () => {
     setBidAmount(newAmount);
+    handlePlaceBid();
   };
   return (
     <Dialog>

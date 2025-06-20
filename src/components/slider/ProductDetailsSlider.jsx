@@ -92,7 +92,7 @@ const ProductDetailsSlider = ({ images }) => {
             key={index}
           >
             <Image
-              src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image}
+              src={image} // process.env.NEXT_PUBLIC_BACKEND_BASE_URL + 
               width={500}
               height={500}
               alt="item"
@@ -106,8 +106,7 @@ const ProductDetailsSlider = ({ images }) => {
         <div className="grid aspect-square w-full max-w-[470px] place-items-center overflow-hidden rounded-[20px] border border-gray-200/5 bg-black/10">
           <Image
             src={
-              process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
-              images[selectedItemIndex]
+              images[selectedItemIndex] //process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
             }
             width={500}
             height={500}
