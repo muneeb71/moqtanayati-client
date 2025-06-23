@@ -2,17 +2,36 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import { cn } from "@/lib/utils";
+import { addWatchlist } from "@/lib/api/watchlist/addWatchlist";
+import toast from "react-hot-toast";
+import { getWatchlistById } from "@/lib/api/watchlist/getWatchlistById";
+import { removeFromWatchlist } from "@/lib/api/watchlist/removeWatchlist";
 
-const ProductDetailsSlider = ({ images }) => {
+const ProductDetailsSlider = ({ images, id }) => {
   const [selectedItemIndex, setSelectedIndex] = useState(3);
   const sliderRef = useRef(null);
   const autoSlideRef = useRef(null);
+  const [favourite, setFavourite] = useState(false);
+  const [auctionId, setAuctionId] = useState();
 
   const goToNextSlide = () => {
     setSelectedIndex((prevIndex) =>
       prevIndex === images.length - 1 ? 0 : prevIndex + 1,
     );
   };
+
+  const getWatchlistStatus = async () => {
+    const auction = await getWatchlistById(id);
+    if (auction?.data?.success) {
+      setFavourite(true);
+      setAuctionId(auction?.data?.data?.auctionId);
+    }
+  };
+
+  useEffect(() => {
+    getWatchlistStatus();
+  }, []);
 
   useEffect(() => {
     autoSlideRef.current = setInterval(goToNextSlide, 4000);
@@ -79,6 +98,31 @@ const ProductDetailsSlider = ({ images }) => {
 
   useEffect(handleDrag, []);
 
+  const addToWatchlist = async () => {
+    try {
+      if (favourite) {
+
+        const res = await removeFromWatchlist(auctionId);
+        if (res?.data?.success) {
+          setFavourite(false);
+          toast.success("Removed from Watchlist")
+        }
+      } else {
+        const res = await addWatchlist(id);
+        if (res?.data?.success) {
+          setFavourite(true);
+          setAuctionId(res?.data?.data?.auctionId)
+          toast.success("Item Added to Watchlist.");
+        } else {
+          toast.error("Failed to add item to Watchlist.");
+        }
+      }
+    } catch (error) {
+      console.error("Add to watchlist error:", error);
+      toast.error("An error occurred while adding to Watchlist.");
+    }
+  };
+
   return (
     <div className="flex flex-col-reverse items-center gap-5 lg:flex-row">
       <div
@@ -92,7 +136,7 @@ const ProductDetailsSlider = ({ images }) => {
             key={index}
           >
             <Image
-              src={image} // process.env.NEXT_PUBLIC_BACKEND_BASE_URL + 
+              src={image} // process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
               width={500}
               height={500}
               alt="item"
@@ -103,7 +147,7 @@ const ProductDetailsSlider = ({ images }) => {
         ))}
       </div>
       <div className="flex w-full flex-col items-start gap-2">
-        <div className="grid aspect-square w-full max-w-[470px] place-items-center overflow-hidden rounded-[20px] border border-gray-200/5 bg-black/10">
+        <div className="relative grid aspect-square w-full max-w-[470px] place-items-center overflow-hidden rounded-[20px] border border-gray-200/5 bg-black/10">
           <Image
             src={
               images[selectedItemIndex] //process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
@@ -114,10 +158,34 @@ const ProductDetailsSlider = ({ images }) => {
             loading="lazy"
             className="h-full w-full object-cover"
           />
+          <button
+            className={cn(
+              "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
+              favourite ? "text-[#F16D6F]" : "text-white",
+            )}
+            onClick={addToWatchlist}
+          >
+            {heartIcon}
+          </button>
         </div>
       </div>
     </div>
   );
 };
+
+const heartIcon = (
+  <svg
+    width="31"
+    height="25"
+    viewBox="0 0 31 25"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M0.400391 8.3145C0.400391 15.2316 6.55189 18.9176 11.0549 22.2169C12.6439 23.3812 14.1744 24.4773 15.7048 24.4773C17.2353 24.4773 18.7657 23.3812 20.3547 22.2169C24.8578 18.9176 31.0092 15.2316 31.0092 8.3145C31.0092 1.39736 22.5915 -3.50813 15.7048 3.14192C8.81807 -3.50813 0.400391 1.39736 0.400391 8.3145Z"
+      fill="currentColor"
+    />
+  </svg>
+);
 
 export default ProductDetailsSlider;

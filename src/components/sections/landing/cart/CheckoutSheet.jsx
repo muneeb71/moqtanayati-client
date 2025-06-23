@@ -26,7 +26,7 @@ import Image from "next/image";
 import { useState } from "react";
 import CreditCard from "../payment-methods/CreditCard";
 
-const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
+const CheckoutSheet = ({ itemCount = 0, orderPlaced, cart, user }) => {
   const tabs = [
     "Items",
     "Select Payment Methods",
@@ -36,7 +36,6 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
   const shippingOptions = ["Option 1", "Option 2", "Option 3"];
   const cards = ["Card 1", "Card 2", "Card 3"];
   const [selectedTab, setSelectedTab] = useState("Items");
-  const [cart, setCart] = useState(dummyCart);
   const [selectedCard, setSelectedCard] = useState(cards[0]);
   const [selectedShippingOption, setSelectedShippingOption] = useState(
     shippingOptions[0],
@@ -46,6 +45,12 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
     setSelectedTab(tabs[1]);
     orderPlaced(true);
   };
+
+  const subtotal = cart.reduce((total, item) => {
+    return total + item.quantity * item.price;
+  }, 0);
+
+  const tax = 40;
 
   return (
     <Sheet>
@@ -72,7 +77,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
               <h1 className="text-lg font-medium text-delftBlue">
                 {selectedTab}
               </h1>
-              {cart.map((item, index) => (
+              {cart?.map((item, index) => (
                 <div
                   className="flex w-full items-center justify-between"
                   key={index}
@@ -80,7 +85,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                   <div className="flex h-full w-full items-center gap-4">
                     <div className="size-[84px] overflow-hidden rounded-lg">
                       <Image
-                        src={item.image}
+                        src={item?.product?.images[0]}
                         width={160}
                         height={160}
                         alt="item"
@@ -91,33 +96,33 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                     <div className="flex h-full flex-col justify-between py-3">
                       <div className="flex flex-col gap-1">
                         <h1 className="max-w-48 truncate text-sm font-medium">
-                          {item.title}
+                          {item?.product?.name}
                         </h1>
                         <div className="flex items-center gap-2 text-[10px]">
                           <span className="text-silver">by</span>
                           <div className="size-4 overflow-hidden rounded-full">
                             <Image
-                              src={item.seller.image}
+                              src={user?.avatar || '/static/user.jpeg'}
                               width={160}
                               height={160}
                               alt="item"
                               loading="lazy"
-                              className="object-cover"
+                              className="object-cover w-40 h-40 rounded-full"
                             />
                           </div>
                           <span className="text-black/70">
-                            {item.seller.name}
+                            {user?.name}
                           </span>
                         </div>
                       </div>
                       <span className="font-medium text-black/80">
-                        ${item.price.toFixed(2)}
+                        ${item?.price.toFixed(2)}
                       </span>
                     </div>
                   </div>
                   <div className="flex h-full flex-col items-center justify-center">
                     <span className="grid size-8 place-items-center rounded-full bg-russianViolet text-xs text-white">
-                      {item.quantity}x
+                      {item?.quantity}x
                     </span>
                   </div>
                 </div>
@@ -158,8 +163,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
               <div className="flex flex-col gap-1 rounded-2xl border border-black/10 px-5 py-5">
                 <h1 className="text-sm font-medium">Home</h1>
                 <div className="max-w-[90%] text-xs text-battleShipGray">
-                  123 Imaginary Street, Fictitious City, Makebelieve County,
-                  Dreamland 56789
+                  {user?.address}
                 </div>
               </div>
               <p className="py-2 text-xs text-battleShipGray">
@@ -170,11 +174,11 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 <h1 className="font-medium text-delftBlue">Order Summary</h1>
                 <div className="flex w-full items-center justify-between">
                   <span className="text-sm">Subtotal</span>
-                  <span className="text-sm">$3040</span>
+                  <span className="text-sm">${subtotal}</span>
                 </div>
                 <div className="flex w-full items-center justify-between">
                   <span className="text-sm">Tax</span>
-                  <span className="text-sm">$40</span>
+                  <span className="text-sm">${tax}</span>
                 </div>
                 <div className="flex w-full items-center justify-between">
                   <span className="text-sm">Delivery</span>
@@ -186,7 +190,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
               <div className="flex flex-col">
                 <h2 className="text-xl text-battleShipGray">Grand Total</h2>
                 <span className="text-3xl font-medium text-black/80">
-                  $1240.00
+                  ${(subtotal+tax).toFixed(2)}
                 </span>
               </div>
               <button

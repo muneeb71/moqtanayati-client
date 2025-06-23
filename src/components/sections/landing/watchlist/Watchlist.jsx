@@ -10,7 +10,7 @@ const Watchlist = ({ items }) => {
       <div className="grid min-h-[30rem] md:grid-cols-2 lg:grid-cols-3 gap-5">
         {items?.length > 0 ? items.map((item, index) => (
           <WatchlistCard key={index} item={item} />
-        )): <p className="text-red-500 w-full text-center md:col-span-2 col-span-3">No Items Added to Watchlist!</p>}
+        )): <p className="text-red-500 w-full md:col-span-2 col-span-3 text-start">No Items Added to Watchlist!</p>}
       </div>
     </div>
   );

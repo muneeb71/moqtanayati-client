@@ -5,6 +5,7 @@ import SellerReviewCard from "@/components/sections/landing/product-details/Sell
 import ProductDetailsSlider from "@/components/slider/ProductDetailsSlider";
 import getBidById from "@/lib/api/auctions/getBid";
 import { getProductById } from "@/lib/api/product/getById";
+import { getWatchlistById } from "@/lib/api/watchlist/getWatchlistById";
 import { dummyItems } from "@/lib/dummy-items";
 
 const ProductDetailsPage = async ({ params }) => {
@@ -16,10 +17,10 @@ const ProductDetailsPage = async ({ params }) => {
     <>
       <div className="grid w-full max-w-7xl gap-10 px-3 py-8 md:grid-cols-2 md:py-20">
         <div className="flex flex-col gap-5">
-          <ProductDetailsSlider images={item?.images || []}/>
+          <ProductDetailsSlider images={item?.images || []} id={productId}/>
           <SellerReviewCard seller={item?.store?.user}/>
         </div>
-        <ProductDetailsCard item={item} totalBids={bids?.length || 0}/>
+        <ProductDetailsCard item={item} totalBids={bids?.data?.length || 0}/>
       </div>
       {item?.pricingFormat === "Auctions" && <BiddersSection />}
       <div className="flex w-full px-3 pb-16 pt-20">

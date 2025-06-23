@@ -8,25 +8,31 @@ import BidPopup from "@/components/popup/BidPopup";
 import { useState } from "react";
 import bidOnAuction from "@/lib/api/auctions/bid";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
+import toast from "react-hot-toast";
 
-const ProductDetailsCard = ({ item, totalBids }) => {
+const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
   const [isBidPopupOpen, setIsBidPopupOpen] = useState(false);
   const path = usePathname();
   const id = path.split("/").splice(-1)[0];
   const [bidAmount, setBidAmount] = useState();
-
+  
   const addItem = async () => {
     const res = await addItemToCart({
       productId: item?.id,
       quantity: 1,
       price: item?.price,
     });
-    console.log(res);
+    if (res?.data?.success) {
+      toast.success("Item Added to Cart")
+    }
+    else {
+      toast.error("Error Adding Item to Cart")
+    }
   };
 
   const addFavortie = async () => {
     const res = await handleFavorite(item?.id);
-    console.log(res);
   };
 
   const bid = async () => {
@@ -35,11 +41,14 @@ const ProductDetailsCard = ({ item, totalBids }) => {
       if (res.success) {
         setIsBidPopupOpen(false);
         toast.success(res.message || "Bid placed successfully!");
+        fetchData();
       } else {
         toast.error(res.message || "Failed to place bid.");
       }
     } catch (err) {
-      toast.error(err?.response?.data?.message || err.message || "Failed to place bid.");
+      toast.error(
+        err?.response?.data?.message || err.message || "Failed to place bid.",
+      );
       console.error("Failed to place bid:", err);
     }
   };
@@ -80,69 +89,108 @@ const ProductDetailsCard = ({ item, totalBids }) => {
             </div>
           </div>
           <div className="flex w-full flex-col gap-2">
-            {!isFixedPrice ? (
-              // Auction content
-              <div className="flex flex-row items-center justify-between">
-                <div className="flex flex-col">
-                  <h2 className="text-[14.4px] leading-[21.6px] text-black/40">
-                    {totalBids > 0 ? "Highest Bid" : "Starting Bid"}
-                  </h2>
-                  <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
-                    ${item?.minimumOffer}
-                  </h1>
+            {isFixedPrice ? (
+              <>
+                <div className="flex w-full flex-row">
+                  <div className="flex w-1/2 flex-col space-y-3">
+                    <div className="flex flex-col">
+                      <h2 className="text-[14.4px] leading-[21.6px] text-black/40">
+                        Price
+                      </h2>
+                      <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
+                        ${item.price.toFixed(2)}
+                      </h1>
+                    </div>
+                  </div>
+                  <div className="flex w-1/2 flex-col space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <button
+                        className="flex h-[52.8px] w-[60px] items-center justify-center rounded-lg border-[2px] border-moonstone"
+                        onClick={addItem}
+                        disabled={item?.status === "SOLD"}
+                      >
+                        <Image
+                          width={24}
+                          height={24}
+                          alt="cart"
+                          src={"/static/moonstonecart.svg"}
+                        />
+                      </button>
+                      <button
+                        disabled={item?.status === "SOLD"}
+                        className="flex h-[52.8px] items-center rounded-lg border-[2px] border-moonstone px-8 text-[14.4px] font-medium text-moonstone"
+                      >
+                        Buy Now
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <h2 className="text-[14.4px] leading-[21.6px] text-black/40">
-                    Buy Now for
-                  </h2>
-                  <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
-                    ${item?.buyItNow}
-                  </h1>
-                </div>
-              </div>
+              </>
             ) : (
-              // Fixed price content
-              <div className="flex flex-col">
-                <h2 className="text-[14.4px] leading-[21.6px] text-black/40">
-                  Price
-                </h2>
-                <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
-                  ${item.price.toFixed(2)}
-                </h1>
-              </div>
+              <>
+                <div className="flex w-full flex-row">
+                  <div className="flex w-1/2 flex-col space-y-3">
+                    <div className="flex flex-col">
+                      <h2 className="text-[14.4px] leading-[21.6px] text-black/40">
+                        {totalBids > 0 ? "Highest Bid" : "Starting Bid"}
+                      </h2>
+                      <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
+                        ${item?.minimumOffer?.toFixed(2)}
+                      </h1>
+                    </div>
+                    <div className="flex flex-col">
+                      <h2 className="text-[14.4px] leading-[21.6px] text-black/40">
+                        Buy Now for
+                      </h2>
+                      <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
+                        ${item?.buyItNow?.toFixed(2)}
+                      </h1>
+                    </div>
+                  </div>
+                  <div className="flex w-1/2 flex-col space-y-3">
+                    <button
+                      className="flex w-full items-center justify-center gap-3 rounded-lg bg-moonstone py-4 text-white"
+                      onClick={() => setIsBidPopupOpen(true)}
+                      disabled={item?.status === "SOLD"}
+                    >
+                      <img src={"/static/bid.svg"} />
+                      <p>Make Offer</p>
+                    </button>
+                    <div className="flex items-center justify-between gap-2">
+                      <button
+                        className="flex h-[52.8px] w-[60px] items-center justify-center rounded-lg border-[2px] border-moonstone"
+                        onClick={addItem}
+                        disabled={item?.status === "SOLD"}
+                      >
+                        <Image
+                          width={24}
+                          height={24}
+                          alt="cart"
+                          src={"/static/moonstonecart.svg"}
+                        />
+                      </button>
+                      <button
+                        disabled={item?.status === "SOLD"}
+                        className="flex h-[52.8px] items-center rounded-lg border-[2px] border-moonstone px-8 text-[14.4px] font-medium text-moonstone"
+                      >
+                        Buy Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
-            <div className="flex flex-col gap-2">
-              {!isFixedPrice && (
-                <button className="rounded-full border border-moonstone bg-white py-2 text-moonstone transition-colors duration-300 ease-in-out hover:border hover:border-white hover:bg-moonstone hover:text-white">
-                  Buy it Now
-                </button>
-              )}
-
-              <button
-                className="rounded-full border border-moonstone bg-white py-2 text-moonstone transition-colors duration-300 ease-in-out hover:border hover:border-white hover:bg-moonstone hover:text-white"
-                onClick={addItem}
-              >
-                Add to Cart
-              </button>
-
-              {!isFixedPrice && (
-                <button className="rounded-full border border-moonstone bg-white py-2 text-moonstone transition-colors duration-300 ease-in-out hover:border hover:border-white hover:bg-moonstone hover:text-white" onClick={()=>setIsBidPopupOpen(true)}>
-                  Make Offer
-                </button>
-              )}
-
-              <button
-                className="flex flex-row items-center justify-center gap-2 rounded-full border border-moonstone bg-white py-2 text-moonstone transition-colors duration-300 ease-in-out hover:border hover:border-white hover:bg-moonstone hover:text-white"
-                onClick={addFavortie}
-              >
-                <CiHeart className="text-[20px]" />
-                Add to Wishlist
-              </button>
-            </div>
           </div>
         </div>
       </div>
-      {isBidPopupOpen && <BidPopup open={isBidPopupOpen} handleBid={bid} onOpenChange={()=>setIsBidPopupOpen(false)}/>}
+      {isBidPopupOpen && (
+        <BidPopup
+          open={isBidPopupOpen}
+          handleBid={bid}
+          onBidChange={(e) => setBidAmount(e)}
+          onOpenChange={() => setIsBidPopupOpen(false)}
+        />
+      )}
     </>
   );
 };

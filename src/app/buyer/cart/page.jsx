@@ -3,38 +3,72 @@
 import OrderPlacedPopup from "@/components/popup/OrderPlacedPopup";
 import CheckoutSheet from "@/components/sections/landing/cart/CheckoutSheet";
 import { getCart } from "@/lib/api/cart/getCart";
-import { dummyCart } from "@/lib/dummyCart";
+import { updateItemQuantity } from "@/lib/api/cart/updateItemQuantity";
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const CartPage = () => {
-  const [cart, setCart] = useState(dummyCart);
+  const [cart, setCart] = useState([]);
+  const [user, setUser] = useState();
   const [isOrderPlaced, setOrderPlaced] = useState(false);
+  const [disableButton, setDisableButton] = useState(false)
+
+  const subtotal = cart.reduce((total, item) => {
+    return total + item.quantity * item.price;
+  }, 0);
+
+  const tax = 40;
 
   const getCartData = async () => {
     try {
       const res = await getCart();
       if (res.success) {
-        setCart(res.data);
+        setCart(res?.data?.data?.items);
+        setUser(res?.data?.data?.user);
       } else {
-        console.error('Failed to fetch cart:', res.error);
+        console.error("Failed to fetch cart:", res.error);
       }
     } catch (error) {
-      console.error('Error fetching cart:', error);
+      console.error("Error fetching cart:", error);
     }
-  }
+  };
+
+  const handleQuantityUpdate = async (item, increase) => {
+    try {
+      setDisableButton(true);
+      const quant = increase ? item?.quantity + 1 : item?.quantity - 1;
+      const res = await updateItemQuantity(item?.id, quant, item?.price);
+
+      const updatedItem = res.data.data;
+
+      setCart((prevCart) =>
+        prevCart.map((cartItem) =>
+          cartItem.id === updatedItem.id
+            ? { ...cartItem, quantity: updatedItem.quantity }
+            : cartItem,
+        ),
+      );
+      setDisableButton(false)
+      toast.success("Item Updated Successfully.");
+    } catch (error) {
+      setDisableButton(false)
+      console.error("Update error:", error);
+      toast.error(error?.data?.message || "Failed to Update.")
+    }
+  };
 
   useEffect(() => {
     getCartData();
   }, []);
-  
-  const placeOrder = () => setOrderPlaced(!isOrderPlaced)
+
+  const placeOrder = () => setOrderPlaced(!isOrderPlaced);
 
   const getItemsCount = () => {
     let count = 0;
 
-    cart.forEach((item) => {
+    cart?.forEach((item) => {
       count += item.quantity;
     });
 
@@ -44,8 +78,8 @@ const CartPage = () => {
     <div className="flex w-full max-w-7xl flex-col gap-10 py-10">
       <h1 className="text-4xl font-semibold text-davyGray">Your Cart</h1>
       <div className="grid w-full max-w-7xl gap-10 md:grid-cols-2">
-        <div className="flex w-full flex-col gap-10">
-          {cart.map((item, index) => (
+        <div className="flex h-80 w-full flex-col gap-10 overflow-y-auto">
+          {cart?.map((item, index) => (
             <div
               className="flex w-full items-center justify-between"
               key={index}
@@ -53,7 +87,7 @@ const CartPage = () => {
               <div className="flex h-full w-full items-center gap-4">
                 <div className="size-[140px] overflow-hidden rounded-2xl">
                   <Image
-                    src={item.image}
+                    src={item?.product?.images[0]}
                     width={160}
                     height={160}
                     alt="item"
@@ -63,14 +97,14 @@ const CartPage = () => {
                 </div>
                 <div className="flex h-full flex-col justify-between py-2">
                   <div className="flex flex-col gap-1">
-                    <h1 className="max-w-48 truncate text-2xl font-medium">
-                      {item.title}
+                    <h1 className="max-w-64 truncate text-2xl font-medium">
+                      {item?.product?.name}
                     </h1>
                     <div className="flex items-center gap-2">
                       <span className="text-silver">by</span>
                       <div className="size-7 overflow-hidden rounded-full">
                         <Image
-                          src={item.seller.image}
+                          src={user?.avatar || "/static/user.jpeg"}
                           width={160}
                           height={160}
                           alt="item"
@@ -78,7 +112,9 @@ const CartPage = () => {
                           className="object-cover"
                         />
                       </div>
-                      <span className="text-black/70">{item.seller.name}</span>
+                      <span className="text-black/70">
+                        {cart?.product?.store?.name}
+                      </span>
                     </div>
                   </div>
                   <span className="text-3xl font-medium text-black/80">
@@ -87,13 +123,21 @@ const CartPage = () => {
                 </div>
               </div>
               <div className="flex h-full flex-col items-center justify-between">
-                <button className="grid size-10 place-items-center rounded-md bg-moonstone/10 text-moonstone hover:bg-moonstone/20">
+                <button
+                  className="grid size-10 place-items-center rounded-md bg-moonstone/10 text-moonstone hover:bg-moonstone/20"
+                  onClick={() => handleQuantityUpdate(item, true)}
+                  disabled={disableButton}
+                >
                   <Plus />
                 </button>
                 <span className="text-2xl font-medium text-russianViolet">
                   {item.quantity}
                 </span>
-                <button className="grid size-10 place-items-center rounded-md bg-moonstone/10 text-moonstone hover:bg-moonstone/20">
+                <button
+                  className="grid size-10 place-items-center rounded-md bg-moonstone/10 text-moonstone hover:bg-moonstone/20"
+                  onClick={() => handleQuantityUpdate(item, false)}
+                  disabled={disableButton}
+                >
                   <Minus />
                 </button>
               </div>
@@ -107,11 +151,11 @@ const CartPage = () => {
             </h1>
             <div className="flex w-full items-center justify-between">
               <span className="text-xl text-[#4D4D4DE5]">Subtotal</span>
-              <span className="text-xl text-[#4D4D4DE5]">$3000</span>
+              <span className="text-xl text-[#4D4D4DE5]">${subtotal}</span>
             </div>
             <div className="flex w-full items-center justify-between">
               <span className="text-xl text-[#4D4D4DE5]">Tax</span>
-              <span className="text-xl text-[#4D4D4DE5]">$40</span>
+              <span className="text-xl text-[#4D4D4DE5]">${tax}</span>
             </div>
             <div className="flex w-full items-center justify-between">
               <span className="text-xl text-[#4D4D4DE5]">Shipping</span>
@@ -121,13 +165,20 @@ const CartPage = () => {
           <div className="flex justify-between">
             <div className="flex flex-col gap-1">
               <span className="text-xl text-black/40">Grand Total</span>
-              <h1 className="text-4xl font-medium">$3040.00</h1>
+              <h1 className="text-4xl font-medium">
+                ${(subtotal + tax).toFixed(2)}
+              </h1>
             </div>
-              <CheckoutSheet itemCount={getItemsCount()} orderPlaced={placeOrder}/>
+            <CheckoutSheet
+              itemCount={getItemsCount()}
+              orderPlaced={placeOrder}
+              cart={cart}
+              user={user}
+            />
           </div>
         </div>
       </div>
-      {isOrderPlaced && <OrderPlacedPopup orderPlaced={placeOrder}/>}
+      {isOrderPlaced && <OrderPlacedPopup orderPlaced={placeOrder} />}
     </div>
   );
 };

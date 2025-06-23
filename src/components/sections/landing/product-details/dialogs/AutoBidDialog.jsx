@@ -13,11 +13,13 @@ import Label from "@/components/form-fields/Label";
 import InputField from "@/components/form-fields/InputField";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 const AutoBidDialog = ({ className = "", bidAmount, setBidAmount, handlePlaceBid }) => {
   const [newAmount, setNewAmount] = useState(0);
   const handleConfirm = () => {
-    setBidAmount(newAmount);
+    // setBidAmount(newAmount);
+    toast.error("Feature not availble yet");
     handlePlaceBid();
   };
   return (
