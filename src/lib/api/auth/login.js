@@ -12,7 +12,7 @@ export async function loginUser(email, password, role) {
 
     const data = response.data.data;
 
-    const responseProfile = await api.get("sellers/profile/" + data.user.id);
+    const responseProfile = await api.get(`sellers/profile/${data.user.id}`);
     const profileData = responseProfile.data.data;
 
     const cookiesStore = await cookies();
@@ -48,6 +48,8 @@ export async function loginUser(email, password, role) {
 
     return response.data;
   } catch (error) {
+    console.log(error);
+    
     return {
       success: false,
       message:

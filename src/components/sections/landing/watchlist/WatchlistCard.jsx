@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 const WatchlistCard = ({ item }) => {
-  const [favourite, setFavourite] = useState(item.isFavourite);
+  const [favourite, setFavourite] = useState(item.isFavourite);  
   return (
     <div
       className="grid h-full max-h-[138px] grid-cols-[96px_1fr] overflow-hidden rounded-[12px] bg-white sm:grid-cols-[126px_1fr]"
@@ -15,7 +15,7 @@ const WatchlistCard = ({ item }) => {
     >
       <div className="h-full w-full overflow-hidden">
         <Image
-          src={item.image}
+          src={item?.auction?.product?.images[0]}
           width={200}
           height={200}
           className="h-full w-full object-cover"
@@ -26,14 +26,14 @@ const WatchlistCard = ({ item }) => {
         <div className="flex justify-between gap-2">
           <div className="flex flex-col px-1.5">
             <span className="max-w-[200px] truncate text-[16.72px] font-medium leading-[25px]">
-              Iphone 6 plus
+              {item?.auction?.product?.name}
             </span>
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-black/30">by</span>
               <div className="flex items-center gap-1">
                 <div className="size-[19.1px] min-h-[19.1px] min-w-[19.1px] overflow-hidden rounded-full">
                   <Image
-                    src="/static/dummy-user/1.jpeg"
+                    src={item?.auction?.seller?.avatar || "/static/dummy-user/1.jpeg"}
                     width={100}
                     height={100}
                     className="h-full w-full object-cover"
@@ -41,7 +41,7 @@ const WatchlistCard = ({ item }) => {
                   />
                 </div>
                 <span className="text-xs font-medium text-black/70">
-                  Kathryn Murphy
+                  {item?.auction?.seller?.name}
                 </span>
               </div>
             </div>
@@ -60,7 +60,7 @@ const WatchlistCard = ({ item }) => {
         <div className="flex items-center justify-between gap-5 px-1.5">
           <div className="flex flex-col">
             <span className="text-xs text-black/40">Highest Bid</span>
-            <span className="text-lg font-medium">$350.00</span>
+            <span className="text-lg font-medium">${item?.auction?.product?.minimumOffer}</span>
           </div>
           <button
             className={cn(

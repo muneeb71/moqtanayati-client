@@ -4,6 +4,13 @@ import CategoriesSliderSection from "@/components/sections/landing/home/Categori
 import RecommendedSection from "@/components/sections/landing/home/RecommendedSection";
 import FurnitureSection from "@/components/sections/landing/home/FurnitureSection";
 import AuctionSection from "@/components/sections/landing/home/AuctionSection";
+import { io } from "socket.io-client";
+
+// Replace with your backend URL and port
+const socket = io("http://localhost:8000", {
+  // You can pass auth tokens or userId here if needed
+  // query: { userId: "USER_ID" }
+});
 
 const BuyerPage = () => {
   return (

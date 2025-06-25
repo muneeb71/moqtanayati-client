@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -43,7 +42,6 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced, cart, user }) => {
 
   const handlePayNow = () => {
     setSelectedTab(tabs[1]);
-    orderPlaced(true);
   };
 
   const subtotal = cart.reduce((total, item) => {
@@ -102,17 +100,15 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced, cart, user }) => {
                           <span className="text-silver">by</span>
                           <div className="size-4 overflow-hidden rounded-full">
                             <Image
-                              src={user?.avatar || '/static/user.jpeg'}
+                              src={user?.avatar || "/static/user.jpeg"}
                               width={160}
                               height={160}
                               alt="item"
                               loading="lazy"
-                              className="object-cover w-40 h-40 rounded-full"
+                              className="h-40 w-40 rounded-full object-cover"
                             />
                           </div>
-                          <span className="text-black/70">
-                            {user?.name}
-                          </span>
+                          <span className="text-black/70">{user?.name}</span>
                         </div>
                       </div>
                       <span className="font-medium text-black/80">
@@ -190,7 +186,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced, cart, user }) => {
               <div className="flex flex-col">
                 <h2 className="text-xl text-battleShipGray">Grand Total</h2>
                 <span className="text-3xl font-medium text-black/80">
-                  ${(subtotal+tax).toFixed(2)}
+                  ${(subtotal + tax).toFixed(2)}
                 </span>
               </div>
               <button
@@ -326,7 +322,10 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced, cart, user }) => {
                 </div>
                 <SheetClose asChild>
                   <button
-                    onClick={() => setSelectedTab(tabs[0])}
+                    onClick={() => {
+                      setSelectedTab(tabs[0]);
+                      orderPlaced(true);
+                    }}
                     className="rounded-lg bg-moonstone/80 px-10 py-3 text-white hover:bg-moonstone"
                   >
                     Place Order

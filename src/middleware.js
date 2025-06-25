@@ -8,12 +8,17 @@ export function middleware(request) {
   const role = request.cookies.get("role")?.value;
   const { pathname } = new URL(request.url);
 
-  if (!token && !userId) {
-    if (!pathname.startsWith("/auth")) {
-      return NextResponse.redirect(new URL("/auth", request.url));
-    }
+  const isAdminLogin = pathname.startsWith("/admin/login");
+  const isAuthPath = pathname.startsWith("/auth");
+
+  if (!token && !userId && (isAdminLogin || isAuthPath)) {
     return NextResponse.next();
   }
+
+  if (!token && !userId && (isAdminLogin || isAuthPath)) {
+    return NextResponse.next();
+  }
+  
 
   if (userId) {
     if (role === "SELLER") {

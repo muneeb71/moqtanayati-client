@@ -1,9 +1,7 @@
 "use client";
 import ProductDetailsAuctionTimer from "@/components/timers/ProductDetailsAuctionTimer";
 import QaSectionSheet from "./dialogs/qa-sheet/QaSectionSheet";
-import { CiHeart } from "react-icons/ci";
 import { addItemToCart } from "@/lib/api/cart/addItemToCart";
-import { handleFavorite } from "@/lib/api/product/handleFavorite";
 import BidPopup from "@/components/popup/BidPopup";
 import { useState } from "react";
 import bidOnAuction from "@/lib/api/auctions/bid";
@@ -31,10 +29,6 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
     }
   };
 
-  const addFavortie = async () => {
-    const res = await handleFavorite(item?.id);
-  };
-
   const bid = async () => {
     try {
       const res = await bidOnAuction({ productId: id, amount: bidAmount });
@@ -54,6 +48,9 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
   };
 
   const isFixedPrice = item?.pricingFormat?.toLowerCase() === "fixed price";
+
+  console.log(item);
+  
 
   return (
     <>

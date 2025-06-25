@@ -1,5 +1,7 @@
 import { sellerChatIcon, starIcon } from "@/assets/icons/common-icons";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useChatStore } from "@/providers/chat-store-provider";
 
 const SellerReviewCard = ({seller}) => {
   const calculateAverageRating = () => {
@@ -34,6 +36,16 @@ const SellerReviewCard = ({seller}) => {
     
     return stars;
   };
+
+  const router = useRouter();
+  const conversations = useChatStore((s) => s.conversations);
+  const setSelectedChat = useChatStore((s) => s.setSelectedChat);
+
+  const handleChatWithSeller = () => {
+    if (seller?.id) {
+      router.push(`/buyer/chats?id=${seller.id}`);
+    }
+  };
   
   return (
     <div className="flex w-full max-w-[404px] flex-col gap-3.5 rounded-[14px] bg-[#F8F7FB] p-3">
@@ -66,7 +78,7 @@ const SellerReviewCard = ({seller}) => {
         </div>
       </div>
       <div className="flex justify-between">
-        <button className="flex items-center gap-1 rounded-[5.6px] border border-moonstone/10 bg-moonstone/10 px-2 py-1 text-moonstone hover:border-moonstone hover:bg-moonstone/20">
+        <button onClick={handleChatWithSeller} className="flex items-center gap-1 rounded-[5.6px] border border-moonstone/10 bg-moonstone/10 px-2 py-1 text-moonstone hover:border-moonstone hover:bg-moonstone/20">
           {sellerChatIcon} <span className="text-sm">Chat with seller</span>
         </button>
         <button className="flex items-center gap-1 rounded-[5.6px] border border-moonstone/10 bg-moonstone/10 px-3 py-1 text-moonstone hover:border-moonstone hover:bg-moonstone/20">

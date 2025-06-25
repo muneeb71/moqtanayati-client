@@ -11,36 +11,21 @@ import getBidById from "@/lib/api/auctions/getBid";
 import bidOnAuction from "@/lib/api/auctions/bid";
 import toast from "react-hot-toast";
 
-const BiddersSection = () => {
+const BiddersSection = ({ data, fetchData }) => {
   const [selectedBidder, setSelectedBidder] = useState(null);
   const [bidAmount, setBidAmount] = useState(0);
-  const [bids, setBids] = useState(null);
   const path = usePathname();
   const id = path.split("/").splice(-1)[0];
 
-  const getProductData = async () => {
-    try {
-      const res = await getBidById(id);
-
-      if (res?.success) {
-        setBids(res.data);
-      } else {
-        console.error(
-          "Failed to fetch bid data:",
-          res?.message || "Unknown error",
-        );
-      }
-    } catch (error) {
-      console.error("Error in getProductData:", error);
-    }
-  };
-
   const handlePlaceBid = async () => {
     try {
-      const res = await bidOnAuction({ productId: id, amount: Number(bidAmount) });
+      const res = await bidOnAuction({
+        productId: id,
+        amount: Number(bidAmount),
+      });
       if (res.success) {
         toast.success(res.message || "Bid placed successfully!");
-        getProductData();
+        fetchData();
       } else {
         toast.error(res.message || "Failed to place bid.");
       }
@@ -51,10 +36,6 @@ const BiddersSection = () => {
       console.error("Failed to place bid:", err);
     }
   };
-
-  useEffect(() => {
-    getProductData();
-  }, []);
 
   useEffect(() => {
     if (selectedBidder) {
@@ -111,18 +92,22 @@ const BiddersSection = () => {
           <h1 className="text-[32px] font-medium text-black/80">
             Bidders{" "}
             <span className="text-[18px] text-moonstone">
-              ({bids?.length || 0})
+              ({data?.length || 0})
             </span>
           </h1>
           <div className="grid gap-2 sm:grid-cols-2 sm:gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-5">
-            {bids?.length > 0 ? bids?.map((bidder, index) => (
-              <BidderCard
-                key={index}
-                bidder={bidder}
-                selectedBidder={selectedBidder}
-                setSelectedBidder={setSelectedBidder}
-              />
-            )) : <p className="w-full text-red-400">No Bids Yet!</p>}
+            {data?.length > 0 ? (
+              data?.map((bidder, index) => (
+                <BidderCard
+                  key={index}
+                  bidder={bidder}
+                  selectedBidder={selectedBidder}
+                  setSelectedBidder={setSelectedBidder}
+                />
+              ))
+            ) : (
+              <p className="w-full text-red-400">No Bids Yet!</p>
+            )}
           </div>
         </div>
       </div>
@@ -145,7 +130,7 @@ const BiddersSection = () => {
               <button
                 type="button"
                 className="flex h-[55px] items-center justify-center rounded-[6.7px] bg-moonstone px-8 text-[17px] font-medium text-white transition-all duration-200 ease-in hover:bg-delftBlue"
-                onClick={()=>handlePlaceBid()}
+                onClick={() => handlePlaceBid()}
               >
                 Bid
               </button>

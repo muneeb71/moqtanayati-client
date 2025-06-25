@@ -9,7 +9,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Label from "@/components/form-fields/Label";
-import InputField from "@/components/form-fields/InputField";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { DialogClose } from "@radix-ui/react-dialog";
@@ -62,6 +61,7 @@ const WithdrawBidDialog = ({ className = "", bidAmount, setBidAmount }) => {
               className="h-[144px] rounded-[8px] bg-[#F8F7FB] px-3 py-3 focus:outline-moonstone"
               onChange={(e) => setRetractionReason(e.target.value)}
               placeholder="Enter reason for retraction (0-150 words)"
+              value={retractionReason}
             >
               {retractionReason}
             </textarea>

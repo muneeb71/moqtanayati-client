@@ -1,30 +1,43 @@
 "use client";
 import { filterSvg } from "@/assets/icons/common-icons";
 import MenuCard from "@/components/cards/MenuCard";
+import { getAllAuctions } from "@/lib/api/auctions/getAll";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const ResultItems = ({ items }) => {
   const pathname = usePathname();
-  const products = JSON.parse(localStorage.getItem("products")) || [];
-  
+  const [products, setProducts] = useState([]);
+
+  const getAuctionData = async () => {
+    const res = await getAllAuctions();    
+    setProducts(res)
+  }
+
+  useEffect(() => {
+    getAuctionData();
+  }, [])
+
   const getFilterType = () => {
     if (pathname === "/buyer/auctions") return "all";
     const type = pathname.split("/").pop();
     return type;
-  };  
+  };    
 
   const filteredProducts = products.filter((product) => {
-    if (product.pricingFormat?.toLowerCase() !== "auctions") {
+    console.log(product);
+    
+    if (product?.product?.pricingFormat?.toLowerCase() !== "auctions") {
       return false;
-    }
+    }    
 
     const filterType = getFilterType();
     if (filterType === "all") return true;
 
     const now = new Date();
-    const launchDate = new Date(product.auctionLaunchDate);
+    const launchDate = new Date(product?.product?.auctionLaunchDate);
     const endDate = new Date(
-      launchDate.getTime() + product.auctionDuration * 24 * 60 * 60 * 1000
+      launchDate.getTime() + product?.product?.auctionDuration * 24 * 60 * 60 * 1000
     );
 
     switch (filterType) {
@@ -58,10 +71,11 @@ const ResultItems = ({ items }) => {
             key={index}
             title={item.name}
             price={item.minimumOffer}
-            image={item.images[0]}
+            image={item?.product?.images[0]}
             address={item.city}
             createdAt={item.createdAt}
             isFavourite={false}
+            productId={item?.product?.id}
           />
         ))}
       </div>

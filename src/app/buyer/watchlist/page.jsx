@@ -6,6 +6,7 @@ import { dummyItems } from "@/lib/dummy-items";
 const WatchListPage = async () => {
   const user = await getUserProfile();
   const items = user?.data?.watchlists;
+  
   return (
     <div className="flex w-full flex-col items-center justify-center gap-5 px-3">
       <PageHeading>Watchlist</PageHeading>

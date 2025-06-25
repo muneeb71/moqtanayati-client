@@ -17,6 +17,7 @@ const MenuCard = ({
   user = "test user",
   address = "",
   isFavourite = false,
+  productId="",
 }) => {
   const router = useRouter();
   const [favourite, setFavourite] = useState(isFavourite);
@@ -30,8 +31,9 @@ const MenuCard = ({
   };
 
   const bidOnAuction = async () => {
+    
     try {
-      const res = await bidOnAuctionApi({ productId: id, amount: bidAmount });
+      const res = await bidOnAuctionApi({ productId, amount: bidAmount });
       if (res.success) {
         setLatestBid(res.data.amount);
         setBidPopup(false);
@@ -56,7 +58,7 @@ const MenuCard = ({
         style={{
           boxShadow: "0px 0px 10px 2px #0000001A",
         }}
-        onClick={() => router.push("/buyer/product-details/" + id)}
+        onClick={() => router.push("/buyer/product-details/" + productId)}
       >
         <div className="rounded-top relative w-1/4">
           <Image
