@@ -14,7 +14,7 @@ import { useState } from "react";
 import { DialogClose } from "@radix-ui/react-dialog";
 import Image from "next/image";
 
-const WithdrawBidDialog = ({ className = "", bidAmount, setBidAmount }) => {
+const WithdrawBidDialog = ({ className = "", bidAmount, setBidAmount, item, handleConfirm }) => {  
   const [retractionReason, setRetractionReason] = useState("");
 
   return (

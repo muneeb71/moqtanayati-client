@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { getWatchlistById } from "@/lib/api/watchlist/getWatchlistById";
 import { removeFromWatchlist } from "@/lib/api/watchlist/removeWatchlist";
 
-const ProductDetailsSlider = ({ images, id }) => {
+const ProductDetailsSlider = ({ images, id, pricingFormat }) => {
   const [selectedItemIndex, setSelectedIndex] = useState(3);
   const sliderRef = useRef(null);
   const autoSlideRef = useRef(null);
@@ -30,7 +30,9 @@ const ProductDetailsSlider = ({ images, id }) => {
   };
 
   useEffect(() => {
-    getWatchlistStatus();
+    if (pricingFormat === "Auctions"){
+      getWatchlistStatus();
+    }
   }, []);
 
   useEffect(() => {
@@ -158,7 +160,7 @@ const ProductDetailsSlider = ({ images, id }) => {
             loading="lazy"
             className="h-full w-full object-cover"
           />
-          <button
+          {pricingFormat === "Auctions" && <button
             className={cn(
               "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
               favourite ? "text-[#F16D6F]" : "text-white",
@@ -166,7 +168,7 @@ const ProductDetailsSlider = ({ images, id }) => {
             onClick={addToWatchlist}
           >
             {heartIcon}
-          </button>
+          </button>}
         </div>
       </div>
     </div>

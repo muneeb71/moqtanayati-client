@@ -16,7 +16,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { dummyCart } from "@/lib/dummyCart";
 import { cn } from "@/lib/utils";
@@ -25,7 +24,7 @@ import Image from "next/image";
 import { useState } from "react";
 import CreditCard from "../payment-methods/CreditCard";
 
-const CheckoutSheet = ({ itemCount = 0, orderPlaced, cart, user }) => {
+const CheckoutSheet = ({ itemCount = 0, orderPlaced, cart, user, open, onOpenChange }) => {
   const tabs = [
     "Items",
     "Select Payment Methods",
@@ -51,15 +50,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced, cart, user }) => {
   const tax = 40;
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <button className="flex h-fit items-center gap-2 rounded-lg bg-moonstone/80 px-7 py-4 text-white hover:bg-moonstone">
-          <span className="text-lg">Check Out</span>
-          <span className="grid size-7 place-items-center rounded-full bg-white/80 text-moonstone">
-            {itemCount}
-          </span>
-        </button>
-      </SheetTrigger>
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="min-w-screen w-full rounded-l-3xl p-0 sm:min-w-[480px]">
         <SheetHeader>
           <SheetTitle className="w-full border-b border-[#F0F1F4] py-7 text-center text-2xl font-medium text-darkBlue">

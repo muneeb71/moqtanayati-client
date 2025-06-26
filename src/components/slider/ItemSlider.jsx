@@ -80,6 +80,7 @@ const ItemSlider = ({ items, section }) => {
                 item?.city && item?.country && `${item?.city}, ${item?.country}`
               }
               isFavourite={item.isFavourite}
+              pricingFormat={item?.pricingFormat}
             />
           </CarouselItem>
         ))}

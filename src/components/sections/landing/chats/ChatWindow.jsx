@@ -76,19 +76,8 @@ const ChatWindow = ({
     if (!selectedUser || !selectedUser.id || !newMessage.trim()) return;
     setSending(true);
     try {
-      const sent = await sendMessageApi(userBId, newMessage, selectedUser.id);
+      await sendMessageApi(userBId, newMessage, selectedUser.id);
       setNewMessage("");
-      setMessages((prev) => [
-        ...prev,
-        {
-          ...sent,
-          sender: {
-            id: currentUserId,
-            name: "You",
-            avatar: null,
-          },
-        },
-      ]);
     } catch (e) {
       // handle error
     }

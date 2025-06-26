@@ -26,8 +26,8 @@ const ChatPage = () => {
     const fetchConvos = async () => {
       setLoading(true);
       try {
-        const data = await getConversations();
-        setConversations(data);
+        const res = await getConversations();
+        setConversations(res?.data || []);
       } catch (e) {
         setConversations([]);
       }
@@ -50,9 +50,10 @@ const ChatPage = () => {
       if (!chat) {
         try {
           await createChat(userId);
-          const updated = await getConversations();
-          setConversations(updated);
-          chat = updated.find(
+          const updatedRes = await getConversations();
+          const updatedConversations = updatedRes?.data || [];
+          setConversations(updatedConversations);
+          chat = updatedConversations.find(
             (c) => String(c.userA.id) === String(userId) || String(c.userB.id) === String(userId)
           );
         } catch (e) {
@@ -62,7 +63,7 @@ const ChatPage = () => {
       setSelectedChat(chat || null);
       if (chat && chat.id) {
         getMessages(userId)
-          .then((msgs) => setMessages(msgs))
+          .then((res) => setMessages(res?.data || []))
           .catch(() => setMessages([]))
           .finally(() => setLoadingMessages(false));
       } else {
@@ -79,7 +80,7 @@ const ChatPage = () => {
     router.push(`/buyer/chats?id=${user.id}`);
   };
 
-  const sidebarUsers = conversations.map((c) => {
+  const sidebarUsers = conversations?.map((c) => {
     const otherUser = String(c.userA.id) === String(currentUserId) ? c.userB : c.userA;
     return {
       id: otherUser.id,
@@ -102,8 +103,6 @@ const ChatPage = () => {
     },
     senderId: msg.senderId,
   }));
-
-  console.log(sidebarUsers);
   
   return (
     <div className="grid min-h-[90vh] w-full max-w-[1172px] md:grid-cols-[2fr_3fr] gap-3 lg:gap-7 py-5 md:py-12">

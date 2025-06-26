@@ -9,16 +9,16 @@ import bidOnAuctionApi from "@/lib/api/auctions/bid";
 import toast from "react-hot-toast";
 
 const MenuCard = ({
-  id = 1,
   title = "",
   price = 0,
-  createdAt = "",
   image,
-  user = "test user",
-  address = "",
+  user = "",
   isFavourite = false,
   productId="",
+  highestBid,
+  startingBid=0
 }) => {
+  
   const router = useRouter();
   const [favourite, setFavourite] = useState(isFavourite);
   const [bidPopup, setBidPopup] = useState(false);
@@ -83,10 +83,10 @@ const MenuCard = ({
           <div className="flex items-center justify-between pt-1">
             <div className="flex flex-col items-center justify-between">
               <span className="text-[15px] leading-[23px] text-black/30">
-                Highest Bid
+                {startingBid == highestBid ? "Starting Bid": "Highest Bid"}
               </span>
               <span className="text-[21px] font-medium leading-[32px]">
-                ${latestBid?.toFixed(2)}
+                ${highestBid?.toFixed(2)}
               </span>
             </div>
             <button

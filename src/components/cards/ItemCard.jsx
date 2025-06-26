@@ -13,6 +13,7 @@ const ItemCard = ({
   image,
   address = "",
   isFavourite = false,
+  pricingFormat
 }) => {
   const router = useRouter();
   const [favourite, setFavourite] = useState(isFavourite);
@@ -24,7 +25,7 @@ const ItemCard = ({
 
   return (
     <div
-      className="flex w-full flex-col overflow-hidden rounded-[12px]"
+      className="flex w-full flex-col overflow-hidden rounded-[12px] h-72"
       style={{
         boxShadow: "0px 0px 10px 2px #0000001A",
       }}
@@ -38,7 +39,7 @@ const ItemCard = ({
           loading="lazy"
           onClick={() => router.push("/buyer/product-details/" + id)}
         />
-        <button
+        {pricingFormat == "Auctions" && <button
           className={cn(
             "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
             favourite ? "text-[#F16D6F]" : "text-white",
@@ -46,7 +47,7 @@ const ItemCard = ({
           onClick={() => setFavourite(!favourite)}
         >
           {heartIcon}
-        </button>
+        </button>}
       </div>
       <div
         className="flex w-full cursor-pointer flex-col px-2.5 py-2"

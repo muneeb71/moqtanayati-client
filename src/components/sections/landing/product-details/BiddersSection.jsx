@@ -7,9 +7,18 @@ import { cn } from "@/lib/utils";
 import UpdateBidDialog from "./dialogs/UpdateBidDialog";
 import WithdrawBidDialog from "./dialogs/WithdrawBidDialog";
 import { usePathname } from "next/navigation";
-import getBidById from "@/lib/api/auctions/getBid";
 import bidOnAuction from "@/lib/api/auctions/bid";
 import toast from "react-hot-toast";
+import withdrawBidOfUser from "@/lib/api/auctions/withdrawBid";
+
+function getCookie(name) {
+  if (typeof document === "undefined") return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+  return null;
+}
+const userId = getCookie("userId");
 
 const BiddersSection = ({ data, fetchData }) => {
   const [selectedBidder, setSelectedBidder] = useState(null);
@@ -18,6 +27,7 @@ const BiddersSection = ({ data, fetchData }) => {
   const id = path.split("/").splice(-1)[0];
 
   const handlePlaceBid = async () => {
+    if (userId !== selectedBidder?.bidder?.id) return toast.error("This is not your bid.");
     try {
       const res = await bidOnAuction({
         productId: id,
@@ -43,6 +53,21 @@ const BiddersSection = ({ data, fetchData }) => {
     }
   }, [selectedBidder]);
 
+  const withdrawBid = async () => {
+    if (userId !== selectedBidder?.bidder?.id) return toast.error("This is not your bid.")
+    try {
+      const res = await withdrawBidOfUser(selectedBidder?.auctionId);
+      if (res?.success) {
+        toast.success(res?.data?.message || "Bid withdrawn successfully.");
+        fetchData();
+      } else {
+        toast.error(res?.message || "Failed to withdraw bid.");
+      }
+    } catch (error) {
+      toast.error(error?.message || "An error occurred while withdrawing bid.");
+    }
+  };
+
   return (
     <div className="flex w-full flex-col items-center justify-center bg-[#F8F7FB] px-3">
       {selectedBidder && (
@@ -60,8 +85,10 @@ const BiddersSection = ({ data, fetchData }) => {
               </div>
               <div className="flex items-center gap-1">
                 <span className="text-[13px] font-medium">Status:</span>
-                <div className="rounded-[9px] bg-faluRed/10 px-3.5 py-1 text-[15px] text-faluRed">
-                  Outbid
+                <div
+                  className={`rounded-[9px] px-3.5 py-1 text-[15px] ${selectedBidder?.status === "HIGHEST" ? "bg-moonstone/10 text-moonstone" : "bg-faluRed/10 text-faluRed"}`}
+                >
+                  {selectedBidder?.status}
                 </div>
               </div>
             </div>
@@ -78,7 +105,10 @@ const BiddersSection = ({ data, fetchData }) => {
                 updateBid={handlePlaceBid}
               />
             </div>
-            <WithdrawBidDialog />
+            <WithdrawBidDialog
+              item={selectedBidder}
+              handleConfirm={withdrawBid}
+            />
           </div>
         </div>
       )}

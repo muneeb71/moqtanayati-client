@@ -8,9 +8,13 @@ import bidOnAuction from "@/lib/api/auctions/bid";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import CheckoutSheet from "@/components/sections/landing/cart/CheckoutSheet";
+import OrderPlacedPopup from "@/components/popup/OrderPlacedPopup";
 
 const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
   const [isBidPopupOpen, setIsBidPopupOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [showOrderPlaced, setShowOrderPlaced] = useState(false);
   const path = usePathname();
   const id = path.split("/").splice(-1)[0];
   const [bidAmount, setBidAmount] = useState();
@@ -47,10 +51,17 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
     }
   };
 
-  const isFixedPrice = item?.pricingFormat?.toLowerCase() === "fixed price";
+  const isFixedPrice = item?.pricingFormat?.toLowerCase() === "fixed price";  
 
-  console.log(item);
-  
+  const user = {
+    name: item?.seller?.name || "Seller",
+    avatar: item?.seller?.avatar || "/static/user.jpeg",
+    address: item?.seller?.address || "123 Main St, City",
+  };
+
+  const handleBuyNow = () => {
+    setIsCheckoutOpen(true);
+  };
 
   return (
     <>
@@ -116,6 +127,7 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
                       <button
                         disabled={item?.status === "SOLD"}
                         className="flex h-[52.8px] items-center rounded-lg border-[2px] border-moonstone px-8 text-[14.4px] font-medium text-moonstone"
+                        onClick={handleBuyNow}
                       >
                         Buy Now
                       </button>
@@ -169,6 +181,7 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
                       <button
                         disabled={item?.status === "SOLD"}
                         className="flex h-[52.8px] items-center rounded-lg border-[2px] border-moonstone px-8 text-[14.4px] font-medium text-moonstone"
+                        onClick={handleBuyNow}
                       >
                         Buy Now
                       </button>
@@ -187,6 +200,22 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
           onBidChange={(e) => setBidAmount(e)}
           onOpenChange={() => setIsBidPopupOpen(false)}
         />
+      )}
+      {isCheckoutOpen && (
+        <CheckoutSheet
+          itemCount={1}
+          cart={[{ id: item.id, product: item, quantity: 1, price: item.price }]}
+          user={user}
+          orderPlaced={() => {
+            setIsCheckoutOpen(false);
+            setShowOrderPlaced(true);
+          }}
+          open={isCheckoutOpen}
+          onOpenChange={setIsCheckoutOpen}
+        />
+      )}
+      {showOrderPlaced && (
+        <OrderPlacedPopup orderPlaced={() => setShowOrderPlaced(false)} />
       )}
     </>
   );

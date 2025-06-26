@@ -11,9 +11,7 @@ import {
 import { MenuIcon } from "lucide-react";
 import Image from "next/image";
 
-const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {
-  console.log(users);
-  
+const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {  
   return (
     <Sheet>
       <SheetTrigger>

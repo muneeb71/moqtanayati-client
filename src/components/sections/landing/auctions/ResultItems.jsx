@@ -24,9 +24,7 @@ const ResultItems = ({ items }) => {
     return type;
   };    
 
-  const filteredProducts = products.filter((product) => {
-    console.log(product);
-    
+  const filteredProducts = products.filter((product) => {    
     if (product?.product?.pricingFormat?.toLowerCase() !== "auctions") {
       return false;
     }    
@@ -42,11 +40,11 @@ const ResultItems = ({ items }) => {
 
     switch (filterType) {
       case "live-auctions":
-        return product.status === "ACTIVE" && now >= launchDate && now <= endDate;
+        return product.status === "LIVE";
       case "upcoming":
-        return now < launchDate;
+        return product.status === "UPCOMING";
       case "history":
-        return now > endDate;
+        return product.status === "ENDED";
       default:
         return true;
     }
@@ -69,13 +67,14 @@ const ResultItems = ({ items }) => {
           <MenuCard
             id={item?.id}
             key={index}
-            title={item.name}
+            title={item?.product?.name}
+            user={item?.seller?.name}
             price={item.minimumOffer}
             image={item?.product?.images[0]}
-            address={item.city}
-            createdAt={item.createdAt}
             isFavourite={false}
             productId={item?.product?.id}
+            highestBid={item.product.minimumOffer}
+            startingBid={item?.product?.startingBid}
           />
         ))}
       </div>

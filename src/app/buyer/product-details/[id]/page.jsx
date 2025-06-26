@@ -45,7 +45,7 @@ const ProductDetailsPage = () => {
     <>
       <div className="grid w-full max-w-7xl gap-10 px-3 py-8 md:grid-cols-2 md:py-20">
         <div className="flex flex-col gap-5">
-          <ProductDetailsSlider images={item?.images || []} id={productId} />
+          <ProductDetailsSlider images={item?.images || []} id={productId} pricingFormat={item?.pricingFormat}/>
           <SellerReviewCard seller={item?.store?.user} />
         </div>
         <ProductDetailsCard item={item} totalBids={bids?.length || 0} fetchData={fetchData}/>

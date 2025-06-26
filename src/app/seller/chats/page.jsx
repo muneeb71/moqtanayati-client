@@ -29,7 +29,9 @@ const ChatPage = () => {
   useEffect(() => {
     setLoading(true);
     getConversations()
-      .then(setConversations)
+      .then((res) => {
+        setConversations(res?.data || []);
+      })
       .catch(() => setConversations([]))
       .finally(() => setLoading(false));
   }, []);
@@ -43,15 +45,20 @@ const ChatPage = () => {
       }
       setLoadingMessages(true);
       let chat = conversations.find(
-        (c) => String(c.userA.id) === String(userId) || String(c.userB.id) === String(userId)
+        (c) =>
+          String(c.userA.id) === String(userId) ||
+          String(c.userB.id) === String(userId)
       );
       if (!chat) {
         try {
           await createChat(userId);
-          const updated = await getConversations();
-          setConversations(updated);
-          chat = updated.find(
-            (c) => String(c.userA.id) === String(userId) || String(c.userB.id) === String(userId)
+          const updatedRes = await getConversations();
+          const updatedConversations = updatedRes?.data || [];
+          setConversations(updatedConversations);
+          chat = updatedConversations.find(
+            (c) =>
+              String(c.userA.id) === String(userId) ||
+              String(c.userB.id) === String(userId)
           );
         } catch (e) {
           chat = null;
@@ -60,7 +67,7 @@ const ChatPage = () => {
       setSelectedChat(chat || null);
       if (chat && chat.id) {
         getMessages(userId)
-          .then((msgs) => setMessages(msgs))
+          .then((res) => setMessages(res?.data || []))
           .catch(() => setMessages([]))
           .finally(() => setLoadingMessages(false));
       } else {
@@ -81,25 +88,21 @@ const ChatPage = () => {
     const socket = socketRef.current;
     
     const handleNewMessage = (msg) => {
-      // Only add message if it belongs to the currently selected chat
-      if (msg.chatId === selectedChat?.id) {
-        setMessages((prev) => {
-          if (prev.find((m) => m.id === msg.id)) return prev;
-          return [...prev, msg];
-        });
-      }
-      // Also update latest message in sidebar
-      setConversations(prevConvos => {
-        return prevConvos.map(convo => {
+      setMessages((prev) => {
+        if (prev.find((m) => m.id === msg.id)) return prev;
+        return [...prev, msg];
+      });
+      setConversations((prevConvos) => {
+        return prevConvos.map((convo) => {
           if (convo.id === msg.chatId) {
             return {
               ...convo,
-              messages: [msg]
-            }
+              messages: [msg],
+            };
           }
           return convo;
-        })
-      })
+        });
+      });
     };
 
     socket.on("receive_message", handleNewMessage);
@@ -113,15 +116,13 @@ const ChatPage = () => {
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !selectedChat?.id) return;
-    
+
     socket.emit("join_conversation", { conversationId: selectedChat.id });
-    console.log("Joined room:", selectedChat.id);
 
     return () => {
       socket.emit("leave_conversation", { conversationId: selectedChat.id });
-      console.log("Left room:", selectedChat.id);
-    }
-  }, [selectedChat?.id])
+    };
+  }, [selectedChat?.id]);
 
   // Disconnect socket on unmount
   useEffect(() => {
@@ -138,8 +139,9 @@ const ChatPage = () => {
     router.push(`/seller/chats?id=${user.id}`);
   };
 
-  const sidebarUsers = conversations.map((c) => {
-    const otherUser = String(c.userA.id) === String(currentUserId) ? c.userB : c.userA;
+  const sidebarUsers = conversations?.map((c) => {
+    const otherUser =
+      String(c.userA.id) === String(currentUserId) ? c.userB : c.userA;
     return {
       id: otherUser.id,
       name: otherUser.name,
@@ -163,7 +165,7 @@ const ChatPage = () => {
   }));
 
   return (
-    <div className="grid min-h-[90vh] w-full max-w-[1172px] md:grid-cols-[2fr_3fr] gap-3 lg:gap-7 py-5 md:py-12">
+    <div className="grid min-h-[90vh] w-full max-w-[1172px] gap-3 py-5 md:grid-cols-[2fr_3fr] md:py-12 lg:gap-7">
       <ChatSidebar
         users={sidebarUsers}
         selectedUser={selectedChat}
@@ -185,7 +187,7 @@ const ChatPage = () => {
           setMessages={setMessages}
         />
       ) : (
-        <div className="flex w-full items-center justify-center text-gray-400 text-lg min-h-[300px]">
+        <div className="flex min-h-[300px] w-full items-center justify-center text-lg text-gray-400">
           No chat selected
         </div>
       )}

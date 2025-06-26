@@ -13,7 +13,7 @@ const CartPage = () => {
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState();
   const [isOrderPlaced, setOrderPlaced] = useState(false);
-  const [disableButton, setDisableButton] = useState(false)
+  const [disableButton, setDisableButton] = useState(false);
 
   const subtotal = cart.reduce((total, item) => {
     return total + item.quantity * item.price;
@@ -50,12 +50,12 @@ const CartPage = () => {
             : cartItem,
         ),
       );
-      setDisableButton(false)
+      setDisableButton(false);
       toast.success("Item Updated Successfully.");
     } catch (error) {
-      setDisableButton(false)
+      setDisableButton(false);
       console.error("Update error:", error);
-      toast.error(error?.data?.message || "Failed to Update.")
+      toast.error(error?.data?.message || "Failed to Update.");
     }
   };
 
@@ -102,16 +102,15 @@ const CartPage = () => {
                     </h1>
                     <div className="flex items-center gap-2">
                       <span className="text-silver">by</span>
-                      <div className="size-7 overflow-hidden rounded-full">
+                      <div className="relative size-7 overflow-hidden rounded-full">
                         <Image
                           src={user?.avatar || "/static/user.jpeg"}
-                          width={160}
-                          height={160}
                           alt="item"
-                          loading="lazy"
+                          fill
                           className="object-cover"
                         />
                       </div>
+
                       <span className="text-black/70">
                         {cart?.product?.store?.name}
                       </span>
