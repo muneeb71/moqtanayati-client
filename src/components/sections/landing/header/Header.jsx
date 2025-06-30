@@ -54,7 +54,7 @@ const Header = () => {
             </Link>
           </div>
           <Link
-            href="/profile"
+            href="/buyer/profile"
             className="size-12 overflow-hidden rounded-full"
           >
             <Image

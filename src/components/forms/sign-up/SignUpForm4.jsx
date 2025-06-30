@@ -8,6 +8,7 @@ import { signUpUser } from "@/lib/api/auth/register";
 import { useRegisterStore } from "@/providers/register-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const SignUpForm4 = ({ role = "" }) => {
   const router = useRouter();
@@ -23,10 +24,11 @@ const SignUpForm4 = ({ role = "" }) => {
     sellerType,
   } = useRegisterStore((state) => state);
 
+  const [type, setType] = useState()
+
   const handleRegisterUser = async () => {
     const roleUppercase = role.toUpperCase();
-
-    const response = await signUpUser({
+    const payload = {
       role: roleUppercase,
       name,
       email,
@@ -36,8 +38,9 @@ const SignUpForm4 = ({ role = "" }) => {
       password,
       latitude,
       longitude,
-      sellerType,
-    });
+      sellerType: role === "buyer" ? "INDIVIDUAL" : sellerType,
+    };
+    const response = await signUpUser(payload);
 
     if (response.success) {
       router.push("/auth/" + role + "/login");

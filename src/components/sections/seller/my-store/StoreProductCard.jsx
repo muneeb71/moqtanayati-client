@@ -91,10 +91,10 @@ const StoreProductCard = ({ item }) => {
               {item.status === "DRAFT" ? "Draft" : item.pricingFormat}
             </div>
           </div>
-          {item.price ? (
+          {item.price !== 0 ? (
             <h1 className="text-3xl font-medium">${item.price?.toFixed(2)}</h1>
           ) : (
-            <h1 className="text-3xl">${item.buyItNow?.toFixed(2)}</h1>
+            <h1 className="text-3xl">${item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}</h1>
           )}
         </div>
       </Link>

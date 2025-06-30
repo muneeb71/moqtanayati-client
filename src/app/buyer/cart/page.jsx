@@ -14,6 +14,8 @@ const CartPage = () => {
   const [user, setUser] = useState();
   const [isOrderPlaced, setOrderPlaced] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
+  const [showCheckoutSheet, setShowCheckoutSheet] = useState(false);
+  const [orderId, setOrderId] = useState(null);
 
   const subtotal = cart.reduce((total, item) => {
     return total + item.quantity * item.price;
@@ -117,7 +119,7 @@ const CartPage = () => {
                     </div>
                   </div>
                   <span className="text-3xl font-medium text-black/80">
-                    ${item.price.toFixed(2)}
+                    ${item.price !== 0 ? item.price.toFixed(2) : item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}
                   </span>
                 </div>
               </div>
@@ -168,16 +170,30 @@ const CartPage = () => {
                 ${(subtotal + tax).toFixed(2)}
               </h1>
             </div>
-            <CheckoutSheet
-              itemCount={getItemsCount()}
-              orderPlaced={placeOrder}
-              cart={cart}
-              user={user}
-            />
+            <div>
+              <button
+                className="flex gap-2 rounded-lg bg-moonstone px-8 py-5"
+                onClick={() => setShowCheckoutSheet(true)}
+              >
+                <p className="text-white text-xl font-medium">Checkout</p>
+                <div className="rounded-full w-6 h-6 flex justify-center items-center bg-white/80 text-moonstone">{getItemsCount()}</div>
+              </button>
+            </div>
+            {showCheckoutSheet && (
+              <CheckoutSheet
+                itemCount={getItemsCount()}
+                orderPlaced={placeOrder}
+                cart={cart}
+                user={user}
+                open={showCheckoutSheet}
+                onOpenChange={setShowCheckoutSheet}
+                setOrderId={setOrderId}
+              />
+            )}
           </div>
         </div>
       </div>
-      {isOrderPlaced && <OrderPlacedPopup orderPlaced={placeOrder} />}
+      {isOrderPlaced && <OrderPlacedPopup orderPlaced={placeOrder} id={orderId}/>}
     </div>
   );
 };

@@ -15,6 +15,15 @@ const nextConfig = {
       }
     ],
   },
+  webpack(config, { dev }) {
+    if (dev) {
+      // This removes the error overlay
+      config.plugins = config.plugins.filter(
+        (plugin) => plugin.constructor.name !== 'ReactDevOverlayPlugin'
+      );
+    }
+    return config;
+  },
 };
 
 export default nextConfig;

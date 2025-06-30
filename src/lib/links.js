@@ -189,11 +189,8 @@ export const adminLinks = [
   },
   {
     title: "Users",
+    href: "/admin/users",
     icon: usersIcon,
-    subLinks: [
-      { title: "Buyers", href: "/admin/users/buyer" },
-      { title: "Sellers", href: "/admin/users/seller" },
-    ],
   },
   {
     title: "Orders",

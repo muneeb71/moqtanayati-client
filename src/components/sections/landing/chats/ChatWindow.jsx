@@ -219,6 +219,11 @@ const ChatWindow = ({
           placeholder="Type a message"
           className="h-[50px] flex-1 rounded-[8px] border border-transparent bg-[#F8F7FB] px-4 text-sm outline-none placeholder:text-[#858699] focus:border-moonstone"
           disabled={sending || !selectedUser}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !sending && selectedUser && newMessage.trim()) {
+              handleSendMessage();
+            }
+          }}
         />
         <button
           onClick={handleSendMessage}

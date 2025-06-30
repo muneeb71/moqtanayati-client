@@ -25,21 +25,26 @@ const BiddersSection = ({ data, fetchData }) => {
   const [bidAmount, setBidAmount] = useState(0);
   const path = usePathname();
   const id = path.split("/").splice(-1)[0];
+  const [requestLoading, setRequestLoading] = useState(false);
 
-  const handlePlaceBid = async () => {
-    if (userId !== selectedBidder?.bidder?.id) return toast.error("This is not your bid.");
+  const handlePlaceBid = async (bypass) => {
+    if (!bypass && userId !== selectedBidder?.bidder?.id) return toast.error("This is not your bid.");
     try {
+      setRequestLoading(true)
       const res = await bidOnAuction({
         productId: id,
         amount: Number(bidAmount),
       });
       if (res.success) {
+        setRequestLoading(false)
         toast.success(res.message || "Bid placed successfully!");
         fetchData();
       } else {
+        setRequestLoading(false)
         toast.error(res.message || "Failed to place bid.");
       }
     } catch (err) {
+      setRequestLoading(false)
       toast.error(
         err?.response?.data?.message || err.message || "Failed to place bid.",
       );
@@ -67,6 +72,17 @@ const BiddersSection = ({ data, fetchData }) => {
       toast.error(error?.message || "An error occurred while withdrawing bid.");
     }
   };
+
+  if (requestLoading) {
+    return (
+      <div className="w-full h-[100vh] z-50 bg-black/80 inset-0 fixed flex justify-center items-center">
+        <svg className="animate-spin h-10 w-10 text-moonstone" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+        </svg>
+      </div>
+    )
+  }
 
   return (
     <div className="flex w-full flex-col items-center justify-center bg-[#F8F7FB] px-3">
@@ -160,7 +176,7 @@ const BiddersSection = ({ data, fetchData }) => {
               <button
                 type="button"
                 className="flex h-[55px] items-center justify-center rounded-[6.7px] bg-moonstone px-8 text-[17px] font-medium text-white transition-all duration-200 ease-in hover:bg-delftBlue"
-                onClick={() => handlePlaceBid()}
+                onClick={() => handlePlaceBid(true)}
               >
                 Bid
               </button>

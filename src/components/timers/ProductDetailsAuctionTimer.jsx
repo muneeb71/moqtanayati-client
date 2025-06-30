@@ -5,11 +5,11 @@ import React, { useState, useEffect } from "react";
 
 const ProductDetailsAuctionTimer = ({ type = "", item }) => {
   const [timeLeft, setTimeLeft] = useState(0);
-  const [isAuctionEnded, setIsAuctionEnded] = useState(false);
+  const [isAuctionEnded, setIsAuctionEnded] = useState(false);  
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const createdAt = new Date(item.createdAt);
+      const createdAt = new Date(item.auctionLaunchDate);
       const endTime = new Date(createdAt.getTime() + (item.auctionDuration * 24 * 60 * 60 * 1000));
       const now = new Date();
       const difference = endTime - now;

@@ -9,6 +9,8 @@ import { getMessages } from "@/lib/api/chat/getMessages";
 import { createChat } from "@/lib/api/chat/createChat";
 import ChatUsersSheet from "@/components/sections/landing/chats/ChatUsersSheet";
 import { useProfileStore } from "@/providers/profile-store-provider";
+import ChatSidebarSkeleton from "@/components/loaders/chats/ChatSidebarSkeleton";
+import ChatWindowSkeleton from "@/components/loaders/chats/ChatWindowSkeleton";
 
 const ChatPage = () => {
   const searchParams = useSearchParams();
@@ -103,29 +105,37 @@ const ChatPage = () => {
     },
     senderId: msg.senderId,
   }));
-  
+    
   return (
     <div className="grid min-h-[90vh] w-full max-w-[1172px] md:grid-cols-[2fr_3fr] gap-3 lg:gap-7 py-5 md:py-12">
-      <ChatSidebar
-        users={sidebarUsers}
-        selectedUser={selectedChat}
-        setSelectedUser={handleSidebarSelect}
-        loading={loading}
-        selectedUserId={userId}
-      />
-      {selectedChat ? (
-        <ChatWindow
+      {loading ? (
+        <ChatSidebarSkeleton />
+      ) : (
+        <ChatSidebar
+          users={sidebarUsers}
           selectedUser={selectedChat}
-          setSelectedUser={setSelectedChat}
-          users={conversations}
-          setUsers={setConversations}
-          newMessage={newMessage}
-          setNewMessage={setNewMessage}
-          messages={mappedMessages}
-          loading={loadingMessages}
-          userBId={userId}
-          setMessages={setMessages}
+          setSelectedUser={handleSidebarSelect}
+          loading={loading}
+          selectedUserId={userId}
         />
+      )}
+      {selectedChat || loading ? (
+        loadingMessages || loading ? (
+          <ChatWindowSkeleton />
+        ) : (
+          <ChatWindow
+            selectedUser={selectedChat}
+            setSelectedUser={setSelectedChat}
+            users={conversations}
+            setUsers={setConversations}
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            messages={mappedMessages}
+            loading={loadingMessages}
+            userBId={userId}
+            setMessages={setMessages}
+          />
+        )
       ) : (
         <div className="flex w-full items-center justify-center text-gray-400 text-lg min-h-[300px]">
           No chat selected

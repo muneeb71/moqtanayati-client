@@ -1,9 +1,15 @@
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
-
-const PlaceBidButton = ({ className = "", type = "primary", ...props }) => {
+const PlaceBidButton = ({
+  className = "",
+  type = "primary",
+  productId,
+  ...props
+}) => {
   return (
-    <button
+    <Link
+      href={`/buyer/product-details/${productId}`}
       className={cn(
         "flex h-[44px] w-full max-w-[168px] items-center justify-center gap-2.5 rounded-[7px] text-white",
         type == "primary" ? "bg-russianViolet" : "bg-moonstone",
@@ -22,7 +28,7 @@ const PlaceBidButton = ({ className = "", type = "primary", ...props }) => {
         Place your Bid
       </span>
       {type == "primary" && chevronRightIcon}
-    </button>
+    </Link>
   );
 };
 

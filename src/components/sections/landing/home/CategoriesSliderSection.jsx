@@ -8,7 +8,7 @@ const CategoriesSliderSection = () => {
         <h1 className="text-xl font-medium leading-[48px] text-delftBlue md:text-[32px]">
           Categories
         </h1>
-        <CustomLink className="md:text-[21.8px]">See All</CustomLink>
+        {/* <CustomLink className="md:text-[21.8px]">See All</CustomLink> */}
       </div>
       <CategoriesSlider />
     </div>

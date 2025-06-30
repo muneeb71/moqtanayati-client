@@ -18,32 +18,43 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
   const path = usePathname();
   const id = path.split("/").splice(-1)[0];
   const [bidAmount, setBidAmount] = useState();
+  const [orderId, setOrderId] = useState(null);
+  const [requestLoading, setRequestLoading] = useState(false);
+  console.log(item);
+  
   
   const addItem = async () => {
+    setRequestLoading(true);
     const res = await addItemToCart({
       productId: item?.id,
       quantity: 1,
       price: item?.price,
     });
     if (res?.data?.success) {
+      setRequestLoading(false);
       toast.success("Item Added to Cart")
     }
     else {
+      setRequestLoading(false);
       toast.error("Error Adding Item to Cart")
     }
   };
 
   const bid = async () => {
     try {
+      setRequestLoading(true);
       const res = await bidOnAuction({ productId: id, amount: bidAmount });
       if (res.success) {
         setIsBidPopupOpen(false);
         toast.success(res.message || "Bid placed successfully!");
         fetchData();
+        setRequestLoading(false);
       } else {
+        setRequestLoading(false);
         toast.error(res.message || "Failed to place bid.");
       }
     } catch (err) {
+      setRequestLoading(false);
       toast.error(
         err?.response?.data?.message || err.message || "Failed to place bid.",
       );
@@ -63,6 +74,17 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
     setIsCheckoutOpen(true);
   };
 
+  if (requestLoading) {
+    return (
+      <div className="w-full h-[100vh] bg-black/80 inset-0 fixed flex justify-center items-center">
+        <svg className="animate-spin h-10 w-10 text-moonstone" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+        </svg>
+      </div>
+    )
+  }
+
   return (
     <>
       <div className="flex w-full flex-col md:px-10">
@@ -76,7 +98,7 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
                   </h2>
                   {isFixedPrice && (
                     <h1 className="text-[24px] font-medium leading-[40px] md:text-[28.8px] md:leading-[43px]">
-                      ${item.price.toFixed(2)}
+                      ${item.price !== 0 ? item.price.toFixed(2) : item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}
                     </h1>
                   )}
                 </div>
@@ -106,7 +128,7 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
                         Price
                       </h2>
                       <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
-                        ${item.price.toFixed(2)}
+                        ${item.price !== 0 ? item.price.toFixed(2) : item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}
                       </h1>
                     </div>
                   </div>
@@ -115,7 +137,7 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
                       <button
                         className="flex h-[52.8px] w-[60px] items-center justify-center rounded-lg border-[2px] border-moonstone"
                         onClick={addItem}
-                        disabled={item?.status === "SOLD"}
+                        disabled={item?.status === "SOLD" || item?.status === "DRAFT"}
                       >
                         <Image
                           width={24}
@@ -125,7 +147,7 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
                         />
                       </button>
                       <button
-                        disabled={item?.status === "SOLD"}
+                        disabled={item?.status === "SOLD" || item?.status === "DRAFT"}
                         className="flex h-[52.8px] items-center rounded-lg border-[2px] border-moonstone px-8 text-[14.4px] font-medium text-moonstone"
                         onClick={handleBuyNow}
                       >
@@ -160,7 +182,7 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
                     <button
                       className="flex w-full items-center justify-center gap-3 rounded-lg bg-moonstone py-4 text-white"
                       onClick={() => setIsBidPopupOpen(true)}
-                      disabled={item?.status === "SOLD"}
+                      disabled={item?.status === "SOLD" || item?.status === "DRAFT"}
                     >
                       <img src={"/static/bid.svg"} />
                       <p>Make Offer</p>
@@ -169,7 +191,7 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
                       <button
                         className="flex h-[52.8px] w-[60px] items-center justify-center rounded-lg border-[2px] border-moonstone"
                         onClick={addItem}
-                        disabled={item?.status === "SOLD"}
+                        disabled={item?.status === "SOLD" || item?.status === "DRAFT"}
                       >
                         <Image
                           width={24}
@@ -179,7 +201,7 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
                         />
                       </button>
                       <button
-                        disabled={item?.status === "SOLD"}
+                        disabled={item?.status === "SOLD" || item?.status === "DRAFT"}
                         className="flex h-[52.8px] items-center rounded-lg border-[2px] border-moonstone px-8 text-[14.4px] font-medium text-moonstone"
                         onClick={handleBuyNow}
                       >
@@ -204,18 +226,19 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
       {isCheckoutOpen && (
         <CheckoutSheet
           itemCount={1}
-          cart={[{ id: item.id, product: item, quantity: 1, price: item.price }]}
+          cart={[{ id: item.id, product: item, quantity: 1, price: item?.pricingFormat === "Auctions" ? item.buyItNow: item.price }]}
           user={user}
           orderPlaced={() => {
             setIsCheckoutOpen(false);
             setShowOrderPlaced(true);
           }}
+          setOrderId={setOrderId}
           open={isCheckoutOpen}
           onOpenChange={setIsCheckoutOpen}
         />
       )}
       {showOrderPlaced && (
-        <OrderPlacedPopup orderPlaced={() => setShowOrderPlaced(false)} />
+        <OrderPlacedPopup orderPlaced={() => setShowOrderPlaced(false)} id={orderId}/>
       )}
     </>
   );

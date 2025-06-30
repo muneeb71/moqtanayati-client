@@ -14,7 +14,7 @@ const AuctionsDescriptionCard = ({ item }) => {
                   {item.title}
                 </h2>
                 <h1 className="text-[24px] font-medium leading-[40px] md:text-[28.8px] md:leading-[43px]">
-                  ${item.price.toFixed(2)}
+                  ${item.price !== 0 ? item.price.toFixed(2) : item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}
                 </h1>
               </div>
               <div className="flex flex-col justify-end gap-2.5">

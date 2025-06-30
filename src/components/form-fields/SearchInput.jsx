@@ -11,7 +11,7 @@ const SearchInput = ({ className = "" }) => {
     if (event.key === "Enter") {
       const query = event.target.value.trim();
       if (query) {
-        router.push(`/search?q=${encodeURIComponent(query)}`);
+        router.push(`/buyer/search?q=${encodeURIComponent(query)}`);
       }
     }
   };

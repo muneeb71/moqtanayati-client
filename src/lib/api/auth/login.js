@@ -48,7 +48,7 @@ export async function loginUser(email, password, role) {
 
     return response.data;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     
     return {
       success: false,

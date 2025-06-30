@@ -8,27 +8,61 @@ import RoundedButton from "@/components/buttons/RoundedButton";
 import InputField from "@/components/form-fields/InputField";
 import { Switch } from "@/components/ui/switch";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css";
+import { getUserProfile } from "@/lib/api/profile/getProfile";
+import toast from "react-hot-toast";
+import { updateAuctionPreference } from "@/lib/api/profile/updatePreference";
+
+const BAR_MAX = 20000;
 
 const PreferencesSection = () => {
-  const [selectedCategories, setSelectedCategories] = useState([
-    {
-      title: "Electronics",
-      icon: electronicsIcon,
-      bgColor: "#FFE9D3",
-    },
-    {
-      title: "Furniture",
-      icon: furnitureIcon,
-      bgColor: "#FEE2EC",
-    },
-  ]);
+  const [categoryInput, setCategoryInput] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedPriceRange, setSelectedPriceRange] = useState([0, BAR_MAX / 2]);
+  const [alertEnding, setAlertEnding] = useState(false);
+  const [alertNew, setAlertNew] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const [priceRange, setPriceRange] = useState([0, 5000]);
-  const [selectedPriceRange, setSelectedPriceRange] = useState([0, 2500]);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setLoading(true);
+      try {
+        const res = await getUserProfile();
+        
+        const prefs = res?.data?.preferences[0];
+        if (prefs) {
+          setSelectedCategories((prefs.categories || []).map((cat) => ({ title: cat })));
+          const min = prefs.minPrice ?? 0;
+          const max = prefs.maxPrice ?? BAR_MAX;
+          setSelectedPriceRange([min, max]);
+          setAlertEnding(!!prefs.alertEnding);
+          setAlertNew(!!prefs.alertNew);
+        } else {
+          setSelectedCategories([]);
+          setSelectedPriceRange([0, BAR_MAX / 2]);
+          setAlertEnding(false);
+          setAlertNew(false);
+        }
+      } catch (err) {
+        toast.error("Failed to fetch profile");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
 
+  const handleCategoryInput = (e) => setCategoryInput(e.target.value);
+  const handleCategoryKeyDown = (e) => {
+    if (e.key === "Enter" && categoryInput.trim()) {
+      if (!selectedCategories.some((cat) => cat.title === categoryInput.trim())) {
+        setSelectedCategories([...selectedCategories, { title: categoryInput.trim() }]);
+      }
+      setCategoryInput("");
+    }
+  };
   const handleRemoveCategory = (title) => {
     setSelectedCategories((prevCategories) =>
       prevCategories.filter((category) => category.title !== title),
@@ -38,16 +72,36 @@ const PreferencesSection = () => {
   const handleSliderChange = (values) => {
     setSelectedPriceRange(values);
   };
-
   const handleInputChange = (index, value) => {
-    const newRange = [...priceRange];
-    newRange[index] = value ? parseInt(value, 10) : 0;
-    setPriceRange(newRange);
+    let val = value ? parseInt(value, 10) : 0;
+    if (isNaN(val) || val < 0) val = 0;
+    let newRange = [...selectedPriceRange];
+    newRange[index] = val;
+    // Clamp values between 0 and BAR_MAX
+    if (newRange[0] < 0) newRange[0] = 0;
+    if (newRange[1] > BAR_MAX) newRange[1] = BAR_MAX;
+    if (newRange[0] > newRange[1]) newRange[0] = newRange[1];
+    setSelectedPriceRange(newRange);
   };
 
-  const handleSavePreferences = () => {
-    console.log("Selected Categories:", selectedCategories);
-    console.log("Price Range:", priceRange);
+  const handleSavePreferences = async () => {
+    const data = {
+      categories: selectedCategories.map((cat) => cat.title),
+      minPrice: selectedPriceRange[0],
+      maxPrice: selectedPriceRange[1],
+      alertEnding,
+      alertNew,
+    };
+    try {
+      const res = await updateAuctionPreference(data);
+      if (res.success) {
+        toast.success("Preferences updated!");
+      } else {
+        toast.error(res.message || "Update failed");
+      }
+    } catch (err) {
+      toast.error("Update failed");
+    }
   };
 
   return (
@@ -56,9 +110,36 @@ const PreferencesSection = () => {
         <h1 className="text-lg font-medium leading-[28px] text-darkBlue">
           Category Selection
         </h1>
-        <button className="w-fit text-start font-semibold text-moonstone">
-          Add
-        </button>
+        <div className="flex gap-2 mb-2">
+          <input
+            className="border-b border-moonstone outline-none bg-transparent px-2 py-1 flex-1"
+            placeholder="Type and press Enter or click Add"
+            value={categoryInput}
+            onChange={handleCategoryInput}
+            onKeyDown={handleCategoryKeyDown}
+          />
+          <button
+            className="w-fit text-start font-semibold text-moonstone cursor-pointer"
+            onClick={() => {
+              if (
+                categoryInput.trim() &&
+                !selectedCategories.some((cat) => cat.title === categoryInput.trim())
+              ) {
+                setSelectedCategories([
+                  ...selectedCategories,
+                  { title: categoryInput.trim() },
+                ]);
+                setCategoryInput("");
+              }
+            }}
+            disabled={
+              !categoryInput.trim() ||
+              selectedCategories.some((cat) => cat.title === categoryInput.trim())
+            }
+          >
+            Add
+          </button>
+        </div>
         <div className="no-scrollbar flex max-w-full items-center gap-5 overflow-auto">
           {selectedCategories.length > 0 ? (
             selectedCategories.map((category, index) => (
@@ -83,10 +164,12 @@ const PreferencesSection = () => {
         <h1 className="text-lg font-medium leading-[28px] text-darkBlue">
           Price Range
         </h1>
-        <div className="flex w-full py-5">
+        <div className="flex w-full flex-col items-center">
+          <div className="flex w-full justify-between mb-1">
+          </div>
           <RangeSlider
-            min={priceRange[0]}
-            max={priceRange[1]}
+            min={0}
+            max={BAR_MAX}
             value={selectedPriceRange}
             onInput={handleSliderChange}
             id="custom-slider"
@@ -96,7 +179,7 @@ const PreferencesSection = () => {
           <InputField
             className="w-full max-w-36"
             type="number"
-            value={priceRange[0]}
+            value={selectedPriceRange[0]}
             onChange={(e) => handleInputChange(0, e.target.value)}
             placeholder="$0"
           />
@@ -104,9 +187,9 @@ const PreferencesSection = () => {
           <InputField
             className="w-full max-w-36"
             type="number"
-            value={priceRange[1]}
+            value={selectedPriceRange[1]}
             onChange={(e) => handleInputChange(1, e.target.value)}
-            placeholder="$5000"
+            placeholder={`$${BAR_MAX.toLocaleString()}`}
           />
         </div>
       </div>
@@ -122,13 +205,13 @@ const PreferencesSection = () => {
             <span className="font-medium text-davyGray">
               Auction ending soon
             </span>
-            <Switch />
+            <Switch checked={alertEnding} onCheckedChange={setAlertEnding} />
           </div>
           <div className="flex items-center justify-between">
             <span className="font-medium text-davyGray">
               New listings in preferred categories
             </span>
-            <Switch />
+            <Switch checked={alertNew} onCheckedChange={setAlertNew} />
           </div>
         </div>
       </div>

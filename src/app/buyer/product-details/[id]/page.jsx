@@ -8,6 +8,7 @@ import BiddersSection from "@/components/sections/landing/product-details/Bidder
 import ProductDetailsCard from "@/components/sections/landing/product-details/ProductDetailsCard";
 import SellerReviewCard from "@/components/sections/landing/product-details/SellerReviewCard";
 import ProductDetailsSlider from "@/components/slider/ProductDetailsSlider";
+import ProductDetailsSkeleton from "@/components/loaders/ProductDetailsSkeleton";
 
 import getBidById from "@/lib/api/auctions/getBid";
 import { getProductById } from "@/lib/api/product/getById";
@@ -16,6 +17,10 @@ const ProductDetailsPage = () => {
   const { id: productId } = useParams();
   const [item, setItem] = useState(null);
   const [bids, setBids] = useState([]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, [productId]);
 
   const fetchData = async () => {
     try {
@@ -39,7 +44,7 @@ const ProductDetailsPage = () => {
     }
   }, [productId]);
 
-  if (!item) return <div>Loading...</div>;
+  if (!item) return <ProductDetailsSkeleton />;
 
   return (
     <>

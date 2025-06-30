@@ -8,10 +8,14 @@ const BidCard = ({ item }) => {
   const [favourite, setFavourite] = useState(item.isFavourite);
   const highestBid = Math.max(...item.auction.bids.map(bid => bid.amount));
   const myBidIsHighest = item.amount === highestBid;
-  let displayStatus = item.bidStatus;
-  if (item.auction.status === 'ENDED') {
-    displayStatus = myBidIsHighest ? 'Won' : 'Ongoing';
-  }
+  
+  const statusStyles = {
+    HIGHEST: "bg-moonstone/10 text-moonstone",
+    WON: "bg-green-100 text-green-700",
+    OUTBID: "bg-faluRed/10 text-faluRed",
+    RETRACTED: "bg-gray-200 text-gray-500",
+  };
+  
   return (
     <div
       className="grid h-full max-h-[138px] grid-cols-[96px_1fr] overflow-hidden rounded-[12px] bg-white sm:grid-cols-[126px_1fr]"
@@ -54,7 +58,7 @@ const BidCard = ({ item }) => {
               </div>
             </div>
           </div>
-          <button
+          {/* <button
             className={cn(
               "grid size-[33px] place-items-center rounded-[4.6px] bg-black/10",
               favourite ? "text-[#F16D6F]" : "text-white",
@@ -62,7 +66,7 @@ const BidCard = ({ item }) => {
             onClick={() => setFavourite(!favourite)}
           >
             {heartIcon}
-          </button>
+          </button> */}
         </div>
         <div className="h-[1px] w-full bg-black bg-opacity-[0.02]"></div>
         <div className="flex items-center justify-between gap-5 px-1.5">
@@ -76,16 +80,12 @@ const BidCard = ({ item }) => {
           </div>
           <div
             className={cn(
-              displayStatus == "Won"
-                ? "bg-moonstone/10 text-moonstone"
-                : displayStatus == "Active"
-                  ? "bg-[#E8F5FF] text-[#1B97FC]"
-                  : "bg-faluRed bg-faluRed/10",
+              statusStyles[item?.status] || "bg-black/10 text-black/60",
               "h-fit rounded-[8px] px-3 py-1 sm:px-5 sm:py-2 text-sm font-medium leading-[21px]",
               "transition-all duration-150 ease-in",
             )}
           >
-            {displayStatus}
+            {item?.status}
           </div>
         </div>
       </div>

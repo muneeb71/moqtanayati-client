@@ -65,6 +65,9 @@ importers:
       react-leaflet:
         specifier: 5.0.0-rc.2
         version: 5.0.0-rc.2(leaflet@1.9.4)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react-loading-skeleton:
+        specifier: ^3.5.0
+        version: 3.5.0(react@19.1.0)
       react-range-slider-input:
         specifier: ^3.1.0
         version: 3.2.1
@@ -1341,6 +1344,11 @@ packages:
       react: ^19.0.0
       react-dom: ^19.0.0
 
+  react-loading-skeleton@3.5.0:
+    resolution: {integrity: sha512-gxxSyLbrEAdXTKgfbpBEFZCO/P153DnqSCQau2+o6lNy1jgMRr2MmRmOzMmyrwSaSYLRB8g7b0waYPmUjz7IhQ==}
+    peerDependencies:
+      react: '>=16.8.0'
+
   react-range-slider-input@3.2.1:
     resolution: {integrity: sha512-MApTX4a/Uzm9ZrJFoWu2kM87TKHJpnHHBV2JR9N9WmOSWk832DDBT3suNN6vCQmFRRtfJO9stw+bsiGpto0Hig==}
 
@@ -2602,6 +2610,10 @@ snapshots:
       leaflet: 1.9.4
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
+
+  react-loading-skeleton@3.5.0(react@19.1.0):
+    dependencies:
+      react: 19.1.0
 
   react-range-slider-input@3.2.1:
     dependencies:

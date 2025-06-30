@@ -18,10 +18,11 @@ const ResultItems = ({ items }) => {
         {items.map((item, index) => (
           <ItemCard
             key={index}
-            title={item.title}
-            price={item.price}
-            createdAt={item.createdAt}
-            image={item.image}
+            id={item?.id}
+            title={item.name}
+            price={item.price || 0}
+            createdAt={item?.createdAt}
+            image={item?.images[0]}
             address={item.address}
             isFavourite={item.isFavourite}
           />

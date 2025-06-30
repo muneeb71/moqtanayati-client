@@ -21,6 +21,9 @@ export function middleware(request) {
   
 
   if (userId) {
+    if (role === "ADMIN" && !pathname.startsWith("/admin")) {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
     if (role === "SELLER") {
       if (!survey && !pathname.startsWith("/survey")) {
         return NextResponse.redirect(new URL("/survey", request.url));

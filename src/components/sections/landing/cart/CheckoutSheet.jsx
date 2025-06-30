@@ -17,20 +17,30 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { dummyCart } from "@/lib/dummyCart";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Cross, Minus, Plus, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import CreditCard from "../payment-methods/CreditCard";
+import { createOrder } from "@/lib/api/orders/createOrder";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
-const CheckoutSheet = ({ itemCount = 0, orderPlaced, cart, user, open, onOpenChange }) => {
+const CheckoutSheet = ({
+  itemCount = 0,
+  orderPlaced,
+  cart,
+  user,
+  open,
+  onOpenChange,
+  setOrderId
+}) => {
   const tabs = [
     "Items",
     "Select Payment Methods",
     "Credit/Debit Cards",
     "New Card",
-  ];
+  ];  
   const shippingOptions = ["Option 1", "Option 2", "Option 3"];
   const cards = ["Card 1", "Card 2", "Card 3"];
   const [selectedTab, setSelectedTab] = useState("Items");
@@ -38,16 +48,57 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced, cart, user, open, onOpenCha
   const [selectedShippingOption, setSelectedShippingOption] = useState(
     shippingOptions[0],
   );
+  const [showOrderPlaced, setShowOrderPlaced] = useState(false);
+  const router = useRouter();
 
   const handlePayNow = () => {
     setSelectedTab(tabs[1]);
   };
+
+  console.log(cart);
+  
 
   const subtotal = cart.reduce((total, item) => {
     return total + item.quantity * item.price;
   }, 0);
 
   const tax = 40;
+
+  const placeOrder = async () => {
+    if (!user || !cart?.length) return;
+    const sellerId = cart[0]?.product?.sellerId;
+    const productId = cart[0]?.product?.id;
+    const orderBody = {
+      userId: user.id,
+      sellerId,
+      productId,
+      status: "PENDING",
+      totalAmount: subtotal + tax,
+      items: cart.map((item) => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        price: item.price,
+        sellerId: item.product.sellerId,
+      })),
+    };
+    try {
+      const res = await createOrder(orderBody);
+            
+      if (res?.success && res?.data?.id) {        
+        setOrderId(res?.data?.id);
+        setShowOrderPlaced(true);
+        onOpenChange(false);
+        toast.success("Order placed successfully!");
+        setSelectedTab(tabs[0]);
+        orderPlaced(true);
+      } else {
+        toast.error("Order placed but no order ID returned.");
+      }
+    } catch (err) {
+      toast.error(err?.message || "Order placement failed");
+      console.error("Order placement failed", err);
+    }
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -103,7 +154,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced, cart, user, open, onOpenCha
                         </div>
                       </div>
                       <span className="font-medium text-black/80">
-                        ${item?.price.toFixed(2)}
+                        ${item.price !== 0 ? item.price.toFixed(2) : item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}
                       </span>
                     </div>
                   </div>
@@ -293,11 +344,11 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced, cart, user, open, onOpenCha
                 <h1 className="font-medium text-delftBlue">Order Summary</h1>
                 <div className="flex w-full items-center justify-between">
                   <span className="text-sm">Subtotal</span>
-                  <span className="text-sm">$3040</span>
+                  <span className="text-sm">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex w-full items-center justify-between">
                   <span className="text-sm">Tax</span>
-                  <span className="text-sm">$40</span>
+                  <span className="text-sm">${tax.toFixed(2)}</span>
                 </div>
                 <div className="flex w-full items-center justify-between">
                   <span className="text-sm">Delivery</span>
@@ -308,14 +359,13 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced, cart, user, open, onOpenCha
                 <div className="flex flex-col">
                   <h2 className="text-xl text-battleShipGray">Grand Total</h2>
                   <span className="text-3xl font-medium text-black/80">
-                    $1240.00
+                    ${(subtotal + tax).toFixed(2)}
                   </span>
                 </div>
                 <SheetClose asChild>
                   <button
                     onClick={() => {
-                      setSelectedTab(tabs[0]);
-                      orderPlaced(true);
+                      placeOrder();
                     }}
                     className="rounded-lg bg-moonstone/80 px-10 py-3 text-white hover:bg-moonstone"
                   >

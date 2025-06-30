@@ -49,7 +49,7 @@ const LeaveFeedbackDialog = ({ item }) => {
               </span>
               <p className="flex gap-1 font-medium">
                 <span className="text-moonstone">Total Paid:</span>
-                <span>${item.price.toFixed(2)}</span>
+                <span>${item.price !== 0 ? item.price.toFixed(2) : item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}</span>
               </p>
             </div>
           </div>

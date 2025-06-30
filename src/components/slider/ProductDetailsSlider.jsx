@@ -14,6 +14,7 @@ const ProductDetailsSlider = ({ images, id, pricingFormat }) => {
   const autoSlideRef = useRef(null);
   const [favourite, setFavourite] = useState(false);
   const [auctionId, setAuctionId] = useState();
+  const [orderId, setOrderId] = useState(null);
 
   const goToNextSlide = () => {
     setSelectedIndex((prevIndex) =>

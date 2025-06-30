@@ -1,34 +1,79 @@
 "use client";
 import PageHeading from "@/components/headings/PageHeading";
-import { dummyCart } from "@/lib/dummyCart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { getOrderById } from "@/lib/api/orders/getOrderById";
 import Image from "next/image";
 
 const page = () => {
-  const [cart, setCart] = useState(dummyCart);
-  const [orderProgress, setOrderProgress] = useState(2); 
-  const address =
-    "123 Imaginary Street, Fictitious City, Makebelieve County, Dreamland 56789";
+  const params = useSearchParams();
+  const orderId = params.get("id");
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [orderProgress, setOrderProgress] = useState(2);
+
+  const fetchOrder = async () => {
+    setLoading(true);
+    try {
+      const data = await getOrderById(orderId);
+      setOrder(data?.data || data);
+      setLoading(false);
+    } catch (err) {
+      setError(err?.message || "Failed to fetch order");
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!orderId) return;
+    fetchOrder();
+  }, [orderId]);
+
+  if (loading)
+    return <div className="w-full py-20 text-center">Loading...</div>;
+  if (error)
+    return <div className="w-full py-20 text-center text-red-500">{error}</div>;
+  if (!order)
+    return <div className="w-full py-20 text-center">Order not found.</div>;
+
+  const cart = order.OrderItem || [];
+  const address = order?.user?.address || "No address provided";
+  const subtotal = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+  const grandTotal = order?.totalAmount || subtotal;
+  const tax = grandTotal - subtotal;
+  const product = order.product;
+  const seller = order.seller;
 
   const getProgressBarColor = (step) => {
-    return step <= orderProgress 
-      ? "bg-moonstone" 
-      : "bg-gray-300";
+    return step <= orderProgress ? "bg-moonstone" : "bg-gray-300";
   };
 
   const getImageSrc = (step) => {
     const images = {
       1: "/static/receive.svg",
-      2: step <= orderProgress ? "/static/processed.svg" : "/static/processing.svg",
+      2:
+        step <= orderProgress
+          ? "/static/processed.svg"
+          : "/static/processing.svg",
       3: step <= orderProgress ? "/static/shipped.svg" : "/static/shipping.svg",
-      4: step <= orderProgress ? "/static/delivered.svg" : "/static/delivery.svg"
+      4:
+        step <= orderProgress
+          ? "/static/delivered.svg"
+          : "/static/delivery.svg",
     };
     return images[step] || "receive.svg";
   };
 
+  console.log(order);
+  
+
   return (
     <div className="flex w-full flex-col items-center justify-center gap-10 px-3 pb-20">
-        {/* <FiltersPopup /> */}
+      {/* <FiltersPopup /> */}
       <PageHeading>
         <span className="text-">Track Order</span>
       </PageHeading>
@@ -42,7 +87,7 @@ const page = () => {
               <div className="flex h-full w-full items-center gap-4">
                 <div className="size-[140px] overflow-hidden rounded-2xl">
                   <Image
-                    src={item.image}
+                    src={product?.images?.[0] || "/static/dummy-items/1.jpeg"}
                     width={160}
                     height={160}
                     alt="item"
@@ -53,25 +98,28 @@ const page = () => {
                 <div className="flex h-full flex-col justify-between py-2">
                   <div className="flex flex-col gap-1">
                     <h1 className="max-w-48 truncate text-2xl font-medium">
-                      {item.title}
+                      {product?.name || "Product"}
                     </h1>
                     <div className="flex items-center gap-2">
                       <span className="text-silver">by</span>
-                      <div className="size-7 overflow-hidden rounded-full">
+                      <div className="h-7 w-7 rounded-full">
                         <Image
-                          src={item.seller.image}
-                          width={160}
-                          height={160}
-                          alt="item"
+                          src={seller?.avatar || "/static/user.jpeg"}
+                          width={28}
+                          height={28}
+                          alt="seller"
                           loading="lazy"
-                          className="object-cover"
+                          className="h-full w-full rounded-full object-cover"
                         />
                       </div>
-                      <span className="text-black/70">{item.seller.name}</span>
+
+                      <span className="text-black/70">
+                        {seller?.name || "Seller"}
+                      </span>
                     </div>
                   </div>
                   <span className="text-3xl font-medium text-black/80">
-                    ${item.price.toFixed(2)}
+                    ${item.price !== 0 ? item.price.toFixed(2) : item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}
                   </span>
                 </div>
               </div>
@@ -91,7 +139,7 @@ const page = () => {
               </h1>
               <div className="flex w-full items-center justify-between">
                 <span className="text-xl text-[#4D4D4DE5]">Subtotal</span>
-                <span className="text-xl text-[#4D4D4DE5]">$3000</span>
+                <span className="text-xl text-[#4D4D4DE5]">${subtotal}</span>
               </div>
               <div className="flex w-full items-center justify-between">
                 <span className="text-xl text-[#4D4D4DE5]">Tax</span>
@@ -105,7 +153,7 @@ const page = () => {
             <div className="flex justify-between">
               <div className="flex flex-col gap-1">
                 <span className="text-xl text-black/40">Grand Total</span>
-                <h1 className="text-4xl font-medium">$3040.00</h1>
+                <h1 className="text-4xl font-medium">${(subtotal+40).toFixed(2)}</h1>
               </div>
             </div>
           </div>
@@ -124,49 +172,55 @@ const page = () => {
         <h1 className="mb-8 text-center text-4xl font-medium text-davyGray">
           Order Status
         </h1>
-        <div className="flex flex-col md:flex-row items-center justify-center md:gap-4 gap-6">
+        <div className="flex flex-col items-center justify-center gap-6 md:flex-row md:gap-4">
           <div className="flex flex-col items-center justify-center space-y-2">
             <Image
               src={getImageSrc(1)}
               alt="Receive"
               width={32}
               height={32}
-              className="w-16 h-16 md:h-32 md:w-32"
+              className="h-16 w-16 md:h-32 md:w-32"
             />
-            <p className="text-xs md:text-3xl font-medium">Received</p>
+            <p className="text-xs font-medium md:text-3xl">Received</p>
           </div>
-          <div className={`h-5 md:h-1 w-1 md:w-[70px] rounded-full ${getProgressBarColor(1)}`}></div>
+          <div
+            className={`h-5 w-1 rounded-full md:h-1 md:w-[70px] ${getProgressBarColor(1)}`}
+          ></div>
           <div className="flex flex-col items-center justify-center space-y-2">
             <Image
               src={getImageSrc(2)}
               alt="Processing"
               width={32}
               height={32}
-              className="w-16 h-16 md:h-32 md:w-32"
+              className="h-16 w-16 md:h-32 md:w-32"
             />
-            <p className="text-xs md:text-3xl font-medium">Processing</p>
+            <p className="text-xs font-medium md:text-3xl">Processing</p>
           </div>
-          <div className={`h-5 md:h-1 w-1 md:w-[70px] rounded-full ${getProgressBarColor(2)}`}></div>
+          <div
+            className={`h-5 w-1 rounded-full md:h-1 md:w-[70px] ${getProgressBarColor(2)}`}
+          ></div>
           <div className="flex flex-col items-center justify-center space-y-2">
             <Image
               src={getImageSrc(3)}
               alt="Shipped"
               width={32}
               height={32}
-              className="w-16 h-16 md:h-32 md:w-32"
+              className="h-16 w-16 md:h-32 md:w-32"
             />
-            <p className="text-xs md:text-3xl font-medium">Shipped</p>
+            <p className="text-xs font-medium md:text-3xl">Shipped</p>
           </div>
-          <div className={`h-5 md:h-1 w-1 md:w-[70px] rounded-full ${getProgressBarColor(3)}`}></div>
+          <div
+            className={`h-5 w-1 rounded-full md:h-1 md:w-[70px] ${getProgressBarColor(3)}`}
+          ></div>
           <div className="flex flex-col items-center justify-center space-y-2">
             <Image
               src={getImageSrc(4)}
               alt="Delivered"
               width={32}
               height={32}
-              className="w-16 h-16 md:h-32 md:w-32"
+              className="h-16 w-16 md:h-32 md:w-32"
             />
-            <p className="text-xs md:text-3xl font-medium">Delivered</p>
+            <p className="text-xs font-medium md:text-3xl">Delivered</p>
           </div>
         </div>
       </div>

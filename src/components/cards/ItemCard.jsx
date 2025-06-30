@@ -13,7 +13,8 @@ const ItemCard = ({
   image,
   address = "",
   isFavourite = false,
-  pricingFormat
+  pricingFormat,
+  buyItNow
 }) => {
   const router = useRouter();
   const [favourite, setFavourite] = useState(isFavourite);
@@ -32,7 +33,7 @@ const ItemCard = ({
     >
       <div className="rounded-top relative h-[250px] cursor-pointer overflow-hidden sm:h-[188px]">
         <Image
-          src={image}
+          src={image || ""}
           width={800}
           height={200}
           alt={title}
@@ -55,7 +56,7 @@ const ItemCard = ({
       >
         <div className="flex items-center justify-between">
           <span className="text-[21px] font-medium leading-[32px]">
-            ${price.toFixed(2)}
+            ${price !== 0 ? price?.toFixed(2) : buyItNow ? buyItNow?.toFixed(2) : "0.00"}
           </span>
           <span className="text-[15px] leading-[23px] text-black/30">
             {getHourAgo(createdAt)}

@@ -3,9 +3,10 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import LeaveFeedbackDialog from "./LeaveFeedbackDialog";
+import toast from "react-hot-toast";
 
 const HistoryCard = ({ item }) => {
-  const formattedDate = new Date(item.purchaseTime).toLocaleString("en-US", {
+  const formattedDate = new Date(item.createdAt || item.purchaseTime).toLocaleString("en-US", {
     month: "long",
     day: "2-digit",
     year: "numeric",
@@ -18,7 +19,7 @@ const HistoryCard = ({ item }) => {
     <div className="grid h-full min-h-fit grid-cols-[120px_1fr] gap-2 overflow-hidden sm:min-h-[138px] sm:place-items-center">
       <div className="aspect-square min-w-[120px] overflow-hidden rounded-2xl border border-black/5">
         <Image
-          src={item.image}
+          src={item.product?.images?.[0] || item.image || "/api/static/dummy-items/1.jpeg"}
           width={200}
           height={200}
           className="h-full w-full object-cover"
@@ -28,9 +29,9 @@ const HistoryCard = ({ item }) => {
       <div className="flex h-full w-full flex-col justify-between gap-2 sm:flex-row sm:items-center">
         <div className="flex flex-col px-1.5">
           <span className="truncate text-black/70 sm:max-w-[200px] sm:text-lg">
-            {item.title}
+            {item.product?.name || item.title || "No Name"}
           </span>
-          <span className="font-medium sm:text-xl">$350.00</span>
+          <span className="font-medium sm:text-xl">${item.totalAmount != null ? item.totalAmount : 350.00}</span>
           <span className="text-xs font-medium text-battleShipGray sm:text-sm">
             {formattedDate}
           </span>
@@ -56,7 +57,7 @@ const HistoryCard = ({ item }) => {
           >
             {item.status}
           </div>
-          <button className="h-fit w-fit rounded-lg border-[1.5px] border-moonstone px-2 text-xs text-moonstone sm:px-6 sm:py-2 sm:text-sm">
+          <button className="h-fit w-fit rounded-lg border-[1.5px] border-moonstone px-2 text-xs text-moonstone sm:px-6 sm:py-2 sm:text-sm" onClick={()=>toast.error("Invoice pdf not generated yet.")}>
             Invoice
           </button>
           {item.isUnrated && <LeaveFeedbackDialog item={item} />}
