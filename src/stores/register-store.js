@@ -13,6 +13,7 @@ export const initRegisterStore = () => {
     latitude: null,
     longitude: null,
     sellerType: "",
+    isVerified: false,
   };
 };
 
@@ -28,6 +29,7 @@ export const defaultInitState = {
   latitude: null,
   longitude: null,
   sellerType: "",
+  isVerified: false,
 };
 
 export const createRegisterStore = (initState = defaultInitState) => {
@@ -44,5 +46,6 @@ export const createRegisterStore = (initState = defaultInitState) => {
     setLatitude: (latitude) => set(() => ({ latitude })),
     setLongitude: (longitude) => set(() => ({ longitude })),
     setSellerType: (sellerType) => set(() => ({ sellerType })),
+    setIsVerified: (isVerified) => set(() => ({ isVerified })),
   }));
 };

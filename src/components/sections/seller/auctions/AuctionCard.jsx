@@ -49,7 +49,7 @@ const AuctionCard = ({
         onClick={() => router.push("/seller/auctions/product-details/" + id)}
       >
         <div className="absolute right-0 top-0 flex items-baseline gap-1 rounded-bl-xl rounded-tr-xl bg-russianViolet/10 px-3 py-1.5 font-medium text-russianViolet">
-          12 <span className="text-xs text-russianViolet/70">Bidders</span>
+          {bids?.length || 0} <span className="text-xs text-russianViolet/70">Bidders</span>
         </div>
         <p className="max-w-36 truncate text-nowrap text-black/70">{title}</p>
         {bids.length === 0 ? (

@@ -7,6 +7,7 @@ import { useState } from "react";
 
 const AuctionProductDetailsCard = ({ auction }) => {
   const getHighestBid = () => {
+    if (!auction.bids || auction.bids.length === 0) return null;
     return auction.bids.reduce(
       (highest, current) =>
         !highest || current.amount > highest.amount ? current : highest,
@@ -14,7 +15,10 @@ const AuctionProductDetailsCard = ({ auction }) => {
     );
   };
 
+  
+  
   const [highestBid, setHighestBid] = useState(getHighestBid());
+  console.log(highestBid);
 
   return (
     <div className="flex w-full flex-col md:px-10">
@@ -55,10 +59,10 @@ const AuctionProductDetailsCard = ({ auction }) => {
                 Highest Bid
               </span>
               <div className="flex items-center gap-1.5">
-                <span className="text-xl font-medium">$500.00</span>
+                <span className="text-xl font-medium">${highestBid?.amount?.toFixed(2) ?? "0.00"}</span>
                 <span className="text-xs text-black/30">by</span>
                 <Image
-                  src="/static/dummy-user/1.jpeg"
+                  src={highestBid?.bidder?.avatar || "/static/dummy-user/1.jpeg"}
                   width={20}
                   height={20}
                   alt="user"
@@ -67,7 +71,7 @@ const AuctionProductDetailsCard = ({ auction }) => {
                   className="rounded-full"
                 />
                 <span className="text-xs font-medium text-black/80">
-                  Kathryn Murphy
+                  {highestBid?.bidder?.name || "Unknown"}
                 </span>
               </div>
             </div>

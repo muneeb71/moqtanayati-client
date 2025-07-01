@@ -1,13 +1,17 @@
 import { sellerChatIcon } from "@/assets/icons/common-icons";
 import Image from "next/image";
 
-
-const CustomerDetailsCard = () => {
+const CustomerDetailsCard = ({ order }) => {
+  if (!order) return null;
+  const user = order.user || {};
+  const avatar = user.avatar || "/static/dummy-user/2.jpeg";
+  const name = user.name || "Customer";
+  const address = user.address || "No address provided";
   return (
     <div className="flex w-full max-w-sm flex-col gap-4 rounded-xl bg-[#F8F7FB] p-4">
       <div className="flex items-center gap-2">
         <Image
-          src="/static/dummy-user/2.jpeg"
+          src={avatar}
           width={48}
           height={48}
           alt="user"
@@ -18,7 +22,7 @@ const CustomerDetailsCard = () => {
         <div className="flex flex-col gap-1">
           <span className="text-xs text-black/50">Customer</span>
           <span className="text-sm font-medium text-black/70">
-            Alexa Johnis
+            {name}
           </span>
         </div>
       </div>
@@ -30,6 +34,9 @@ const CustomerDetailsCard = () => {
         <button className="flex items-center gap-1 rounded-lg bg-moonstone/10 px-4 py-1">
           <span className="text-xs text-moonstone">View Profile</span>
         </button>
+      </div>
+      <div className="mt-2 text-xs text-black/50">
+        {address}
       </div>
     </div>
   );

@@ -5,32 +5,34 @@ import InputField from "@/components/form-fields/InputField";
 import Label from "@/components/form-fields/Label";
 import RoundedButton from "../buttons/RoundedButton";
 import { lockIcon } from "@/assets/icons/input-icons";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { resetPassword } from "@/lib/api/auth/forgotPassword";
 
 const NewPasswordForm = ({ role }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const emailOrPhone = searchParams.get("emailOrPhone");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+      setError("Passwords do not match.");
       return;
     }
-
-    const response = await fetch("/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ password, confirmPassword }),
-    });
-
-    if (response.ok) {
-      router.push(`/login/${role}`);
-    } else {
-      alert("Failed to reset password.");
+    setLoading(true);
+    setError("");
+    try {
+      const isEmail = emailOrPhone.includes("@");
+      await resetPassword(isEmail ? { email: emailOrPhone, newPassword: password, confirmPassword } : { phone: emailOrPhone, newPassword: password, confirmPassword });
+      router.push(`/auth/${role}/login`);
+    } catch (err) {
+      setError(err?.response?.data?.message || "Failed to reset password.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,10 +62,12 @@ const NewPasswordForm = ({ role }) => {
           />
         </div>
       </div>
+      {error && <span className="text-red-500 self-center">{error}</span>}
       <RoundedButton
-        title="Reset Password"
+        title={loading ? "Resetting..." : "Reset Password"}
         className="w-fit self-center px-20"
         type="submit"
+        disabled={loading}
       />
     </form>
   );

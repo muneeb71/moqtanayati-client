@@ -9,34 +9,52 @@ import RoundedButton from "@/components/buttons/RoundedButton";
 import InputField from "@/components/form-fields/InputField";
 import Label from "@/components/form-fields/Label";
 import CustomLink from "@/components/link/CustomLink";
-import { checkExistingUser } from "@/lib/api/auth/check-existing";
 import { useRegisterStore } from "@/providers/register-provider";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const SignUpForm1 = ({ role }) => {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const searchParams = useSearchParams();
 
-  const { name, email, phone, setName, setEmail, setPhone } = useRegisterStore(
-    (state) => state,
-  );
+  const { name, email, phone, setName, setEmail, setPhone } = useRegisterStore((state) => state);
 
-  const handleNextClick = async () => {
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [phoneVerified, setPhoneVerified] = useState(false);
+
+  // On mount, check for emailVerified/phoneVerified and email/phone in query params
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("emailVerified") === "true") {
+      setEmailVerified(true);
+      if (params.get("email")) setEmail(params.get("email"));
+    }
+    if (params.get("phoneVerified") === "true") {
+      setPhoneVerified(true);
+      if (params.get("phone")) setPhone(params.get("phone"));
+    }
+  }, [setEmail, setPhone]);
+
+  const handleVerifyEmail = () => {
+    if (!name || !email) {
+      toast.error("Please fill in your name and email.");
+      return;
+    }
+    router.push(`/auth/${role}/sign-up/email-otp?email=${encodeURIComponent(email)}`);
+  };
+
+  const handleVerifyPhone = () => {
     if (!name || !email || !phone) {
       toast.error("Please fill in all fields (name, email, and phone).");
       return;
     }
-
-    startTransition(async () => {
-      const response = await checkExistingUser({ email, phone });
-      if (!response.data.isRegistered) {
-        router.push("/auth/" + role + "/sign-up/id-proof");
-      } else {
-        toast.error(response.message || response.data.message);
-      }
-    });
+    if (!emailVerified) {
+      toast.error("Please verify your email first.");
+      return;
+    }
+    router.push(`/auth/${role}/sign-up/phone-otp?phone=${encodeURIComponent(phone)}`);
   };
 
   return (
@@ -79,14 +97,28 @@ const SignUpForm1 = ({ role }) => {
         </div>
       </div>
       <div className="flex flex-col items-center gap-8 self-center">
-        <RoundedButton
-          onClick={() => handleNextClick()}
-          title={isPending ? "Checking Unique ..." : "Next"}
-          disabled={isPending}
-          loading={isPending.toString()}
-          showIcon
-          className="min-w-72"
-        />
+        {!emailVerified ? (
+          <RoundedButton
+            onClick={handleVerifyEmail}
+            title="Verify Email"
+            showIcon
+            className="min-w-72"
+          />
+        ) : !phoneVerified ? (
+          <RoundedButton
+            onClick={handleVerifyPhone}
+            title="Verify Phone"
+            showIcon
+            className="min-w-72"
+          />
+        ) : (
+          <RoundedButton
+            onClick={() => router.push(`/auth/${role}/sign-up/id-proof`)}
+            title="Continue to ID Proof"
+            showIcon
+            className="min-w-72"
+          />
+        )}
         <div className="flex items-center gap-1">
           Already have an account?{" "}
           <CustomLink href={"/auth/" + role + "/login"}>Sign in</CustomLink>

@@ -66,7 +66,7 @@ const LoginForm = ({ role = "seller" }) => {
           </div>
           <CustomLink
             className="text-sm"
-            href={`/login/${role}/forget-password`}
+            href={`/auth/${role}/login/forget-password`}
           >
             Forgot password ?
           </CustomLink>

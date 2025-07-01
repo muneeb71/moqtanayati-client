@@ -1,14 +1,21 @@
 import { sellerChatIcon } from "@/assets/icons/common-icons";
 import Image from "next/image";
 
-
-const BidRetractionCard = () => {
+const BidRetractionCard = ({ bid }) => {
+  if (!bid) return null;
+  const user = bid.user || {};
+  const avatar = user.avatar || "/static/dummy-user/1.jpeg";
+  const name = user.name || "Unknown";
+  const amount = bid.amount || 0;
+  const reason = bid.retractionReason || "No reason provided.";
+  // Calculate time ago (simple, for demo)
+  const timeAgo = bid.createdAt ? new Date(bid.createdAt).toLocaleString() : "Just now";
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-black/10 bg-[#FBFBFB] p-3">
       <div className="flex w-full items-center justify-between">
         <div className="flex items-center gap-3">
           <Image
-            src="/static/dummy-user/1.jpeg"
+            src={avatar}
             width={57}
             height={57}
             alt="Profile Image"
@@ -16,18 +23,17 @@ const BidRetractionCard = () => {
             quality={100}
             className="rounded-full"
           />
-          <span className="text-black/60">Kathryn Murphy</span>
+          <span className="text-black/60">{name}</span>
         </div>
         <div className="flex flex-col items-end gap-1">
-          <span className="text-xl font-medium">$350.00</span>
-          <span className="text-xs text-black/40">1 min ago</span>
+          <span className="text-xl font-medium">${amount}</span>
+          <span className="text-xs text-black/40">{timeAgo}</span>
         </div>
       </div>
       <div className="flex flex-col gap-1">
         <span className="font-medium">Reason</span>
         <span className="text-sm text-black/60">
-          The payment method I intended to use is currently unavailable, so I
-          cannot proceed with the bid.
+          {reason}
         </span>
       </div>
       <div className="flex items-center flex-col sm:flex-row justify-between gap-5 pt-5">

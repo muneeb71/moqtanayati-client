@@ -11,6 +11,8 @@ const SellerBiddersSection = ({ bids }) => {
   const [selectedBidder, setSelectedBidder] = useState(null);
   const [bidAmount, setBidAmount] = useState(0);
 
+  const retractedBids = bids.filter(bid => bid.status === "RETRACTED");
+
   useEffect(() => {
     if (selectedBidder) {
       setBidAmount(selectedBidder.amount);
@@ -28,7 +30,7 @@ const SellerBiddersSection = ({ bids }) => {
                 ({bids.length})
               </span>
             </h1>
-            <BidRetractionRequestsDialog />
+            <BidRetractionRequestsDialog retractedBids={retractedBids} />
           </div>
           {bids.length === 0 ? (
             <span className="text-[15px] leading-[23px] text-black/30">

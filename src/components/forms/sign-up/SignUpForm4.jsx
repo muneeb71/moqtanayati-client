@@ -22,6 +22,7 @@ const SignUpForm4 = ({ role = "" }) => {
     latitude,
     longitude,
     sellerType,
+    isVerified
   } = useRegisterStore((state) => state);
 
   const [type, setType] = useState()
@@ -38,6 +39,7 @@ const SignUpForm4 = ({ role = "" }) => {
       password,
       latitude,
       longitude,
+      isVerified: true,
       sellerType: role === "buyer" ? "INDIVIDUAL" : sellerType,
     };
     const response = await signUpUser(payload);

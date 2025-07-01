@@ -1,4 +1,11 @@
-const PaymentDetailsCard = () => {
+const PaymentDetailsCard = ({ order }) => {
+  if (!order) return null;
+  // These fields are placeholders, replace with real fields if available
+  const paymentMethod = order.paymentMethod || order.paymentStatus || "N/A";
+  const transactionId = order.transactionId || order.id || "N/A";
+  const transactionDate = order.createdAt ? new Date(order.createdAt).toLocaleString() : "N/A";
+  const estimatedDelivery = order.estimatedDelivery || "N/A";
+  const shippingAddress = order.user?.address || "N/A";
   return (
     <div className="flex w-full flex-col gap-4 rounded-3xl border border-black/10 bg-[#F8F7FB] px-5 py-6">
       <span className="text-lg font-medium text-delftBlue">Details</span>
@@ -7,7 +14,7 @@ const PaymentDetailsCard = () => {
           Payment Method
         </span>
         <span className="text-right text-sm font-medium text-[#4D4D4DE5]">
-          Payment Method
+          {paymentMethod}
         </span>
       </div>
       <div className="flex items-start justify-between gap-4">
@@ -15,7 +22,7 @@ const PaymentDetailsCard = () => {
           Transaction ID
         </span>
         <span className="text-right text-sm font-medium text-[#4D4D4DE5]">
-          #TXN1234567890ABC
+          {transactionId}
         </span>
       </div>
       <div className="flex items-start justify-between gap-4">
@@ -23,7 +30,7 @@ const PaymentDetailsCard = () => {
           Transaction Date
         </span>
         <span className="text-right text-sm font-medium text-[#4D4D4DE5]">
-          April 26, 2024, 10:45 AM
+          {transactionDate}
         </span>
       </div>
       <div className="flex items-start justify-between gap-4">
@@ -31,7 +38,7 @@ const PaymentDetailsCard = () => {
           Estimated Delivery
         </span>
         <span className="text-right text-sm font-medium text-[#4D4D4DE5]">
-          April 30, 2024
+          {estimatedDelivery}
         </span>
       </div>
       <div className="flex items-start justify-between gap-4">
@@ -39,7 +46,7 @@ const PaymentDetailsCard = () => {
           Shipping Address
         </span>
         <span className="text-right text-sm font-medium text-[#4D4D4DE5]">
-          123 King's Road, Riyadh, Saudi Arabia.
+          {shippingAddress}
         </span>
       </div>
     </div>
