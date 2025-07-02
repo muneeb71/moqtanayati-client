@@ -66,10 +66,7 @@ const page = () => {
           : "/static/delivery.svg",
     };
     return images[step] || "receive.svg";
-  };
-
-  console.log(order);
-  
+  };  
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-10 px-3 pb-20">

@@ -3,17 +3,17 @@
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 
-const CustomerSupportBar = () => {
+const CustomerSupportBar = ({ selected = "contact", setSelected }) => {
   const pathname = usePathname();
   const router = useRouter();
 
   return (
     <div className="flex w-full items-center justify-center gap-2 text-nowrap border-b-[1.5px] border-[#F0F1F4] pb-5 md:gap-[18px]">
       <button
-        onClick={() => router.push("/profile/settings/customer-support")}
+        onClick={() => setSelected("contact")}
         className={cn(
           "flex items-center justify-center rounded-[12px] border-[1.5px] px-3 py-1.5 md:px-5 md:py-2.5",
-          pathname === "/profile/settings/customer-support"
+          selected === "contact"
             ? "border-moonstone bg-moonstone text-white"
             : "border-silver hover:border-moonstone hover:bg-moonstone/10",
         )}
@@ -21,19 +21,23 @@ const CustomerSupportBar = () => {
         Contact Form
       </button>
       <button
-        onClick={() => router.push("#")}
+        onClick={() => setSelected("whatsapp")}
         className={cn(
-          "flex items-center justify-center gap-1.5 rounded-[12px] border-[1.5px] px-3 py-1.5 text-davyGray md:px-5 md:py-2.5",
-          "border-[#67C15E66] hover:border-[#67C15E] hover:bg-[#67C15E]/5",
+          "flex items-center justify-center gap-1.5 rounded-[12px] border-[1.5px] px-3 py-1.5 md:px-5 md:py-2.5",
+          selected === "whatsapp"
+            ? "border-[#67C15E] bg-[#67C15E] text-white"
+            : "border-[#67C15E66] text-davyGray hover:border-[#67C15E] hover:bg-[#67C15E]/5",
         )}
       >
         {whatsappIcon} <span className="hidden sm:inline">Whatsapp</span>
       </button>
       <button
-        onClick={() => router.push("#")}
+        onClick={() => setSelected("email")}
         className={cn(
-          "flex items-center justify-center gap-1.5 rounded-[12px] border-[1.5px] px-3 py-1.5 text-davyGray md:px-5 md:py-2.5",
-          "border-[#ECB16880] hover:border-[#ECB168] hover:bg-[#67C15E]/5",
+          "flex items-center justify-center gap-1.5 rounded-[12px] border-[1.5px] px-3 py-1.5 md:px-5 md:py-2.5",
+          selected === "email"
+            ? "border-[#ECB168] bg-[#ECB168] text-white"
+            : "border-[#ECB16880] text-davyGray hover:border-[#ECB168] hover:bg-[#67C15E]/5",
         )}
       >
         {emailSupportIcon}{" "}

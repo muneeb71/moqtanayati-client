@@ -8,7 +8,7 @@ export const getWatchlistById = async (id) => {
       data: response.data,
     };
   } catch (error) {
-    console.error('Error updating cart:', error);
+    // console.error('Error updating cart:', error);
     return {
       success: false,
       error: error.response?.data?.message || 'Failed to get watchlist data',

@@ -19,9 +19,7 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
   const id = path.split("/").splice(-1)[0];
   const [bidAmount, setBidAmount] = useState();
   const [orderId, setOrderId] = useState(null);
-  const [requestLoading, setRequestLoading] = useState(false);
-  console.log(item);
-  
+  const [requestLoading, setRequestLoading] = useState(false);  
   
   const addItem = async () => {
     setRequestLoading(true);

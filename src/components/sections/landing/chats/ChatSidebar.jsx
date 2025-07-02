@@ -1,9 +1,12 @@
 import { searchIconSmall } from "@/assets/icons/common-icons";
 import Image from "next/image";
+import { useState } from "react";
 
 const ChatSidebar = ({ users, selectedUser, setSelectedUser, loading, selectedUserId }) => {
-  console.log(users);
-  
+  const [search, setSearch] = useState("");
+  const filteredUsers = users.filter(user =>
+    (user.name || "").toLowerCase().includes(search.toLowerCase())
+  );
   return (
     <div className="hidden w-full flex-col rounded-[30px] border border-black/10 bg-[#F9F9F9] px-[20px] py-[30px] md:flex">
       <h1 className="border-b-[1.3px] border-[#F0F1F4] pb-[32px] text-center text-[23px] leading-[31px] text-delftBlue">
@@ -18,15 +21,17 @@ const ChatSidebar = ({ users, selectedUser, setSelectedUser, loading, selectedUs
             id="searchChat"
             className="w-full text-sm outline-none placeholder:text-[#858699]"
             placeholder="Search..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
           />
         </div>
         <div className="flex w-full flex-col">
           {loading ? (
             <div className="text-center text-gray-400 py-8">Loading...</div>
-          ) : users.length === 0 ? (
+          ) : filteredUsers.length === 0 ? (
             <div className="text-center text-gray-400 py-8">No chats</div>
           ) : (
-            users.map((user, index) => {
+            filteredUsers.map((user, index) => {
               const messages = user.chatMeta.messages || [];
               const lastMessage = messages[messages.length - 1];
               return (

@@ -40,7 +40,7 @@ const Header = () => {
         <div className="hidden items-center gap-2 md:flex md:gap-4">
           <div className="grid grid-cols-[1fr_1px_1fr] place-items-center gap-5">
             <Link
-              href="/notifications/all"
+              href="/buyer/notifications/all"
               className="grid size-12 place-items-center rounded-full border border-[#3F175F1A]"
             >
               {bellIcon}

@@ -81,9 +81,9 @@ const SellerReviewCard = ({seller}) => {
         <button onClick={handleChatWithSeller} className="flex items-center gap-1 rounded-[5.6px] border border-moonstone/10 bg-moonstone/10 px-2 py-1 text-moonstone hover:border-moonstone hover:bg-moonstone/20">
           {sellerChatIcon} <span className="text-sm">Chat with seller</span>
         </button>
-        <button className="flex items-center gap-1 rounded-[5.6px] border border-moonstone/10 bg-moonstone/10 px-3 py-1 text-moonstone hover:border-moonstone hover:bg-moonstone/20">
+        {/* <button className="flex items-center gap-1 rounded-[5.6px] border border-moonstone/10 bg-moonstone/10 px-3 py-1 text-moonstone hover:border-moonstone hover:bg-moonstone/20">
           <span className="text-sm">View Profile</span>
-        </button>
+        </button> */}
       </div>
     </div>
   );

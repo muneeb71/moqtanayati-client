@@ -33,7 +33,7 @@ const CartPage = () => {
         setCart(res?.data?.data?.items);
         setUser(res?.data?.data?.user);
       } else {
-        console.error("Failed to fetch cart:", res.error);
+        console.log("Failed to fetch cart:", res.error);
       }
     } catch (error) {
       console.error("Error fetching cart:", error);
@@ -83,6 +83,9 @@ const CartPage = () => {
 
   if (loading) return <CartSkeleton />;
 
+  console.log(cart);
+  
+
   return (
     <div className="flex w-full max-w-7xl flex-col gap-10 py-10">
       <h1 className="text-4xl font-semibold text-davyGray">Your Cart</h1>
@@ -123,9 +126,7 @@ const CartPage = () => {
                           />
                         </div>
 
-                        <span className="text-black/70">
-                          {cart?.product?.store?.name}
-                        </span>
+                        <span className="text-black/70 text-xs">{item.product.store?.name || "Store"}</span>
                       </div>
                     </div>
                     <span className="text-3xl font-medium text-black/80">

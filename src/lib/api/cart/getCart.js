@@ -8,7 +8,7 @@ export const getCart = async () => {
       data: response.data,
     };
   } catch (error) {
-    console.error('Error fetching cart:', error);
+    // console.error('Error fetching cart:', error);
     return {
       success: false,
       error: error.response?.data?.message || 'Failed to fetch cart data',

@@ -7,6 +7,7 @@ import OrdersCompletedCard from "./cards/OrdersCompletedCard";
 import RatingReviewsCard from "./cards/RatingReviewsCard";
 import SalesAnalyticsCard from "./cards/SalesAnalyticsCard";
 import TotalOrdersCard from "./cards/TotalOrdersCard";
+import AnalyticsBannerSkeleton from "@/components/loaders/AnalyticsBannerSkeleton";
 
 const AnalyticsBanner = () => {
   const [analytics, setAnalytics] = useState(null);
@@ -29,7 +30,7 @@ const AnalyticsBanner = () => {
     fetchAnalytics();
   }, []);
 
-  if (loading) return <div className="py-10 text-center">Loading analytics...</div>;
+  if (loading) return <AnalyticsBannerSkeleton />;
   if (error) return <div className="py-10 text-center text-red-500">{error}</div>;
 
   return (

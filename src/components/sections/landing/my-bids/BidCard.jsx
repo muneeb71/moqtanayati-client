@@ -2,12 +2,15 @@
 
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const BidCard = ({ item }) => {  
   const [favourite, setFavourite] = useState(item.isFavourite);
   const highestBid = Math.max(...item.auction.bids.map(bid => bid.amount));
   const myBidIsHighest = item.amount === highestBid;
+  const router = useRouter();
+  
   
   const statusStyles = {
     HIGHEST: "bg-moonstone/10 text-moonstone",
@@ -18,10 +21,11 @@ const BidCard = ({ item }) => {
   
   return (
     <div
-      className="grid h-full max-h-[138px] grid-cols-[96px_1fr] overflow-hidden rounded-[12px] bg-white sm:grid-cols-[126px_1fr]"
+      className="grid cursor-pointer h-full max-h-[138px] grid-cols-[96px_1fr] overflow-hidden rounded-[12px] bg-white sm:grid-cols-[126px_1fr]"
       style={{
         boxShadow: "0px 0px 29.85px 2.39px #0000001A",
       }}
+      onClick={()=>router.push(`/buyer/product-details/${item?.auction?.product?.id}`)}
     >
       <div className="h-full w-full overflow-hidden">
         <Image

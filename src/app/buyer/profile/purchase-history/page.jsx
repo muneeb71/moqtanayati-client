@@ -1,5 +1,6 @@
 "use client"
 import HistoryCard from "@/components/sections/landing/profile/purchase-history/HistoryCard";
+import HistoryCardSkeleton from "@/components/loaders/HistoryCardSkeleton";
 import { useEffect, useState } from "react";
 import { getUserOrders } from "@/lib/api/orders/getUserOrders";
 
@@ -24,7 +25,11 @@ const PurchaseHistoryPage = () => {
   return (
     <div className="no-scrollbar flex max-h-[40rem] flex-col gap-3 overflow-y-auto py-5">
       {loading ? (
-        <div>Loading...</div>
+        <>
+          <HistoryCardSkeleton />
+          <HistoryCardSkeleton />
+          <HistoryCardSkeleton />
+        </>
       ) : (
         orders.map((item, index) => <HistoryCard item={item} key={item.id || index} />)
       )}

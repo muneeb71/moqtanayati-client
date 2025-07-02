@@ -15,6 +15,7 @@ const HistoryCard = ({ item }) => {
     hour12: true,
     timeZone: "UTC",
   });
+  
   return (
     <div className="grid h-full min-h-fit grid-cols-[120px_1fr] gap-2 overflow-hidden sm:min-h-[138px] sm:place-items-center">
       <div className="aspect-square min-w-[120px] overflow-hidden rounded-2xl border border-black/5">
@@ -57,10 +58,10 @@ const HistoryCard = ({ item }) => {
           >
             {item.status}
           </div>
-          <button className="h-fit w-fit rounded-lg border-[1.5px] border-moonstone px-2 text-xs text-moonstone sm:px-6 sm:py-2 sm:text-sm" onClick={()=>toast.error("Invoice pdf not generated yet.")}>
+          {/* <button className="h-fit w-fit rounded-lg border-[1.5px] border-moonstone px-2 text-xs text-moonstone sm:px-6 sm:py-2 sm:text-sm" onClick={()=>toast.error("Invoice pdf not generated yet.")}>
             Invoice
-          </button>
-          {item.isUnrated && <LeaveFeedbackDialog item={item} />}
+          </button> */}
+          {true && <LeaveFeedbackDialog item={item} />}
         </div>
       </div>
     </div>

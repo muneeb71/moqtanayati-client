@@ -14,6 +14,7 @@ import "react-range-slider-input/dist/style.css";
 import { getUserProfile } from "@/lib/api/profile/getProfile";
 import toast from "react-hot-toast";
 import { updateAuctionPreference } from "@/lib/api/profile/updatePreference";
+import PreferencesSectionSkeleton from "@/components/loaders/PreferencesSectionSkeleton";
 
 const BAR_MAX = 20000;
 
@@ -103,6 +104,12 @@ const PreferencesSection = () => {
       toast.error("Update failed");
     }
   };
+
+  if (loading) {
+    return (
+      <PreferencesSectionSkeleton />
+    )
+  }
 
   return (
     <div className="flex w-full max-w-[470px] flex-col gap-6 p-5">

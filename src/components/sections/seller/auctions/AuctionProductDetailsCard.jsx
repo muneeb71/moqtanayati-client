@@ -18,7 +18,6 @@ const AuctionProductDetailsCard = ({ auction }) => {
   
   
   const [highestBid, setHighestBid] = useState(getHighestBid());
-  console.log(highestBid);
 
   return (
     <div className="flex w-full flex-col md:px-10">

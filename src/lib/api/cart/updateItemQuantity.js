@@ -10,7 +10,7 @@ export const updateItemQuantity = async (itemId, quantity, price) => {
       data: response.data,
     };
   } catch (error) {
-    console.error('Error updating cart:', error);
+    // console.error('Error updating cart:', error);
     return {
       success: false,
       error: error.response?.data?.message || 'Failed to update cart data',

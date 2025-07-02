@@ -7,6 +7,7 @@ import FileUpload from "@/components/form-fields/FileUpload";
 import InputField from "@/components/form-fields/InputField";
 import Label from "@/components/form-fields/Label";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 const CustomerSupportContactForm = () => {
   const categories = ["Category 1", "Category 2", "Category 3", "Category 4"];
@@ -47,7 +48,7 @@ const CustomerSupportContactForm = () => {
           </div>
         </div>
       </div>
-      <RoundedButton title="Submit" className="w-72" />
+      <RoundedButton title="Submit" className="w-72" onClick={() => toast.error("Service currently unavailable")} />
     </div>
   );
 };

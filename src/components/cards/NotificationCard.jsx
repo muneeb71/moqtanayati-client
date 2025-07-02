@@ -1,10 +1,10 @@
-import Image from "next/image";
+import formatDateTime from "@/utils/dateFormatter";
 
 const NotificationCard = ({ image, title, desc, time }) => {
   return (
     <div className="flex items-center justify-between gap-[50px] rounded-[15px] bg-[#F8F7FB] py-5 pl-5 pr-1.5">
       <div className="flex flex-col items-start gap-3 sm:flex-row">
-        <div className="grid size-[66px] place-items-center overflow-hidden rounded-full">
+        {/* <div className="grid size-[66px] place-items-center overflow-hidden rounded-full">
           <Image
             src={image}
             width={100}
@@ -13,19 +13,19 @@ const NotificationCard = ({ image, title, desc, time }) => {
             loading="lazy"
             className="h-full w-full object-cover"
           />
-        </div>
+        </div> */}
         <div className="flex min-h-[97px] flex-col justify-between">
           <span className="max-w-[337px] text-lg sm:text-[21px] sm:leading-[31px]">
             <span className="font-medium">{title}:</span> {desc}
           </span>
           <span className="font-medium text-battleShipGray sm:text-lg">
-            {time}
+            {formatDateTime(time)}
           </span>
         </div>
       </div>
-      <button className="text-[#8E8E93] hover:text-black/80">
+      {/* <button className="text-[#8E8E93] hover:text-black/80">
         {barsIconSvg}
-      </button>
+      </button> */}
     </div>
   );
 };

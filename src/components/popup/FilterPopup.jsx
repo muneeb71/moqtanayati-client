@@ -1,8 +1,12 @@
 import { useState } from "react";
 
-const FiltersPopup = ({ onClose }) => {
+const FiltersPopup = ({ onClose, onApplyFilter }) => {
   const [categories, setCategories] = useState([]);
   const [categoryInput, setCategoryInput] = useState("");
+  const [location, setLocation] = useState("");
+  const [condition, setCondition] = useState("");
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
   const years = [2024, 2023, 2022, 2021];
   const months = [
     "January",
@@ -140,6 +144,8 @@ const FiltersPopup = ({ onClose }) => {
             type="text"
             placeholder="Enter Location"
             className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone"
+            value={location}
+            onChange={e => setLocation(e.target.value)}
           />
         </div>
 
@@ -147,7 +153,8 @@ const FiltersPopup = ({ onClose }) => {
           <label className="mb-2 block text-lg font-medium text-[#0C0D34]">
             Item Condition
           </label>
-          <select className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone">
+          <select className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone" value={condition} onChange={e => setCondition(e.target.value)}>
+            <option value="">Select Condition</option>
             {conditions.map((condition, index) => (
               <option key={index} value={condition}>
                 {condition}
@@ -160,7 +167,8 @@ const FiltersPopup = ({ onClose }) => {
           <label className="mb-2 block text-lg font-medium text-[#0C0D34]">
             Month
           </label>
-          <select className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone">
+          <select className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone" value={month} onChange={e => setMonth(e.target.value)}>
+            <option value="">Select Month</option>
             {months.map((month, index) => (
               <option key={index} value={month}>
                 {month}
@@ -173,7 +181,8 @@ const FiltersPopup = ({ onClose }) => {
           <label className="mb-2 block text-lg font-medium text-[#0C0D34]">
             Year
           </label>
-          <select className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone">
+          <select className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone" value={year} onChange={e => setYear(e.target.value)}>
+            <option value="">Select Year</option>
             {years.map((year, index) => (
               <option key={index} value={year}>
                 {year}
@@ -182,7 +191,20 @@ const FiltersPopup = ({ onClose }) => {
           </select>
         </div>
 
-        <button className="w-full rounded-lg bg-[#25A5B4] py-2 text-white hover:bg-[#1F8A9A]">
+        <button
+          className="w-full rounded-lg bg-[#25A5B4] py-2 text-white hover:bg-[#1F8A9A]"
+          onClick={e => {
+            e.preventDefault();
+            const filterObj = {
+              categories,
+              location,
+              condition,
+              month,
+              year,
+            };
+            if (onApplyFilter) onApplyFilter(filterObj);
+          }}
+        >
           Apply Filter
         </button>
       </div>

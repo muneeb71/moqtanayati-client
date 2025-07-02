@@ -55,9 +55,6 @@ const CheckoutSheet = ({
     setSelectedTab(tabs[1]);
   };
 
-  console.log(cart);
-  
-
   const subtotal = cart.reduce((total, item) => {
     return total + item.quantity * item.price;
   }, 0);

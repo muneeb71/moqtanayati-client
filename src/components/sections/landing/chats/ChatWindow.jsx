@@ -124,7 +124,7 @@ const ChatWindow = ({
             </div>
           </div>
         </div>
-        <button className="px-3 py-1">{threeDotsIcon}</button>
+        {/* <button className="px-3 py-1">{threeDotsIcon}</button> */}
       </div>
 
       {/* Chat Messages */}

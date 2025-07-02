@@ -20,7 +20,6 @@ const OrderDetailsPage = () => {
     try {
       const data = await getOrderByIdClient(id);
       setOrder(data?.data);
-      console.log("Order details:", data);
     } catch (error) {
       // Optionally handle error
       setOrder(null);

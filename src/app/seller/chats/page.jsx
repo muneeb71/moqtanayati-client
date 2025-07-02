@@ -10,12 +10,14 @@ import { getMessages } from "@/lib/api/chat/getMessages";
 import { createChat } from "@/lib/api/chat/createChat";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import { io } from "socket.io-client";
+import ChatSidebarSkeleton from "@/components/loaders/chats/ChatSidebarSkeleton";
+import ChatWindowSkeleton from "@/components/loaders/chats/ChatWindowSkeleton";
 
 const SOCKET_URL = "http://localhost:8000";
 
 const ChatPage = () => {
   const searchParams = useSearchParams();
-  const userId = searchParams.get("id");
+  const userIdFromParams = searchParams.get("id");
   const currentUserId = useProfileStore((s) => s.id);
   const [conversations, setConversations] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -25,6 +27,7 @@ const ChatPage = () => {
   const [newMessage, setNewMessage] = useState("");
   const router = useRouter();
   const socketRef = useRef(null);
+  const [selectedUserId, setSelectedUserId] = useState(userIdFromParams);
 
   useEffect(() => {
     setLoading(true);
@@ -37,8 +40,12 @@ const ChatPage = () => {
   }, []);
 
   useEffect(() => {
+    setSelectedUserId(userIdFromParams);
+  }, [userIdFromParams]);
+
+  useEffect(() => {
     const fetchChatAndMessages = async () => {
-      if (!userId) {
+      if (!selectedUserId) {
         setSelectedChat(null);
         setMessages([]);
         return;
@@ -46,19 +53,19 @@ const ChatPage = () => {
       setLoadingMessages(true);
       let chat = conversations.find(
         (c) =>
-          String(c.userA.id) === String(userId) ||
-          String(c.userB.id) === String(userId)
+          String(c.userA.id) === String(selectedUserId) ||
+          String(c.userB.id) === String(selectedUserId)
       );
       if (!chat) {
         try {
-          await createChat(userId);
+          await createChat(selectedUserId);
           const updatedRes = await getConversations();
           const updatedConversations = updatedRes?.data || [];
           setConversations(updatedConversations);
           chat = updatedConversations.find(
             (c) =>
-              String(c.userA.id) === String(userId) ||
-              String(c.userB.id) === String(userId)
+              String(c.userA.id) === String(selectedUserId) ||
+              String(c.userB.id) === String(selectedUserId)
           );
         } catch (e) {
           chat = null;
@@ -66,7 +73,7 @@ const ChatPage = () => {
       }
       setSelectedChat(chat || null);
       if (chat && chat.id) {
-        getMessages(userId)
+        getMessages(selectedUserId)
           .then((res) => setMessages(res?.data || []))
           .catch(() => setMessages([]))
           .finally(() => setLoadingMessages(false));
@@ -77,7 +84,7 @@ const ChatPage = () => {
     };
     fetchChatAndMessages();
     // eslint-disable-next-line
-  }, [userId]);
+  }, [selectedUserId, conversations]);
 
   // SOCKET.IO LOGIC
   useEffect(() => {
@@ -136,6 +143,7 @@ const ChatPage = () => {
 
   const handleSidebarSelect = (user) => {
     if (!user) return;
+    setSelectedUserId(user.id);
     router.push(`/seller/chats?id=${user.id}`);
   };
 
@@ -166,26 +174,34 @@ const ChatPage = () => {
 
   return (
     <div className="grid min-h-[90vh] w-full max-w-[1172px] gap-3 py-5 md:grid-cols-[2fr_3fr] md:py-12 lg:gap-7">
-      <ChatSidebar
-        users={sidebarUsers}
-        selectedUser={selectedChat}
-        setSelectedUser={handleSidebarSelect}
-        loading={loading}
-        selectedUserId={userId}
-      />
-      {selectedChat ? (
-        <ChatWindow
+      {loading ? (
+        <ChatSidebarSkeleton />
+      ) : (
+        <ChatSidebar
+          users={sidebarUsers}
           selectedUser={selectedChat}
-          setSelectedUser={setSelectedChat}
-          users={conversations}
-          setUsers={setConversations}
-          newMessage={newMessage}
-          setNewMessage={setNewMessage}
-          messages={mappedMessages}
-          loading={loadingMessages}
-          userBId={userId}
-          setMessages={setMessages}
+          setSelectedUser={handleSidebarSelect}
+          loading={loading}
+          selectedUserId={selectedUserId}
         />
+      )}
+      {selectedChat || loading ? (
+        loadingMessages || loading ? (
+          <ChatWindowSkeleton />
+        ) : (
+          <ChatWindow
+            selectedUser={selectedChat}
+            setSelectedUser={setSelectedChat}
+            users={conversations}
+            setUsers={setConversations}
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            messages={mappedMessages}
+            loading={loadingMessages}
+            userBId={selectedUserId}
+            setMessages={setMessages}
+          />
+        )
       ) : (
         <div className="flex min-h-[300px] w-full items-center justify-center text-lg text-gray-400">
           No chat selected
