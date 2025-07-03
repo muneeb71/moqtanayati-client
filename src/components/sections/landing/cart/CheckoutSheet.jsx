@@ -93,7 +93,7 @@ const CheckoutSheet = ({
       }
     } catch (err) {
       toast.error(err?.message || "Order placement failed");
-      console.error("Order placement failed", err);
+      console.log("Order placement failed", err);
     }
   };
 
@@ -318,6 +318,7 @@ const CheckoutSheet = ({
                 <div className="flex items-center justify-center gap-3 py-5">
                   {cards.map((card, index) => (
                     <div
+                      key={index}
                       className={cn(
                         "cursor-pointer",
                         selectedCard === card

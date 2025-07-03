@@ -151,7 +151,7 @@ const EditProfileCard = () => {
         toast.error(response.message || "Failed to update profile");
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.log("Error updating profile:", error);
       toast.error(error.message || "An unexpected error occurred");
     } finally {
       setIsLoading(false);

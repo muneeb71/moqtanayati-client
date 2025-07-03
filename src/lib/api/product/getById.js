@@ -7,7 +7,7 @@ export async function getProductById(id) {
     const response = await api.get(`products/${id}`);
     return response.data.data;
   } catch (error) {
-    console.error("Error fetching product:", error);
+    console.log("Error fetching product:", error);
     return [];
   }
 }

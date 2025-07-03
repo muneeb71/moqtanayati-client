@@ -30,7 +30,7 @@ const AuctionProductDetailsCard = ({ auction }) => {
                   {auction?.product.name}
                 </h2>
                 <h1 className="text-[24px] font-medium leading-[40px] md:text-[28.8px] md:leading-[43px]">
-                  ${auction?.product.buyItNow.toFixed(2)}
+                  ${auction?.product?.buyItNow?.toFixed(2) || 0.00}
                 </h1>
               </div>
               <div className="flex flex-col justify-end gap-2.5">

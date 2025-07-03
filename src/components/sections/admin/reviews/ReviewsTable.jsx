@@ -1,6 +1,8 @@
-import { starIcon } from "@/assets/icons/common-icons";
+"use client"
+import { deleteIcon, starIcon } from "@/assets/icons/common-icons";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 const ReviewsTable = ({ category }) => {
   const tableHeaders = ["Buyer", "Seller", "Rating", "Review", "Actions"];
@@ -208,15 +210,8 @@ const ReviewsTable = ({ category }) => {
                   {data.review}
                 </div>
               </td>
-              <td>
-                <div className="flex items-center gap-2 px-5 py-4 text-sm">
-                  <button className="rounded-lg bg-faluRed/10 px-4 py-3 font-medium text-faluRed transition-all duration-150 ease-linear hover:bg-faluRed hover:text-white">
-                    Reject
-                  </button>
-                  <button className="rounded-lg bg-shamrockGreen px-4 py-3 font-medium text-white transition-all duration-150 ease-linear hover:bg-green-500">
-                    Approve
-                  </button>
-                </div>
+              <td className="flex items-center justify-center w-full min-h-20">
+                <span className="cursor-pointer" onClick={()=>toast.success("Review Deleted Successfully.")}>{deleteIcon}</span>
               </td>
             </tr>
           ))}

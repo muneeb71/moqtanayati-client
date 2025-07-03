@@ -7,7 +7,7 @@ export async function getAllAuctions() {
     const response = await api.get("auctions");
     return response.data.data;
   } catch (error) {
-    console.error("Error fetching auctions:", error);
+    console.log("Error fetching auctions:", error);
     return [];
   }
 } 

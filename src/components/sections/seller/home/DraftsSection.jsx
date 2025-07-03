@@ -17,7 +17,7 @@ const DraftsSection = () => {
           const draftProducts = await getDraftProducts(store.id);
           setDrafts(draftProducts);
         } catch (error) {
-          console.error("Error fetching drafts:", error);
+          console.log("Error fetching drafts:", error);
         } finally {
           setIsLoading(false);
         }

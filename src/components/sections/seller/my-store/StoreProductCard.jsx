@@ -37,7 +37,7 @@ const StoreProductCard = ({ item }) => {
         setStock(newStock);
       }
     } catch (error) {
-      console.error("Error updating stock:", error);
+      console.log("Error updating stock:", error);
     } finally {
       setIsUpdating(false);
     }
@@ -88,7 +88,7 @@ const StoreProductCard = ({ item }) => {
               {item.name}
             </h1>
             <div className="w-fit rounded-full bg-moonstone px-2 py-1 text-xs text-white">
-              {item.status === "DRAFT" ? "Draft" : item.pricingFormat}
+              {item.status === "DRAFT" ? "Draft" : item.pricingFormat || "INCOMPLETE"}
             </div>
           </div>
           {item.price !== 0 ? (

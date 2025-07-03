@@ -6,6 +6,7 @@ import { productHeartIcon } from "@/assets/icons/seller-icons";
 import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { updateProductStock } from "@/lib/api/product/updateStock";
+import toast from "react-hot-toast";
 
 const formatTimeAgo = (dateString) => {
   const date = new Date(dateString);
@@ -54,9 +55,10 @@ const StoreProductDetailsCard = ({ item }) => {
       const response = await updateProductStock(item.id, newStock);
       if (response) {
         setStock(newStock);
+        toast.success("Stock updated.")
       }
     } catch (error) {
-      console.error("Error updating stock:", error);
+      console.log("Error updating stock:", error);
     } finally {
       setIsUpdating(false);
     }
@@ -91,7 +93,7 @@ const StoreProductDetailsCard = ({ item }) => {
                   {item?.name}
                 </h2>
                 <h1 className="text-[24px] font-medium leading-[40px] md:text-[28.8px] md:leading-[43px]">
-                  ${item?.price !== 0 ? item?.price.toFixed(2) : item?.buyItNow ? item?.buyItNow.toFixed(2) : "0.00"}
+                  ${item?.price !== 0 ? item?.price?.toFixed(2) : item?.buyItNow ? item?.buyItNow?.toFixed(2) : "0.00"}
                 </h1>
               </div>
               <div className="flex flex-col justify-end gap-2.5">

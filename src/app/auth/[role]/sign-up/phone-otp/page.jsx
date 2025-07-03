@@ -25,8 +25,6 @@ const PhoneOtpForm = () => {
         const res = await sendPhoneOtp({ phone });
         if (res.success) {
           toast.success("OTP sent to your phone.");
-        } else {
-          toast.error(res.error || "Failed to send OTP.");
         }
       } catch (e) {
         toast.error("Failed to send OTP.");
@@ -47,7 +45,7 @@ const PhoneOtpForm = () => {
       const res = await verifyPhoneOtp({ phone, otp: otpValue });
       if (res.success) {
         toast.success("Phone verified!");
-        router.push(`/auth/${role}/sign-up/id-proof`);
+        router.push(`/auth/${role}/sign-up/id-proof?role=${role}`);
       } else {
         toast.error(res.error || "Invalid OTP.");
       }

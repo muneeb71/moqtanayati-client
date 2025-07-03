@@ -7,7 +7,7 @@ export async function handleFavorite(productId) {
     const response = await api.post(`/products/${productId}/favorite`, {});
     return response;
   } catch (error) {
-    console.error("Error fetching product:", error);
+    console.log("Error fetching product:", error);
     return [];
   }
 }

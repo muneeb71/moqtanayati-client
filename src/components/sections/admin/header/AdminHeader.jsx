@@ -1,5 +1,6 @@
 import { BiSearch } from "react-icons/bi";
 import Image from "next/image";
+import { bellIcon } from "@/assets/icons/header-icons";
 
 const AdminHeader = () => {
   return (
@@ -14,18 +15,18 @@ const AdminHeader = () => {
           <BiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xl" />
         </div>
       </div>
-      
-      <div className="flex items-center gap-4">
-        <div className="relative cursor-pointer">
-          <Image src="/static/notifs.svg" alt="notifications" width={16} height={16} />
+
+      <div className="flex items-center justify-center gap-4">
+        <div className="relative cursor-pointer w-8 h-8 flex items-center justify-center rounded-full bg-slate-100">
+          {bellIcon}
         </div>
-        
+
         <div className="flex items-center gap-2">
           <div className="h-10 w-10 overflow-hidden rounded-full">
-            <Image 
-              src="/static/dummy-user/1.jpeg" 
-              alt="User profile" 
-              width={40} 
+            <Image
+              src="/static/dummy-user/1.jpeg"
+              alt="User profile"
+              width={40}
               height={40}
               className="h-full w-full object-cover"
             />
@@ -38,5 +39,6 @@ const AdminHeader = () => {
     </div>
   );
 };
+
 
 export default AdminHeader;

@@ -8,19 +8,17 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '8000',
-        pathname: '/api/static/**',
-      }
+        protocol: "http",
+        hostname: "localhost",
+        port: "8000",
+        pathname: "/api/static/**",
+      },
     ],
   },
-  webpack(config, { dev }) {
-    if (dev) {
-      // This removes the error overlay
-      config.plugins = config.plugins.filter(
-        (plugin) => plugin.constructor.name !== 'ReactDevOverlayPlugin'
-      );
+  webpack(config, { dev, isServer }) {
+    if (dev && !isServer) {
+      // Silences warnings in console
+      config.resolve.alias["react-dom$"] = "react-dom/profiling";
     }
     return config;
   },

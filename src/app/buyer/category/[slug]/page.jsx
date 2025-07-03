@@ -33,7 +33,7 @@ const CategoryPage = () => {
           setItems(dummyItems);
         }
       } catch (err) {
-        console.error('Error fetching products:', err);
+        console.log('Error fetching products:', err);
         setError(err.message);
         setItems(dummyItems);
       } finally {

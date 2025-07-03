@@ -1,4 +1,5 @@
 import CustomCheckBox from "@/components/form-fields/CustomCheckBox";
+import formatDateTime from "@/utils/dateFormatter";
 import Image from "next/image";
 
 import { BiSolidTrash } from "react-icons/bi";
@@ -60,7 +61,7 @@ const UsersTable = ({
             <td className="py-5">
               <div className="flex items-center gap-2">
                 <Image
-                  src={user.image}
+                  src={user.avatar || "/static/dummy-user/1.jpeg"}
                   width={50}
                   height={50}
                   alt="Profile Image"
@@ -89,7 +90,7 @@ const UsersTable = ({
                     : "bg-faluRed/10 text-faluRed"
                 }`}
               >
-                {user.account_status}
+                {user.accountStatus}
               </span>
             </td>
             <td className="py-5 pl-8">
@@ -100,11 +101,11 @@ const UsersTable = ({
                     : "bg-lightBlue/10 text-lightBlue"
                 }`}
               >
-                {user.verification_status}
+                {user.verificationStatus}
               </span>
             </td>
             <td className="py-5 pl-8 text-[16px] text-customGray">
-              {user.registration_date}
+              {formatDateTime(user.registrationDate)}
             </td>
             <td className="py-5 pl-8">
               <div className="flex flex-row gap-2">

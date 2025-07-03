@@ -40,7 +40,7 @@ const SignUpForm4 = ({ role = "" }) => {
       latitude,
       longitude,
       isVerified: true,
-      sellerType: role === "buyer" ? "INDIVIDUAL" : sellerType,
+      sellerType: role === "buyer" ? "INDIVIDUAL" : sellerType || "BUSINESS",
     };
     const response = await signUpUser(payload);
 

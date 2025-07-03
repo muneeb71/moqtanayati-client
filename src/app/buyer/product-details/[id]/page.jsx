@@ -34,7 +34,7 @@ const ProductDetailsPage = () => {
         setBids([]);
       }
     } catch (error) {
-      console.error("Failed to fetch product or bids:", error);
+      console.log("Failed to fetch product or bids:", error);
     }
   };
 

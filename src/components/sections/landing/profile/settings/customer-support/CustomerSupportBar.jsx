@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 
-const CustomerSupportBar = ({ selected = "contact", setSelected }) => {
+const CustomerSupportBar = ({ selected = "contact", setSelected, role }) => {
   const pathname = usePathname();
   const router = useRouter();
 

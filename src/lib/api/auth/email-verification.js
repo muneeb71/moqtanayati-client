@@ -8,10 +8,10 @@ export const sendEmailOtp = async (data) => {
       data: response.data,
     };
   } catch (error) {
-    console.error("Error sending email OTP:", error);
+    // console.log("Error sending email OTP:", error);
     return {
       success: false,
-      error: error.response?.data?.message || 'Failed to send email OTP',
+      // error: error.response?.data?.message || 'Failed to send email OTP',
     };
   }
 };
@@ -24,7 +24,7 @@ export const verifyEmailOtp = async (data) => {
       data: response.data,
     };
   } catch (error) {
-    console.error("Error verifying email OTP:", error);
+    // console.log("Error verifying email OTP:", error);
     return {
       success: false,
       error: error.response?.data?.message || 'Failed to verify email OTP',

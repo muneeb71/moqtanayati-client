@@ -3,6 +3,8 @@ import QaSectionSheet from "../../landing/product-details/dialogs/qa-sheet/QaSec
 import Image from "next/image";
 
 const AuctionsDescriptionCard = ({ item }) => {
+  console.log(item);
+  
   return (
     <div className="flex w-full flex-col md:px-10">
       <div className="flex w-full max-w-[404px] flex-col gap-[52px]">
@@ -11,10 +13,10 @@ const AuctionsDescriptionCard = ({ item }) => {
             <div className="flex w-full items-end justify-between md:gap-[33px]">
               <div className="flex flex-col">
                 <h2 className="max-w-[258px] truncate font-medium md:text-[19.2px] md:leading-[29px]">
-                  {item.title}
+                  {item?.title || item?.name}
                 </h2>
                 <h1 className="text-[24px] font-medium leading-[40px] md:text-[28.8px] md:leading-[43px]">
-                  ${item.price !== 0 ? item.price.toFixed(2) : item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}
+                  ${item?.totalAmount !== 0 ? item?.price.toFixed(2) : item?.buyItNow ? item?.buyItNow.toFixed(2) : "0.00"}
                 </h1>
               </div>
               <div className="flex flex-col justify-end gap-2.5">

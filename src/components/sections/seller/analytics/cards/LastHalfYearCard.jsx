@@ -1,11 +1,24 @@
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-const LastHalfYearCard = ({ salesByMonth }) => {
-  const data = (salesByMonth || []).map(item => ({
-    month: monthNames[item.month - 1],
-    value: item.sales,
-    color: "#9F9FF8", // You can add logic for different colors if needed
-  }));
+const LastHalfYearCard = ({ salesByMonth, sales }) => {
+  const source = sales ?? salesByMonth ?? [];
+  const data = source.map(item => {
+    let monthLabel = "";
+    let value = 0;
+    if (typeof item.month === "string" && item.month.includes("-")) {
+      const monthIdx = parseInt(item.month.split("-")[1], 10) - 1;
+      monthLabel = monthNames[monthIdx];
+      value = item.totalSales ?? 0;
+    } else {
+      monthLabel = monthNames[item.month - 1];
+      value = item.sales ?? 0;
+    }
+    return {
+      month: monthLabel,
+      value,
+      color: "#9F9FF8",
+    };
+  });
 
   const calculateMax = () => {
     return data.length > 0 ? Math.max(...data.map((item) => item.value)) : 0;

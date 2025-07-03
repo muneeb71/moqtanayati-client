@@ -10,7 +10,7 @@ export const addItemToCart = async ({ productId, quantity, price }) => {
       data: response.data,
     };
   } catch (error) {
-    console.error('Error fetching cart:', error);
+    console.log('Error fetching cart:', error);
     return {
       success: false,
       error: error.response?.data?.message || 'Failed to fetch cart data',

@@ -9,10 +9,10 @@ export const sendPhoneOtp = async (data) => {
       data: response.data,
     };
   } catch (error) {
-    console.error("Error sending OTP:", error);
+    // console.log("Error sending OTP:", error);
     return {
       success: false,
-      error: error.response?.data?.message || 'Failed to send OTP',
+      // error: error.response?.data?.message || 'Failed to send OTP',
     };
   }
 };
@@ -26,7 +26,7 @@ export const verifyPhoneOtp = async (data) => {
       data: response.data,
     };
   } catch (error) {
-    console.error("Error verifying OTP:", error);
+    console.log("Error verifying OTP:", error);
     return {
       success: false,
       error: error.response?.data?.message || 'Failed to verify OTP',

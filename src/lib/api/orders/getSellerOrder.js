@@ -10,7 +10,7 @@ export async function getSellerOrders() {
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching user orders:', error);
+    console.log('Error fetching user orders:', error);
     throw error.response?.data || error;
   }
 } 

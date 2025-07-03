@@ -8,7 +8,7 @@ const ReviewsTableHeader = ({ reviewCategories, reviewCategory }) => {
   return (
     <div className="flex flex-col md:flex-row sm:items-center justify-between gap-5">
       <div className="flex items-center gap-2">
-        {reviewCategories.map((category, index) => (
+        {/* {reviewCategories.map((category, index) => (
           <Link
           key={index}
             className={cn(
@@ -22,7 +22,7 @@ const ReviewsTableHeader = ({ reviewCategories, reviewCategory }) => {
           >
             {category.title}
           </Link>
-        ))}
+        ))} */}
       </div>
       <div className="flex items-center self-end md:self-center gap-4">
         <button className="flex items-center gap-1">

@@ -36,7 +36,7 @@ const CartPage = () => {
         console.log("Failed to fetch cart:", res.error);
       }
     } catch (error) {
-      console.error("Error fetching cart:", error);
+      console.log("Error fetching cart:", error);
     }
     setLoading(false);
   };
@@ -60,7 +60,7 @@ const CartPage = () => {
       toast.success("Item Updated Successfully.");
     } catch (error) {
       setDisableButton(false);
-      console.error("Update error:", error);
+      console.log("Update error:", error);
       toast.error(error?.data?.message || "Failed to Update.");
     }
   };

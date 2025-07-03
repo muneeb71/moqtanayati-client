@@ -3,9 +3,12 @@ import PageHeading from "@/components/headings/PageHeading";
 import CustomerSupportBar from "@/components/sections/landing/profile/settings/customer-support/CustomerSupportBar";
 import CustomerSupportContactForm from "@/components/sections/landing/profile/settings/customer-support/CustomerSupportContactForm";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 const CustomerSupportPage = () => {
   const [selected, setSelected] = useState("contact");
+  const pathname = usePathname();
+  const role = pathname.includes("/seller/") ? "seller" : "buyer";
   return (
     <div className="flex w-full flex-col items-center justify-center gap-5 px-3">
       <PageHeading>
@@ -13,7 +16,7 @@ const CustomerSupportPage = () => {
       </PageHeading>
       <div className="flex w-full flex-col items-center justify-center pb-20 pt-10">
         <div className="no-scrollbar flex w-full max-w-xl items-center justify-center overflow-auto">
-          <CustomerSupportBar selected={selected} setSelected={setSelected} />
+          <CustomerSupportBar selected={selected} setSelected={setSelected} role={role} />
         </div>
         {selected === "contact" && <CustomerSupportContactForm />}
         {selected === "whatsapp" && (

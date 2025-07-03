@@ -121,7 +121,7 @@ const ProductDetailsSlider = ({ images, id, pricingFormat }) => {
         }
       }
     } catch (error) {
-      console.error("Add to watchlist error:", error);
+      console.log("Add to watchlist error:", error);
       toast.error("An error occurred while adding to Watchlist.");
     }
   };

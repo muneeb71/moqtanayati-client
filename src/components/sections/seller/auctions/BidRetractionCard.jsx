@@ -1,5 +1,6 @@
 import { sellerChatIcon } from "@/assets/icons/common-icons";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 const BidRetractionCard = ({ bid }) => {
   if (!bid) return null;
@@ -37,15 +38,15 @@ const BidRetractionCard = ({ bid }) => {
         </span>
       </div>
       <div className="flex items-center flex-col sm:flex-row justify-between gap-5 pt-5">
-        <div className="flex items-center gap-1 text-xs text-moonstone">
+        {/* <div className="flex items-center gap-1 text-xs text-moonstone">
           {sellerChatIcon}
           Message
-        </div>
+        </div> */}
         <div className="flex items-center gap-1">
-          <button className="cursor-pointer rounded-lg bg-faluRed/10 px-10 py-2 text-sm font-medium text-faluRed transition-all duration-150 ease-in hover:bg-faluRed hover:text-white">
+          <button className="cursor-pointer rounded-lg bg-faluRed/10 px-10 py-2 text-sm font-medium text-faluRed transition-all duration-150 ease-in hover:bg-faluRed hover:text-white" onClick={()=>toast.success("Bid retraction denied.")}>
             Deny
           </button>
-          <button className="cursor-pointer rounded-lg bg-moonstone/10 px-10 py-2 text-sm font-medium text-moonstone transition-all duration-150 ease-in hover:bg-moonstone hover:text-white">
+          <button className="cursor-pointer rounded-lg bg-moonstone/10 px-10 py-2 text-sm font-medium text-moonstone transition-all duration-150 ease-in hover:bg-moonstone hover:text-white" onClick={()=>toast.success("Bid retraction accepted.")}>
             Approve
           </button>
         </div>

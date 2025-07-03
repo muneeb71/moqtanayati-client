@@ -18,21 +18,20 @@ const EmailOtpForm = () => {
   const [sending, setSending] = useState(false);
 
   // Send OTP on mount
-  useEffect(() => {
-    const sendOtp = async () => {
-      setSending(true);
-      try {
-        const res = await sendEmailOtp({ email });
-        if (res.success) {
-          toast.success("OTP sent to your email.");
-        } else {
-          toast.error(res.error || "Failed to send OTP.");
-        }
-      } catch (e) {
-        toast.error("Failed to send OTP.");
+  const sendOtp = async () => {
+    setSending(true);
+    try {
+      const res = await sendEmailOtp({ email });
+      if (res.success) {
+        toast.success("OTP sent to your email.");
       }
-      setSending(false);
-    };
+    } catch (e) {
+      toast.error("Failed to send OTP.");
+    }
+    setSending(false);
+  };
+
+  useEffect(() => {
     if (email) sendOtp();
   }, [email]);
 
@@ -47,9 +46,9 @@ const EmailOtpForm = () => {
       const res = await verifyEmailOtp({ email, otp: otpValue });
       if (res.success) {
         toast.success("Email verified!");
-        router.push(`/auth/${role}/sign-up?emailVerified=true&email=${encodeURIComponent(email)}`);
+        router.push(`/auth/${role}/sign-up?emailVerified=true&email=${encodeURIComponent(email)}&role=${role}`);
       } else {
-        toast.error(res.error || "Invalid OTP.");
+        toast.error("Invalid OTP.");
       }
     } catch (e) {
       toast.error("Failed to verify OTP.");

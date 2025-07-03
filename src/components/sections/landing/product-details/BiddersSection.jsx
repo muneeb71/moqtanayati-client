@@ -48,7 +48,7 @@ const BiddersSection = ({ data, fetchData }) => {
       toast.error(
         err?.response?.data?.message || err.message || "Failed to place bid.",
       );
-      console.error("Failed to place bid:", err);
+      console.log("Failed to place bid:", err);
     }
   };
 

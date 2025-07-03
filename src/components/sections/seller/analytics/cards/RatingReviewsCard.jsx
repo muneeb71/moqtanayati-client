@@ -45,7 +45,7 @@ const RatingReviewsCard = ({ ratings = data }) => {
                 ></span>
                 {item.name}
               </div>
-              {item.value}%
+              {item.value?.toFixed(2)}%
             </li>
           ))}
         </ul>

@@ -14,11 +14,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-const SignUpForm1 = ({ role }) => {
+const SignUpForm1 = ({ role: propRole }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const role = propRole || searchParams.get("role") || "buyer";
+
   const { name, email, phone, setName, setEmail, setPhone } = useRegisterStore((state) => state);
+  
 
   const [emailVerified, setEmailVerified] = useState(false);
   const [phoneVerified, setPhoneVerified] = useState(false);
@@ -42,7 +45,7 @@ const SignUpForm1 = ({ role }) => {
       toast.error("Please fill in your name and email.");
       return;
     }
-    router.push(`/auth/${role}/sign-up/email-otp?email=${encodeURIComponent(email)}`);
+    router.push(`/auth/${role}/sign-up/email-otp?email=${encodeURIComponent(email)}&role=${role}`);
   };
 
   const handleVerifyPhone = () => {
@@ -54,7 +57,7 @@ const SignUpForm1 = ({ role }) => {
       toast.error("Please verify your email first.");
       return;
     }
-    router.push(`/auth/${role}/sign-up/phone-otp?phone=${encodeURIComponent(phone)}`);
+    router.push(`/auth/${role}/sign-up/phone-otp?phone=${encodeURIComponent(phone)}&role=${role}`);
   };
 
   return (

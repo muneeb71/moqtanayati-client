@@ -9,7 +9,7 @@ export async function getProductByCategory(category) {
     console.log('API request successful:', response);
     return response;
   } catch (error) {
-    console.error("Error fetching product:", error);
+    console.log("Error fetching product:", error);
     return [];
   }
 }

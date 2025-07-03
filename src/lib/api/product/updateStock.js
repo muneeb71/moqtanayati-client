@@ -7,7 +7,7 @@ export async function updateProductStock(id, stock) {
     const response = await api.patch(`products/${id}/stock`, { stock });
     return response.data.data;
   } catch (error) {
-    console.error("Error fetching product:", error);
+    console.log("Error fetching product:", error);
     return [];
   }
 }

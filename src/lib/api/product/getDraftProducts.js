@@ -7,7 +7,7 @@ export async function getDraftProducts(storeId) {
     const response = await api.get(`products/store/${storeId}/drafts`);
     return response.data.data;
   } catch (error) {
-    console.error("Error fetching draft products:", error);
+    console.log("Error fetching draft products:", error);
     return [];
   }
 }

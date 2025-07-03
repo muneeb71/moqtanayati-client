@@ -1,8 +1,8 @@
 import api from '../../axios';
 
-export async function getAllUsers() {
+export async function getAdminProfile() {
   try {
-    const response = await api.get('/admin/users');
+    const response = await api.get('/admin/profile');
     return response;
   } catch (error) {
     throw error.response?.data || error;

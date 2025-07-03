@@ -11,7 +11,7 @@ export async function getAuctionsBySellerId() {
 
     return response.data.data;
   } catch (error) {
-    console.error("Error fetching auctions:", error);
+    console.log("Error fetching auctions:", error);
     return [];
   }
 }

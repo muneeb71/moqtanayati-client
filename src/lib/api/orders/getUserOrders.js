@@ -7,7 +7,7 @@ export async function getUserOrders(filter = 'all') {
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching user orders:', error);
+    console.log('Error fetching user orders:', error);
     throw error.response?.data || error;
   }
 } 
