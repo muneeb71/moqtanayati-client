@@ -25,7 +25,9 @@ const HelpCenterBar = () => {
         {helpCenterCategories.map((helpCenterCategory, index) => (
           <button
             onClick={() => {
-              const basePath = pathname.includes("seller") ? "/seller" : "";
+              const basePath = pathname.includes("seller")
+                ? "/seller"
+                : "/buyer";
               router.push(
                 `${basePath}/help-center/${helpCenterCategory.href}/${helpCenterSubCategories[0].href}`,
               );
@@ -46,13 +48,17 @@ const HelpCenterBar = () => {
         <div className="flex items-center gap-3">
           {helpCenterSubCategories.map((helpCenterSubCategory, index) => (
             <button
-              onClick={() =>
+              onClick={() => {
+                const basePath = pathname.includes("seller")
+                  ? "/seller"
+                  : "/buyer";
                 router.push(
-                  "/help-center" +
+                  basePath +
+                    "/help-center" +
                     (pathname.includes("faqs") ? "/faqs/" : "/user-guides/") +
                     helpCenterSubCategory.href,
-                )
-              }
+                );
+              }}
               key={index}
               className={cn(
                 "flex items-center justify-center rounded-[8px] border px-2 py-1 text-xs md:px-3.5 md:py-2",

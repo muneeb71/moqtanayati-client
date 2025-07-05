@@ -14,12 +14,12 @@ const NotificationBar = () => {
       {notificationCategories.map((notificationCategory, index) => (
         <button
           onClick={() =>
-            router.push("/notifications/" + notificationCategory.toLowerCase())
+            router.push("/buyer/notifications/" + notificationCategory.toLowerCase())
           }
           key={index}
           className={cn(
             "flex items-center justify-center rounded-[12px] border-[1.5px] px-3 py-1.5 md:px-5 md:py-2.5",
-            pathname === "/notifications/" + notificationCategory.toLowerCase()
+            pathname === "/buyer/notifications/" + notificationCategory.toLowerCase()
               ? "border-moonstone bg-moonstone text-white"
               : "border-silver hover:border-moonstone hover:bg-moonstone/10",
           )}

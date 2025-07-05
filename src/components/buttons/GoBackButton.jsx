@@ -12,7 +12,7 @@ const GoBackButton = ({ className = "" }) => {
       onClick={() => router.back()}
     >
       <ChevronLeft className="size-5 md:size-8" />
-      Back
+      <span className="hidden md:inline">Back</span>
     </button>
   );
 };

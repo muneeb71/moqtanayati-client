@@ -1,257 +1,50 @@
+"use client";
+import { useEffect, useState } from "react";
+import { getAllOrders } from "@/lib/api/admin/orders/getAllOrders";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import formatDateTime from "@/utils/dateFormatter";
+import toast from "react-hot-toast";
+
+const tableHeaders = [
+  "Product",
+  "Buyer",
+  "Payment",
+  "Delivery Status",
+  "Order Date",
+  "Review",
+];
 
 const OrdersTable = () => {
-  const tableHeaders = [
-    "Product",
-    "Buyer",
-    "Payment Status",
-    "Delivery Stats",
-    "Date of order",
-    "Invoice",
-  ];
-  const tableData = [
-    {
-      product: {
-        name: "Airpods Max",
-        image: "/dummy-items/1.jpeg",
-      },
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Kristin Watson",
-        image: "/dummy-user/2.jpeg",
-      },
-      payment: {
-        price: 800,
-        status: "Paid",
-      },
-      delivery: "Delivered",
-      dateOfOrder: "21 June, 2024 - 10:00 am",
-    },
-    {
-      product: {
-        name: "Airpods Max",
-        image: "/dummy-items/1.jpeg",
-      },
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Kristin Watson",
-        image: "/dummy-user/2.jpeg",
-      },
-      payment: {
-        price: 800,
-        status: "Failed",
-      },
-      delivery: "Shipped",
-      dateOfOrder: "21 June, 2024 - 10:00 am",
-    },
-    {
-      product: {
-        name: "Airpods Max",
-        image: "/dummy-items/1.jpeg",
-      },
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Kristin Watson",
-        image: "/dummy-user/2.jpeg",
-      },
-      payment: {
-        price: 1200,
-        status: "Pending",
-      },
-      delivery: "Pending",
-      dateOfOrder: "21 June, 2024 - 10:00 am",
-    },
-    {
-      product: {
-        name: "Airpods Max",
-        image: "/dummy-items/1.jpeg",
-      },
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Kristin Watson",
-        image: "/dummy-user/2.jpeg",
-      },
-      payment: {
-        price: 800,
-        status: "Paid",
-      },
-      delivery: "Delivered",
-      dateOfOrder: "21 June, 2024 - 10:00 am",
-    },
-    {
-      product: {
-        name: "Airpods Max",
-        image: "/dummy-items/1.jpeg",
-      },
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Kristin Watson",
-        image: "/dummy-user/2.jpeg",
-      },
-      payment: {
-        price: 800,
-        status: "Failed",
-      },
-      delivery: "Shipped",
-      dateOfOrder: "21 June, 2024 - 10:00 am",
-    },
-    {
-      product: {
-        name: "Airpods Max",
-        image: "/dummy-items/1.jpeg",
-      },
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Kristin Watson",
-        image: "/dummy-user/2.jpeg",
-      },
-      payment: {
-        price: 1200,
-        status: "Pending",
-      },
-      delivery: "Pending",
-      dateOfOrder: "21 June, 2024 - 10:00 am",
-    },
-    {
-      product: {
-        name: "Airpods Max",
-        image: "/dummy-items/1.jpeg",
-      },
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Kristin Watson",
-        image: "/dummy-user/2.jpeg",
-      },
-      payment: {
-        price: 800,
-        status: "Paid",
-      },
-      delivery: "Delivered",
-      dateOfOrder: "21 June, 2024 - 10:00 am",
-    },
-    {
-      product: {
-        name: "Airpods Max",
-        image: "/dummy-items/1.jpeg",
-      },
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Kristin Watson",
-        image: "/dummy-user/2.jpeg",
-      },
-      payment: {
-        price: 800,
-        status: "Failed",
-      },
-      delivery: "Shipped",
-      dateOfOrder: "21 June, 2024 - 10:00 am",
-    },
-    {
-      product: {
-        name: "Airpods Max",
-        image: "/dummy-items/1.jpeg",
-      },
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Kristin Watson",
-        image: "/dummy-user/2.jpeg",
-      },
-      payment: {
-        price: 1200,
-        status: "Pending",
-      },
-      delivery: "Pending",
-      dateOfOrder: "21 June, 2024 - 10:00 am",
-    },
-    {
-      product: {
-        name: "Airpods Max",
-        image: "/dummy-items/1.jpeg",
-      },
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Kristin Watson",
-        image: "/dummy-user/2.jpeg",
-      },
-      payment: {
-        price: 800,
-        status: "Paid",
-      },
-      delivery: "Delivered",
-      dateOfOrder: "21 June, 2024 - 10:00 am",
-    },
-    {
-      product: {
-        name: "Airpods Max",
-        image: "/dummy-items/1.jpeg",
-      },
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Kristin Watson",
-        image: "/dummy-user/2.jpeg",
-      },
-      payment: {
-        price: 800,
-        status: "Failed",
-      },
-      delivery: "Shipped",
-      dateOfOrder: "21 June, 2024 - 10:00 am",
-    },
-    {
-      product: {
-        name: "Airpods Max",
-        image: "/dummy-items/1.jpeg",
-      },
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Kristin Watson",
-        image: "/dummy-user/2.jpeg",
-      },
-      payment: {
-        price: 1200,
-        status: "Pending",
-      },
-      delivery: "Pending",
-      dateOfOrder: "21 June, 2024 - 10:00 am",
-    },
-  ];
+  const [orders, setOrders] = useState([]);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [pages, setPages] = useState(1);
+
+  const fetchOrders = async (currentPage = 1) => {
+    try {
+      const res = await getAllOrders({ page: currentPage });
+      const { orders = [], pagination = {} } = res.data;
+
+      setOrders(orders);
+      setPage(pagination.page || 1);
+      setLimit(pagination.limit || 10);
+      setPages(pagination.pages || 1);
+      setTotal(pagination.total || 0);
+    } catch (error) {
+      console.error("Failed to fetch orders:", error);
+      setOrders([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders(page);
+  }, [page]);
+
+  console.log(orders);
+  
+
   return (
     <div className="flex h-full w-full flex-col overflow-auto rounded-lg">
       <table className="w-full min-w-[1200px] table-fixed bg-white">
@@ -260,7 +53,7 @@ const OrdersTable = () => {
             {tableHeaders.map((header, index) => (
               <th
                 key={index}
-                className={cn(header == "Review" ? "col-span-2" : "col-span-1")}
+                className={cn(header === "Review" ? "col-span-2" : "col-span-1")}
               >
                 <div className="flex w-full min-w-[200px] items-center justify-between gap-3 text-nowrap px-5 py-4">
                   <span className="text-sm font-medium text-darkBlue">
@@ -272,15 +65,15 @@ const OrdersTable = () => {
           </tr>
         </thead>
         <tbody>
-          {tableData.map((data, index) => (
+          {orders.map((data, index) => (
             <tr key={index} className="border-b border-silver/30">
               <td>
                 <div className="flex items-center gap-2 px-5 py-4">
                   <Image
-                    src={data.product.image}
+                    src={data.product.images[0]}
                     width={44}
                     height={44}
-                    alt="Buyer"
+                    alt="Product"
                     loading="lazy"
                     quality={100}
                     className="rounded-full border border-black/10"
@@ -291,10 +84,10 @@ const OrdersTable = () => {
                     </span>
                     <div className="flex items-center gap-1">
                       <Image
-                        src={data.seller.image}
+                        src={data.seller.avatar || "/static/dummy-user/1.jpeg"}
                         width={18}
                         height={18}
-                        alt="seller"
+                        alt="Seller"
                         loading="lazy"
                         quality={100}
                         className="rounded-full border border-black/10"
@@ -309,7 +102,7 @@ const OrdersTable = () => {
               <td>
                 <div className="flex items-center gap-3 px-5 py-4">
                   <Image
-                    src={data.buyer.image}
+                    src={data.user.avatar || "/static/dummy-user/1.jpeg"}
                     width={44}
                     height={44}
                     alt="Buyer"
@@ -318,7 +111,7 @@ const OrdersTable = () => {
                     className="rounded-full"
                   />
                   <span className="text-sm font-medium text-[#667085]">
-                    {data.buyer.name}
+                    {data.user.name}
                   </span>
                 </div>
               </td>
@@ -329,20 +122,20 @@ const OrdersTable = () => {
                       Total price:
                     </span>
                     <span className="text-sm text-russianViolet">
-                      ${data.payment.price}
+                      ${(data.totalAmount)?.toFixed(2)}
                     </span>
                   </div>
                   <div
                     className={cn(
                       "w-fit rounded-lg px-3.5 py-1",
-                      data.payment.status == "Paid"
+                      data.paymentStatus === "PAID"
                         ? "bg-shamrockGreen/10 text-shamrockGreen"
-                        : data.payment.status == "Pending"
-                          ? "bg-black/5 text-black/60"
-                          : "bg-faluRed/10 text-faluRed",
+                        : data.paymentStatus === "PENDING"
+                        ? "bg-black/5 text-black/60"
+                        : "bg-faluRed/10 text-faluRed"
                     )}
                   >
-                    {data.payment.status}
+                    {data?.paymentStatus}
                   </div>
                 </div>
               </td>
@@ -350,23 +143,23 @@ const OrdersTable = () => {
                 <div
                   className={cn(
                     "w-fit rounded-lg px-3.5 py-1",
-                    data.delivery == "Delivered"
+                    data.status === "DELIVERED"
                       ? "bg-shamrockGreen/10 text-shamrockGreen"
-                      : data.delivery == "Shipped"
-                        ? "bg-[#AEAB21]/10 text-[#AEAB21]"
-                        : "bg-black/5 text-black/60",
+                      : data.status === "SHIPPED"
+                      ? "bg-[#AEAB21]/10 text-[#AEAB21]"
+                      : "bg-black/5 text-black/60"
                   )}
                 >
-                  {data.delivery}
+                  {data.status}
                 </div>
               </td>
               <td>
                 <div className="flex items-center gap-2 px-5 py-4 text-sm text-[#667085]">
-                  {data.dateOfOrder}
+                  {formatDateTime(data.createdAt)}
                 </div>
               </td>
               <td>
-                <button className="px-5 py-4 font-medium text-russianViolet underline transition-all duration-100 ease-linear hover:text-shamrockGreen">
+                <button className="px-5 py-4 font-medium text-russianViolet underline transition-all duration-100 ease-linear hover:text-shamrockGreen" onClick={()=>toast.error("Invoice not generated.")}>
                   Download
                 </button>
               </td>
@@ -374,6 +167,40 @@ const OrdersTable = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Pagination (basic, bottom right) */}
+      <div className="flex justify-end gap-2 p-4">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+          className="rounded bg-moonstone/10 px-3 py-1 text-sm text-moonstone disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Prev
+        </button>
+
+        {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
+          <button
+            key={p}
+            onClick={() => setPage(p)}
+            className={cn(
+              "rounded px-3 py-1 text-sm",
+              p === page
+                ? "bg-moonstone text-white"
+                : "bg-moonstone/10 text-moonstone hover:bg-moonstone/20"
+            )}
+          >
+            {p}
+          </button>
+        ))}
+
+        <button
+          disabled={page === pages}
+          onClick={() => setPage(page + 1)}
+          className="rounded bg-moonstone/10 px-3 py-1 text-sm text-moonstone disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

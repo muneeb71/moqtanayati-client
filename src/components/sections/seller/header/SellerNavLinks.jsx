@@ -9,13 +9,13 @@ const SellerNavLinks = () => {
   const pathname = usePathname();
   
   return (
-    <div className="hidden items-center gap-6 md:flex">
+    <div className="hidden items-center gap-3 lg:gap-6 md:flex">
       {sellerHeaderLinks.map((headerLink, index) => (
         <Link
           key={index}
           href={headerLink.href}
           className={cn(
-            "text-sm font-medium",
+            "text-xs lg:text-sm font-medium",
             pathname === "href"
               ? "text-moonstone"
               : "text-[#5C5F6A] hover:text-moonstone",

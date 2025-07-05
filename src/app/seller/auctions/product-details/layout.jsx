@@ -1,5 +1,5 @@
 import PageHeading from "@/components/headings/PageHeading";
-import React from "react";
+
 
 const ProductDetailsLayout = ({ children }) => {
   return (

@@ -229,7 +229,7 @@ const UserDetails = ({ role }) => {
               >
                 <div className="relative">
                   <Image
-                    src="/product.svg"
+                    src="/static/product.svg"
                     width={280}
                     height={200}
                     alt="Product"

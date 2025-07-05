@@ -10,34 +10,6 @@ import PriceAndShippingForm from "./forms/PriceAndShippingForm";
 const AddProductFlow = () => {
   const tabs = ["Picture & Videos", "Unit & Dimensions", "Pricing & Shipping"];
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
-  const [images, setImages] = useState([]);
-  const [video, setVideo] = useState(null);
-  const [productTitle, setProductTitle] = useState("");
-  const [productDescription, setProductDescription] = useState("");
-
-  const [unitsAvailable, setUnitsAvailable] = useState("");
-  const [length, setLength] = useState("");
-  const [width, setWidth] = useState("");
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
-  const [conditionRating, setConditionRating] = useState("");
-  const [productCategories, setProductCategories] = useState("");
-  const productConditionsList = ["New", "Old"];
-  const [productCondition, setProductCondition] = useState(
-    productConditionsList[0],
-  );
-
-  const pricingFormats = ["Fixed Price", "Auctions"];
-  const [selectedPricingFormat, setSelectedPricingFormat] = useState();
-  const [price, setPrice] = useState(0);
-  const [quantity, setQuantity] = useState(0);
-  const shippingMethods = [
-    "Freight: Oversized items",
-    "Local pickup only: Sell to Buyers near you",
-  ];
-  const [selectedShippingMethod, setSelectedShippingMethod] = useState(
-    shippingMethods[0],
-  );
 
   const prevTab = () => {
     if (currentTabIndex > 0) setCurrentTabIndex(currentTabIndex - 1);
@@ -56,59 +28,18 @@ const AddProductFlow = () => {
             onClick={() => prevTab()}
             className="flex w-fit items-center gap-1 text-start text-xl font-normal md:pb-10"
           >
-            <ChevronLeft className="size-6" /> Back
+            <ChevronLeft className="size-6" />
+            <span className="hidden md:inline">Back</span>
           </button>
         )}
         My Store {">"} Add Product
       </PageHeading>
       {tabs[currentTabIndex] === tabs[0] ? (
-        <PictureAndVideosForm
-          prevTab={prevTab}
-          nextTab={nextTab}
-          images={images}
-          setImages={setImages}
-          video={video}
-          setVideo={setVideo}
-          productTitle={productTitle}
-          setProductTitle={setProductTitle}
-          productDescription={productDescription}
-          setProductDescription={setProductDescription}
-        />
+        <PictureAndVideosForm prevTab={prevTab} nextTab={nextTab} />
       ) : tabs[currentTabIndex] === tabs[1] ? (
-        <UnitsAndDimensionsForm
-          prevTab={prevTab}
-          nextTab={nextTab}
-          unitsAvailable={unitsAvailable}
-          setUnitsAvailable={setUnitsAvailable}
-          length={length}
-          setLength={setLength}
-          width={width}
-          setWidth={setWidth}
-          height={height}
-          setHeight={setHeight}
-          weight={weight}
-          setWeight={setWeight}
-          conditionRating={conditionRating}
-          setConditionRating={setConditionRating}
-          productCategories={productCategories}
-          setProductCategories={setProductCategories}
-          productConditionsList={productConditionsList}
-          productCondition={productCondition}
-          setProductCondition={setProductCondition}
-        />
+        <UnitsAndDimensionsForm prevTab={prevTab} nextTab={nextTab} />
       ) : (
-        <PriceAndShippingForm
-          pricingFormats={pricingFormats}
-          selectedPricingFormat={selectedPricingFormat}
-          setSelectedPricingFormat={setSelectedPricingFormat}
-          price={price}
-          setPrice={setPrice}
-          quantity={quantity}
-          setQuantity={setQuantity}
-          shippingMethods={shippingMethods}
-          selectedShippingMethod={selectedShippingMethod}
-          setSelectedShippingMethod={setSelectedShippingMethod}
-        />
+        <PriceAndShippingForm />
       )}
     </div>
   );

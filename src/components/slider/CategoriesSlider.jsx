@@ -43,7 +43,7 @@ const CategoriesSlider = () => {
           <CarouselItem
             key={index}
             className="flex basis-1/2 cursor-pointer flex-col items-center gap-5 border-2 border-white py-5 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
-            onClick={() => router.push("/category/" + slugify(category.title))}
+            onClick={() => router.push(`/buyer/search?q=${encodeURIComponent(category.title)}`)}
           >
             <div
               className="flex size-[119px] items-center justify-center rounded-full"

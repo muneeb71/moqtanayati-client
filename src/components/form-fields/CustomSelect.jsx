@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const CustomSelect = ({
@@ -15,6 +15,20 @@ const CustomSelect = ({
   onChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const selectRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (selectRef.current && !selectRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleSelect = (option) => {
     setSelectedOption(option);
@@ -23,7 +37,7 @@ const CustomSelect = ({
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full" ref={selectRef}>
       <div
         className={cn(
           "flex cursor-pointer items-center justify-between gap-2.5 rounded-[9.6px] border border-[#F8F7FB] bg-[#F8F7FB] px-3 py-3 has-[:focus]:border-moonstone md:h-[60px] md:px-5",
@@ -33,7 +47,7 @@ const CustomSelect = ({
       >
         <div className="flex items-center gap-2.5">
           {icon}
-          <span className={cn("text-[16.8px]", !selectedOption && "text-[#858699]")}>
+          <span className={cn("text-sm", !selectedOption && "text-[#858699]")}>
             {selectedOption || placeholder}
           </span>
         </div>
@@ -52,19 +66,17 @@ const CustomSelect = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute left-0 top-full z-[101] mt-2 w-full rounded-[9.6px] border border-[#F8F7FB] bg-[#F8F7FB] shadow-md"
+            className="absolute left-0 top-full z-50 mt-2 w-full max-h-[300px] overflow-auto rounded-[9.6px] border border-[#F8F7FB] bg-[#F8F7FB] shadow-md"
           >
-            <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-              {options.map((option, index) => (
-                <div
-                  key={index}
-                  className="cursor-pointer px-5 py-3 text-[16.8px] hover:bg-gray-200"
-                  onClick={() => handleSelect(option)}
-                >
-                  {option}
-                </div>
-              ))}
-            </div>
+            {options.map((option, index) => (
+              <div
+                key={index}
+                className="cursor-pointer px-5 py-3 text-sm hover:bg-gray-200"
+                onClick={() => handleSelect(option)}
+              >
+                {option}
+              </div>
+            ))}
           </motion.div>
         )}
       </AnimatePresence>

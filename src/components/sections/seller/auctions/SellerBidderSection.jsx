@@ -7,9 +7,11 @@ import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import BidRetractionRequestsDialog from "./BidRetractionRequestsDialog";
 
-const SellerBiddersSection = () => {
+const SellerBiddersSection = ({ bids }) => {
   const [selectedBidder, setSelectedBidder] = useState(null);
   const [bidAmount, setBidAmount] = useState(0);
+
+  const retractedBids = bids.filter(bid => bid.status === "RETRACTED");
 
   useEffect(() => {
     if (selectedBidder) {
@@ -25,21 +27,27 @@ const SellerBiddersSection = () => {
             <h1 className="text-[32px] font-medium text-black/80">
               Bidders{" "}
               <span className="text-[18px] text-moonstone">
-                ({dummyBidders.length})
+                ({bids.length})
               </span>
             </h1>
-            <BidRetractionRequestsDialog />
+            <BidRetractionRequestsDialog retractedBids={retractedBids} />
           </div>
-          <div className="grid gap-2 sm:grid-cols-2 sm:gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-5">
-            {dummyBidders.map((bidder, index) => (
-              <BidderCard
-                key={index}
-                bidder={bidder}
-                selectedBidder={selectedBidder}
-                setSelectedBidder={setSelectedBidder}
-              />
-            ))}
-          </div>
+          {bids.length === 0 ? (
+            <span className="text-[15px] leading-[23px] text-black/30">
+              No Bids Yet
+            </span>
+          ) : (
+            <div className="grid gap-2 sm:grid-cols-2 sm:gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-5">
+              {bids.map((bidder, index) => (
+                <BidderCard
+                  key={index}
+                  bidder={bidder}
+                  selectedBidder={selectedBidder}
+                  setSelectedBidder={setSelectedBidder}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

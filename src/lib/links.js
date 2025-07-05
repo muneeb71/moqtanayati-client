@@ -6,7 +6,7 @@ import {
   settingsIcon,
   usersIcon,
   reportIcon,
-  paymentIcon
+  paymentIcon,
 } from "@/assets/icons/admin-icons";
 import {
   githubIcon,
@@ -26,15 +26,15 @@ import {
 
 export const headerLinks = [
   {
-    href: "/",
+    href: "/buyer",
     title: "Home",
   },
   {
-    href: "/chats",
+    href: "/buyer/chats",
     title: "Chats",
   },
   {
-    href: "/auctions",
+    href: "/buyer/auctions",
     title: "Auctions",
   },
 ];
@@ -102,42 +102,42 @@ export const headerDropdownLinks = [
   {
     title: "My Bids",
     icon: myBidsIcon,
-    href: "/my-bids/all",
+    href: "/buyer/my-bids/all",
   },
   {
     title: "Purchase History",
     icon: purchaseHistoryIcon,
-    href: "/profile/purchase-history/all",
+    href: "/buyer/profile/purchase-history/all",
   },
   {
     title: "Watchlist",
     icon: watchListIcon,
-    href: "/watchlist",
+    href: "/buyer/watchlist",
   },
   {
     title: "Auction Preferences",
     icon: auctionPreferencesIcon,
-    href: "/profile/auction-preferences",
+    href: "/buyer/profile/auction-preferences",
   },
   {
     title: "Payment Methods",
     icon: paymentMethodsIcon,
-    href: "/payment-methods/cards",
+    href: "/buyer/payment-methods/cards",
   },
   // {
   //   title: "Shipping Address",
   //   icon: shippingAddressIcon,
-  //   href: "/shipping-address",
+  //   href: "/buyer/shipping-address",
   // },
   {
     title: "Customer Support",
     icon: customerSupportIcon,
-    href: "/profile/settings/customer-support",
+    href: "/buyer/profile/settings/customer-support",
   },
   {
     title: "Help Center",
     icon: helpCenterIcon,
-    href: "/help-center/faqs/all",
+    href: "/buyer/help-center/faqs/all",
   },
 ];
 
@@ -179,7 +179,7 @@ export const sellerDropdownList = [
     icon: helpCenterIcon,
     href: "/seller/help-center/faqs/all",
   },
-]
+];
 
 export const adminLinks = [
   {
@@ -189,11 +189,8 @@ export const adminLinks = [
   },
   {
     title: "Users",
+    href: "/admin/users",
     icon: usersIcon,
-    subLinks: [
-      { title: "Buyers", href: "/admin/users/buyer" },
-      { title: "Sellers", href: "/admin/users/seller" },
-    ],
   },
   {
     title: "Orders",
@@ -208,7 +205,7 @@ export const adminLinks = [
   {
     title: "Payments",
     href: "/admin/payments",
-    icon: paymentIcon, 
+    icon: paymentIcon,
     subLinks: [
       { title: "Cash", href: "/admin/payment/cod" },
       { title: "Third Party", href: "/admin/payment/online" },
@@ -217,7 +214,7 @@ export const adminLinks = [
   {
     title: "Reports",
     href: "/admin/reports",
-    icon: reportIcon, 
+    icon: reportIcon,
     subLinks: [
       { title: "Buyer Reports", href: "/admin/reports/buyer" },
       { title: "Seller Reports", href: "/admin/reports/seller" },
@@ -231,7 +228,6 @@ export const adminLinks = [
   {
     title: "Settings",
     href: "/admin/settings",
-    icon: settingsIcon, 
+    icon: settingsIcon,
   },
 ];
-

@@ -3,19 +3,24 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-const WatchlistCard = ({ item }) => {
-  const [favourite, setFavourite] = useState(item.isFavourite);
+const WatchlistCard = ({ item, removeFromWatchlist }) => {
+  const [favourite, setFavourite] = useState(true);
+  const router = useRouter();
+  const handleCardClick = () => {
+    const id = item?.auction?.product?.id;
+    if (id) router.push(`/buyer/product-details/${id}`);
+  };
   return (
     <div
-      className="grid h-full max-h-[138px] grid-cols-[96px_1fr] overflow-hidden rounded-[12px] bg-white sm:grid-cols-[126px_1fr]"
-      style={{
-        boxShadow: "0px 0px 29.85px 2.39px #0000001A",
-      }}
+      className="grid h-full max-h-[138px] grid-cols-[96px_1fr] overflow-hidden rounded-[12px] bg-white sm:grid-cols-[126px_1fr] cursor-pointer"
+      style={{ boxShadow: "0px 0px 29.85px 2.39px #0000001A" }}
+      onClick={handleCardClick}
     >
       <div className="h-full w-full overflow-hidden">
         <Image
-          src={item.image}
+          src={item?.auction?.product?.images[0]}
           width={200}
           height={200}
           className="h-full w-full object-cover"
@@ -26,14 +31,14 @@ const WatchlistCard = ({ item }) => {
         <div className="flex justify-between gap-2">
           <div className="flex flex-col px-1.5">
             <span className="max-w-[200px] truncate text-[16.72px] font-medium leading-[25px]">
-              Iphone 6 plus
+              {item?.auction?.product?.name}
             </span>
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-black/30">by</span>
               <div className="flex items-center gap-1">
                 <div className="size-[19.1px] min-h-[19.1px] min-w-[19.1px] overflow-hidden rounded-full">
                   <Image
-                    src="/dummy-user/1.jpeg"
+                    src={item?.auction?.seller?.avatar || "/static/dummy-user/1.jpeg"}
                     width={100}
                     height={100}
                     className="h-full w-full object-cover"
@@ -41,7 +46,7 @@ const WatchlistCard = ({ item }) => {
                   />
                 </div>
                 <span className="text-xs font-medium text-black/70">
-                  Kathryn Murphy
+                  {item?.auction?.seller?.name}
                 </span>
               </div>
             </div>
@@ -51,7 +56,10 @@ const WatchlistCard = ({ item }) => {
               "grid size-[33px] place-items-center rounded-[4.6px] bg-black/10",
               favourite ? "text-[#F16D6F]" : "text-white",
             )}
-            onClick={() => setFavourite(!favourite)}
+            onClick={e => {
+              e.stopPropagation();
+              removeFromWatchlist(item?.auction?.id)
+            }}
           >
             {heartIcon}
           </button>
@@ -60,16 +68,16 @@ const WatchlistCard = ({ item }) => {
         <div className="flex items-center justify-between gap-5 px-1.5">
           <div className="flex flex-col">
             <span className="text-xs text-black/40">Highest Bid</span>
-            <span className="text-lg font-medium">$350.00</span>
+            <span className="text-lg font-medium">${item?.auction?.product?.minimumOffer}</span>
           </div>
-          <button
+          {/* <button
             className={cn(
               "h-fit rounded-[8px] bg-moonstone/10 px-3 py-1 text-sm font-medium leading-[21px] text-moonstone sm:px-5 sm:py-2",
               "transition-all duration-150 ease-in hover:bg-moonstone hover:text-white",
             )}
           >
             Bid Now
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

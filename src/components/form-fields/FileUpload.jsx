@@ -3,9 +3,9 @@
 import { cn } from "@/lib/utils";
 import { UploadCloud } from "lucide-react";
 
-const FileUpload = ({ className }) => {
+const FileUpload = ({ className, value, onChange }) => {
   return (
-    <div
+    <label
       className={cn(
         "flex min-h-[150px] w-full cursor-pointer flex-col items-center justify-center rounded-[9.6px]",
         "border-[1.5px] border-dashed border-moonstone/50 p-5 hover:border-moonstone",
@@ -14,8 +14,19 @@ const FileUpload = ({ className }) => {
     >
       <UploadCloud className="size-7 text-[#3E3065]" />
       <p className="text-or Upload images mt-2 text-xs">or Upload images</p>
-      <input type="file" className="hidden" />
-    </div>
+      <input
+        type="file"
+        className="hidden"
+        onChange={e => {
+          if (e.target.files && e.target.files[0]) {
+            onChange(e.target.files[0]);
+          }
+        }}
+      />
+      {value && (
+        <span className="mt-2 text-xs text-moonstone">{value.name}</span>
+      )}
+    </label>
   );
 };
 

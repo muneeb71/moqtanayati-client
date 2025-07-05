@@ -5,7 +5,7 @@ export const dummyItems = [
     price: 500,
     address: "College Road, Islamabad",
     createdAt: "2025-01-21T10:30:00.000Z",
-    image: "/dummy-items/1.jpeg",
+    image: "/static/dummy-items/1.jpeg",
     isFavourite: true,
   },
   {
@@ -14,7 +14,7 @@ export const dummyItems = [
     price: 500,
     address: "College Road, Islamabad",
     createdAt: "2025-01-21T10:30:00.000Z",
-    image: "/dummy-items/2.jpeg",
+    image: "/static/dummy-items/2.jpeg",
     isFavourite: false,
   },
   {
@@ -23,7 +23,7 @@ export const dummyItems = [
     price: 500,
     address: "College Road, Islamabad",
     createdAt: "2025-01-21T10:30:00.000Z",
-    image: "/dummy-items/3.jpeg",
+    image: "/static/dummy-items/3.jpeg",
     isFavourite: false,
   },
   {
@@ -32,7 +32,7 @@ export const dummyItems = [
     price: 500,
     address: "College Road, Islamabad",
     createdAt: "2025-01-21T10:30:00.000Z",
-    image: "/dummy-items/4.jpeg",
+    image: "/static/dummy-items/4.jpeg",
     isFavourite: true,
   },
   {
@@ -41,7 +41,7 @@ export const dummyItems = [
     price: 500,
     address: "College Road, Islamabad",
     createdAt: "2025-01-21T10:30:00.000Z",
-    image: "/dummy-items/5.jpeg",
+    image: "/static/dummy-items/5.jpeg",
     isFavourite: false,
   },
   {
@@ -50,7 +50,7 @@ export const dummyItems = [
     price: 500,
     address: "College Road, Islamabad",
     createdAt: "2025-01-21T10:30:00.000Z",
-    image: "/dummy-items/6.jpeg",
+    image: "/static/dummy-items/6.jpeg",
     isFavourite: false,
   },
   {
@@ -59,7 +59,7 @@ export const dummyItems = [
     price: 500,
     address: "College Road, Islamabad",
     createdAt: "2025-01-21T10:30:00.000Z",
-    image: "/dummy-items/7.jpeg",
+    image: "/static/dummy-items/7.jpeg",
     isFavourite: true,
   },
   {
@@ -68,7 +68,7 @@ export const dummyItems = [
     price: 500,
     address: "College Road, Islamabad",
     createdAt: "2025-01-21T10:30:00.000Z",
-    image: "/dummy-items/8.jpeg",
+    image: "/static/dummy-items/8.jpeg",
     isFavourite: false,
   },
 ];

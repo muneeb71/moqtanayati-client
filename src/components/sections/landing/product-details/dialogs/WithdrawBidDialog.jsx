@@ -9,13 +9,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Label from "@/components/form-fields/Label";
-import InputField from "@/components/form-fields/InputField";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { DialogClose } from "@radix-ui/react-dialog";
 import Image from "next/image";
 
-const WithdrawBidDialog = ({ className = "", bidAmount, setBidAmount }) => {
+const WithdrawBidDialog = ({ className = "", bidAmount, setBidAmount, item, handleConfirm }) => {  
   const [retractionReason, setRetractionReason] = useState("");
 
   return (
@@ -35,7 +34,7 @@ const WithdrawBidDialog = ({ className = "", bidAmount, setBidAmount }) => {
           <div className="flex w-full items-start gap-3">
             <div className="grid aspect-square size-[80px] min-w-[80px] place-items-center overflow-hidden rounded-[8px] border border-black/5 bg-black/10">
               <Image
-                src="/dummy-items/2.jpeg"
+                src="/static/dummy-items/2.jpeg"
                 width={500}
                 height={500}
                 alt="item"
@@ -54,14 +53,15 @@ const WithdrawBidDialog = ({ className = "", bidAmount, setBidAmount }) => {
             </div>
           </div>
           <div className="flex w-full flex-col gap-2">
-            {/* <Label
+            <Label
               text="Reason for retraction"
               className="text-sm text-darkBlue"
-            /> */}
+            />
             <textarea
               className="h-[144px] rounded-[8px] bg-[#F8F7FB] px-3 py-3 focus:outline-moonstone"
               onChange={(e) => setRetractionReason(e.target.value)}
               placeholder="Enter reason for retraction (0-150 words)"
+              value={retractionReason}
             >
               {retractionReason}
             </textarea>

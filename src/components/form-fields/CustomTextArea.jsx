@@ -12,7 +12,7 @@ const TextareaField = ({ icon, className = "", ...props }) => {
           className,
         )}
         {...props}
-      />
+      ></textarea>
     </div>
   );
 };

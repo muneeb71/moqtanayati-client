@@ -2,11 +2,13 @@ import PageHeading from "@/components/headings/PageHeading";
 import DisableProductDialog from "@/components/sections/seller/my-store/product/details/DisableProductDialog";
 import StoreProductDetailsCard from "@/components/sections/seller/my-store/product/details/StoreProductDetailsCard";
 import ProductDetailsSlider from "@/components/slider/ProductDetailsSlider";
-import { dummyItems } from "@/lib/dummy-items";
+import { getProductById } from "@/lib/api/product/getById";
 import { PenLineIcon } from "lucide-react";
 
 const ProductDetailsPage = async ({ params }) => {
   const productId = (await params).id;
+  const product = await getProductById(productId);
+
   return (
     <div className="flex w-full flex-col items-center justify-center gap-10 px-3">
       <PageHeading>Product Details</PageHeading>
@@ -23,10 +25,10 @@ const ProductDetailsPage = async ({ params }) => {
         </div>
         <div className="grid w-full gap-10 py-10 md:grid-cols-2">
           <div className="flex flex-col gap-5">
-            <ProductDetailsSlider />
-            <DisableProductDialog />
+            <ProductDetailsSlider images={product.images} />
+            <DisableProductDialog product={product} />
           </div>
-          <StoreProductDetailsCard item={dummyItems[productId]} />
+          <StoreProductDetailsCard item={product} />
         </div>
       </div>
     </div>

@@ -27,7 +27,7 @@ const MobileSheet = () => {
         <SheetHeader>
           <SheetTitle>
             <Image
-              src="/logo.png"
+              src="/static/logo.png"
               width={121}
               height={61}
               alt="LOGO"

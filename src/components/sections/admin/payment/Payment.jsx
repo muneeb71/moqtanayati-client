@@ -10,17 +10,14 @@ const Payment = ({ role }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState([]);
   const rowsPerPage = 10;
-  console.log(role);
   
   const methodData = paymentData.filter(payment => payment.paymentMethod.toLowerCase() == role)
   const totalPages = Math.ceil(methodData.length / rowsPerPage);
-  console.log(paymentData[5]?.paymentMethod.toLowerCase())
+
   const currentData = methodData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage,
-  );
-  console.log(methodData);
-  
+  );  
 
   const toggleRowSelection = (orderId) => {
     setSelectedRows((prev) =>

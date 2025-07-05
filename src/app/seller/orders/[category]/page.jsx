@@ -1,42 +1,30 @@
 import OrderCard from "@/components/cards/OrderCard";
 import { unslugify } from "@/utils/slugify";
-import React from "react";
+import { getSellerOrders } from "@/lib/api/orders/getSellerOrder";
+
+const statusMap = {
+  "active-orders": ["PENDING", "PROCESSING", "SHIPPED"],
+  "cancelled": ["CANCELLED"],
+  "completed": ["DELIVERED"],
+};
 
 const OrdersPage = async ({ params }) => {
   const category = (await params).category;
-  return category == "cancelled" ? (
-    <div className="flex w-full max-w-md flex-col gap-2 px-3 py-5">
-      <div className="flex w-full flex-col gap-2 border-b border-black/10 pb-8">
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-lg font-medium">Cancel Request</span>
-          <span className="text-sm text-battleShipGray">(1)</span>
-        </div>
-        <div className="flex w-full flex-col gap-6">
-          <OrderCard item={category}/>
-        </div>
-      </div>
-      <div className="flex w-full flex-col pt-5">
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-lg font-medium">Cancelled Orders</span>
-          <span className="text-sm text-battleShipGray">(2)</span>
-        </div>
-        <div className="flex w-full flex-col gap-6">
-          <OrderCard item={category}/>
-          <OrderCard item={category}/>
-        </div>
-      </div>
-    </div>
-  ) : (
+  const orders = await getSellerOrders();
+  const filteredOrders = orders.data.filter(order => statusMap[category]?.includes(order.status));
+
+  return (
     <div className="flex w-full max-w-md flex-col gap-2 px-3 py-5">
       <div className="flex items-baseline gap-1.5">
-        <span className="text-lg font-medium">2</span>
-        <span className="text-sm text-battleShipGray">
-          {unslugify(category)}
-        </span>
+        <span className="text-lg font-medium">{filteredOrders.length}</span>
+        <span className="text-sm text-battleShipGray">{unslugify(category)}</span>
       </div>
       <div className="flex w-full flex-col gap-6">
-        <OrderCard item={category}/>
-        <OrderCard item={category}/>
+        {filteredOrders.length === 0 ? (
+          <span className="text-center text-battleShipGray">No orders found.</span>
+        ) : (
+          filteredOrders.map(order => <OrderCard key={order.id} item={order} />)
+        )}
       </div>
     </div>
   );

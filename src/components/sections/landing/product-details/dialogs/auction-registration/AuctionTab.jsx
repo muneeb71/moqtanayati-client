@@ -1,7 +1,7 @@
 import { cardsIcon, shippingTruckIcon } from "@/assets/icons/common-icons";
 import RoundedButton from "@/components/buttons/RoundedButton";
 import { Plus } from "lucide-react";
-import React from "react";
+
 
 const AuctionTab = ({ setSelectedTab, tabs }) => {
   return (

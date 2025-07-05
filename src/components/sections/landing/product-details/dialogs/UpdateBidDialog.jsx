@@ -14,11 +14,14 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { DialogClose } from "@radix-ui/react-dialog";
 
-const UpdateBidDialog = ({ className = "", bidAmount, setBidAmount }) => {
+const UpdateBidDialog = ({ className = "", bidAmount, setBidAmount, updateBid }) => {
   const [newAmount, setNewAmount] = useState(0);
-  const handleConfirm = () => {
+  
+  const handleConfirm = () => {    
     setBidAmount(newAmount);
+    updateBid();
   };
+  
   return (
     <Dialog>
       <DialogTrigger
@@ -37,19 +40,19 @@ const UpdateBidDialog = ({ className = "", bidAmount, setBidAmount }) => {
         </DialogHeader>
         <div className="flex flex-col items-center gap-20 pt-20">
           <div className="flex w-full flex-col gap-3">
-            {/* <Label text="Bid Amount" className="text-[19.2px]" /> */}
+            <Label text="Bid Amount" className="text-[19.2px]" />
             <InputField
-              placeholder="Enter New Nid Amount"
+              placeholder="Enter New Amount"
               type="number"
-              value={newAmount}
-              onChange={(e) => setNewAmount(e.target.value)}
+              value={bidAmount}
+              onChange={(e) => setBidAmount(e.target.value)}
             />
           </div>
           <DialogClose asChild>
             <RoundedButton
               title="Confirm"
               className="px-20"
-              onClick={() => handleConfirm()}
+              onClick={() => handleConfirm()}z
             />
           </DialogClose>
         </div>

@@ -12,7 +12,7 @@ const SellerHeader = () => {
       <div className="flex w-full max-w-7xl items-center justify-between px-4 py-4 md:px-5">
         <Link href="/seller">
           <Image
-            src="/logo.png"
+            src="/static/logo.png"
             width={121}
             height={61}
             alt="LOGO"
@@ -41,7 +41,7 @@ const SellerHeader = () => {
             className="size-12 overflow-hidden rounded-full"
           >
             <Image
-              src="/dummy-user/1.jpeg"
+              src="/static/dummy-user/1.jpeg"
               width={250}
               height={250}
               loading="lazy"
@@ -56,7 +56,7 @@ const SellerHeader = () => {
             className="size-10 overflow-hidden rounded-full"
           >
             <Image
-              src="/dummy-user/1.jpeg"
+              src="/static/dummy-user/1.jpeg"
               width={250}
               height={250}
               loading="lazy"

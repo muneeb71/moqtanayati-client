@@ -1,6 +1,6 @@
 import CustomCheckBox from "@/components/form-fields/CustomCheckBox";
 import Image from "next/image";
-import React from "react";
+
 import { BiSolidTrash } from "react-icons/bi";
 import { BsFillEyeFill } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
@@ -12,7 +12,6 @@ const PaymentTable = ({
   toggleRowSelection,
   onViewClick,
 }) => {
-    console.log(currentData);
     
   return (
     <table className="min-w-[1200px] rounded-lg">

@@ -3,11 +3,22 @@
 import RoundedButton from "@/components/buttons/RoundedButton";
 import { Plus } from "lucide-react";
 import StoreProductCard from "./StoreProductCard";
-import { dummyItems } from "@/lib/dummy-items";
 import { useRouter } from "next/navigation";
+import { useProfileStore } from "@/providers/profile-store-provider";
+import { useEffect } from "react";
+import { useInventoryStore } from "@/providers/inventory-store-provider";
 
 const StoreProductsSection = () => {
   const router = useRouter();
+  const { store } = useProfileStore((state) => state);
+  const { products, isLoadingProducts, productsError, fetchProducts } = useInventoryStore();
+
+  useEffect(() => {
+    if (store?.id) {
+      fetchProducts(store.id);
+    }
+  }, [store?.id, fetchProducts]);
+
   return (
     <div className="flex w-full flex-col gap-5">
       <div className="flex items-center justify-between">
@@ -20,11 +31,25 @@ const StoreProductsSection = () => {
           onClick={() => router.push("/seller/my-store/product/add")}
         />
       </div>
-      <div className="grid w-full gap-x-20 gap-y-8 md:grid-cols-2">
-        {dummyItems.slice(0, 4).map((item, index) => (
-          <StoreProductCard item={item} key={index} />
-        ))}
-      </div>
+      {isLoadingProducts ? (
+        <span className="rounded-2xl bg-moonstone/20 py-20 text-center text-2xl text-black/80">
+          Loading products...
+        </span>
+      ) : productsError ? (
+        <span className="rounded-2xl bg-red-100 py-20 text-center text-2xl text-red-600">
+          {productsError}
+        </span>
+      ) : products?.length > 0 ? (
+        <div className="grid w-full gap-x-20 gap-y-8 md:grid-cols-2">
+          {products.map((item, index) => (
+            <StoreProductCard item={item} key={index} />
+          ))}
+        </div>
+      ) : (
+        <span className="rounded-2xl bg-moonstone/20 py-20 text-center text-2xl text-black/80">
+          No Products in store
+        </span>
+      )}
     </div>
   );
 };

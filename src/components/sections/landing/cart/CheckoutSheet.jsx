@@ -5,7 +5,6 @@ import {
   masterCardIcon,
   payPalIcon,
   visaIcon,
-  tamaraIcon,
 } from "@/assets/icons/payment-icons";
 import RoundedButton from "@/components/buttons/RoundedButton";
 import InputField from "@/components/form-fields/InputField";
@@ -17,51 +16,89 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
-import { dummyCart } from "@/lib/dummyCart";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Cross, Minus, Plus, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import CreditCard from "../payment-methods/CreditCard";
+import { createOrder } from "@/lib/api/orders/createOrder";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
-const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
+const CheckoutSheet = ({
+  itemCount = 0,
+  orderPlaced,
+  cart,
+  user,
+  open,
+  onOpenChange,
+  setOrderId
+}) => {
   const tabs = [
     "Items",
     "Select Payment Methods",
     "Credit/Debit Cards",
     "New Card",
-  ];
+  ];  
   const shippingOptions = ["Option 1", "Option 2", "Option 3"];
   const cards = ["Card 1", "Card 2", "Card 3"];
   const [selectedTab, setSelectedTab] = useState("Items");
-  const [cart, setCart] = useState(dummyCart);
   const [selectedCard, setSelectedCard] = useState(cards[0]);
   const [selectedShippingOption, setSelectedShippingOption] = useState(
     shippingOptions[0],
   );
+  const [showOrderPlaced, setShowOrderPlaced] = useState(false);
+  const router = useRouter();
 
   const handlePayNow = () => {
     setSelectedTab(tabs[1]);
-    //orderPlaced(true);
   };
 
-  const handleOrderPlace = () => {
-    setSelectedTab(tabs[0])
-    orderPlaced()
-  }
+  const subtotal = cart.reduce((total, item) => {
+    return total + item.quantity * item.price;
+  }, 0);
+
+  const tax = 40;
+
+  const placeOrder = async () => {
+    if (!user || !cart?.length) return;
+    const sellerId = cart[0]?.product?.sellerId;
+    const productId = cart[0]?.product?.id;
+    const orderBody = {
+      userId: user.id,
+      sellerId,
+      productId,
+      status: "PENDING",
+      totalAmount: subtotal + tax,
+      items: cart.map((item) => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        price: item.price,
+        sellerId: item.product.sellerId,
+      })),
+    };
+    try {
+      const res = await createOrder(orderBody);
+            
+      if (res?.success && res?.data?.id) {        
+        setOrderId(res?.data?.id);
+        setShowOrderPlaced(true);
+        onOpenChange(false);
+        toast.success("Order placed successfully!");
+        setSelectedTab(tabs[0]);
+        orderPlaced(true);
+      } else {
+        toast.error("Order placed but no order ID returned.");
+      }
+    } catch (err) {
+      toast.error(err?.message || "Order placement failed");
+      console.log("Order placement failed", err);
+    }
+  };
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <button className="flex h-fit items-center gap-2 rounded-lg bg-moonstone/80 px-7 py-4 text-white hover:bg-moonstone">
-          <span className="text-lg">Check Out</span>
-          <span className="grid size-7 place-items-center rounded-full bg-white/80 text-moonstone">
-            {itemCount}
-          </span>
-        </button>
-      </SheetTrigger>
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="min-w-screen w-full rounded-l-3xl p-0 sm:min-w-[480px]">
         <SheetHeader>
           <SheetTitle className="w-full border-b border-[#F0F1F4] py-7 text-center text-2xl font-medium text-darkBlue">
@@ -77,7 +114,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
               <h1 className="text-lg font-medium text-delftBlue">
                 {selectedTab}
               </h1>
-              {cart.map((item, index) => (
+              {cart?.map((item, index) => (
                 <div
                   className="flex w-full items-center justify-between"
                   key={index}
@@ -85,7 +122,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                   <div className="flex h-full w-full items-center gap-4">
                     <div className="size-[84px] overflow-hidden rounded-lg">
                       <Image
-                        src={item.image}
+                        src={item?.product?.images[0]}
                         width={160}
                         height={160}
                         alt="item"
@@ -96,33 +133,31 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                     <div className="flex h-full flex-col justify-between py-3">
                       <div className="flex flex-col gap-1">
                         <h1 className="max-w-48 truncate text-sm font-medium">
-                          {item.title}
+                          {item?.product?.name}
                         </h1>
                         <div className="flex items-center gap-2 text-[10px]">
                           <span className="text-silver">by</span>
                           <div className="size-4 overflow-hidden rounded-full">
                             <Image
-                              src={item.seller.image}
+                              src={user?.avatar || "/static/user.jpeg"}
                               width={160}
                               height={160}
                               alt="item"
                               loading="lazy"
-                              className="object-cover"
+                              className="h-40 w-40 rounded-full object-cover"
                             />
                           </div>
-                          <span className="text-black/70">
-                            {item.seller.name}
-                          </span>
+                          <span className="text-black/70">{user?.name}</span>
                         </div>
                       </div>
                       <span className="font-medium text-black/80">
-                        ${item.price.toFixed(2)}
+                        ${item.price !== 0 ? item.price.toFixed(2) : item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}
                       </span>
                     </div>
                   </div>
                   <div className="flex h-full flex-col items-center justify-center">
                     <span className="grid size-8 place-items-center rounded-full bg-russianViolet text-xs text-white">
-                      {item.quantity}x
+                      {item?.quantity}x
                     </span>
                   </div>
                 </div>
@@ -163,8 +198,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
               <div className="flex flex-col gap-1 rounded-2xl border border-black/10 px-5 py-5">
                 <h1 className="text-sm font-medium">Home</h1>
                 <div className="max-w-[90%] text-xs text-battleShipGray">
-                  123 Imaginary Street, Fictitious City, Makebelieve County,
-                  Dreamland 56789
+                  {user?.address}
                 </div>
               </div>
               <p className="py-2 text-xs text-battleShipGray">
@@ -175,11 +209,11 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 <h1 className="font-medium text-delftBlue">Order Summary</h1>
                 <div className="flex w-full items-center justify-between">
                   <span className="text-sm">Subtotal</span>
-                  <span className="text-sm">$3040</span>
+                  <span className="text-sm">${subtotal}</span>
                 </div>
                 <div className="flex w-full items-center justify-between">
                   <span className="text-sm">Tax</span>
-                  <span className="text-sm">$40</span>
+                  <span className="text-sm">${tax}</span>
                 </div>
                 <div className="flex w-full items-center justify-between">
                   <span className="text-sm">Delivery</span>
@@ -191,7 +225,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
               <div className="flex flex-col">
                 <h2 className="text-xl text-battleShipGray">Grand Total</h2>
                 <span className="text-3xl font-medium text-black/80">
-                  $1240.00
+                  ${(subtotal + tax).toFixed(2)}
                 </span>
               </div>
               <button
@@ -235,33 +269,9 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 )}
               >
                 <div className="flex items-center gap-2">
-                  Apple Pay {applePayIcon}
-                </div>
-                <ChevronRight />
-              </button>
-              {/* <button
-                onClick={() => setSelectedTab(tabs[2])}
-                className={cn(
-                  "flex items-center justify-between rounded-xl border border-delftBlue/10 bg-[#F8F7FB] px-4 py-5 text-start text-darkBlue",
-                  "transition-all duration-200 ease-in hover:border-moonstone",
-                )}
-              >
-                <div className="flex items-center gap-2">
                   Paypal {payPalIcon}
                 </div>
                 <ChevronRight />
-              </button> */}
-              <button
-                onClick={() => setSelectedTab(tabs[2])}
-                className={cn(
-                  "flex items-center justify-between rounded-xl border border-delftBlue/10 bg-[#F8F7FB] px-4 py-5 text-start text-darkBlue",
-                  "transition-all duration-200 ease-in hover:border-moonstone",
-                )}
-              >
-                <div className="flex items-center gap-2">
-                  Tabby <Image width={50} height={33} alt="icon" src={"tabbyIcon.svg"} />
-                </div>
-                <ChevronRight />
               </button>
               <button
                 onClick={() => setSelectedTab(tabs[2])}
@@ -271,7 +281,7 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 )}
               >
                 <div className="flex items-center gap-2">
-                  Tamara <Image width={25} height={25} alt="icon" src={"tamaraIcon.svg"} />
+                  Apple Pay {applePayIcon}
                 </div>
                 <ChevronRight />
               </button>
@@ -308,13 +318,13 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 <div className="flex items-center justify-center gap-3 py-5">
                   {cards.map((card, index) => (
                     <div
+                      key={index}
                       className={cn(
                         "cursor-pointer",
                         selectedCard === card
                           ? "relative rounded-2xl bg-moonstone p-[1px]"
                           : "",
                       )}
-                      key={index}
                       onClick={() => setSelectedCard(card)}
                     >
                       <CreditCard
@@ -332,11 +342,11 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 <h1 className="font-medium text-delftBlue">Order Summary</h1>
                 <div className="flex w-full items-center justify-between">
                   <span className="text-sm">Subtotal</span>
-                  <span className="text-sm">$3040</span>
+                  <span className="text-sm">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex w-full items-center justify-between">
                   <span className="text-sm">Tax</span>
-                  <span className="text-sm">$40</span>
+                  <span className="text-sm">${tax.toFixed(2)}</span>
                 </div>
                 <div className="flex w-full items-center justify-between">
                   <span className="text-sm">Delivery</span>
@@ -347,12 +357,14 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
                 <div className="flex flex-col">
                   <h2 className="text-xl text-battleShipGray">Grand Total</h2>
                   <span className="text-3xl font-medium text-black/80">
-                    $1240.00
+                    ${(subtotal + tax).toFixed(2)}
                   </span>
                 </div>
                 <SheetClose asChild>
                   <button
-                    onClick={() => handleOrderPlace()}
+                    onClick={() => {
+                      placeOrder();
+                    }}
                     className="rounded-lg bg-moonstone/80 px-10 py-3 text-white hover:bg-moonstone"
                   >
                     Place Order
@@ -375,20 +387,20 @@ const CheckoutSheet = ({ itemCount = 0, orderPlaced }) => {
               </div>
               <div className="flex w-full flex-col gap-3 px-10 py-5">
                 <div className="flex w-full flex-col gap-1">
-                  {/* <Label text="Card Number" /> */}
+                  <Label text="Card Number" />
                   <InputField placeholder="Enter card number" />
                 </div>
                 <div className="flex w-full flex-col gap-1">
-                  {/* <Label text="Cardholder Name" /> */}
+                  <Label text="Cardholder Name" />
                   <InputField placeholder="Enter cardholder name" />
                 </div>
                 <div className="flex w-full items-center gap-2">
                   <div className="flex w-full flex-col gap-1">
-                    {/* <Label text="Expiry Date" /> */}
+                    <Label text="Expiry Date" />
                     <InputField placeholder="01/01/2000" />
                   </div>
                   <div className="flex w-full flex-col gap-1">
-                    {/* <Label text="CVV" /> */}
+                    <Label text="CVV" />
                     <InputField placeholder="CVV" />
                   </div>
                 </div>

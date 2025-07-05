@@ -15,7 +15,7 @@ const HistoryBar = () => {
         <button
           onClick={() =>
             router.push(
-              "/profile/purchase-history/" + historyCategory.toLowerCase(),
+              "/buyer/profile/purchase-history/" + historyCategory.toLowerCase(),
             )
           }
           key={index}

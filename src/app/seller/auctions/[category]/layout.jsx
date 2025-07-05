@@ -1,10 +1,8 @@
 import PageHeading from "@/components/headings/PageHeading";
 import SellerAuctionBar from "@/components/sections/seller/auctions/SellerAuctionBar";
+import { getAuctionsBySellerId } from "@/lib/api/auctions/getAllByStoreId";
 
-const CategoryLayout = async ({ params, children }) => {
-  const auctionType = (await params).type;
-  const category = "";
-
+const CategoryLayout = async ({ children }) => {
   return (
     <div className="flex w-full flex-col items-center px-3">
       <PageHeading>
@@ -16,7 +14,7 @@ const CategoryLayout = async ({ params, children }) => {
       </PageHeading>
       <div className="flex w-full max-w-7xl flex-col items-center justify-center py-5">
         <div className="flex w-full flex-col gap-5">
-          <SellerAuctionBar category={"all"} auctionType={auctionType} />
+          <SellerAuctionBar />
         </div>
         {children}
       </div>

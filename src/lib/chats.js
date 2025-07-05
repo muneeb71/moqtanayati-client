@@ -2,7 +2,7 @@ export const dummyChats = [
   {
     name: "Theresa Webb",
     time: "Today, 8:20 am",
-    image: "/dummy-user/2.jpeg",
+    image: "/static/dummy-user/2.jpeg",
     chats: [
       { message: "Hi, how are you?", time: "8:20 am", isSender: false },
       {
@@ -15,7 +15,7 @@ export const dummyChats = [
   {
     name: "Marvin McKinney",
     time: "Yesterday, 3:45 pm",
-    image: "/dummy-user/3.jpeg",
+    image: "/static/dummy-user/3.jpeg",
     chats: [
       {
         message: "I'll send the documents shortly.",
@@ -28,7 +28,7 @@ export const dummyChats = [
   {
     name: "Kristin Watson",
     time: "Monday, 10:15 am",
-    image: "/dummy-user/4.jpeg",
+    image: "/static/dummy-user/4.jpeg",
     chats: [
       {
         message: "Can you review the proposal?",
@@ -45,7 +45,7 @@ export const dummyChats = [
   {
     name: "Cameron Williamson",
     time: "Last Friday, 4:30 pm",
-    image: "/dummy-user/5.jpeg",
+    image: "/static/dummy-user/5.jpeg",
     chats: [
       {
         message: "Hey, any updates on the project?",
@@ -62,7 +62,7 @@ export const dummyChats = [
   {
     name: "Darlene Robertson",
     time: "Last Thursday, 1:00 pm",
-    image: "/dummy-user/6.jpeg",
+    image: "/static/dummy-user/6.jpeg",
     chats: [
       {
         message: "Can we reschedule our meeting?",

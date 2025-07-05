@@ -1,6 +1,7 @@
 import Image from "next/image";
 import SidebarLinks from "./SidebarLinks";
 import { logoutIcon } from "@/assets/icons/admin-icons";
+import { logoutUser } from "@/lib/api/auth/logout";
 
 const AdminSidebar = () => {
   return (
@@ -9,7 +10,7 @@ const AdminSidebar = () => {
     >
       <div className="flex w-full flex-col gap-16 mb-10">
         <Image
-          src="/logo.png"
+          src="/static/logo.png"
           width={143}
           height={72}
           alt="logo"
@@ -19,7 +20,7 @@ const AdminSidebar = () => {
         />
     <SidebarLinks />
       </div>
-      <div className="flex items-center gap-2 mt-auto px-3.5 cursor-pointer">
+      <div className="flex items-center gap-2 mt-auto px-3.5 cursor-pointer" onClick={logoutUser}>
         {logoutIcon}
         <p className="text-[#DA6D75CC]">Logout</p>
       </div>

@@ -14,11 +14,68 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useState } from "react";
+import { updateUserPassword } from "@/lib/api/profile/updatePassword";
+import toast from "react-hot-toast";
 
 const ChangePasswordDialog = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Validation logic
+  const isValid = () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error("All fields are required");
+      return false;
+    }
+    if (newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters");
+      return false;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match");
+      return false;
+    }
+    if (currentPassword === newPassword) {
+      toast.error("New password must be different from current password");
+      return false;
+    }
+    return true;
+  };
+
+  const handleChangePassword = async () => {
+    if (!isValid()) return;
+    toast.error("Can't update password for now")
+    // setIsLoading(true);
+    // try {
+    //   const res = await updateUserPassword({
+    //     currentPassword,
+    //     newPassword,
+    //     confirmNewPassword: confirmPassword,
+    //   });
+    //   if (res.success) {
+    //     toast.success("Password updated successfully!");
+    //     setCurrentPassword("");
+    //     setNewPassword("");
+    //     setConfirmPassword("");
+    //   } else {
+    //     toast.error(res.message || "Failed to update password");
+    //   }
+    // } catch (err) {
+    //   toast.error(err.message || "An unexpected error occurred");
+    // } finally {
+    //   setIsLoading(false);
+    // }
+  };
+
+  // Button should be disabled if any field is empty or loading
+  const isButtonDisabled =
+    isLoading ||
+    !currentPassword ||
+    !newPassword ||
+    !confirmPassword;
+
   return (
     <div className="border- flex flex-col border-b border-[#4D4D4D1A] pb-7">
       <Dialog>
@@ -71,7 +128,11 @@ const ChangePasswordDialog = () => {
               </div>
             </div>
             <div className="flex flex-col items-center gap-5">
-              <RoundedButton title="Verify & Save" />
+              <RoundedButton
+                title={isLoading ? "Saving..." : "Verify & Save"}
+                onClick={handleChangePassword}
+                disabled={isButtonDisabled}
+              />
               <CustomLink className="text-sm font-medium">
                 Resend OTP
               </CustomLink>

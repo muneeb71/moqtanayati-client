@@ -1,28 +1,21 @@
 "use client";
 
-import { useState } from "react";
-
-const OtpInput = () => {
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-
+const EmailOtpInput = ({ otp, setOtp }) => {
   const handleOtpChange = (e, index) => {
     const value = e.target.value;
-
     if (/^\d$/.test(value) || value === "") {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-
       if (value && index < otp.length - 1) {
-        const nextInput = document.getElementById(`otp-${index + 1}`);
+        const nextInput = document.getElementById(`email-otp-${index + 1}`);
         if (nextInput) nextInput.focus();
       }
     }
   };
-
   const handleFocus = (e, index) => {
     if (e.key === "Backspace" && otp[index] === "") {
-      const prevInput = document.getElementById(`otp-${index - 1}`);
+      const prevInput = document.getElementById(`email-otp-${index - 1}`);
       if (prevInput) prevInput.focus();
     }
   };
@@ -31,7 +24,7 @@ const OtpInput = () => {
       {otp.map((digit, index) => (
         <input
           key={index}
-          id={`otp-${index}`}
+          id={`email-otp-${index}`}
           type="text"
           maxLength="1"
           value={digit}
@@ -44,4 +37,4 @@ const OtpInput = () => {
   );
 };
 
-export default OtpInput;
+export default EmailOtpInput;

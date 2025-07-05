@@ -1,16 +1,34 @@
+"use client";
 import { bellIcon, cartIcon } from "@/assets/icons/header-icons";
 import Image from "next/image";
 import NavLinks from "./NavLinks";
 import MobileSheet from "./MobileSheet";
 import Link from "next/link";
 import HeaderDropdown from "./HeaderDropdown";
+import { useEffect, useState } from "react";
+import { getUserProfile } from "@/lib/api/profile/getProfile";
+import toast from "react-hot-toast";
 
 const Header = () => {
+  const [user, setUser] = useState(null);
+
+  const getUserData = async () => {
+    const res = await getUserProfile();
+    if (res?.success) {
+      setUser(res?.data);
+    } else {
+      toast.error("Error fetching user details.");
+    }
+  };
+  useEffect(() => {
+    getUserData();
+  }, []);
+
   return (
     <header className="flex w-full flex-col items-center justify-center">
       <div className="flex w-full max-w-7xl items-center justify-between px-4 py-4 md:px-5">
         <Image
-          src="/logo.png"
+          src={user?.avatar || "/static/logo.png"}
           width={121}
           height={61}
           alt="LOGO"
@@ -22,25 +40,25 @@ const Header = () => {
         <div className="hidden items-center gap-2 md:flex md:gap-4">
           <div className="grid grid-cols-[1fr_1px_1fr] place-items-center gap-5">
             <Link
-              href="/notifications/all"
+              href="/buyer/notifications/all"
               className="grid size-12 place-items-center rounded-full border border-[#3F175F1A]"
             >
               {bellIcon}
             </Link>
             <div className="h-[44px] w-[1px] bg-[#3F175F1A]"></div>
             <Link
-              href="/cart"
+              href="/buyer/cart"
               className="grid size-12 place-items-center rounded-full border border-[#3F175F1A]"
             >
               {cartIcon}
             </Link>
           </div>
           <Link
-            href="/profile"
+            href="/buyer/profile"
             className="size-12 overflow-hidden rounded-full"
           >
             <Image
-              src="/dummy-user/1.jpeg"
+              src="/static/dummy-user/1.jpeg"
               width={250}
               height={250}
               loading="lazy"
@@ -55,7 +73,7 @@ const Header = () => {
             className="size-10 overflow-hidden rounded-full"
           >
             <Image
-              src="/dummy-user/1.jpeg"
+              src="/static/dummy-user/1.jpeg"
               width={250}
               height={250}
               loading="lazy"

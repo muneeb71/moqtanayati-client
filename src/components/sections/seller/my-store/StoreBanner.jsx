@@ -10,10 +10,10 @@ const StoreBanner = () => {
         <ProfileImageContainer />
       </div>
       <div className="flex items-center gap-3 rounded-xl border border-black/10 px-3.5 py-4">
-        <span className="text-sm font-medium text-battleShipGray">
+        {/* <span className="text-sm font-medium text-battleShipGray">
           Disable Profile
         </span>
-        <Switch />
+        <Switch /> */}
       </div>
     </div>
   );

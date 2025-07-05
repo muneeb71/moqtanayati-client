@@ -295,7 +295,7 @@ export default function AuctionRegisterSlider({ onClose }) {
                     placeholder="Type your message..."
                   />
                   <button className="absolute right-2 top-1/2 -translate-y-1/2 transform text-teal-500">
-                    <Image src="arrow.svg" alt="Send button" width={20} height={20} />
+                    <Image src="/static/arrow.svg" alt="Send button" width={20} height={20} />
                   </button>
                 </div>
               </div>

@@ -2,20 +2,34 @@
 
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const BidCard = ({ item }) => {
+const BidCard = ({ item }) => {  
   const [favourite, setFavourite] = useState(item.isFavourite);
+  const highestBid = Math.max(...item.auction.bids.map(bid => bid.amount));
+  const myBidIsHighest = item.amount === highestBid;
+  const router = useRouter();
+  
+  
+  const statusStyles = {
+    HIGHEST: "bg-moonstone/10 text-moonstone",
+    WON: "bg-green-100 text-green-700",
+    OUTBID: "bg-faluRed/10 text-faluRed",
+    RETRACTED: "bg-gray-200 text-gray-500",
+  };
+  
   return (
     <div
-      className="grid h-full max-h-[138px] grid-cols-[96px_1fr] overflow-hidden rounded-[12px] bg-white sm:grid-cols-[126px_1fr]"
+      className="grid cursor-pointer h-full max-h-[138px] grid-cols-[96px_1fr] overflow-hidden rounded-[12px] bg-white sm:grid-cols-[126px_1fr]"
       style={{
         boxShadow: "0px 0px 29.85px 2.39px #0000001A",
       }}
+      onClick={()=>router.push(`/buyer/product-details/${item?.auction?.product?.id}`)}
     >
       <div className="h-full w-full overflow-hidden">
         <Image
-          src={item.image}
+          src={item?.auction?.product?.images[0]}
           width={200}
           height={200}
           className="h-full w-full object-cover"
@@ -26,7 +40,7 @@ const BidCard = ({ item }) => {
         <div className="flex justify-between gap-2">
           <div className="flex flex-col px-1.5">
             <span className="max-w-[200px] truncate text-[16.72px] font-medium leading-[25px]">
-              Iphone 6 plus
+              {item?.auction?.product?.name}
             </span>
             <div className="flex items-center gap-2">
               <span className="text-[11.9px] font-medium leading-[18px] text-black/30">
@@ -35,7 +49,7 @@ const BidCard = ({ item }) => {
               <div className="flex items-center gap-1">
                 <div className="size-[19.1px] min-h-[19.1px] min-w-[19.1px] overflow-hidden rounded-full">
                   <Image
-                    src="/dummy-user/1.jpeg"
+                    src={item?.auction?.seller?.avatar || '/static/user.jpeg'}
                     width={100}
                     height={100}
                     className="h-full w-full object-cover"
@@ -43,12 +57,12 @@ const BidCard = ({ item }) => {
                   />
                 </div>
                 <span className="text-[11.9px] font-medium leading-[18px] text-black/70">
-                  Kathryn Murphy
+                  {item?.auction?.seller?.name}
                 </span>
               </div>
             </div>
           </div>
-          <button
+          {/* <button
             className={cn(
               "grid size-[33px] place-items-center rounded-[4.6px] bg-black/10",
               favourite ? "text-[#F16D6F]" : "text-white",
@@ -56,7 +70,7 @@ const BidCard = ({ item }) => {
             onClick={() => setFavourite(!favourite)}
           >
             {heartIcon}
-          </button>
+          </button> */}
         </div>
         <div className="h-[1px] w-full bg-black bg-opacity-[0.02]"></div>
         <div className="flex items-center justify-between gap-5 px-1.5">
@@ -65,21 +79,17 @@ const BidCard = ({ item }) => {
               Highest Bid
             </span>
             <span className="sm:text-lg font-medium">
-              $350.00
+              ${highestBid}
             </span>
           </div>
           <div
             className={cn(
-              item.bidStatus == "Won"
-                ? "bg-moonstone/10 text-moonstone"
-                : item.bidStatus == "Active"
-                  ? "bg-[#E8F5FF] text-[#1B97FC]"
-                  : "bg-faluRed bg-faluRed/10",
+              statusStyles[item?.status] || "bg-black/10 text-black/60",
               "h-fit rounded-[8px] px-3 py-1 sm:px-5 sm:py-2 text-sm font-medium leading-[21px]",
               "transition-all duration-150 ease-in",
             )}
           >
-            {item.bidStatus}
+            {item?.status}
           </div>
         </div>
       </div>

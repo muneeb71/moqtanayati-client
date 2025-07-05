@@ -1,6 +1,6 @@
 import WatchlistCard from "./WatchlistCard";
 
-const Watchlist = ({ items }) => {
+const Watchlist = ({ items, removeFromWatchlist }) => {
   return (
     <div className="flex min-h-[40rem] w-full max-w-7xl flex-col gap-5">
       <h1 className="text-[21px] font-medium leading-[31px]">
@@ -8,9 +8,9 @@ const Watchlist = ({ items }) => {
         <span className="font-normal text-battleShipGray">Results</span>
       </h1>
       <div className="grid min-h-[30rem] md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {items.map((item, index) => (
-          <WatchlistCard key={index} item={item} />
-        ))}
+        {items?.length > 0 ? items.map((item, index) => (
+          <WatchlistCard key={index} item={item} removeFromWatchlist={removeFromWatchlist} />
+        )): <p className="text-red-500 w-full md:col-span-2 col-span-3 text-start">No Items Added to Watchlist!</p>}
       </div>
     </div>
   );

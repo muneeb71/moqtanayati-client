@@ -11,10 +11,10 @@ const FurnitureSection = () => {
           <h1 className="text-lg font-medium leading-[48px] text-delftBlue md:text-[32px]">
             Furniture
           </h1>
-          <CustomLink className="md:text-[21.8px]">See All</CustomLink>
+          {/* <CustomLink className="md:text-[21.8px]">See All</CustomLink> */}
         </div>
       </div>
-      <ItemSlider items={dummyItems} />
+      <ItemSlider items={dummyItems} section={"furniture"}/>
     </div>
   );
 };

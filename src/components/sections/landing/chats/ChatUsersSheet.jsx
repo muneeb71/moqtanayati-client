@@ -11,7 +11,7 @@ import {
 import { MenuIcon } from "lucide-react";
 import Image from "next/image";
 
-const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {
+const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {  
   return (
     <Sheet>
       <SheetTrigger>
@@ -42,7 +42,7 @@ const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {
                   <div className="flex w-full items-center gap-3">
                     <div className="grid size-[36px] min-w-[36px] place-items-center overflow-hidden rounded-full">
                       <Image
-                        src={user.image}
+                        src={user.avatar || "/static/dummy-user/1.jpeg"}
                         width={100}
                         height={100}
                         alt={user.name}
@@ -54,21 +54,10 @@ const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {
                         {user.name}
                       </h1>
                       <p className="max-w-[190px] truncate text-xs leading-[17.5px] text-[#595C75]">
-                        {user.chats[user.chats.length - 1]?.isSender && (
-                          <span className="font-medium">You: </span>
-                        )}
-                        <span
-                          className={
-                            !user.chats[user.chats.length - 1]?.isSender
-                              ? "font-medium text-moonstone"
-                              : ""
-                          }
-                        >
-                          {user.chats[user.chats.length - 1]?.message}
-                        </span>
+                        {user.lastMessage ? <span>{user.lastMessage}</span> : <span className="italic text-gray-400">No messages</span>}
                       </p>
                       <span className="text-end text-[10px] text-[#9799A8]">
-                        {user.time}
+                        {user.lastMessageTime ? user.lastMessageTime : ""}
                       </span>
                     </div>
                   </div>
