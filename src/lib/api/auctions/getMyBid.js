@@ -9,4 +9,4 @@ export async function getMyBids() {
     },
   });
   return response.data;
-} 
+}

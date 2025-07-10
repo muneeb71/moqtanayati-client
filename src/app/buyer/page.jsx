@@ -8,7 +8,7 @@ import { io } from "socket.io-client";
 import { getAllAuctions } from "@/lib/api/auctions/getAll";
 import AuctionSectionSkeleton from "@/components/loaders/AuctionSectionSkeleton";
 
-const socket = io("http://localhost:8000", {});
+const socket = io("http://localhost:5000", {});
 let loading = true;
 const auctions = await getAllAuctions();
 const auction = auctions.find(a => a.status === "LIVE");

@@ -10,7 +10,7 @@ const SearchPage = async ({ searchParams }) => {
 
   if (key) {
     try {
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/products/search/${encodeURIComponent(key)}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/products/search/${encodeURIComponent(key)}`);
       items = res.data?.data || [];
     } catch (err) {
       error = "Failed to fetch search results.";

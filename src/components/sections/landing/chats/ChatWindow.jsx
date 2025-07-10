@@ -13,7 +13,7 @@ import { useState, useEffect, useRef } from "react";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import { io } from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:8000";
+const SOCKET_URL = "http://localhost:5000";
 
 const ChatWindow = ({
   selectedUser,

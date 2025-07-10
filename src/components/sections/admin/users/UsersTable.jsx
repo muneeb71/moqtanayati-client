@@ -105,7 +105,7 @@ const UsersTable = ({
               </span>
             </td>
             <td className="py-5 pl-8 text-[16px] text-customGray">
-              {formatDateTime(user.registrationDate)}
+              {formatDateTime.formatDateTime(user.registrationDate)}
             </td>
             <td className="py-5 pl-8">
               <div className="flex flex-row gap-2">

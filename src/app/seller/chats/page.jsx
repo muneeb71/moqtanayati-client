@@ -13,7 +13,7 @@ import { io } from "socket.io-client";
 import ChatSidebarSkeleton from "@/components/loaders/chats/ChatSidebarSkeleton";
 import ChatWindowSkeleton from "@/components/loaders/chats/ChatWindowSkeleton";
 
-const SOCKET_URL = "http://localhost:8000";
+const SOCKET_URL = "http://localhost:5000";
 
 const ChatPage = () => {
   const searchParams = useSearchParams();

@@ -6,6 +6,8 @@ import { leftChipIcon, rightChipIcon } from "@/assets/icons/admin-icons";
 import { getAllUsers } from "@/lib/api/admin/users/getAllUsers";
 
 const Users = () => {
+  console.log("Users component rendered");
+
   const router = useRouter();
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,7 +31,10 @@ const Users = () => {
 
   async function fetchUsers() {
     try {
+
+      console.log('in fetch function');
       const res = await getAllUsers();
+            console.log('sfter fetch function ', res);
       const fetchedUsers = res?.data?.users || [];
       const pagination = res?.data?.pagination || {};
 
@@ -44,7 +49,8 @@ const Users = () => {
   }
 
   useEffect(() => {
-    fetchUsers(currentPage);
+     console.log("useEffect called, page:", currentPage);
+    fetchUsers();
   }, [currentPage]);
 
   return (
