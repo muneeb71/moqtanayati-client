@@ -4,7 +4,7 @@ import { getAllOrders } from "@/lib/api/admin/orders/getAllOrders";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import formatDateTime from "@/utils/dateFormatter";
-import toast from "react-hot-toast";
+import { generateInvoiceAndDownload } from "@/lib/api/admin/invoice/generateInvoiceAndDownload";
 
 const tableHeaders = [
   "Product",
@@ -43,7 +43,6 @@ const OrdersTable = () => {
   }, [page]);
 
   console.log(orders);
-  
 
   return (
     <div className="flex h-full w-full flex-col overflow-auto rounded-lg">
@@ -53,7 +52,9 @@ const OrdersTable = () => {
             {tableHeaders.map((header, index) => (
               <th
                 key={index}
-                className={cn(header === "Review" ? "col-span-2" : "col-span-1")}
+                className={cn(
+                  header === "Review" ? "col-span-2" : "col-span-1",
+                )}
               >
                 <div className="flex w-full min-w-[200px] items-center justify-between gap-3 text-nowrap px-5 py-4">
                   <span className="text-sm font-medium text-darkBlue">
@@ -122,7 +123,7 @@ const OrdersTable = () => {
                       Total price:
                     </span>
                     <span className="text-sm text-russianViolet">
-                      ${(data.totalAmount)?.toFixed(2)}
+                      ${data.totalAmount?.toFixed(2)}
                     </span>
                   </div>
                   <div
@@ -131,8 +132,8 @@ const OrdersTable = () => {
                       data.paymentStatus === "PAID"
                         ? "bg-shamrockGreen/10 text-shamrockGreen"
                         : data.paymentStatus === "PENDING"
-                        ? "bg-black/5 text-black/60"
-                        : "bg-faluRed/10 text-faluRed"
+                          ? "bg-black/5 text-black/60"
+                          : "bg-faluRed/10 text-faluRed",
                     )}
                   >
                     {data?.paymentStatus}
@@ -146,8 +147,12 @@ const OrdersTable = () => {
                     data.status === "DELIVERED"
                       ? "bg-shamrockGreen/10 text-shamrockGreen"
                       : data.status === "SHIPPED"
-                      ? "bg-[#AEAB21]/10 text-[#AEAB21]"
-                      : "bg-black/5 text-black/60"
+                        ? "bg-[#AEAB21]/10 text-[#AEAB21]"
+                        : data.status === "CANCELLED"
+                          ? "bg-faluRed/10 text-faluRed"
+                          : data.status === "PROCESSING"
+                            ? "bg-yellow/10 text-yellow"
+                            : "bg-black/5 text-black/60",
                   )}
                 >
                   {data.status}
@@ -155,13 +160,31 @@ const OrdersTable = () => {
               </td>
               <td>
                 <div className="flex items-center gap-2 px-5 py-4 text-sm text-[#667085]">
-                  {formatDateTime(data.createdAt)}
+                  {formatDateTime.formatDateTime(data.createdAt)}
                 </div>
               </td>
               <td>
-                <button className="px-5 py-4 font-medium text-russianViolet underline transition-all duration-100 ease-linear hover:text-shamrockGreen" onClick={()=>toast.error("Invoice not generated.")}>
-                  Download
-                </button>
+                <td>
+                  <button
+                    className="px-5 py-4 font-medium text-russianViolet underline transition-all duration-100 ease-linear hover:text-shamrockGreen"
+                    onClick={() =>
+                      generateInvoiceAndDownload({
+                        id: data.id,
+                        customerName: data.user.name,
+                        date: new Date(data.createdAt).toLocaleDateString(),
+                        items: [
+                          {
+                            name: data.product.name,
+                            qty: data.quantity || 1,
+                            price: data.totalAmount,
+                          },
+                        ],
+                      })
+                    }
+                  >
+                    Download
+                  </button>
+                </td>
               </td>
             </tr>
           ))}
@@ -186,7 +209,7 @@ const OrdersTable = () => {
               "rounded px-3 py-1 text-sm",
               p === page
                 ? "bg-moonstone text-white"
-                : "bg-moonstone/10 text-moonstone hover:bg-moonstone/20"
+                : "bg-moonstone/10 text-moonstone hover:bg-moonstone/20",
             )}
           >
             {p}

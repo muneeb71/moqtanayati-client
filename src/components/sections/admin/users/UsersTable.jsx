@@ -85,9 +85,9 @@ const UsersTable = ({
             <td className="py-5 pl-8">
               <span
                 className={`rounded-lg px-5 py-1 text-[14px] font-semibold ${
-                  user.account_status === "Active"
-                    ? "bg-customGreen/10 text-customGreen"
-                    : "bg-faluRed/10 text-faluRed"
+                  user.accountStatus === "DISABLED"
+                    ? "bg-faluRed/10 text-faluRed"
+                    : "bg-customGreen/10 text-customGreen"
                 }`}
               >
                 {user.accountStatus}

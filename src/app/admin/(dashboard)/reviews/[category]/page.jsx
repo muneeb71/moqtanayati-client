@@ -1,8 +1,12 @@
+"use client";
+
+import { useState } from "react";
 import ReviewsTable from "@/components/sections/admin/reviews/ReviewsTable";
 import ReviewsTableHeader from "@/components/sections/admin/reviews/ReviewsTableHeader";
 
-const ReviewsPage = async ({ params }) => {
-  const reviewCategory = (await params).category;
+const ReviewsPageClient = ({ category }) => {
+  const [sortBy, setSortBy] = useState("newest");
+
   const reviewCategories = [
     {
       title: "Buyer Reviews Sellers",
@@ -23,13 +27,15 @@ const ReviewsPage = async ({ params }) => {
           Reviews
         </span>
         <ReviewsTableHeader
-          reviewCategory={reviewCategory}
+          reviewCategory={category}
           reviewCategories={reviewCategories}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
         />
       </div>
-      <ReviewsTable category={reviewCategory} />
+      <ReviewsTable category={category} sortBy={sortBy} setSortBy={setSortBy} />
     </div>
   );
 };
 
-export default ReviewsPage;
+export default ReviewsPageClient;

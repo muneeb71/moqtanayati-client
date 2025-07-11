@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import UsersTable from "./UsersTable";
 import { leftChipIcon, rightChipIcon } from "@/assets/icons/admin-icons";
 import { getAllUsers } from "@/lib/api/admin/users/getAllUsers";
+import { filterIcon } from "@/assets/icons/admin-icons";
 
 const Users = () => {
   console.log("Users component rendered");
@@ -21,7 +22,7 @@ const Users = () => {
     setSelectedRows((prev) =>
       prev.includes(email)
         ? prev.filter((item) => item !== email)
-        : [...prev, email]
+        : [...prev, email],
     );
   };
 
@@ -31,10 +32,8 @@ const Users = () => {
 
   async function fetchUsers() {
     try {
-
-      console.log('in fetch function');
       const res = await getAllUsers();
-            console.log('sfter fetch function ', res);
+
       const fetchedUsers = res?.data?.users || [];
       const pagination = res?.data?.pagination || {};
 
@@ -49,27 +48,33 @@ const Users = () => {
   }
 
   useEffect(() => {
-     console.log("useEffect called, page:", currentPage);
+    console.log("useEffect called, page:", currentPage);
     fetchUsers();
   }, [currentPage]);
 
   return (
     <div className="flex h-full max-h-full flex-col overflow-hidden py-6">
-      <div className="flex flex-col gap-3 pb-5">
-        <p className="text-[24px] font-semibold leading-none text-russianViolet">
-          Users
-        </p>
-        <div className="flex flex-row items-center justify-between">
-          <div className="flex flex-row items-center gap-5">
-            <p className="text-[18px] font-normal text-davyGray">All Users</p>
-            {selectedRows.length > 0 && (
-              <p className="text-[13px] font-normal text-davyGray">
-                ({selectedRows.length}{" "}
-                {selectedRows.length === 1 ? "row" : "rows"} selected)
-              </p>
-            )}
+      <div className="mb-5 flex w-full items-end justify-between">
+        <div className="flex flex-col gap-1">
+          <span className="text-2xl font-semibold text-russianViolet">
+            Users
+          </span>
+          <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-row items-center gap-5">
+              <p className="text-[18px] font-normal text-davyGray">All Users</p>
+              {selectedRows.length > 0 && (
+                <p className="text-[13px] font-normal text-davyGray">
+                  ({selectedRows.length}{" "}
+                  {selectedRows.length === 1 ? "row" : "rows"} selected)
+                </p>
+              )}
+            </div>
           </div>
         </div>
+        <button className="flex items-center gap-2 rounded-lg border border-silver bg-white px-3 py-2 text-moonstone transition-all duration-100 ease-linear hover:bg-moonstone/5">
+          {filterIcon}
+          <span className="text-sm font-medium">Filters</span>
+        </button>
       </div>
 
       <div className="no-scrollbar flex h-full max-h-full w-full max-w-full flex-col overflow-auto rounded-lg">
@@ -82,7 +87,7 @@ const Users = () => {
         />
       </div>
 
-      <div className="flex md:h-20 flex-col md:flex-row md:items-center gap-1 justify-between bg-white py-5 pl-8">
+      <div className="flex flex-col justify-between gap-1 bg-white py-5 pl-8 md:h-20 md:flex-row md:items-center">
         <p className="text-sm text-customGray">
           Showing {1 + (currentPage - 1) * rowsPerPage} -{" "}
           {Math.min(currentPage * rowsPerPage, totalUsers)} from {totalUsers}

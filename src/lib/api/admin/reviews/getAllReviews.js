@@ -1,7 +1,7 @@
 import api from "../../axios";
 import Cookies from "js-cookie";
 
-export async function getAllUsers() {
+export async function getAllReviews() {
   try {
     const token = Cookies.get("token");
 
@@ -10,11 +10,13 @@ export async function getAllUsers() {
       return;
     }
 
-    const response = await api.get("http://localhost:5000/api/admin/users", {
+    const response = await api.get("http://localhost:5000/api/admin/reviews", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+
+    console.log("response : ", response);
 
     return response;
   } catch (error) {

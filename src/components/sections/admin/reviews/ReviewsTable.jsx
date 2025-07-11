@@ -1,139 +1,102 @@
-"use client"
-import { deleteIcon, starIcon } from "@/assets/icons/common-icons";
+"use client";
+import { starIcon } from "@/assets/icons/common-icons";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import { useEffect, useState } from "react";
+import { getAllReviews } from "@/lib/api/admin/reviews/getAllReviews";
+import { approveReview } from "@/lib/api/admin/reviews/approveReview";
+import { rejectReview } from "@/lib/api/admin/reviews/rejectReview";
 
-const ReviewsTable = ({ category }) => {
-  const tableHeaders = ["Buyer", "Seller", "Rating", "Review", "Actions"];
-  const tableData = [
+const ReviewsTable = ({ category, sortBy, setSortBy }) => {
+  const [review, setReview] = useState(null);
+  const actions = [
     {
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Albert Flores",
-        image: "/dummy-user/2.jpeg",
-      },
-      rating: 4,
-      review:
-        "Fantastic seller! The item was exactly as described, and shipping was fast. Great communication throughout the transaction. Highly recommended!",
+      title: "Approve",
+      href: "",
     },
     {
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Albert Flores",
-        image: "/dummy-user/2.jpeg",
-      },
-      rating: 4,
-      review:
-        "Fantastic seller! The item was exactly as described, and shipping was fast. Great communication throughout the transaction. Highly recommended!",
-    },
-    {
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Albert Flores",
-        image: "/dummy-user/2.jpeg",
-      },
-      rating: 4,
-      review:
-        "Fantastic seller! The item was exactly as described, and shipping was fast. Great communication throughout the transaction. Highly recommended!",
-    },
-    {
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Albert Flores",
-        image: "/dummy-user/2.jpeg",
-      },
-      rating: 4,
-      review:
-        "Fantastic seller! The item was exactly as described, and shipping was fast. Great communication throughout the transaction. Highly recommended!",
-    },
-    {
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Albert Flores",
-        image: "/dummy-user/2.jpeg",
-      },
-      rating: 4,
-      review:
-        "Fantastic seller! The item was exactly as described, and shipping was fast. Great communication throughout the transaction. Highly recommended!",
-    },
-    {
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Albert Flores",
-        image: "/dummy-user/2.jpeg",
-      },
-      rating: 4,
-      review:
-        "Fantastic seller! The item was exactly as described, and shipping was fast. Great communication throughout the transaction. Highly recommended!",
-    },
-    {
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Albert Flores",
-        image: "/dummy-user/2.jpeg",
-      },
-      rating: 4,
-      review:
-        "Fantastic seller! The item was exactly as described, and shipping was fast. Great communication throughout the transaction. Highly recommended!",
-    },
-    {
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Albert Flores",
-        image: "/dummy-user/2.jpeg",
-      },
-      rating: 4,
-      review:
-        "Fantastic seller! The item was exactly as described, and shipping was fast. Great communication throughout the transaction. Highly recommended!",
-    },
-    {
-      buyer: {
-        name: "Esther Howard",
-        image: "/dummy-user/1.jpeg",
-      },
-      seller: {
-        name: "Albert Flores",
-        image: "/dummy-user/2.jpeg",
-      },
-      rating: 4,
-      review:
-        "Fantastic seller! The item was exactly as described, and shipping was fast. Great communication throughout the transaction. Highly recommended!",
+      title: "Reject",
+      href: "",
     },
   ];
+  const tableHeaders = ["Buyer", "Seller", "Rating", "Review", "Actions"];
+
+  async function fetchReviewData() {
+    try {
+      const res = await getAllReviews();
+      console.log("reviews data 1 : ", res.data);
+
+      const fetchReviews = res.data.reviews || [];
+      console.log("reviews data 2 : ", fetchReviews);
+      setReview(fetchReviews);
+    } catch (error) {
+      setReview([]);
+    }
+  }
+
+  async function handleStatusChange(id, action) {
+    try {
+      const res =
+        action == "APPROVE" ? await approveReview(id) : await rejectReview(id);
+      console.log("reviews action data 1 : ", res.data);
+
+      // Update local review list
+      setReview((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? {
+                ...item,
+                status: action === "APPROVE" ? "APPROVED" : "REJECTED",
+              }
+            : item,
+        ),
+      );
+
+      toast.success(
+        `Review ${action === "APPROVE" ? "approved" : "rejected"} successfully`,
+      );
+    } catch (error) {
+      setReview([]);
+    }
+  }
+
+  const sortedReviews = (review || []).slice().sort((a, b) => {
+    switch (sortBy) {
+      case "newest":
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      case "oldest":
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      case "highest":
+        return b.rating - a.rating;
+      case "lowest":
+        return a.rating - b.rating;
+      default:
+        return 0;
+    }
+  });
+
+  useEffect(() => {
+    fetchReviewData();
+  }, [category]);
+
+  if (!review) return <div>Loading reviews ....</div>;
+
   return (
     <div className="flex h-full max-h-full w-full flex-col overflow-auto">
-      <table className="w-full table-fixed min-w-[1200px] rounded-lg bg-white">
+      <table className="w-full min-w-[1200px] table-fixed rounded-lg bg-white">
         <thead>
           <tr className="sticky top-0 border-b border-silver/30 bg-white">
             {tableHeaders.map((header, index) => (
               <th
                 key={index}
-                className={cn(header == "Review" ? "col-span-2" : "col-span-1")}
+                className={cn(
+                  header === "Review"
+                    ? "w-[30%]"
+                    : header === "Actions"
+                      ? "w-[200px] text-center"
+                      : "w-[20%]",
+                )}
               >
                 <div className="flex w-full items-center justify-between gap-3 px-5 py-4">
                   <span className="text-sm font-medium text-darkBlue">
@@ -155,12 +118,12 @@ const ReviewsTable = ({ category }) => {
           </tr>
         </thead>
         <tbody>
-          {tableData.map((data, index) => (
+          {sortedReviews.map((data, index) => (
             <tr key={index} className="border-b border-silver/30">
               <td>
                 <div className="flex items-center gap-3 px-5 py-4">
                   <Image
-                    src={data.buyer.image}
+                    src="/static/dummy-user/1.jpeg"
                     width={34}
                     height={34}
                     alt="Buyer"
@@ -169,14 +132,14 @@ const ReviewsTable = ({ category }) => {
                     className="rounded-full"
                   />
                   <span className="text-sm font-medium text-[#667085]">
-                    {data.buyer.name}
+                    {data.user.name}
                   </span>
                 </div>
               </td>
               <td>
                 <div className="flex items-center gap-3 px-5 py-4">
                   <Image
-                    src={data.seller.image}
+                    src="/static/dummy-user/2.jpeg"
                     width={34}
                     height={34}
                     alt="Buyer"
@@ -207,11 +170,33 @@ const ReviewsTable = ({ category }) => {
               </td>
               <td>
                 <div className="flex items-center gap-1 px-5 py-4 text-sm text-davyGray/50">
-                  {data.review}
+                  {data.comment}
                 </div>
               </td>
-              <td className="flex items-center justify-center w-full min-h-20">
-                <span className="cursor-pointer" onClick={()=>toast.success("Review Deleted Successfully.")}>{deleteIcon}</span>
+              <td className="flex min-h-20 w-full items-center justify-center">
+                <div className="flex items-center gap-2">
+                  {actions.map((action, index) => (
+                    <button
+                      key={index}
+                      onClick={() =>
+                        handleStatusChange(data.id, action.title.toUpperCase())
+                      }
+                      disabled={data.status !== "PENDING"}
+                      className={cn(
+                        "rounded-lg border px-2 py-2 text-xs sm:px-4",
+                        data.status === "PENDING" && action.title === "Approve"
+                          ? "bg-customGreen text-white hover:bg-customGreen/70"
+                          : data.status === "PENDING" &&
+                              action.title === "Reject"
+                            ? "bg-faluRed/10 text-faluRed hover:bg-faluRed/30"
+                            : "bg-davyGray/10 text-davyGray",
+                        "w-fit transition-all duration-100 ease-linear",
+                      )}
+                    >
+                      {action.title}
+                    </button>
+                  ))}
+                </div>
               </td>
             </tr>
           ))}
