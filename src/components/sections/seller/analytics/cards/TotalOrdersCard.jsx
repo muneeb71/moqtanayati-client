@@ -1,29 +1,19 @@
 "use client";
-import dynamic from "next/dynamic";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  Tooltip,
+  CartesianGrid,
+} from "recharts";
 
-const Line = dynamic(() => import("recharts").then(mod => mod.Line), { ssr: false });
-const LineChart = dynamic(() => import("recharts").then(mod => mod.LineChart), { ssr: false });
-const ResponsiveContainer = dynamic(() => import("recharts").then(mod => mod.ResponsiveContainer), { ssr: false });
-const XAxis = dynamic(() => import("recharts").then(mod => mod.XAxis), { ssr: false });
-const YAxis = dynamic(() => import("recharts").then(mod => mod.YAxis), { ssr: false });
+const TotalOrdersCard = ({ salesByMonth = [] }) => {
+  const data = Array.isArray(salesByMonth) ? salesByMonth : [];
 
-const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-const TotalOrdersCard = ({ salesByMonth }) => {
-  const data = (salesByMonth || []).map(item => ({
-    name: monthNames[item.month - 1] + ' ' + item.year,
-    uv: item.sales,
-    pv: item.sales,
-    amt: item.sales,
-    value: item.sales,
-  }));
-
-  const calculateMax = () => {
-    return data.length > 0 ? Math.max(...data.map((item) => item.value)) : 0;
-  };
-  const maxValue = calculateMax();
   return (
-    <div className="h-[500px] flex flex-col gap-8 rounded-[30px] bg-[#F9F9FA] p-5 md:p-8">
+    <div className="flex h-[500px] flex-col gap-8 rounded-[30px] bg-[#F9F9FA] p-5 md:p-8">
       <h1 className="flex flex-col gap-4 text-2xl font-semibold md:flex-row md:items-center">
         Total Orders
         <span className="font-normal text-black/40">Total Projects</span>
@@ -36,8 +26,8 @@ const TotalOrdersCard = ({ salesByMonth }) => {
           <span className="text-black">This year</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="bg-secondaryCyan size-2 rounded-full"></div>
-          <span className="text-black">This year</span>
+          <div className="size-2 rounded-full bg-secondaryCyan"></div>
+          <span className="text-black">Last year</span>
         </div>
       </div>
       <ResponsiveContainer width="100%" height={250}>
@@ -47,20 +37,22 @@ const TotalOrdersCard = ({ salesByMonth }) => {
         >
           <XAxis tickLine={false} axisLine={false} dataKey="name" />
           <YAxis tickLine={false} axisLine={false} tickMargin={30} />
+          <Tooltip />
+          <CartesianGrid strokeDasharray="3 3" />
           <Line
-            dot={false}
             type="monotone"
-            dataKey="pv"
+            dataKey="lastYear"
             stroke="#bcbfc0"
             strokeDasharray="4"
             strokeWidth={1.64}
+            dot={false}
           />
           <Line
-            dot={false}
-            strokeWidth={1.64}
             type="monotone"
-            dataKey="uv"
+            dataKey="thisYear"
             stroke="#25A5B4"
+            strokeWidth={1.64}
+            dot={false}
           />
         </LineChart>
       </ResponsiveContainer>

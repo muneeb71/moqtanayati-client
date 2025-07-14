@@ -10,14 +10,11 @@ export async function rejectReview(id) {
       return;
     }
 
-    const response = await api.patch(
-      `http://localhost:5000/api/admin/reviews/${id}/reject`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    const response = await api.patch(`/admin/reviews/${id}/reject`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
 
     console.log("response : ", response);
 

@@ -164,27 +164,25 @@ const OrdersTable = () => {
                 </div>
               </td>
               <td>
-                <td>
-                  <button
-                    className="px-5 py-4 font-medium text-russianViolet underline transition-all duration-100 ease-linear hover:text-shamrockGreen"
-                    onClick={() =>
-                      generateInvoiceAndDownload({
-                        id: data.id,
-                        customerName: data.user.name,
-                        date: new Date(data.createdAt).toLocaleDateString(),
-                        items: [
-                          {
-                            name: data.product.name,
-                            qty: data.quantity || 1,
-                            price: data.totalAmount,
-                          },
-                        ],
-                      })
-                    }
-                  >
-                    Download
-                  </button>
-                </td>
+                <button
+                  className="px-5 py-4 font-medium text-russianViolet underline transition-all duration-100 ease-linear hover:text-shamrockGreen"
+                  onClick={() =>
+                    generateInvoiceAndDownload({
+                      id: data.id,
+                      customerName: data.user.name,
+                      date: new Date(data.createdAt).toLocaleDateString(),
+                      items: [
+                        {
+                          name: data.product.name,
+                          qty: data.quantity || 1,
+                          price: data.totalAmount,
+                        },
+                      ],
+                    })
+                  }
+                >
+                  Download
+                </button>
               </td>
             </tr>
           ))}

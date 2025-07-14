@@ -1,11 +1,10 @@
 "use client";
 
 import BidderCard from "@/components/cards/BidderCard";
-import { dummyBidders } from "@/lib/dummy-bidders";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
-const AuctionBidders = () => {
+const AuctionBidders = ({ bidders }) => {
   const [selectedBidder, setSelectedBidder] = useState(null);
   return (
     <div className="flex w-full flex-col items-center justify-center bg-[#F8F7FB] px-3">
@@ -19,11 +18,11 @@ const AuctionBidders = () => {
           <h1 className="text-[32px] font-medium text-black/80">
             Bidders{" "}
             <span className="text-[18px] text-moonstone">
-              ({dummyBidders.length})
+              ({bidders.length})
             </span>
           </h1>
           <div className="grid gap-2 sm:grid-cols-2 sm:gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-5">
-            {dummyBidders.map((bidder, index) => (
+            {bidders.map((bidder, index) => (
               <BidderCard
                 key={index}
                 bidder={bidder}

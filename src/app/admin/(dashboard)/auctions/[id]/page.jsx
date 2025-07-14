@@ -1,11 +1,33 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import AuctionBidders from "@/components/sections/admin/auctions/AuctionBidders";
 import AuctionsDescriptionCard from "@/components/sections/admin/auctions/AuctionsDescriptionCard";
 import ProductDetailsSlider from "@/components/slider/ProductDetailsSlider";
-import { dummyItems } from "@/lib/dummy-items";
+import { getAuctionById } from "@/lib/api/admin/auctions/getAuctionBYId";
+import { use } from "react";
 
-const AdminAuctionPage = async ({ params }) => {
-  const productId = (await params).id;
-  const item = dummyItems.find((item) => item.id == productId);
+const AdminAuctionPage = ({ params }) => {
+  const { id: productId } = use(params);
+
+  const [auctionDetail, setAuctionDetail] = useState(null);
+
+  const fetchAuction = async () => {
+    try {
+      const res = await getAuctionById(productId);
+      setAuctionDetail(res.data);
+    } catch (error) {
+      console.error("Error fetching auction detail:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (productId) {
+      fetchAuction();
+    }
+  }, [productId]);
+
+  if (!auctionDetail) return <div>Loading...</div>;
 
   return (
     <div className="flex w-full flex-col items-center gap-10 pb-20">
@@ -13,10 +35,10 @@ const AdminAuctionPage = async ({ params }) => {
         Cancel Auction
       </button>
       <div className="grid w-full max-w-7xl gap-10 md:grid-cols-2">
-        <ProductDetailsSlider />
-        <AuctionsDescriptionCard item={item} />
+        <ProductDetailsSlider auctionDetail={auctionDetail} />
+        <AuctionsDescriptionCard item={auctionDetail} />
       </div>
-      <AuctionBidders />
+      <AuctionBidders bidders={auctionDetail.bids} />
     </div>
   );
 };

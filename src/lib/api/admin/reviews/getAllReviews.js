@@ -10,7 +10,7 @@ export async function getAllReviews() {
       return;
     }
 
-    const response = await api.get("http://localhost:5000/api/admin/reviews", {
+    const response = await api.get("/admin/reviews", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

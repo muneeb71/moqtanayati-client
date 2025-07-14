@@ -10,7 +10,7 @@ export async function getAllUsers() {
       return;
     }
 
-    const response = await api.get("http://localhost:5000/api/admin/users", {
+    const response = await api.get("/admin/users", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

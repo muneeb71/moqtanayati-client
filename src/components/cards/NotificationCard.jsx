@@ -19,7 +19,7 @@ const NotificationCard = ({ image, title, desc, time }) => {
             <span className="font-medium">{title}:</span> {desc}
           </span>
           <span className="font-medium text-battleShipGray sm:text-lg">
-            {formatDateTime(time)}
+            {formatDateTime.formatDateTime(time)}
           </span>
         </div>
       </div>

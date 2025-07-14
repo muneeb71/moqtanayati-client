@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { getWatchlistById } from "@/lib/api/watchlist/getWatchlistById";
 import { removeFromWatchlist } from "@/lib/api/watchlist/removeWatchlist";
 
-const ProductDetailsSlider = ({ images, id, pricingFormat }) => {
+const ProductDetailsSlider = ({ auctionDetail }) => {
   const imagesList = [
     "/static/user.jpeg",
     "/static/user.jpeg",
@@ -24,12 +24,12 @@ const ProductDetailsSlider = ({ images, id, pricingFormat }) => {
 
   const goToNextSlide = () => {
     setSelectedIndex((prevIndex) =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1,
+      prevIndex === imagesList.length - 1 ? 0 : prevIndex + 1,
     );
   };
 
   const getWatchlistStatus = async () => {
-    const auction = await getWatchlistById(id);
+    const auction = await getWatchlistById(auctionDetail.id);
     if (auction?.data?.success) {
       setFavourite(true);
       setAuctionId(auction?.data?.data?.auctionId);
@@ -37,7 +37,7 @@ const ProductDetailsSlider = ({ images, id, pricingFormat }) => {
   };
 
   useEffect(() => {
-    if (pricingFormat === "Auctions") {
+    if (auctionDetail.pricingFormat === "Auctions") {
       getWatchlistStatus();
     }
   }, []);
@@ -164,7 +164,7 @@ const ProductDetailsSlider = ({ images, id, pricingFormat }) => {
             loading="lazy"
             className="h-full w-full object-cover"
           />
-          {pricingFormat === "Auctions" && (
+          {auctionDetail.pricingFormat === "Auctions" && (
             <button
               className={cn(
                 "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",

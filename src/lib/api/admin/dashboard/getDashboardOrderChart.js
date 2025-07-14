@@ -1,7 +1,7 @@
 import api from "../../axios";
 import Cookies from "js-cookie";
 
-export async function getDashboardStats() {
+export async function getDashboardOrderChart() {
   try {
     const token = Cookies.get("token");
 
@@ -12,7 +12,7 @@ export async function getDashboardStats() {
 
     console.log("response  1 token: ", token);
 
-    const response = await api.get("/admin/dashboard/stats", {
+    const response = await api.get("/admin/dashboard/orders-chart", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
