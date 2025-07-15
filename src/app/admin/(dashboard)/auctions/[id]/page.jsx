@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import AuctionBidders from "@/components/sections/admin/auctions/AuctionBidders";
 import AuctionsDescriptionCard from "@/components/sections/admin/auctions/AuctionsDescriptionCard";
 import ProductDetailsSlider from "@/components/slider/ProductDetailsSlider";
-import { getAuctionById } from "@/lib/api/admin/auctions/getAuctionBYId";
+import { getAuctionById } from "@/lib/api/admin/auctions/getAdminAuctionById";
 import { use } from "react";
 
 const AdminAuctionPage = ({ params }) => {

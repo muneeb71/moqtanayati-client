@@ -6,6 +6,7 @@ import { getAdminProfile } from "@/lib/api/admin/settings/getAdminProfile";
 import { updateAdminProfile } from "@/lib/api/admin/settings/updateAdminProfile";
 import toast from "react-hot-toast";
 import formatDateTime from "@/utils/dateFormatter";
+import ShimmeringCard from "@/components/shimmer/shimmerCard";
 
 const iconMap = {
   name: "/static/user.svg",
@@ -127,11 +128,7 @@ export default function ProfilePage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#EDF3F7]">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
+    return <ShimmeringCard />;
   }
 
   if (!profile) {
@@ -205,7 +202,7 @@ export default function ProfilePage() {
           ))}
         </div>
       </div>
-      <div className="flex w-full justify-center">
+      <div className="mb-20 mt-10 flex w-full justify-center">
         <button
           onClick={handleSave}
           className="text-md mt-6 rounded-full bg-moonstone px-32 py-4 text-lg font-medium text-white hover:bg-moonstone/80"

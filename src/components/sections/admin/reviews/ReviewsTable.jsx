@@ -7,9 +7,11 @@ import { useEffect, useState } from "react";
 import { getAllReviews } from "@/lib/api/admin/reviews/getAllReviews";
 import { approveReview } from "@/lib/api/admin/reviews/approveReview";
 import { rejectReview } from "@/lib/api/admin/reviews/rejectReview";
+import ShimmerRow from "@/components/shimmer/shimmerRow";
 
 const ReviewsTable = ({ category, sortBy, setSortBy }) => {
   const [review, setReview] = useState(null);
+  const [isReviewsLoading, setIsReviewsLoading] = useState(false);
   const actions = [
     {
       title: "Approve",
@@ -24,6 +26,7 @@ const ReviewsTable = ({ category, sortBy, setSortBy }) => {
 
   async function fetchReviewData() {
     try {
+      setIsReviewsLoading(true);
       const res = await getAllReviews();
       console.log("reviews data 1 : ", res.data);
 
@@ -32,6 +35,8 @@ const ReviewsTable = ({ category, sortBy, setSortBy }) => {
       setReview(fetchReviews);
     } catch (error) {
       setReview([]);
+    } finally {
+      setIsReviewsLoading(false);
     }
   }
 
@@ -80,8 +85,6 @@ const ReviewsTable = ({ category, sortBy, setSortBy }) => {
     fetchReviewData();
   }, [category]);
 
-  if (!review) return <div>Loading reviews ....</div>;
-
   return (
     <div className="flex h-full max-h-full w-full flex-col overflow-auto">
       <table className="w-full min-w-[1200px] table-fixed rounded-lg bg-white">
@@ -118,88 +121,107 @@ const ReviewsTable = ({ category, sortBy, setSortBy }) => {
           </tr>
         </thead>
         <tbody>
-          {sortedReviews.map((data, index) => (
-            <tr key={index} className="border-b border-silver/30">
-              <td>
-                <div className="flex items-center gap-3 px-5 py-4">
-                  <Image
-                    src="/static/dummy-user/1.jpeg"
-                    width={34}
-                    height={34}
-                    alt="Buyer"
-                    loading="lazy"
-                    quality={100}
-                    className="rounded-full"
-                  />
-                  <span className="text-sm font-medium text-[#667085]">
-                    {data.user.name}
-                  </span>
-                </div>
-              </td>
-              <td>
-                <div className="flex items-center gap-3 px-5 py-4">
-                  <Image
-                    src="/static/dummy-user/2.jpeg"
-                    width={34}
-                    height={34}
-                    alt="Buyer"
-                    loading="lazy"
-                    quality={100}
-                    className="rounded-full"
-                  />
-                  <span className="text-sm font-medium text-[#667085]">
-                    {data.seller.name}
-                  </span>
-                </div>
-              </td>
-              <td>
-                <div className="flex items-center gap-1 px-5 py-4">
-                  <div className="flex items-center gap-1 text-[#F3B95A]">
-                    {/* render amount of rating in stars */}
-                    {Array.from({ length: data.rating }, (_, index) => (
-                      <span key={index}>{starIcon}</span>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-1 text-silver">
-                    {/* render remaining stars out of 5 here */}
-                    {Array.from({ length: 5 - data.rating }, (_, index) => (
-                      <span key={index}>{starIcon}</span>
-                    ))}
-                  </div>
-                </div>
-              </td>
-              <td>
-                <div className="flex items-center gap-1 px-5 py-4 text-sm text-davyGray/50">
-                  {data.comment}
-                </div>
-              </td>
-              <td className="flex min-h-20 w-full items-center justify-center">
-                <div className="flex items-center gap-2">
-                  {actions.map((action, index) => (
-                    <button
-                      key={index}
-                      onClick={() =>
-                        handleStatusChange(data.id, action.title.toUpperCase())
-                      }
-                      disabled={data.status !== "PENDING"}
-                      className={cn(
-                        "rounded-lg border px-2 py-2 text-xs sm:px-4",
-                        data.status === "PENDING" && action.title === "Approve"
-                          ? "bg-customGreen text-white hover:bg-customGreen/70"
-                          : data.status === "PENDING" &&
-                              action.title === "Reject"
-                            ? "bg-faluRed/10 text-faluRed hover:bg-faluRed/30"
-                            : "bg-davyGray/10 text-davyGray",
-                        "w-fit transition-all duration-100 ease-linear",
-                      )}
-                    >
-                      {action.title}
-                    </button>
-                  ))}
-                </div>
+          {isReviewsLoading ? (
+            Array(5)
+              .fill(0)
+              .map((_, idx) => <ShimmerRow key={idx} />)
+          ) : sortedReviews.length === 0 ? (
+            <tr>
+              <td
+                colSpan={7}
+                className="py-10 text-center text-sm text-gray-500"
+              >
+                No reviews found.
               </td>
             </tr>
-          ))}
+          ) : (
+            sortedReviews.map((data, index) => (
+              <tr key={index} className="border-b border-silver/30">
+                <td>
+                  <div className="flex items-center gap-3 px-5 py-4">
+                    <Image
+                      src="/static/dummy-user/1.jpeg"
+                      width={34}
+                      height={34}
+                      alt="Buyer"
+                      loading="lazy"
+                      quality={100}
+                      className="rounded-full"
+                    />
+                    <span className="text-sm font-medium text-[#667085]">
+                      {data.user.name}
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div className="flex items-center gap-3 px-5 py-4">
+                    <Image
+                      src="/static/dummy-user/2.jpeg"
+                      width={34}
+                      height={34}
+                      alt="Buyer"
+                      loading="lazy"
+                      quality={100}
+                      className="rounded-full"
+                    />
+                    <span className="text-sm font-medium text-[#667085]">
+                      {data.seller.name}
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div className="flex items-center gap-1 px-5 py-4">
+                    <div className="flex items-center gap-1 text-[#F3B95A]">
+                      {/* render amount of rating in stars */}
+                      {Array.from({ length: data.rating }, (_, index) => (
+                        <span key={index}>{starIcon}</span>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-1 text-silver">
+                      {/* render remaining stars out of 5 here */}
+                      {Array.from({ length: 5 - data.rating }, (_, index) => (
+                        <span key={index}>{starIcon}</span>
+                      ))}
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div className="flex items-center gap-1 px-5 py-4 text-sm text-davyGray/50">
+                    {data.comment}
+                  </div>
+                </td>
+                <td className="flex min-h-20 w-full items-center justify-center">
+                  <div className="flex items-center gap-2">
+                    {actions.map((action, index) => (
+                      <button
+                        key={index}
+                        onClick={() =>
+                          handleStatusChange(
+                            data.id,
+                            action.title.toUpperCase(),
+                          )
+                        }
+                        disabled={data.status !== "PENDING"}
+                        className={cn(
+                          "rounded-lg border px-2 py-2 text-xs sm:px-4",
+                          data.status === "PENDING" &&
+                            action.title === "Approve"
+                            ? "bg-customGreen text-white hover:bg-customGreen/70"
+                            : data.status === "PENDING" &&
+                                action.title === "Reject"
+                              ? "bg-faluRed/10 text-faluRed hover:bg-faluRed/30"
+                              : "bg-davyGray/10 text-davyGray",
+                          "w-fit transition-all duration-100 ease-linear",
+                        )}
+                      >
+                        {action.title}
+                      </button>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

@@ -1,34 +1,58 @@
 "use client";
 import { reportData } from "@/lib/report-data";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ReportTable from "./ReportsTable";
 import { leftChipIcon, rightChipIcon } from "@/assets/icons/admin-icons";
+import { getReport } from "@/lib/api/admin/reports/getReport";
 
-const Reports = ({ role }) => { 
+const Reports = ({ role }) => {
+  const [detail, setDetail] = useState(null);
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
   const router = useRouter();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState([]);
   const rowsPerPage = 10;
-  const roleData = reportData.filter(user => user.role === role)
+
+  const roleData = reportData.filter((user) => user.role === role);
   const totalPages = Math.ceil(roleData.length / rowsPerPage);
-  
+
   const currentData = roleData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage,
   );
 
-  const toggleRowSelection = (email) => {
+  const toggleRowSelection = (id) => {
     setSelectedRows((prev) =>
-      prev.includes(email)
-        ? prev.filter((item) => item !== email)
-        : [...prev, email],
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
 
   const onViewClick = (id) => {
-    router.push(`/admin/reports/${role}/${id}`);
+    router.push(`/admin/reports/${id}`);
   };
+
+  async function fetchReportData() {
+    try {
+      setIsDetailLoading(true);
+      const res = await getReport(role);
+      console.log("report 1 : ", res.data);
+
+      const fetchReport = res.data || [];
+      console.log("report  2 : ", fetchReport);
+      setDetail(fetchReport);
+    } catch (error) {
+      setDetail([]);
+    } finally {
+      setIsDetailLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchReportData();
+  }, [role]);
+
   return (
     <div className="flex h-full max-h-full flex-col overflow-hidden py-6">
       <div className="flex flex-col gap-3 pb-5">
@@ -37,7 +61,9 @@ const Reports = ({ role }) => {
         </p>
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-row items-center gap-5">
-            <p className="text-[18px] font-normal text-davyGray">All {role == "buyer" ? "Buyers" : "Sellers"}</p>
+            <p className="text-[18px] font-normal text-davyGray">
+              All {role == "buyer" ? "Buyers" : "Sellers"}
+            </p>
             {selectedRows.length > 0 && (
               <p className="text-[13px] font-normal text-davyGray">
                 ({selectedRows.length}{" "}
@@ -51,13 +77,14 @@ const Reports = ({ role }) => {
         <ReportTable
           setSelectedRows={setSelectedRows}
           selectedRows={selectedRows}
-          currentData={currentData}
+          currentData={detail}
           toggleRowSelection={toggleRowSelection}
           onViewClick={onViewClick}
           role={role}
+          loading={isDetailLoading}
         />
       </div>
-      <div className="flex md:h-20 flex-col md:flex-row md:items-center gap-1 justify-between bg-white py-5 pl-8">
+      <div className="flex flex-col justify-between gap-1 bg-white py-5 pl-8 md:h-20 md:flex-row md:items-center">
         <p className="text-sm text-customGray">
           Showing {1 + (currentPage - 1) * rowsPerPage} -{" "}
           {Math.min(currentPage * rowsPerPage, roleData.length)} from{" "}

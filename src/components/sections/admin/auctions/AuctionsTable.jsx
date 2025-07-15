@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ActionsDropdownButton from "./ActionsDropdownButton";
 import { getAllAuctions } from "@/lib/api/admin/auctions/getAllAuctions";
+import ShimmerRow from "@/components/shimmer/shimmerRow";
 
 const tableHeaders = [
   "Product",
@@ -23,9 +24,11 @@ const AuctionsTable = () => {
   const [pages, setPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [limit, setLimit] = useState(10);
+  const [isAuctionLoading, setIsAuctionLoading] = useState(false);
 
   const fetchAuctions = async (currentPage = 1) => {
     try {
+      setIsAuctionLoading(true);
       const res = await getAllAuctions({ page: currentPage });
       const { auctions = [], pagination = {} } = res.data;
       setAuctions(auctions);
@@ -36,12 +39,16 @@ const AuctionsTable = () => {
     } catch (error) {
       console.error("Error fetching auctions:", error);
       setAuctions([]);
+    } finally {
+      setIsAuctionLoading(false);
     }
   };
 
   useEffect(() => {
     fetchAuctions(page);
   }, [page]);
+
+  if (!auctions) setIsAuctionLoading(false);
 
   return (
     <div className="flex h-full w-full flex-col overflow-auto rounded-lg">
@@ -60,120 +67,135 @@ const AuctionsTable = () => {
           </tr>
         </thead>
         <tbody>
-          {auctions.map((auction, index) => {
-            const product = auction.product;
-            const imageUrl = product.images?.[0] || "/fallback.png";
-            const seller = auction.seller;
-            const startingBid = product.startingBid ?? 0;
-            const bids = auction.bids ?? [];
-            const currentBid =
-              bids.length > 0
-                ? Math.max(...bids.map((b) => b.amount))
-                : startingBid;
+          {isAuctionLoading ? (
+            Array(5)
+              .fill(0)
+              .map((_, idx) => <ShimmerRow key={idx} />)
+          ) : auctions.length === 0 ? (
+            <tr>
+              <td
+                colSpan={7}
+                className="py-10 text-center text-sm text-gray-500"
+              >
+                No auctions found.
+              </td>
+            </tr>
+          ) : (
+            auctions.map((auction, index) => {
+              const product = auction.product;
+              const imageUrl = product.images?.[0] || "/fallback.png";
+              const seller = auction.seller;
+              const startingBid = product.startingBid ?? 0;
+              const bids = auction.bids ?? [];
+              const currentBid =
+                bids.length > 0
+                  ? Math.max(...bids.map((b) => b.amount))
+                  : startingBid;
 
-            return (
-              <tr key={auction.id} className="border-b border-silver/30">
-                <td>
-                  <Link
-                    href={`/admin/auctions/${auction.id}`}
-                    className="flex items-center gap-2 px-5 py-4"
-                  >
-                    <Image
-                      src={imageUrl}
-                      width={44}
-                      height={44}
-                      alt="Product"
-                      loading="lazy"
-                      className="rounded-full border border-black/10"
-                    />
-                    <div className="flex flex-col gap-1">
-                      <span className="text-sm font-medium text-darkBlue">
-                        {product.name}
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <Image
-                          src="/static/dummy-user/1.jpeg"
-                          width={18}
-                          height={18}
-                          alt="Seller"
-                          className="rounded-full border border-black/10"
-                        />
-                        <span className="text-[10px] text-battleShipGray">
-                          {seller.name}
+              return (
+                <tr key={auction.id} className="border-b border-silver/30">
+                  <td>
+                    <Link
+                      href={`/admin/auctions/${auction.id}`}
+                      className="flex items-center gap-2 px-5 py-4"
+                    >
+                      <Image
+                        src={imageUrl}
+                        width={44}
+                        height={44}
+                        alt="Product"
+                        loading="lazy"
+                        className="rounded-full border border-black/10"
+                      />
+                      <div className="flex flex-col gap-1">
+                        <span className="text-sm font-medium text-darkBlue">
+                          {product.name}
                         </span>
+                        <div className="flex items-center gap-1">
+                          <Image
+                            src="/static/dummy-user/1.jpeg"
+                            width={18}
+                            height={18}
+                            alt="Seller"
+                            className="rounded-full border border-black/10"
+                          />
+                          <span className="text-[10px] text-battleShipGray">
+                            {seller.name}
+                          </span>
+                        </div>
                       </div>
+                    </Link>
+                  </td>
+                  <td>
+                    <div className="px-5 py-4 font-medium text-[#667085]">
+                      ${startingBid.toFixed(2)}
                     </div>
-                  </Link>
-                </td>
-                <td>
-                  <div className="px-5 py-4 font-medium text-[#667085]">
-                    ${startingBid.toFixed(2)}
-                  </div>
-                </td>
-                <td>
-                  <div className="px-5 py-4 font-medium text-[#667085]">
-                    ${currentBid.toFixed(2)}
-                  </div>
-                </td>
-                <td>
-                  <div className="px-5 py-4 font-medium text-[#667085]">
-                    {bids.length}
-                  </div>
-                </td>
-                <td>
-                  <div className="px-5 py-4 font-medium text-[#667085]">
-                    {["LIVE", "UPCOMING"].includes(auction.status) &&
-                    product.auctionLaunchDate &&
-                    product.auctionDuration
-                      ? (() => {
-                          const launchDate = new Date(
-                            product.auctionLaunchDate,
-                          );
-                          const endDate = new Date(
-                            launchDate.getTime() +
-                              product.auctionDuration * 24 * 60 * 60 * 1000,
-                          );
-                          const now = new Date();
-                          const timeDiff = endDate.getTime() - now.getTime();
+                  </td>
+                  <td>
+                    <div className="px-5 py-4 font-medium text-[#667085]">
+                      ${currentBid.toFixed(2)}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="px-5 py-4 font-medium text-[#667085]">
+                      {bids.length}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="px-5 py-4 font-medium text-[#667085]">
+                      {["LIVE", "UPCOMING"].includes(auction.status) &&
+                      product.auctionLaunchDate &&
+                      product.auctionDuration
+                        ? (() => {
+                            const launchDate = new Date(
+                              product.auctionLaunchDate,
+                            );
+                            const endDate = new Date(
+                              launchDate.getTime() +
+                                product.auctionDuration * 24 * 60 * 60 * 1000,
+                            );
+                            const now = new Date();
+                            const timeDiff = endDate.getTime() - now.getTime();
 
-                          if (timeDiff <= 0) return "0d 0h 0m";
+                            if (timeDiff <= 0) return "0d 0h 0m";
 
-                          const days = Math.floor(
-                            timeDiff / (1000 * 60 * 60 * 24),
-                          );
-                          const hours = Math.floor(
-                            (timeDiff / (1000 * 60 * 60)) % 24,
-                          );
-                          const minutes = Math.floor(
-                            (timeDiff / (1000 * 60)) % 60,
-                          );
+                            const days = Math.floor(
+                              timeDiff / (1000 * 60 * 60 * 24),
+                            );
+                            const hours = Math.floor(
+                              (timeDiff / (1000 * 60 * 60)) % 24,
+                            );
+                            const minutes = Math.floor(
+                              (timeDiff / (1000 * 60)) % 60,
+                            );
 
-                          return `${days}d ${hours}h ${minutes}m`;
-                        })()
-                      : "N/A"}
-                  </div>
-                </td>
+                            return `${days}d ${hours}h ${minutes}m`;
+                          })()
+                        : "N/A"}
+                    </div>
+                  </td>
 
-                <td>
-                  <div
-                    className={cn(
-                      "w-fit rounded-lg px-3.5 py-1",
-                      auction.status === "LIVE"
-                        ? "bg-shamrockGreen/10 text-shamrockGreen"
-                        : auction.status === "ENDED"
-                          ? "bg-[#608DFF]/5 text-[#608DFF]"
-                          : "bg-black/5 text-black/60",
-                    )}
-                  >
-                    {auction.status}
-                  </div>
-                </td>
-                <td>
-                  <ActionsDropdownButton />
-                </td>
-              </tr>
-            );
-          })}
+                  <td>
+                    <div
+                      className={cn(
+                        "w-fit rounded-lg px-3.5 py-1",
+                        auction.status === "LIVE"
+                          ? "bg-shamrockGreen/10 text-shamrockGreen"
+                          : auction.status === "ENDED"
+                            ? "bg-[#608DFF]/5 text-[#608DFF]"
+                            : "bg-black/5 text-black/60",
+                      )}
+                    >
+                      {auction.status}
+                    </div>
+                  </td>
+                  <td>
+                    <ActionsDropdownButton />
+                  </td>
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
 

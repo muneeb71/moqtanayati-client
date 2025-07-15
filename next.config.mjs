@@ -18,7 +18,7 @@ const nextConfig = {
   webpack(config, { dev, isServer }) {
     if (dev && !isServer) {
       // Silences warnings in console
-      config.resolve.alias["react-dom$"] = "react-dom/profiling";
+      // config.resolve.alias["react-dom$"] = "react-dom/profiling";
     }
     return config;
   },

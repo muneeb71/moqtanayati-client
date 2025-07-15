@@ -26,3 +26,23 @@
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
+
+.shimmering-loader {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    to right,
+    hsl(var(--border-default)) 4%,
+    hsl(var(--background-surface-200)) 25%,
+    hsl(var(--border-default)) 36%
+  );
+  background-size: 1000px 100%;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}

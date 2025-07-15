@@ -15,6 +15,7 @@ export async function getUserById(id) {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log("check response", response.data);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;

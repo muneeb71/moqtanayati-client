@@ -17,6 +17,7 @@ const Users = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
+  const [isUsersLoading, setIsUserLoading] = useState(false);
 
   const toggleRowSelection = (email) => {
     setSelectedRows((prev) =>
@@ -32,6 +33,7 @@ const Users = () => {
 
   async function fetchUsers() {
     try {
+      setIsUserLoading(true);
       const res = await getAllUsers();
 
       const fetchedUsers = res?.data?.users || [];
@@ -44,6 +46,8 @@ const Users = () => {
       setTotalUsers(pagination.total || fetchedUsers.length);
     } catch (e) {
       setUsers([]);
+    } finally {
+      setIsUserLoading(false);
     }
   }
 
@@ -51,6 +55,8 @@ const Users = () => {
     console.log("useEffect called, page:", currentPage);
     fetchUsers();
   }, [currentPage]);
+
+  if (!users) setIsUserLoading(false);
 
   return (
     <div className="flex h-full max-h-full flex-col overflow-hidden py-6">
@@ -84,6 +90,7 @@ const Users = () => {
           currentData={users}
           toggleRowSelection={toggleRowSelection}
           onViewClick={onViewClick}
+          loading={isUsersLoading}
         />
       </div>
 
