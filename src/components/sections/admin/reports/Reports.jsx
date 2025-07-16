@@ -1,27 +1,59 @@
 "use client";
+import { filterIcon } from "@/assets/icons/admin-icons";
 import { reportData } from "@/lib/report-data";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ReportTable from "./ReportsTable";
 import { leftChipIcon, rightChipIcon } from "@/assets/icons/admin-icons";
 import { getReport } from "@/lib/api/admin/reports/getReport";
+import TablePagination from "@/components/pagination/TablePagination";
+import { useRef } from "react";
+import { BiSearch } from "react-icons/bi";
+import Filter from "@/components/dropdown/filter";
 
 const Reports = ({ role }) => {
+  const [sortBy, setSortBy] = useState("SELLER");
+
+  const reportSortOptions = [
+    { label: "Newest", value: "newest" },
+    { label: "Oldest", value: "oldest" },
+    {
+      label:
+        role === "BUYER"
+          ? "Highest Orders Placed"
+          : "Highest Orders Dispatched",
+      value: "highest orders dispatched",
+    },
+    {
+      label:
+        role === "BUYER" ? "Lowest Orders Placed" : "Lowest Orders Dispatched",
+      value: "lowest orders dispatched",
+    },
+    {
+      label:
+        role === "BUYER" ? "Highest Total Spent" : "Highest Payment Earned",
+      value: "highest payment earned",
+    },
+    {
+      label: role === "BUYER" ? "Lowest Total Spent" : "Lowest Payment Earned",
+      value: "lowest payment earned",
+    },
+  ];
+
   const [detail, setDetail] = useState(null);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
   const router = useRouter();
+  const tableRef = useRef(null);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalReports, setTotalReports] = useState(0);
+
   const [selectedRows, setSelectedRows] = useState([]);
-  const rowsPerPage = 10;
 
-  const roleData = reportData.filter((user) => user.role === role);
-  const totalPages = Math.ceil(roleData.length / rowsPerPage);
-
-  const currentData = roleData.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage,
-  );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
   const toggleRowSelection = (id) => {
     setSelectedRows((prev) =>
@@ -33,46 +65,85 @@ const Reports = ({ role }) => {
     router.push(`/admin/reports/${id}`);
   };
 
-  async function fetchReportData() {
+  const fetchReportData = async (currentPage = 1) => {
     try {
       setIsDetailLoading(true);
-      const res = await getReport(role);
-      console.log("report 1 : ", res.data);
+      if (!currentPage || isNaN(currentPage)) return;
 
-      const fetchReport = res.data || [];
-      console.log("report  2 : ", fetchReport);
+      const res = await getReport({
+        role,
+        currentPage,
+        search: debouncedSearchTerm.trim(),
+        filter: sortBy.trim(),
+      });
+      const pagination = res?.data?.pagination || {};
+      const fetchReport = res.data?.reports || [];
+
       setDetail(fetchReport);
+
+      setRowsPerPage(pagination.limit || 10);
+      setTotalPages(pagination.pages || 1);
+      setTotalReports(pagination.total || res.length);
     } catch (error) {
       setDetail([]);
     } finally {
       setIsDetailLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchReportData();
-  }, [role]);
+    const delay = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 400);
+
+    return () => clearTimeout(delay);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    fetchReportData(currentPage);
+  }, [role, currentPage, debouncedSearchTerm, sortBy]);
 
   return (
     <div className="flex h-full max-h-full flex-col overflow-hidden py-6">
-      <div className="flex flex-col gap-3 pb-5">
-        <p className="text-[24px] font-semibold leading-none text-russianViolet">
-          Reports
-        </p>
-        <div className="flex flex-row items-center justify-between">
+      <div
+        ref={tableRef}
+        className="mb-5 flex w-full items-end justify-between"
+      >
+        <div className="flex flex-col gap-1">
+          <span className="text-2xl font-semibold text-russianViolet">
+            Reports
+          </span>
           <div className="flex flex-row items-center gap-5">
             <p className="text-[18px] font-normal text-davyGray">
-              All {role == "buyer" ? "Buyers" : "Sellers"}
+              {" "}
+              All {role == "BUYER" ? "Buyers" : "Sellers"}
             </p>
-            {selectedRows.length > 0 && (
-              <p className="text-[13px] font-normal text-davyGray">
-                ({selectedRows.length}{" "}
-                {selectedRows.length === 1 ? "row" : "rows"} selected)
-              </p>
-            )}
           </div>
         </div>
+
+        <div className="flex items-center gap-3">
+          <div className="relative w-full max-w-[220px]">
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="h-10 w-full rounded-lg border border-silver bg-white pl-10 pr-4 text-gray-700 focus:outline-none focus:ring-1 focus:ring-moonstone"
+            />
+            <BiSearch className="absolute left-3 top-1/2 -translate-y-1/2 transform text-xl text-gray-500" />
+          </div>
+
+          <Filter
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            sortingOptions={reportSortOptions}
+          />
+        </div>
       </div>
+
       <div className="no-scrollbar flex h-full max-h-full w-full max-w-full flex-col overflow-auto rounded-lg">
         <ReportTable
           setSelectedRows={setSelectedRows}
@@ -84,62 +155,14 @@ const Reports = ({ role }) => {
           loading={isDetailLoading}
         />
       </div>
-      <div className="flex flex-col justify-between gap-1 bg-white py-5 pl-8 md:h-20 md:flex-row md:items-center">
-        <p className="text-sm text-customGray">
-          Showing {1 + (currentPage - 1) * rowsPerPage} -{" "}
-          {Math.min(currentPage * rowsPerPage, roleData.length)} from{" "}
-          {roleData.length}
-        </p>
-        <div className="mr-10 flex items-center gap-2">
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-lightBlue/20 text-moonstone hover:bg-moonstone/40 disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(currentPage - 1)}
-          >
-            {leftChipIcon}
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => {
-            if (
-              i === 0 ||
-              i === totalPages - 1 ||
-              Math.abs(currentPage - (i + 1)) <= 1
-            ) {
-              return (
-                <button
-                  key={i}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-semibold ${
-                    currentPage === i + 1
-                      ? "bg-moonstone text-white"
-                      : "bg-moonstone/10 text-moonstone hover:bg-moonstone/20"
-                  }`}
-                  onClick={() => setCurrentPage(i + 1)}
-                >
-                  {i + 1}
-                </button>
-              );
-            } else if (
-              (i === 1 && currentPage > 3) ||
-              (i === totalPages - 2 && currentPage < totalPages - 2)
-            ) {
-              return (
-                <span
-                  key={i}
-                  className="flex size-8 items-end justify-center rounded-lg bg-moonstone/10 pb-2 text-sm text-moonstone"
-                >
-                  ...
-                </span>
-              );
-            }
-          })}
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-moonstone/10 text-moonstone hover:bg-moonstone/40 disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(currentPage + 1)}
-          >
-            {rightChipIcon}
-          </button>
-        </div>
-      </div>
+
+      <TablePagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        rowsPerPage={rowsPerPage}
+        totalItems={totalReports}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

@@ -50,7 +50,7 @@ const UsersTable = ({
         {loading ? (
           Array(5)
             .fill(0)
-            .map((_, idx) => <ShimmerRow key={idx} />)
+            .map((_, idx) => <ShimmerRow key={idx} columns={7} />)
         ) : currentData.length === 0 ? (
           <tr>
             <td colSpan={7} className="py-10 text-center text-sm text-gray-500">

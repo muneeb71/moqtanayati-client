@@ -27,7 +27,10 @@ function formatDate(isoString) {
 }
 
 function formatJoinDate(isoString) {
+  if (!isoString) return "Invalid Date";
+
   const date = new Date(isoString);
+  if (isNaN(date.getTime())) return "Invalid Date";
 
   const options = {
     month: "short",

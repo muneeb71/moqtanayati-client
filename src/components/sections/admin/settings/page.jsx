@@ -37,6 +37,7 @@ export default function ProfilePage() {
           email: data.email,
           cnic: data.nationalId,
           location: data.address,
+          createdAt: data.createdAt,
         });
         setOriginalProfile({
           name: data.name,
@@ -45,6 +46,7 @@ export default function ProfilePage() {
           email: data.email,
           cnic: data.nationalId,
           location: data.address,
+          createdAt: data.createdAt,
         });
       } catch (err) {
         setProfile(null);

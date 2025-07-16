@@ -41,10 +41,10 @@ const ReportTable = ({
             Registration Date
           </th>
           <th className="text-customeBlue py-5 pl-8 font-semibold">
-            {role === "buyer" ? "Orders Placed" : "Orders Dispatched"}
+            {role === "BUYER" ? "Orders Placed" : "Orders Dispatched"}
           </th>
           <th className="text-customeBlue py-5 pl-8 font-semibold">
-            Payments Earned
+            {role === "BUYER" ? "Total Spent" : "Payments Earned"}
           </th>
           <th className="text-customeBlue py-5 pl-8 font-semibold">Action</th>
         </tr>
@@ -54,7 +54,7 @@ const ReportTable = ({
 
         {loading ? (
           Array.from({ length: 6 }).map((_, idx) => (
-            <ShimmerRow key={idx} columns={7} />
+            <ShimmerRow key={idx} columns={6} />
           ))
         ) : Array.isArray(currentData) && currentData.length > 0 ? (
           currentData.map((report, index) => (

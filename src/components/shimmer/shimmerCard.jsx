@@ -2,7 +2,7 @@ import React from "react";
 
 const ShimmeringCard = () => {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#EDF3F7] p-4">
+    <div className="my-10 flex max-h-screen flex-col items-center justify-center bg-[#EDF3F7] p-4">
       {/* White Profile Card */}
       <div className="w-full max-w-md animate-pulse rounded-2xl bg-white p-6 shadow-md">
         {/* Profile Image */}

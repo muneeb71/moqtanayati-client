@@ -1,29 +1,17 @@
-// ShimmerRow.jsx or .tsx
 const ShimmerRow = ({ columns = 6 }) => {
   return (
     <tr className="animate-pulse border-b bg-white">
       {Array.from({ length: columns }).map((_, index) => (
         <td key={index} className="py-5 pl-8">
-          <div className={getShimmerStyle(index)} />
+          {getShimmerStyle(index)}
         </td>
       ))}
     </tr>
   );
 };
 
-// Function to return different shimmer sizes/styles based on column index
 const getShimmerStyle = (index) => {
-  const styles = [
-    "h-5 w-5 rounded bg-gray-200",
-    "flex items-center gap-2",
-    "h-4 w-20 rounded bg-gray-200",
-    "h-6 w-24 rounded-lg bg-gray-200",
-    "h-6 w-28 rounded-lg bg-gray-200",
-    "h-4 w-32 rounded bg-gray-200",
-    "flex gap-2",
-  ];
-
-  // Add a fallback shimmer box if index exceeds the preset styles
+  // Special layout for column 1
   if (index === 1) {
     return (
       <div className="flex items-center gap-2">
@@ -36,6 +24,7 @@ const getShimmerStyle = (index) => {
     );
   }
 
+  // Special layout for column 6
   if (index === 6) {
     return (
       <div className="flex gap-2">
@@ -45,6 +34,17 @@ const getShimmerStyle = (index) => {
       </div>
     );
   }
+
+  // Default shimmer boxes for other columns
+  const styles = [
+    "h-5 w-5 rounded bg-gray-200",
+    "", // skipped because index === 1 is handled above
+    "h-4 w-20 rounded bg-gray-200",
+    "h-6 w-24 rounded-lg bg-gray-200",
+    "h-6 w-28 rounded-lg bg-gray-200",
+    "h-4 w-32 rounded bg-gray-200",
+    "", // index 6 handled above
+  ];
 
   return <div className={styles[index] || "h-4 w-24 rounded bg-gray-200"} />;
 };
