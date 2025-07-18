@@ -78,7 +78,7 @@ const OrdersTable = () => {
     }, 400);
 
     return () => clearTimeout(delay);
-  }, [searchTerm]);
+  }, [searchTerm, debouncedSearchTerm]);
 
   useEffect(() => {
     fetchOrders(currentPage);
@@ -270,8 +270,10 @@ const OrdersTable = () => {
                         className="px-5 py-4 font-medium text-russianViolet underline transition-all duration-100 ease-linear hover:text-shamrockGreen"
                         onClick={() =>
                           generateInvoiceAndDownload({
-                            id: data.id,
+                            userId: data.id,
                             customerName: data.user.name,
+                            email: data.user.email,
+                            address: data.user.address,
                             date: new Date(data.createdAt).toLocaleDateString(),
                             items: [
                               {

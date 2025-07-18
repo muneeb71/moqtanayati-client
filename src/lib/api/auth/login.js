@@ -11,45 +11,51 @@ export async function loginUser(email, password, role) {
     });
 
     const data = response.data.data;
+    const token = data.token;
+    const user = data.user;
 
-    const responseProfile = await api.get(`sellers/profile/${data.user.id}`);
-    const profileData = responseProfile.data.data;
+    const cookiesStore = cookies();
 
-    const cookiesStore = await cookies();
-
-    if (data.user.role.toLowerCase() !== role.toLowerCase()) {
+    if (user.role.toLowerCase() !== role.toLowerCase()) {
       return {
         success: false,
-        message: `You are trying to log in as a ${data.user.role}. Please log in as a ${role}.`,
+        message: `You are trying to log in as a ${user.role}. Please log in as a ${role}.`,
       };
     }
 
-    cookiesStore.set("token", data.token, {
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    });
+    // Set cookies (7-day expiration)
+    const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    cookiesStore.set("token", token, { expires });
+    cookiesStore.set("userId", user.id, { expires });
+    cookiesStore.set("role", user.role, { expires });
+    cookiesStore.set("survey", JSON.stringify(user.sellerSurvey), { expires });
 
-    cookiesStore.set("userId", data.user.id, {
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    });
+    // Fetch profile with token in Authorization header
+    let profileResponse;
+    if (role.toLowerCase() === "admin") {
+      profileResponse = await api.get(`admin/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } else {
+      profileResponse = await api.get(`sellers/profile/${user.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
 
-    cookiesStore.set("role", data.user.role, {
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    });
-
-    cookiesStore.set("survey", JSON.stringify(data.user.sellerSurvey), {
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    });
+    const profileData = profileResponse.data.data;
 
     if (profileData.store) {
-      cookiesStore.set("storeId", profileData.store.id, {
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-      });
+      cookiesStore.set("storeId", profileData.store.id, { expires });
     }
 
     return response.data;
   } catch (error) {
-    console.log(error);
-    
+    console.error("Login Error:", error);
+
     return {
       success: false,
       message:

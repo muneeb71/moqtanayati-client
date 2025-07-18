@@ -1,11 +1,23 @@
+"use client";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { bellIcon } from "@/assets/icons/header-icons";
 
 const AdminHeader = () => {
+  const router = useRouter();
+
+  const handleBellClick = () => {
+    router.push("/admin/notifications");
+  };
+
   return (
     <div className="flex h-full max-h-[76px] w-full items-center justify-end rounded-l-[18px] rounded-r-[39px] bg-white px-8">
       <div className="align-center flex justify-end gap-4">
-        <div className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-slate-100">
+        <div
+          className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-slate-100"
+          onClick={handleBellClick}
+        >
           {bellIcon}
         </div>
 

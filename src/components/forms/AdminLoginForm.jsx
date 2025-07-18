@@ -19,6 +19,16 @@ const AdminLoginForm = () => {
   const router = useRouter();
 
   const handleLogin = async () => {
+    if (!email.trim()) {
+      toast.error("Email is required.");
+      return;
+    }
+
+    if (!password.trim()) {
+      toast.error("Password is required.");
+      return;
+    }
+
     setLoading(true);
     const res = await loginUser(email, password, "admin");
     setLoading(false);
@@ -46,7 +56,7 @@ const AdminLoginForm = () => {
             icon={envelopeIcon}
             placeholder="Enter your email"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -56,7 +66,7 @@ const AdminLoginForm = () => {
             icon={lockIcon}
             placeholder="Enter your password"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <div className="mt-1 flex items-center justify-between">
             <div className="flex items-center gap-1.5 sm:gap-2.5">

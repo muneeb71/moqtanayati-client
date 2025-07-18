@@ -5,6 +5,8 @@ import { BsFillEyeFill } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
 import formatDateTime from "@/utils/dateFormatter";
 import ShimmerRow from "@/components/shimmer/ShimmerRow";
+import toast from "react-hot-toast";
+import { deleteReportById } from "@/lib/api/admin/reports/deleteReportById";
 
 const ReportTable = ({
   selectedRows,
@@ -19,6 +21,16 @@ const ReportTable = ({
     Array.isArray(currentData) &&
     selectedRows.length === currentData.length &&
     currentData.length > 0;
+
+  const deleteReport = async (id) => {
+    console.log("report id : ", id);
+    try {
+      await deleteReportById(id);
+      toast.success("Report deleted");
+    } catch {
+      toast.error("Report not deleted. Try again!");
+    }
+  };
 
   return (
     <table className="min-w-[1200px] rounded-lg">
@@ -104,12 +116,15 @@ const ReportTable = ({
               </td>
               <td className="py-5 pl-8">
                 <div className="flex flex-row gap-2">
-                  <MdEdit className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700" />
+                  {/* <MdEdit className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700" /> */}
                   <BsFillEyeFill
                     onClick={() => onViewClick(report.user.id)}
                     className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700"
                   />
-                  <BiSolidTrash className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700" />
+                  {/* <BiSolidTrash
+                    onClick={() => deleteReport(report.id)}
+                    className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700"
+                  /> */}
                 </div>
               </td>
             </tr>

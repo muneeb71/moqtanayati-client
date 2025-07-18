@@ -1,20 +1,25 @@
 import CustomCheckBox from "@/components/form-fields/CustomCheckBox";
 import formatDateTime from "@/utils/dateFormatter";
 import Image from "next/image";
-
 import { BiSolidTrash } from "react-icons/bi";
 import { BsFillEyeFill } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
 import ShimmerRow from "@/components/shimmer/shimmerRow";
+import useUserStore from "@/stores/useUserStore";
 
-const UsersTable = ({
-  selectedRows,
-  setSelectedRows,
-  currentData,
-  toggleRowSelection,
-  onViewClick,
-  loading,
-}) => {
+const UsersTable = ({ onViewClick, currentData, loading }) => {
+  const {
+    selectedRows,
+    toggleRowSelection,
+    setSelectedRows,
+    editingUserId,
+    setEditingUserId,
+    editValues,
+    setEditValues,
+    handleSave,
+    deleteUser,
+  } = useUserStore();
+
   return (
     <table className="min-w-[1200px] rounded-lg">
       <thead className="sticky top-0 bg-white">
@@ -61,9 +66,7 @@ const UsersTable = ({
           currentData.map((user, index) => (
             <tr
               key={index}
-              className={`border-b ${
-                selectedRows.includes(user.email) ? "bg-[#F9F9FC]" : "bg-white"
-              }`}
+              className={`border-b ${selectedRows.includes(user.email) ? "bg-[#F9F9FC]" : "bg-white"}`}
             >
               <td className="py-5 pl-8">
                 <CustomCheckBox
@@ -78,8 +81,6 @@ const UsersTable = ({
                     width={50}
                     height={50}
                     alt="Profile Image"
-                    loading="lazy"
-                    quality={100}
                     className="rounded-full"
                   />
                   <div>
@@ -96,38 +97,95 @@ const UsersTable = ({
                 {user.role}
               </td>
               <td className="py-5 pl-8">
-                <span
-                  className={`rounded-lg px-5 py-1 text-[14px] font-semibold ${
-                    user.accountStatus === "DISABLED"
-                      ? "bg-faluRed/10 text-faluRed"
-                      : "bg-customGreen/10 text-customGreen"
-                  }`}
-                >
-                  {user.accountStatus}
-                </span>
+                {editingUserId === user.id ? (
+                  <select
+                    value={editValues.accountStatus}
+                    onChange={(e) =>
+                      setEditValues({ accountStatus: e.target.value })
+                    }
+                    className="rounded-lg border px-2 py-1 text-sm"
+                  >
+                    <option value="PENDING">PENDING</option>
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="DISABLED">DISABLED</option>
+                  </select>
+                ) : (
+                  <span
+                    className={`rounded-lg px-5 py-1 text-[14px] font-semibold ${
+                      user.accountStatus === "DISABLED"
+                        ? "bg-faluRed/10 text-faluRed"
+                        : "bg-customGreen/10 text-customGreen"
+                    }`}
+                  >
+                    {user.accountStatus}
+                  </span>
+                )}
               </td>
               <td className="py-5 pl-8">
-                <span
-                  className={`rounded-lg px-5 py-1 text-[14px] font-semibold ${
-                    user.verification_status === "Approved"
-                      ? "bg-customGreen/10 text-customGreen"
-                      : "bg-lightBlue/10 text-lightBlue"
-                  }`}
-                >
-                  {user.verificationStatus}
-                </span>
+                {editingUserId === user.id ? (
+                  <select
+                    value={editValues.verificationStatus}
+                    onChange={(e) =>
+                      setEditValues({ verificationStatus: e.target.value })
+                    }
+                    className="rounded-lg border px-2 py-1 text-sm"
+                  >
+                    <option value="PENDING">PENDING</option>
+                    <option value="APPROVED">APPROVED</option>
+                    <option value="REJECTED">REJECTED</option>
+                  </select>
+                ) : (
+                  <span
+                    className={`rounded-lg px-5 py-1 text-[14px] font-semibold ${
+                      user.verificationStatus === "APPROVED"
+                        ? "bg-customGreen/10 text-customGreen"
+                        : "bg-lightBlue/10 text-lightBlue"
+                    }`}
+                  >
+                    {user.verificationStatus}
+                  </span>
+                )}
               </td>
               <td className="py-5 pl-8 text-[16px] text-customGray">
                 {formatDateTime.formatDateTime(user.registrationDate)}
               </td>
               <td className="py-5 pl-8">
                 <div className="flex flex-row gap-2">
-                  <MdEdit className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700" />
+                  {editingUserId === user.id ? (
+                    <>
+                      <button
+                        onClick={() => handleSave(user.id)}
+                        className="text-sm text-green-600 hover:underline"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingUserId(null)}
+                        className="text-sm text-red-500 hover:underline"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <MdEdit
+                      className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700"
+                      onClick={() => {
+                        setEditingUserId(user.id);
+                        setEditValues({
+                          accountStatus: user.accountStatus,
+                          verificationStatus: user.verificationStatus,
+                        });
+                      }}
+                    />
+                  )}
                   <BsFillEyeFill
                     onClick={() => onViewClick(user.id)}
                     className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700"
                   />
-                  <BiSolidTrash className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700" />
+                  <BiSolidTrash
+                    onClick={() => deleteUser(user.id)}
+                    className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700"
+                  />
                 </div>
               </td>
             </tr>

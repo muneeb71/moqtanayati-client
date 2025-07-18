@@ -12,6 +12,7 @@ import {
   cashIcon,
   thirdPartyIcon,
 } from "@/assets/icons/admin-icons.jsx";
+import UserDetailsShimmer from "@/components/shimmer/userDetailsShimmer";
 
 const UserDetails = () => {
   const params = useParams();
@@ -53,9 +54,6 @@ const UserDetails = () => {
         setTotalSpent(spent);
         setOrdersPlaced(orders.length);
         setToReceive(role === "BUYER" ? received : pending);
-
-        console.log("user detail : ", userDetail?.user);
-        console.log("product detail : ", userDetail?.listings?.[0].name);
       } catch (err) {
         console.error("Failed to fetch user detail", err);
         setUserDetail([]);
@@ -65,7 +63,9 @@ const UserDetails = () => {
     fetchUserDetail();
   }, [userDetail]);
 
-  return (
+  return userDetail === null ? (
+    <UserDetailsShimmer />
+  ) : (
     <div className="flex h-full max-h-full flex-col gap-10 pb-10">
       <div className="flex flex-row justify-between rounded-xl bg-white px-5 py-5 lg:px-10">
         <div className="flex flex-row items-center gap-5">
@@ -271,7 +271,7 @@ const UserDetails = () => {
               )}
 
               {/* Navigation Arrows */}
-              <button className="absolute -right-4 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-white shadow-md">
+              <button className="absolute -right-1 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-white shadow-md">
                 <svg
                   width="20"
                   height="20"

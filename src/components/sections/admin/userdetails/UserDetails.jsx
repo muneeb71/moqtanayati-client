@@ -8,6 +8,7 @@ import { getUserById } from "@/lib/api/admin/users/getUserById";
 
 import formatDateTime from "@/utils/dateFormatter";
 import { getMyBidsDetail } from "@/lib/api/auctions/getMyBidsDetail";
+import UserSkeleton from "@/components/shimmer/userSkeleton";
 
 const UserDetails = ({ userId }) => {
   const [user, setUser] = useState(null);
@@ -77,7 +78,7 @@ const UserDetails = ({ userId }) => {
     fetchRecentBids();
   }, [userId]);
 
-  if (!user) return <div>Loading user ....</div>;
+  if (!user) return <UserSkeleton />;
 
   return (
     <div className="flex h-full max-h-full flex-col gap-10 pb-10">

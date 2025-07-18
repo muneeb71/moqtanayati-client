@@ -1,23 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { use } from "react";
+
 import AuctionBidders from "@/components/sections/admin/auctions/AuctionBidders";
 import AuctionsDescriptionCard from "@/components/sections/admin/auctions/AuctionsDescriptionCard";
 import ProductDetailsSlider from "@/components/slider/ProductDetailsSlider";
-import { getAuctionById } from "@/lib/api/admin/auctions/getAdminAuctionById";
-import { use } from "react";
+import { getAdminAuctionById } from "@/lib/api/admin/auctions/getAdminAuctionById";
+import AdminAuctionSkeleton from "@/components/shimmer/adminAuctionSkeletion";
 
 const AdminAuctionPage = ({ params }) => {
   const { id: productId } = use(params);
-
   const [auctionDetail, setAuctionDetail] = useState(null);
 
   const fetchAuction = async () => {
     try {
-      const res = await getAuctionById(productId);
+      const res = await getAdminAuctionById(productId);
       setAuctionDetail(res.data);
     } catch (error) {
-      console.error("Error fetching auction detail:", error);
+      console.log("Error fetching auction detail:", error);
     }
   };
 
@@ -27,7 +28,7 @@ const AdminAuctionPage = ({ params }) => {
     }
   }, [productId]);
 
-  if (!auctionDetail) return <div>Loading...</div>;
+  if (!auctionDetail) return <AdminAuctionSkeleton />;
 
   return (
     <div className="flex w-full flex-col items-center gap-10 pb-20">

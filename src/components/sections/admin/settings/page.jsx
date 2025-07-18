@@ -122,8 +122,9 @@ export default function ProfilePage() {
           location: data.address,
         });
       }
-    } catch (err) {
-      toast.error(err?.message || "Failed to update profile");
+    } catch (error) {
+      console.log("profile update error :", error);
+      //toast.error("Failed to update profile");
     } finally {
       setUpdating(false);
     }

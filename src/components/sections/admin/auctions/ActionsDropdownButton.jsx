@@ -2,11 +2,14 @@
 
 import { EllipsisVertical } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import useAuctionStore from "@/stores/useAuctionStore";
 
-const ActionsDropdownButton = () => {
+const ActionsDropdownButton = ({ auctionId }) => {
   const [actionsDropdown, setActionsDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
+
+  const { cancelAuction } = useAuctionStore();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -21,11 +24,13 @@ const ActionsDropdownButton = () => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleCancelAuction = async () => {
+    await cancelAuction(auctionId);
+    setActionsDropdown(false);
+  };
 
   return (
     <div className="relative flex max-w-[100px] justify-end px-5 py-4">
@@ -36,12 +41,13 @@ const ActionsDropdownButton = () => {
       >
         <EllipsisVertical />
       </button>
+
       {actionsDropdown && (
         <div
           ref={dropdownRef}
           className="absolute top-12 min-w-full text-nowrap rounded-[10px_0px_10px_10px] bg-white px-3 py-2 text-sm font-medium text-faluRed shadow-[0px_0px_25px_2px_#0000001A]"
         >
-          <button>Cancel Auction</button>
+          <button onClick={handleCancelAuction}>Cancel Auction</button>
         </div>
       )}
     </div>

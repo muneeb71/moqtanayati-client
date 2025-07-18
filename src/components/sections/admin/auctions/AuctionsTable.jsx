@@ -1,17 +1,19 @@
 "use client";
 
 import { filterIcon } from "@/assets/icons/admin-icons";
-import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import ActionsDropdownButton from "./ActionsDropdownButton";
-import { getAllAuctions } from "@/lib/api/admin/auctions/getAllAuctions";
+import { BiSearch } from "react-icons/bi";
+import toast from "react-hot-toast";
+
+import { cn } from "@/lib/utils";
+import Filter from "@/components/dropdown/filter";
 import ShimmerRow from "@/components/shimmer/shimmerRow";
 import TablePagination from "@/components/pagination/TablePagination";
-import { useRef } from "react";
-import { BiSearch } from "react-icons/bi";
-import Filter from "@/components/dropdown/filter";
+import ActionsDropdownButton from "./ActionsDropdownButton";
+
+import useAuctionStore from "@/stores/useAuctionStore";
 
 const tableHeaders = [
   "Product",
@@ -23,70 +25,50 @@ const tableHeaders = [
   "Actions",
 ];
 
+const auctionSortOptions = [
+  { label: "Newest", value: "newest" },
+  { label: "Oldest", value: "oldest" },
+  { label: "Live", value: "live" },
+  { label: "Ended", value: "ended" },
+  { label: "Upcoming", value: "upcoming" },
+  { label: "Highest Starting Bid", value: "highest starting bid" },
+  { label: "Lowest Starting Bid", value: "lowest starting bid" },
+  { label: "Highest Current Bid", value: "highest current bid" },
+  { label: "Lowest Current Bid", value: "lowest current bid" },
+];
+
 const AuctionsTable = () => {
-  const [sortBy, setSortBy] = useState("SELLER");
-
-  const auctionSortOptions = [
-    { label: "Newest", value: "newest" },
-    { label: "Oldest", value: "oldest" },
-    { label: "Live", value: "live" },
-    { label: "Ended", value: "ended" },
-    { label: "Upcoming", value: "upcoming" },
-    { label: "Highest Starting Bid", value: "highest starting bid" },
-    { label: "Lowest Starting Bid", value: "lowest starting bid" },
-    { label: "Highest Current Bid", value: "highest current bid" },
-    { label: "Lowest Current Bid", value: "lowest current bid" },
-  ];
-
   const tableRef = useRef(null);
-  const [auctions, setAuctions] = useState([]);
 
-  const [isAuctionLoading, setIsAuctionLoading] = useState(false);
+  const {
+    auctions,
+    auctionsLoading,
+    fetchAuctions,
+    currentAuctionPage,
+    setCurrentAuctionPage,
+    rowsPerAuctionPage,
+    totalAuctionPages,
+    totalAuctions,
+    auctionSearchTerm,
+    setAuctionSearchTerm,
+    debouncedAuctionSearchTerm,
+    setDebouncedAuctionSearchTerm,
+    auctionSortBy,
+    setAuctionSortBy,
+  } = useAuctionStore();
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalAuctions, setTotalAuctions] = useState(0);
-
-  const fetchAuctions = async (currentPage = 1) => {
-    try {
-      setIsAuctionLoading(true);
-      if (!currentPage || isNaN(currentPage)) return;
-
-      const res = await getAllAuctions({
-        currentPage,
-        search: debouncedSearchTerm.trim(),
-        filter: sortBy.trim(),
-      });
-      const pagination = res?.data?.pagination || {};
-      const fetchedAuctions = res.data.auctions;
-      setAuctions(fetchedAuctions);
-      setRowsPerPage(pagination.limit || 10);
-      setTotalPages(pagination.pages || 1);
-      setTotalAuctions(pagination.total || res.length);
-    } catch (error) {
-      setAuctions([]);
-    } finally {
-      setIsAuctionLoading(false);
-    }
-  };
-
+  // Debounce search term
   useEffect(() => {
     const delay = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
+      setDebouncedAuctionSearchTerm(auctionSearchTerm);
     }, 400);
-
     return () => clearTimeout(delay);
-  }, [searchTerm]);
+  }, [auctionSearchTerm]);
 
+  // Fetch auctions when search, sort or page changes
   useEffect(() => {
-    fetchAuctions(currentPage);
-  }, [currentPage, debouncedSearchTerm, sortBy]);
-
-  if (!auctions) setIsAuctionLoading(false);
+    fetchAuctions(currentAuctionPage);
+  }, [debouncedAuctionSearchTerm, auctionSortBy, currentAuctionPage]);
 
   return (
     <div className="flex h-full w-full flex-col gap-2 py-5">
@@ -98,11 +80,7 @@ const AuctionsTable = () => {
           <span className="text-2xl font-semibold text-russianViolet">
             Auctions
           </span>
-          <div className="flex flex-row items-center gap-5">
-            <p className="text-[18px] font-normal text-davyGray">
-              All Auctions
-            </p>
-          </div>
+          <p className="text-[18px] font-normal text-davyGray">All Auctions</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -110,19 +88,18 @@ const AuctionsTable = () => {
             <input
               type="text"
               placeholder="Search"
-              value={searchTerm}
+              value={auctionSearchTerm}
               onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
+                setAuctionSearchTerm(e.target.value);
+                setCurrentAuctionPage(1);
               }}
               className="h-10 w-full rounded-lg border border-silver bg-white pl-10 pr-4 text-gray-700 focus:outline-none focus:ring-1 focus:ring-moonstone"
             />
             <BiSearch className="absolute left-3 top-1/2 -translate-y-1/2 transform text-xl text-gray-500" />
           </div>
-
           <Filter
-            sortBy={sortBy}
-            setSortBy={setSortBy}
+            sortBy={auctionSortBy}
+            setSortBy={setAuctionSortBy}
             sortingOptions={auctionSortOptions}
           />
         </div>
@@ -144,7 +121,7 @@ const AuctionsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {isAuctionLoading ? (
+            {auctionsLoading ? (
               Array(5)
                 .fill(0)
                 .map((_, idx) => <ShimmerRow key={idx} columns={7} />)
@@ -158,7 +135,7 @@ const AuctionsTable = () => {
                 </td>
               </tr>
             ) : (
-              auctions.map((auction, index) => {
+              auctions.map((auction) => {
                 const product = auction.product;
                 const imageUrl = product.images?.[0] || "/fallback.png";
                 const seller = auction.seller;
@@ -210,7 +187,7 @@ const AuctionsTable = () => {
                     </td>
                     <td>
                       <div className="px-5 py-4 font-medium text-[#667085]">
-                        ${currentBid}
+                        {currentBid}
                       </div>
                     </td>
                     <td>
@@ -234,7 +211,6 @@ const AuctionsTable = () => {
                               const now = new Date();
                               const timeDiff =
                                 endDate.getTime() - now.getTime();
-
                               if (timeDiff <= 0) return "0d 0h 0m";
 
                               const days = Math.floor(
@@ -246,13 +222,11 @@ const AuctionsTable = () => {
                               const minutes = Math.floor(
                                 (timeDiff / (1000 * 60)) % 60,
                               );
-
                               return `${days}d ${hours}h ${minutes}m`;
                             })()
                           : "N/A"}
                       </div>
                     </td>
-
                     <td>
                       <div
                         className={cn(
@@ -268,7 +242,7 @@ const AuctionsTable = () => {
                       </div>
                     </td>
                     <td>
-                      <ActionsDropdownButton />
+                      <ActionsDropdownButton auctionId={auction.id} />
                     </td>
                   </tr>
                 );
@@ -279,11 +253,11 @@ const AuctionsTable = () => {
       </div>
 
       <TablePagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        rowsPerPage={rowsPerPage}
+        currentPage={currentAuctionPage}
+        totalPages={totalAuctionPages}
+        rowsPerPage={rowsPerAuctionPage}
         totalItems={totalAuctions}
-        onPageChange={setCurrentPage}
+        onPageChange={setCurrentAuctionPage}
       />
     </div>
   );

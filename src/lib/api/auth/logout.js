@@ -1,16 +1,28 @@
-"use server";
+"use client";
 
-import { cookies } from "next/headers";
-import api from "../axios";
+import { useRouter } from "next/navigation";
+import { deleteCookie } from "cookies-next";
 
-export async function logoutUser() {
-  const cookiesStore = await cookies();
+export default function LogoutButton({ logoutIcon }) {
+  const router = useRouter();
 
-  cookiesStore.delete("token");
-  cookiesStore.delete("userId");
-  cookiesStore.delete("role");
-  cookiesStore.delete("survey");
-  cookiesStore.delete("storeId");
+  const logoutUser = () => {
+    deleteCookie("token");
+    deleteCookie("userId");
+    deleteCookie("role");
+    deleteCookie("survey");
+    deleteCookie("storeId");
+    router.push("/admin/login");
+  };
 
-  return { success: true, message: "Logged out successfully" };
+  return (
+    <div
+      className="mt-auto flex cursor-pointer items-center gap-2 px-3.5"
+      onClick={logoutUser}
+    >
+      {logoutIcon}
+
+      <p className="text-red-400">Logout</p>
+    </div>
+  );
 }
