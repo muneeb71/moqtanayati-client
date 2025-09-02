@@ -27,8 +27,12 @@ const NewPasswordForm = ({ role }) => {
     setError("");
     try {
       const isEmail = emailOrPhone.includes("@");
-      await resetPassword(isEmail ? { email: emailOrPhone, newPassword: password, confirmPassword } : { phone: emailOrPhone, newPassword: password, confirmPassword });
-      router.push(`/auth/${role}/login`);
+      await resetPassword(
+        isEmail
+          ? { email: emailOrPhone, newPassword: password, confirmPassword }
+          : { phone: emailOrPhone, newPassword: password, confirmPassword },
+      );
+      router.push(`/${role}/login`);
     } catch (err) {
       setError(err?.response?.data?.message || "Failed to reset password.");
     } finally {
@@ -62,7 +66,7 @@ const NewPasswordForm = ({ role }) => {
           />
         </div>
       </div>
-      {error && <span className="text-red-500 self-center">{error}</span>}
+      {error && <span className="self-center text-red-500">{error}</span>}
       <RoundedButton
         title={loading ? "Resetting..." : "Reset Password"}
         className="w-fit self-center px-20"

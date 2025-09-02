@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/api/auth/login";
 import toast from "react-hot-toast";
 
-const LoginForm = ({ role = "seller" }) => {
+const LoginForm = ({ role }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
@@ -23,6 +23,7 @@ const LoginForm = ({ role = "seller" }) => {
     if (e) e.preventDefault();
     startTransition(async () => {
       const response = await loginUser(email, password, role);
+      console.log("suc : ", response);
       if (response.success) {
         if (response.data.user.sellerSuvery) {
           router.push("/" + response.data.user.role.toLowerCase());
@@ -66,7 +67,7 @@ const LoginForm = ({ role = "seller" }) => {
           </div>
           <CustomLink
             className="text-sm"
-            href={`/auth/${role}/login/forget-password`}
+            href={`/${role}/login/forget-password`}
           >
             Forgot password ?
           </CustomLink>

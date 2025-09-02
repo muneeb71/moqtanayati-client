@@ -4,15 +4,20 @@ import { cookies } from "next/headers";
 import api from "../axios";
 
 export async function loginUser(email, password, role) {
+  console.log("check role ", role);
   try {
     const response = await api.post("sellers/login", {
       email,
       password,
     });
 
+    console.log("login res : ", response);
+
     const data = response.data.data;
     const token = data.token;
     const user = data.user;
+
+    console.log("token : ", token);
 
     const cookiesStore = cookies();
 

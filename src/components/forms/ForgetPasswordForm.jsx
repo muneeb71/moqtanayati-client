@@ -20,8 +20,12 @@ const ForgetPasswordForm = ({ role }) => {
     setError("");
     try {
       const isEmail = emailOrPhone.includes("@");
-      await forgotPassword(isEmail ? { email: emailOrPhone } : { phone: emailOrPhone });
-      router.push(`/auth/${role}/login/forget-password/otp?emailOrPhone=${encodeURIComponent(emailOrPhone)}`);
+      await forgotPassword(
+        isEmail ? { email: emailOrPhone } : { phone: emailOrPhone },
+      );
+      router.push(
+        `/${role}/login/forget-password/otp?emailOrPhone=${encodeURIComponent(emailOrPhone)}`,
+      );
     } catch (err) {
       setError(err?.response?.data?.message || "Failed to send reset link.");
     } finally {
@@ -45,7 +49,7 @@ const ForgetPasswordForm = ({ role }) => {
           onChange={(e) => setEmailOrPhone(e.target.value)}
         />
       </div>
-      {error && <span className="text-red-500 self-center">{error}</span>}
+      {error && <span className="self-center text-red-500">{error}</span>}
       <RoundedButton
         title={loading ? "Sending..." : "Send Reset Link"}
         className="w-fit self-center px-10"

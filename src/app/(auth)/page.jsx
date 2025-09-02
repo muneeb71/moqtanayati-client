@@ -11,7 +11,7 @@ const RoleSelectionLoginPage = () => {
   const [selectedRole, setSelectedRole] = useState("");
   const router = useRouter();
   return (
-    <div className="flex w-full flex-col gap-10 justify-center pt-28 pb-10 md:gap-[66px]">
+    <div className="flex w-full flex-col justify-center gap-10 pb-10 pt-28 md:gap-[66px]">
       <div className="flex w-full flex-col gap-1">
         <h1 className="text-xl font-medium leading-[36px] md:text-2xl">
           Are you here to buy or sell?
@@ -24,7 +24,10 @@ const RoleSelectionLoginPage = () => {
         {roles.map((role, index) => (
           <button
             key={index}
-            onClick={() => setSelectedRole(role)}
+            onClick={() => {
+              setSelectedRole(role);
+              console.log("selected role : ", role);
+            }}
             className={cn(
               "relative flex min-h-[280px] w-full flex-col items-center justify-between gap-3 rounded-[24px] border-[1.8px] bg-white pb-5 pt-10",
               "hover:border-moonstone",
@@ -38,7 +41,11 @@ const RoleSelectionLoginPage = () => {
               <div className="absolute left-2.5 top-2.5">{selectSvg}</div>
             )}
             <Image
-              src={role === "buyer" ? "/static/auth/buyer.svg" : "/static/auth/seller.svg"}
+              src={
+                role === "buyer"
+                  ? "/static/auth/buyer.svg"
+                  : "/static/auth/seller.svg"
+              }
               quality={100}
               width={164}
               height={164}
@@ -56,7 +63,7 @@ const RoleSelectionLoginPage = () => {
         className="min-w-[294px] self-center"
         showIcon
         disabled={selectedRole === ""}
-        onClick={() => router.push("/auth/" + selectedRole + "/login")}
+        onClick={() => router.push(selectedRole + "/login")}
       />
     </div>
   );
