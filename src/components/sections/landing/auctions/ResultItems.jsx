@@ -20,7 +20,9 @@ const ResultItems = ({ items }) => {
       setLoading(true);
       try {
         const res = await getAllAuctions();
-        setProducts(res || []);
+
+        console.log("response auctions: ", res.auctions);
+        setProducts(res.auctions || []);
       } catch (error) {
         setProducts([]);
       }
@@ -107,7 +109,9 @@ const ResultItems = ({ items }) => {
           </div>
         )}
       </div>
-      {filterPopupOpen && <FiltersPopup onClose={()=>setFilterPopupOpen(false)}/>}
+      {filterPopupOpen && (
+        <FiltersPopup onClose={() => setFilterPopupOpen(false)} />
+      )}
     </div>
   );
 };

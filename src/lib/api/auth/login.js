@@ -11,15 +11,14 @@ export async function loginUser(email, password, role) {
       password,
     });
 
-    console.log("login res : ", response);
-
     const data = response.data.data;
     const token = data.token;
     const user = data.user;
 
     console.log("token : ", token);
 
-    const cookiesStore = cookies();
+    // await cookies()
+    const cookieStore = await cookies();
 
     if (user.role.toLowerCase() !== role.toLowerCase()) {
       return {
@@ -30,37 +29,34 @@ export async function loginUser(email, password, role) {
 
     // Set cookies (7-day expiration)
     const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    cookiesStore.set("token", token, { expires });
-    cookiesStore.set("userId", user.id, { expires });
-    cookiesStore.set("role", user.role, { expires });
-    cookiesStore.set("survey", JSON.stringify(user.sellerSurvey), { expires });
+    await cookieStore.set("token", token, { expires });
+    await cookieStore.set("userId", user.id, { expires });
+    await cookieStore.set("role", user.role, { expires });
+    await cookieStore.set("survey", JSON.stringify(user.sellerSurvey), {
+      expires,
+    });
 
     // Fetch profile with token in Authorization header
     let profileResponse;
     if (role.toLowerCase() === "admin") {
       profileResponse = await api.get(`admin/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
     } else {
       profileResponse = await api.get(`sellers/profile/${user.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
     }
 
     const profileData = profileResponse.data.data;
 
     if (profileData.store) {
-      cookiesStore.set("storeId", profileData.store.id, { expires });
+      await cookieStore.set("storeId", profileData.store.id, { expires });
     }
 
     return response.data;
   } catch (error) {
     console.error("Login Error:", error);
-
     return {
       success: false,
       message:

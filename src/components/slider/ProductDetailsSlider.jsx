@@ -37,7 +37,7 @@ const ProductDetailsSlider = ({ auctionDetail }) => {
   };
 
   useEffect(() => {
-    if (auctionDetail.pricingFormat === "Auctions") {
+    if (auctionDetail?.pricingFormat === "Auctions") {
       getWatchlistStatus();
     }
   }, []);
@@ -164,7 +164,7 @@ const ProductDetailsSlider = ({ auctionDetail }) => {
             loading="lazy"
             className="h-full w-full object-cover"
           />
-          {auctionDetail.pricingFormat === "Auctions" && (
+          {auctionDetail?.pricingFormat === "Auctions" && (
             <button
               className={cn(
                 "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",

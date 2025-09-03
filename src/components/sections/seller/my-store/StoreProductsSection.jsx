@@ -11,13 +11,27 @@ import { useInventoryStore } from "@/providers/inventory-store-provider";
 const StoreProductsSection = () => {
   const router = useRouter();
   const { store } = useProfileStore((state) => state);
-  const { products, isLoadingProducts, productsError, fetchProducts } = useInventoryStore();
+  const { products, isLoadingProducts, productsError, fetchProducts } =
+    useInventoryStore();
 
   useEffect(() => {
-    if (store?.id) {
-      fetchProducts(store.id);
-    }
-  }, [store?.id, fetchProducts]);
+    const loadData = async () => {
+      if (!store?.id) {
+        console.log("Store not ready yet:", store?.id);
+        return;
+      }
+
+      try {
+        console.log("Fetching products for store:", store.id);
+        const response = await fetchProducts(store.id);
+        console.log("res :", response);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      }
+    };
+
+    loadData();
+  }, [store?.id]);
 
   return (
     <div className="flex w-full flex-col gap-5">
@@ -31,6 +45,7 @@ const StoreProductsSection = () => {
           onClick={() => router.push("/seller/my-store/product/add")}
         />
       </div>
+
       {isLoadingProducts ? (
         <span className="rounded-2xl bg-moonstone/20 py-20 text-center text-2xl text-black/80">
           Loading products...
@@ -41,8 +56,8 @@ const StoreProductsSection = () => {
         </span>
       ) : products?.length > 0 ? (
         <div className="grid w-full gap-x-20 gap-y-8 md:grid-cols-2">
-          {products.map((item, index) => (
-            <StoreProductCard item={item} key={index} />
+          {products.map((item) => (
+            <StoreProductCard item={item} key={item.id || item._id} />
           ))}
         </div>
       ) : (

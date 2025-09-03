@@ -23,13 +23,17 @@ const LoginForm = ({ role }) => {
     if (e) e.preventDefault();
     startTransition(async () => {
       const response = await loginUser(email, password, role);
-      console.log("suc : ", response);
+
       if (response.success) {
-        if (response.data.user.sellerSuvery) {
-          router.push("/" + response.data.user.role.toLowerCase());
-        } else {
-          router.push("/" + response.data.user.role.toLowerCase());
-        }
+        console.log("suc : ", response.data.user.role.toLowerCase());
+        const rolePath = `/seller`;
+        router.push(rolePath);
+
+        // if (response.data.user.sellerSuvery) {
+        //   router.push("/" + response.data.user.role.toLowerCase());
+        // } else {
+        //   router.push("/" + response.data.user.role.toLowerCase());
+        // }
       } else {
         toast.error(response.message || "Login failed");
       }
@@ -86,8 +90,8 @@ const LoginForm = ({ role }) => {
           <CustomLink
             href={
               role === "buyer"
-                ? "/auth/" + role + "/sign-up"
-                : "/auth/" + role + "/seller-type"
+                ? "/" + role + "/sign-up"
+                : "/" + role + "/seller-type"
             }
           >
             Create Account

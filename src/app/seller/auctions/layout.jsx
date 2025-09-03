@@ -3,8 +3,9 @@ import { AuctionStoreProvider } from "@/providers/auction-store-provider";
 
 const AuctionLayout = async ({ children }) => {
   const auctions = await getAuctionsBySellerId();
+  console.log("auction received : ", auctions.auctions);
   return (
-    <AuctionStoreProvider auctionProducts={auctions}>
+    <AuctionStoreProvider auctionProducts={auctions.auctions}>
       {children}
     </AuctionStoreProvider>
   );

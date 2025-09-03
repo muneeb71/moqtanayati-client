@@ -258,7 +258,7 @@ const UnitsAndDimensionsForm = () => {
                 if (val.includes(",")) {
                   const parts = val
                     .split(",")
-                    .map((c) => c.trim())
+                    .map((c) => c.trim().toLowerCase())
                     .filter(Boolean);
                   const merged = Array.from(
                     new Set([...productCategories, ...parts]),

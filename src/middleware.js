@@ -18,17 +18,16 @@ export function middleware(request) {
   if (!token && !userId && (isAdminLogin || isAuthPath)) {
     return NextResponse.next();
   }
-  
 
   if (userId) {
     if (role === "ADMIN" && !pathname.startsWith("/admin")) {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
     if (role === "SELLER") {
-      if (!survey && !pathname.startsWith("/survey")) {
-        return NextResponse.redirect(new URL("/survey", request.url));
-      }
-      if (survey && !pathname.startsWith("/seller")) {
+      // if (!survey && !pathname.startsWith("/survey")) {
+      //   return NextResponse.redirect(new URL("/survey", request.url));
+      // }
+      if (!survey && !pathname.startsWith("/seller")) {
         return NextResponse.redirect(new URL("/seller", request.url));
       }
     }

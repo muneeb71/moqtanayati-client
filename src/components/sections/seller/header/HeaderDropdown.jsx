@@ -16,11 +16,15 @@ const HeaderDropdown = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    const response = await logoutUser();
-    if (response.success) {
-      router.push("/auth");
-    } else {
-      toast.error(response.message || "Logout failed");
+    try {
+      const response = await logoutUser();
+      // if (response.success) {
+      router.push("/");
+      // } else {
+      //   toast.error(response.message || "Logout failed");
+      // }
+    } catch (e) {
+      toast.error(e.message || "Logout failed");
     }
   };
 

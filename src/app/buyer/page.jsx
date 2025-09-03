@@ -10,8 +10,9 @@ import AuctionSectionSkeleton from "@/components/loaders/AuctionSectionSkeleton"
 
 const socket = io("http://localhost:5000", {});
 let loading = true;
-const auctions = await getAllAuctions();
-const auction = auctions.find(a => a.status === "LIVE");
+const response = await getAllAuctions();
+const auctions = response.data || [];
+const auction = auctions.find((a) => a.status === "LIVE");
 loading = false;
 
 const BuyerPage = async () => {
@@ -19,7 +20,11 @@ const BuyerPage = async () => {
     <div className="flex w-full flex-col items-center justify-center gap-5 px-3 pb-20">
       <MainBanner />
       <CategoriesSliderSection />
-      {loading ? <AuctionSectionSkeleton />: <AuctionSection auction={auction} />}
+      {loading ? (
+        <AuctionSectionSkeleton />
+      ) : (
+        <AuctionSection auction={auction} />
+      )}
       <RecommendedSection />
       <FurnitureSection />
     </div>

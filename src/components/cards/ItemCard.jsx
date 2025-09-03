@@ -14,7 +14,7 @@ const ItemCard = ({
   address = "",
   isFavourite = false,
   pricingFormat,
-  buyItNow
+  buyItNow,
 }) => {
   const router = useRouter();
   const [favourite, setFavourite] = useState(isFavourite);
@@ -26,7 +26,7 @@ const ItemCard = ({
 
   return (
     <div
-      className="flex w-full flex-col overflow-hidden rounded-[12px] h-72"
+      className="flex h-72 w-full flex-col overflow-hidden rounded-[12px]"
       style={{
         boxShadow: "0px 0px 10px 2px #0000001A",
       }}
@@ -40,15 +40,17 @@ const ItemCard = ({
           loading="lazy"
           onClick={() => router.push("/buyer/product-details/" + id)}
         />
-        {pricingFormat == "Auctions" && <button
-          className={cn(
-            "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
-            favourite ? "text-[#F16D6F]" : "text-white",
-          )}
-          onClick={() => setFavourite(!favourite)}
-        >
-          {heartIcon}
-        </button>}
+        {pricingFormat == "Auctions" && (
+          <button
+            className={cn(
+              "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
+              favourite ? "text-[#F16D6F]" : "text-white",
+            )}
+            onClick={() => setFavourite(!favourite)}
+          >
+            {heartIcon}
+          </button>
+        )}
       </div>
       <div
         className="flex w-full cursor-pointer flex-col px-2.5 py-2"
@@ -56,7 +58,12 @@ const ItemCard = ({
       >
         <div className="flex items-center justify-between">
           <span className="text-[21px] font-medium leading-[32px]">
-            ${price !== 0 ? price?.toFixed(2) : buyItNow ? buyItNow?.toFixed(2) : "0.00"}
+            $
+            {price !== 0
+              ? price?.toFixed(2)
+              : buyItNow
+                ? buyItNow?.toFixed(2)
+                : "0.00"}
           </span>
           <span className="text-[15px] leading-[23px] text-black/30">
             {getHourAgo(createdAt)}

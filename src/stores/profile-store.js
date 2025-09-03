@@ -58,6 +58,9 @@ export const createProfileStore = (initState = defaultInitState, profile) => {
 
     fetchUserProfile: async (uid) => {
       const response = await getUserProfile(uid);
+      console.log("user profile 1 : ", response);
+      console.log("user profile 2 : ", response.data);
+      console.log("user profile 3 : ", response.data.data);
       if (response && response.success !== false) {
         set({ ...response.data });
       }
