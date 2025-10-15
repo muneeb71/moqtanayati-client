@@ -1,13 +1,11 @@
-'use client';
+"use client";
 
-import { createContext, useRef, useContext } from 'react';
-import { useStore } from 'zustand';
+import { createContext, useRef, useContext } from "react";
+import { useStore } from "zustand";
 
-import {
-  createProductStore,
-  initProductStore,
-} from '@/stores/product-store';
+import { createProductStore, initProductStore } from "@/stores/product-store";
 
+// ✅ Create Context
 export const ProductStoreContext = createContext(undefined);
 
 export const ProductStoreProvider = ({ children }) => {
@@ -24,11 +22,12 @@ export const ProductStoreProvider = ({ children }) => {
   );
 };
 
-export const useProductStore = (selector) => {
+// ✅ Update Hook to Work Without Selector
+export const useProductStore = (selector = (state) => state) => {
   const productStoreContext = useContext(ProductStoreContext);
 
   if (!productStoreContext) {
-    throw new Error('useProductStore must be used within ProductStoreProvider');
+    throw new Error("useProductStore must be used within ProductStoreProvider");
   }
 
   return useStore(productStoreContext, selector);

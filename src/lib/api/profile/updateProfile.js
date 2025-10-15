@@ -1,12 +1,18 @@
-"use server";
-
-import { cookies } from "next/headers";
+"use client";
 import api from "../axios";
 
 export async function updateUserProfile({ userId, data }) {
   try {
-    const response = await api.put("sellers/profile/" + userId, data);
+    console.log("profile data  : ", data);
+
+    const response = await api.patch("/sellers/profile/" + userId, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     const userData = response.data.data;
+
+    console.log("profile data res  : ", userData);
 
     return {
       success: true,

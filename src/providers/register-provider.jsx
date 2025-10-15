@@ -1,19 +1,18 @@
-'use client';
+"use client";
 
-import { createContext, useRef, useContext } from 'react';
-import { useStore } from 'zustand';
-
+import { createContext, useRef, useContext } from "react";
+import { useStore } from "zustand";
 import {
   createRegisterStore,
   initRegisterStore,
-} from '@/stores/register-store';
+} from "@/stores/register-store";
 
-export const RegisterStoreContext = createContext(undefined);
+const RegisterStoreContext = createContext(undefined);
 
 export const RegisterStoreProvider = ({ children }) => {
-  const storeRef = useRef(null);
+  const storeRef = useRef();
 
-  if (storeRef.current === null) {
+  if (!storeRef.current) {
     storeRef.current = createRegisterStore(initRegisterStore());
   }
 
@@ -25,11 +24,11 @@ export const RegisterStoreProvider = ({ children }) => {
 };
 
 export const useRegisterStore = (selector) => {
-  const registerStoreContext = useContext(RegisterStoreContext);
+  const store = useContext(RegisterStoreContext);
+  if (!store)
+    throw new Error(
+      "useRegisterStore must be used within RegisterStoreProvider",
+    );
 
-  if (!registerStoreContext) {
-    throw new Error('useRegisterStore must be used within RegisterStoreProvider');
-  }
-
-  return useStore(registerStoreContext, selector);
+  return useStore(store, selector);
 };

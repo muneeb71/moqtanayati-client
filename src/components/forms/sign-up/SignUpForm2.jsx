@@ -7,6 +7,7 @@ import Label from "@/components/form-fields/Label";
 import CustomLink from "@/components/link/CustomLink";
 import { useRegisterStore } from "@/providers/register-provider";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const SignUpForm2 = ({ role }) => {
   const router = useRouter();
@@ -17,7 +18,7 @@ const SignUpForm2 = ({ role }) => {
       toast.error("Please enter National ID.");
       return;
     }
-    router.push("/auth/" + role + "/sign-up/password");
+    router.push(`/${role}/sign-up/password`);
   };
 
   return (

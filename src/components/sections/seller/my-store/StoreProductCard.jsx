@@ -44,13 +44,13 @@ const StoreProductCard = ({ item }) => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       const newValue = parseInt(editValue);
       if (!isNaN(newValue) && newValue >= 0) {
         handleStockUpdate(newValue);
         setIsEditing(false);
       }
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       setIsEditing(false);
       setEditValue(stock);
     }
@@ -70,11 +70,13 @@ const StoreProductCard = ({ item }) => {
         <div className="size-36 min-w-36 overflow-hidden rounded-2xl border border-black/10">
           <Image
             src={
-              item.images && item.images[0] !== ""
-                ? item.images[0] //{/*process.env.NEXT_PUBLIC_BACKEND_BASE_URL +*/}
+              Array.isArray(item.images) &&
+              item.images.length > 0 &&
+              item.images[0]
+                ? item.images[0]
                 : "/static/dummy-items/1.jpeg"
             }
-            alt="image"
+            alt={item.name || "Product image"}
             width={200}
             height={200}
             loading="lazy"
@@ -88,18 +90,22 @@ const StoreProductCard = ({ item }) => {
               {item.name}
             </h1>
             <div className="w-fit rounded-full bg-moonstone px-2 py-1 text-xs text-white">
-              {item.status === "DRAFT" ? "Draft" : item.pricingFormat || "INCOMPLETE"}
+              {item.status === "DRAFT"
+                ? "Draft"
+                : item.pricingFormat || "INCOMPLETE"}
             </div>
           </div>
           {item.price !== 0 ? (
             <h1 className="text-3xl font-medium">${item.price?.toFixed(2)}</h1>
           ) : (
-            <h1 className="text-3xl">${item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}</h1>
+            <h1 className="text-3xl">
+              ${item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}
+            </h1>
           )}
         </div>
       </Link>
       <div className="flex h-full flex-col items-center justify-between py-1">
-        <button 
+        <button
           onClick={() => handleStockUpdate(stock + 1)}
           disabled={isUpdating}
           className="grid size-10 place-items-center rounded-md bg-moonstone/10 transition-colors hover:bg-moonstone/20 disabled:cursor-not-allowed disabled:opacity-50"
@@ -113,12 +119,12 @@ const StoreProductCard = ({ item }) => {
             onChange={(e) => setEditValue(e.target.value)}
             onKeyDown={handleKeyPress}
             onBlur={handleBlur}
-            className="w-20 text-center text-2xl font-medium text-darkBlue border border-moonstone rounded-md px-2"
+            className="w-20 rounded-md border border-moonstone px-2 text-center text-2xl font-medium text-darkBlue"
             autoFocus
           />
         ) : (
-          <span 
-            className="text-2xl font-medium text-darkBlue cursor-pointer"
+          <span
+            className="cursor-pointer text-2xl font-medium text-darkBlue"
             onClick={() => {
               setIsEditing(true);
               setEditValue(stock);
@@ -127,7 +133,7 @@ const StoreProductCard = ({ item }) => {
             {stock}
           </span>
         )}
-        <button 
+        <button
           onClick={() => handleStockUpdate(stock - 1)}
           disabled={isUpdating || stock <= 0}
           className="grid size-10 place-items-center rounded-md bg-moonstone/10 transition-colors hover:bg-moonstone/20 disabled:cursor-not-allowed disabled:opacity-50"

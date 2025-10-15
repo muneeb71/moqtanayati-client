@@ -8,7 +8,6 @@ import { XIcon } from "lucide-react/dist/cjs/lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 import { updateProductUnitAndDimensions } from "@/lib/api/product/update";
-import { addProduct } from "@/lib/api/product/add";
 import { useProfileStore } from "@/providers/profile-store-provider";
 
 const UnitsAndDimensionsForm = () => {
@@ -35,7 +34,7 @@ const UnitsAndDimensionsForm = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
-  if (!id || id == "") {
+  if (!id || id === "") {
     router.back();
   }
 
@@ -49,6 +48,7 @@ const UnitsAndDimensionsForm = () => {
 
   const productConditionsList = ["New", "Old"];
 
+  // ✅ Validation function
   const validate = () => {
     const newErrors = {};
     if (!stock || isNaN(parseFloat(stock)))
@@ -67,7 +67,9 @@ const UnitsAndDimensionsForm = () => {
       newErrors.productCategories = "Product category is required.";
     if (!productCondition || productCondition.trim() === "")
       newErrors.productCondition = "Product condition is required.";
+
     setErrors(newErrors);
+
     if (Object.keys(newErrors).length > 0) {
       if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current);
       errorTimeoutRef.current = setTimeout(() => setErrors({}), 3000);
@@ -75,7 +77,10 @@ const UnitsAndDimensionsForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // ✅ Handle Next Button
   const handleNext = async () => {
+    console.log("Categories before submit:", productCategories);
+
     if (validate()) {
       try {
         setIsLoading(true);
@@ -107,7 +112,7 @@ const UnitsAndDimensionsForm = () => {
         }
       } catch (error) {
         setErrors({
-          submit: "An unexpected error occurred. Please try again." + error,
+          submit: "An unexpected error occurred. Please try again. " + error,
         });
       } finally {
         setIsLoading(false);
@@ -123,84 +128,37 @@ const UnitsAndDimensionsForm = () => {
           Add the measurements of your product.
         </span>
       </div>
+
       <div className="grid w-full gap-5 md:grid-cols-2 md:gap-10">
+        {/* ================= LEFT SIDE ================= */}
         <div className="flex w-full flex-col gap-5">
-          <div className="flex flex-col gap-1">
-            <InputField
-              type="text"
-              placeholder="Available units"
-              value={stock}
-              onChange={(e) => {
-                const val = e.target.value;
-                setStock(val);
-              }}
-            />
-            {errors.stock && (
-              <span className="text-xs text-red-500">{errors.stock}</span>
-            )}
-          </div>
-          <div className="flex flex-col gap-1">
-            <InputField
-              type="number"
-              placeholder="Length 0.00 in"
-              value={length}
-              step="0.01"
-              onChange={(e) => {
-                const val = e.target.value;
-                setLength(val);
-              }}
-            />
-            {errors.length && (
-              <span className="text-xs text-red-500">{errors.length}</span>
-            )}
-          </div>
-          <div className="flex flex-col gap-1">
-            <InputField
-              type="number"
-              placeholder="Width 0.00 in"
-              value={width}
-              step="0.01"
-              onChange={(e) => {
-                const val = e.target.value;
-                setWidth(val);
-              }}
-            />
-            {errors.width && (
-              <span className="text-xs text-red-500">{errors.width}</span>
-            )}
-          </div>
-          <div className="flex flex-col gap-1">
-            <InputField
-              type="number"
-              placeholder="Height 0.00 in"
-              value={height}
-              step="0.01"
-              onChange={(e) => {
-                const val = e.target.value;
-                setHeight(val);
-              }}
-            />
-            {errors.height && (
-              <span className="text-xs text-red-500">{errors.height}</span>
-            )}
-          </div>
-          <div className="flex flex-col gap-1">
-            <InputField
-              type="number"
-              placeholder="Weight 0.00 kg"
-              value={weight}
-              step="0.01"
-              onChange={(e) => {
-                const val = e.target.value;
-                setWeight(val);
-              }}
-            />
-            {errors.weight && (
-              <span className="text-xs text-red-500">{errors.weight}</span>
-            )}
-          </div>
+          {[
+            { label: "Available units", value: stock, set: setStock },
+            { label: "Length 0.00 in", value: length, set: setLength },
+            { label: "Width 0.00 in", value: width, set: setWidth },
+            { label: "Height 0.00 in", value: height, set: setHeight },
+            { label: "Weight 0.00 kg", value: weight, set: setWeight },
+          ].map(({ label, value, set }, idx) => (
+            <div className="flex flex-col gap-1" key={idx}>
+              <InputField
+                type="number"
+                placeholder={label}
+                value={value}
+                step="0.01"
+                onChange={(e) => set(e.target.value)}
+              />
+              {errors[label.toLowerCase().split(" ")[0]] && (
+                <span className="text-xs text-red-500">
+                  {errors[label.toLowerCase().split(" ")[0]]}
+                </span>
+              )}
+            </div>
+          ))}
         </div>
+
+        {/* ================= RIGHT SIDE ================= */}
         <div className="flex w-full flex-col gap-5">
+          {/* Product condition */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-3">
               {productConditionsList.map((condition, index) => (
@@ -208,7 +166,7 @@ const UnitsAndDimensionsForm = () => {
                   key={index}
                   className={cn(
                     "rounded-lg border px-8 py-2",
-                    productCondition == condition
+                    productCondition === condition
                       ? "border-moonstone bg-moonstone text-white"
                       : "border-battleShipGray",
                   )}
@@ -224,6 +182,8 @@ const UnitsAndDimensionsForm = () => {
               </span>
             )}
           </div>
+
+          {/* Condition rating */}
           <div className="flex flex-col gap-1">
             <InputField
               type="number"
@@ -248,6 +208,8 @@ const UnitsAndDimensionsForm = () => {
               </span>
             )}
           </div>
+
+          {/* ✅ Fixed category input */}
           <div className="flex flex-col gap-1">
             <InputField
               type="text"
@@ -261,7 +223,7 @@ const UnitsAndDimensionsForm = () => {
                     .map((c) => c.trim().toLowerCase())
                     .filter(Boolean);
                   const merged = Array.from(
-                    new Set([...productCategories, ...parts]),
+                    new Set([...(productCategories || []), ...parts]),
                   );
                   setProductCategories(merged);
                   setCategoryInput("");
@@ -276,7 +238,7 @@ const UnitsAndDimensionsForm = () => {
                     .map((c) => c.trim())
                     .filter(Boolean);
                   const merged = Array.from(
-                    new Set([...productCategories, ...parts]),
+                    new Set([...(productCategories || []), ...parts]),
                   );
                   setProductCategories(merged);
                   setCategoryInput("");
@@ -284,6 +246,8 @@ const UnitsAndDimensionsForm = () => {
                 }
               }}
             />
+
+            {/* Category tags */}
             {productCategories && productCategories.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-1">
                 {productCategories.map((cat, idx) => (
@@ -296,8 +260,9 @@ const UnitsAndDimensionsForm = () => {
                       type="button"
                       className="ml-1 focus:outline-none"
                       onClick={() => {
-                        const newCategories = [...productCategories];
-                        newCategories.splice(idx, 1);
+                        const newCategories = productCategories.filter(
+                          (_, i) => i !== idx,
+                        );
                         setProductCategories(newCategories);
                       }}
                       aria-label={`Remove ${cat}`}
@@ -316,11 +281,13 @@ const UnitsAndDimensionsForm = () => {
           </div>
         </div>
       </div>
+
       {errors.submit && (
         <span className="text-center text-xs text-red-500">
           {errors.submit}
         </span>
       )}
+
       <div className="flex items-center justify-center pb-20 pt-8">
         <RoundedButton
           onClick={handleNext}

@@ -13,6 +13,11 @@ const nextConfig = {
         port: "5000",
         pathname: "/api/static/**",
       },
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+        pathname: "/**",
+      },
     ],
   },
   webpack(config, { dev, isServer }) {

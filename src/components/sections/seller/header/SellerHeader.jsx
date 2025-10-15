@@ -1,12 +1,20 @@
-import { bellIcon, cartIcon } from "@/assets/icons/header-icons";
+"use client";
+
+import { bellIcon } from "@/assets/icons/header-icons";
+import { UserIcon } from "lucide-react";
 import Image from "next/image";
 import NavLinks from "./SellerNavLinks";
 import Link from "next/link";
 import { searchIconSmall } from "@/assets/icons/common-icons";
 import SellerMobileSheet from "./SellerMobileSheet";
 import HeaderDropdown from "./HeaderDropdown";
+import { useProfileStore } from "@/providers/profile-store-provider";
 
 const SellerHeader = () => {
+  const profile = useProfileStore((state) => state.profile);
+
+  const hasProfileImage = profile?.image && profile.image.trim() !== "";
+
   return (
     <header className="flex w-full flex-col items-center justify-center">
       <div className="flex w-full max-w-7xl items-center justify-between px-4 py-4 md:px-5">
@@ -21,7 +29,10 @@ const SellerHeader = () => {
             priority
           />
         </Link>
+
         <NavLinks />
+
+        {/* Desktop View */}
         <div className="hidden items-center gap-2 md:flex md:gap-4">
           <Link
             href="/search"
@@ -29,39 +40,55 @@ const SellerHeader = () => {
           >
             {searchIconSmall}
           </Link>
-          <div className="h-[44px] w-[1px] bg-[#3F175F1A]"></div>
+          <div className="h-[44px] w-[1px] bg-[#3F175F1A]" />
+
           <Link
             href="/seller/notifications/all"
             className="grid size-12 place-items-center rounded-full border border-[#3F175F1A]"
           >
             {bellIcon}
           </Link>
+
+          {/* Profile Image or Icon */}
           <Link
             href="/seller/profile"
-            className="size-12 overflow-hidden rounded-full"
+            className="flex size-12 items-center justify-center overflow-hidden rounded-full bg-gray-200"
           >
-            <Image
-              src="/static/dummy-user/1.jpeg"
-              width={250}
-              height={250}
-              loading="lazy"
-              alt="user image"
-            />
+            {hasProfileImage ? (
+              <Image
+                src={profile.image}
+                width={250}
+                height={250}
+                alt="user image"
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <UserIcon className="size-6 text-gray-400" />
+            )}
           </Link>
+
           <HeaderDropdown />
         </div>
+
+        {/* Mobile View */}
         <div className="flex items-center gap-3 md:hidden">
           <Link
             href="/seller/profile"
-            className="size-10 overflow-hidden rounded-full"
+            className="flex size-10 items-center justify-center overflow-hidden rounded-full bg-gray-200"
           >
-            <Image
-              src="/static/dummy-user/1.jpeg"
-              width={250}
-              height={250}
-              loading="lazy"
-              alt="user image"
-            />
+            {hasProfileImage ? (
+              <Image
+                src={profile.image}
+                width={250}
+                height={250}
+                alt="user image"
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <UserIcon className="size-5 text-gray-400" />
+            )}
           </Link>
           <SellerMobileSheet />
         </div>

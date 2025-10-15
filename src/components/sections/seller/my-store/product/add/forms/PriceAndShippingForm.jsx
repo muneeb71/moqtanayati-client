@@ -191,7 +191,7 @@ const PriceAndShippingForm = () => {
           shippingMethod: shippingMethod,
           country: selectedCountry,
           city: selectedCity,
-          handlingTime: handlingTime,
+          handlingTime: handlingTime || "",
           domesticReturns: domesticReturns,
           internationalReturns: internationalReturns,
           domesticShippingType: domesticShippingType,
@@ -204,7 +204,7 @@ const PriceAndShippingForm = () => {
           minimumOffer: minimumOffer ? parseFloat(minimumOffer) : 0,
           autoAccept: autoAccept ? parseFloat(autoAccept) : 0,
           storeId: store.id,
-          status: "ACTIVE"
+          status: "ACTIVE",
         };
 
         const response = await updateProductPriceAndShipping(id, productData);
@@ -523,6 +523,7 @@ const PriceAndShippingForm = () => {
                   setSelectedOption={setHandlingTime}
                   placeholder="Select handling time"
                 />
+
                 {errors.handlingTime && (
                   <span className="text-sm text-red-500">
                     {errors.handlingTime}

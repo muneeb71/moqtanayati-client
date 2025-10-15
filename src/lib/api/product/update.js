@@ -74,6 +74,8 @@ export async function updateProductPriceAndShipping(id, data) {
       formData.append("autoAccept", data.autoAccept);
     }
 
+    console.log("product adding : ", formData);
+
     const response = await api.patch(`products/${id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",

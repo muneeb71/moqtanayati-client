@@ -28,7 +28,7 @@ const SignUpForm3 = ({ role }) => {
       return;
     }
 
-    router.push("/auth/" + role + "/location-selection");
+    router.push(`/${role}/location-selection`);
   };
   return (
     <>

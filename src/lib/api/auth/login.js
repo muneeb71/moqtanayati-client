@@ -35,6 +35,12 @@ export async function loginUser(email, password, role) {
     await cookieStore.set("survey", JSON.stringify(user.sellerSurvey), {
       expires,
     });
+    await cookieStore.set("survey", JSON.stringify(user.sellerSurvey), {
+      expires,
+    });
+    await cookieStore.set("survey", JSON.stringify(user.sellerSurvey), {
+      expires,
+    });
 
     // Fetch profile with token in Authorization header
     let profileResponse;

@@ -7,10 +7,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { logoutUser } from "@/lib/api/auth/logout";
 import { sellerDropdownList } from "@/lib/links";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import LogoutUserButton from "@/components/buttons/LogoutUserButton"; // ✅ correct
 
 const HeaderDropdown = () => {
   const router = useRouter();
@@ -51,13 +51,14 @@ const HeaderDropdown = () => {
             </DropdownMenuItem>
           ))}
         </div>
-        <DropdownMenuItem
+        {/* <DropdownMenuItem
           className="flex cursor-pointer items-center justify-end gap-1 px-3 text-[13px]"
           onClick={() => handleLogout()}
         >
           {logoutIcon}
           Logout
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
+        <LogoutUserButton logoutIcon={logoutIcon} />
       </DropdownMenuContent>
     </DropdownMenu>
   );
