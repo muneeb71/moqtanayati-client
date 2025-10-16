@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { logoutUser } from "@/lib/api/auth/logout";
+import LogoutUserButton from "@/components/buttons/LogoutUserButton";
 import { headerDropdownLinks } from "@/lib/links";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,15 +16,7 @@ import toast from "react-hot-toast";
 const HeaderDropdown = () => {
   const router = useRouter();
 
-  const handleLogout = async () => {
-    const response = await logoutUser();
-    if (response.success) {
-      router.push("/");
-      toast.success("Logged out successfully.");
-    } else {
-      toast.error(response.message || "Logout failed");
-    }
-  };
+  // Logout is handled inside LogoutUserButton
 
   return (
     <DropdownMenu>
@@ -49,13 +41,7 @@ const HeaderDropdown = () => {
             </DropdownMenuItem>
           ))}
         </div>
-        <DropdownMenuItem
-          className="flex cursor-pointer items-center justify-end gap-1 px-3 text-[13px]"
-          onClick={() => handleLogout()}
-        >
-          {logoutIcon}
-          Logout
-        </DropdownMenuItem>
+        <LogoutUserButton logoutIcon={logoutIcon} />
       </DropdownMenuContent>
     </DropdownMenu>
   );

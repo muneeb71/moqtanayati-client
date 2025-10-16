@@ -9,6 +9,7 @@ import { useState } from "react";
 const RoleSelectionLoginPage = () => {
   const roles = ["buyer", "seller"];
   const [selectedRole, setSelectedRole] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   return (
     <div className="flex w-full flex-col justify-center gap-10 pb-10 pt-28 md:gap-[66px]">
@@ -59,11 +60,20 @@ const RoleSelectionLoginPage = () => {
         ))}
       </div>
       <RoundedButton
-        title={selectedRole === "" ? "Continue" : "Continue as " + selectedRole}
-        className="min-w-[294px] self-center"
-        showIcon
-        disabled={selectedRole === ""}
-        onClick={() => router.push(selectedRole + "/login")}
+        title={
+          isLoading
+            ? "Loading..."
+            : selectedRole === ""
+              ? "Continue"
+              : "Continue as " + selectedRole
+        }
+        className={`min-w-[294px] self-center ${isLoading ? "opacity-60" : ""}`}
+        showIcon={!isLoading}
+        disabled={selectedRole === "" || isLoading}
+        onClick={() => {
+          setIsLoading(true);
+          router.push(selectedRole + "/login");
+        }}
       />
     </div>
   );

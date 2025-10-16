@@ -4,6 +4,7 @@ import OrderCard from "@/components/cards/OrderCard";
 import { unslugify } from "@/utils/slugify";
 import { getSellerOrders } from "@/lib/api/orders/getSellerOrder";
 import { useEffect, useState, use, useRef } from "react";
+import { useProfileStore } from "@/providers/profile-store-provider";
 import toast from "react-hot-toast";
 
 const statusMap = {
@@ -16,11 +17,26 @@ export default function OrdersPage({ params }) {
   const { category } = use(params);
   const [orders, setOrders] = useState([]);
   const hasFetched = useRef(false);
+  const storeOrders = (() => {
+    try {
+      // prefer sellerOrders, fallback to orders
+      const sellerOrders = useProfileStore((s) => s.sellerOrders) || [];
+      const ordersArr = useProfileStore((s) => s.orders) || [];
+      return sellerOrders.length ? sellerOrders : ordersArr;
+    } catch (_) {
+      return [];
+    }
+  })();
 
   useEffect(() => {
+    // If store already hydrated on login, use it
+    if (storeOrders && storeOrders.length) {
+      setOrders(storeOrders);
+      return;
+    }
+    // Otherwise, fetch once as a fallback
     if (hasFetched.current) return;
     hasFetched.current = true;
-
     (async () => {
       try {
         const res = await getSellerOrders();
@@ -38,7 +54,7 @@ export default function OrdersPage({ params }) {
         );
       }
     })();
-  }, []);
+  }, [storeOrders?.length]);
 
   const filteredOrders = orders.filter((order) =>
     statusMap[category]?.includes(order.status),

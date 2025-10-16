@@ -5,8 +5,8 @@ import InputField from "@/components/form-fields/InputField";
 import { cn } from "@/lib/utils";
 import { useProductStore } from "@/providers/product-store-provider";
 import { XIcon } from "lucide-react/dist/cjs/lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useRef, useState, useEffect } from "react";
 import { updateProductUnitAndDimensions } from "@/lib/api/product/update";
 import { useProfileStore } from "@/providers/profile-store-provider";
 
@@ -32,6 +32,7 @@ const UnitsAndDimensionsForm = () => {
 
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const id = searchParams.get("id");
 
   if (!id || id === "") {
@@ -48,19 +49,33 @@ const UnitsAndDimensionsForm = () => {
 
   const productConditionsList = ["New", "Old"];
 
+  // Clear loading when next step route is active
+  useEffect(() => {
+    if (
+      isLoading &&
+      pathname?.startsWith("/seller/my-store/product/add/") &&
+      pathname.includes("price-and-shipping")
+    ) {
+      setIsLoading(false);
+    }
+  }, [pathname, isLoading]);
+
   // ✅ Validation function
   const validate = () => {
     const newErrors = {};
-    if (!stock || isNaN(parseFloat(stock)))
-      newErrors.stock = "Units available is required.";
-    if (!length || isNaN(parseFloat(length)))
-      newErrors.length = "Length is required.";
-    if (!width || isNaN(parseFloat(width)))
-      newErrors.width = "Width is required.";
-    if (!height || isNaN(parseFloat(height)))
-      newErrors.height = "Height is required.";
-    if (!weight || isNaN(parseFloat(weight)))
-      newErrors.weight = "Weight is required.";
+    const integerRegex = /^\d+$/; // e.g., 2, 879
+    const decimalRegex = /^\d+(\.\d+)?$/; // e.g., 2, 9.8, 879
+
+    if (!stock || !integerRegex.test(String(stock)))
+      newErrors.stock = "Enter valid units (e.g., 2, 879).";
+    if (!length || !decimalRegex.test(String(length)))
+      newErrors.length = "Enter a valid length (e.g., 2, 9.8, 879).";
+    if (!width || !decimalRegex.test(String(width)))
+      newErrors.width = "Enter a valid width (e.g., 2, 9.8, 879).";
+    if (!height || !decimalRegex.test(String(height)))
+      newErrors.height = "Enter a valid height (e.g., 2, 9.8, 879).";
+    if (!weight || !decimalRegex.test(String(weight)))
+      newErrors.weight = "Enter a valid weight (e.g., 2, 9.8, 879).";
     if (!conditionRating || isNaN(parseFloat(conditionRating)))
       newErrors.conditionRating = "Condition rating is required.";
     if (!productCategories || productCategories.length === 0)
@@ -104,17 +119,18 @@ const UnitsAndDimensionsForm = () => {
           router.push(
             `/seller/my-store/product/add/price-and-shipping?id=${response.data.id}`,
           );
+          // Do not clear loading here; it will clear when pathname updates
         } else {
           setErrors({
             submit:
               response.message || "Failed to save product. Please try again.",
           });
+          setIsLoading(false);
         }
       } catch (error) {
         setErrors({
           submit: "An unexpected error occurred. Please try again. " + error,
         });
-      } finally {
         setIsLoading(false);
       }
     }

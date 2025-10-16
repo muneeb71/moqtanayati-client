@@ -3,13 +3,16 @@
 import RoundedButton from "@/components/buttons/RoundedButton";
 import { Plus } from "lucide-react";
 import StoreProductCard from "./StoreProductCard";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useProfileStore } from "@/providers/profile-store-provider";
-import { useEffect } from "react";
 import { useInventoryStore } from "@/providers/inventory-store-provider";
 
 const StoreProductsSection = () => {
   const router = useRouter();
+  const pathname = usePathname();
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [isNavigatingProduct, setIsNavigatingProduct] = useState(false);
   const { store } = useProfileStore((state) => state);
   const { products, isLoadingProducts, productsError, fetchProducts } =
     useInventoryStore();
@@ -33,16 +36,40 @@ const StoreProductsSection = () => {
     loadData();
   }, [store?.id]);
 
+  // Clear navigating states when route changes (navigation completed)
+  useEffect(() => {
+    if (isNavigating) setIsNavigating(false);
+    if (isNavigatingProduct) setIsNavigatingProduct(false);
+  }, [pathname]);
+
   return (
-    <div className="flex w-full flex-col gap-5">
+    <div className="relative flex w-full flex-col gap-5">
+      {/* Product navigation overlay */}
+      {isNavigatingProduct && (
+        <div className="absolute inset-0 z-10 grid place-items-center rounded-2xl bg-black/5">
+          <span className="rounded-md bg-moonstone px-4 py-2 text-sm text-white">
+            Going to view product detail
+          </span>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-medium">Products</h1>
         <RoundedButton
-          title="Add Product"
-          className="max-h-[50px] flex-row-reverse gap-2 py-3 text-sm"
-          showIcon
+          title={isNavigating ? "Opening..." : "Add Product"}
+          className={`max-h-[50px] flex-row-reverse gap-2 py-3 text-sm ${
+            isNavigating ? "opacity-60" : ""
+          }`}
+          showIcon={!isNavigating}
           icon={<Plus className="size-4" />}
-          onClick={() => router.push("/seller/my-store/product/add")}
+          onClick={
+            isNavigating
+              ? undefined
+              : () => {
+                  setIsNavigating(true);
+                  router.push("/seller/my-store/product/add");
+                }
+          }
         />
       </div>
 
@@ -57,7 +84,11 @@ const StoreProductsSection = () => {
       ) : products?.length > 0 ? (
         <div className="grid w-full gap-x-20 gap-y-8 md:grid-cols-2">
           {products.map((item) => (
-            <StoreProductCard item={item} key={item.id || item._id} />
+            <StoreProductCard
+              item={item}
+              key={item.id || item._id}
+              onNavigateStart={() => setIsNavigatingProduct(true)}
+            />
           ))}
         </div>
       ) : (

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { updateProductStock } from "@/lib/api/product/updateStock";
 
-const StoreProductCard = ({ item }) => {
+const StoreProductCard = ({ item, onNavigateStart }) => {
   const [stock, setStock] = useState(item?.stock || 0);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -66,6 +66,7 @@ const StoreProductCard = ({ item }) => {
       <Link
         href={url}
         className="flex h-full w-full items-center gap-3 text-start"
+        onClick={() => onNavigateStart && onNavigateStart()}
       >
         <div className="size-36 min-w-36 overflow-hidden rounded-2xl border border-black/10">
           <Image

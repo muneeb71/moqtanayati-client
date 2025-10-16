@@ -12,8 +12,7 @@ const getCookie = (name) => {
 };
 
 const api = axios.create({
-  baseURL:
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://192.168.18.82:3000/api",
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api",
   // "https://api.muqtanaiaty.com/api"
   headers: {
     "Content-Type": "application/json",

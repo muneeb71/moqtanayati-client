@@ -8,6 +8,8 @@ import { getOrderByIdClient } from "@/lib/api/orders/getOrderByIdClient";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import OrderDetailsSkeleton from "@/components/loaders/OrderDetailsSkeleton";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 const OrderDetailsPage = () => {
   const searchParams = useSearchParams();
@@ -38,7 +40,20 @@ const OrderDetailsPage = () => {
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-10 px-3 pb-28">
-      <PageHeading>Order Details</PageHeading>
+      <PageHeading>
+        <div>
+          <div className="flex w-full max-w-4xl items-center justify-start">
+            <Link
+              href="/seller/orders/active-orders"
+              className="flex items-center gap-2 text-sm text-darkBlue hover:underline"
+            >
+              <ArrowLeft className="size-4" />
+              <span>Back</span>
+            </Link>
+          </div>
+          Order Details
+        </div>
+      </PageHeading>
       <div className="flex w-full max-w-4xl flex-col items-center justify-center gap-20">
         <div className="grid w-full gap-10 md:grid-cols-[6fr_4fr]">
           <div className="flex w-full flex-col justify-center gap-8">

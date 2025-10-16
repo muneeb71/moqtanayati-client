@@ -8,14 +8,14 @@ import toast from "react-hot-toast";
 import { getWatchlistById } from "@/lib/api/watchlist/getWatchlistById";
 import { removeFromWatchlist } from "@/lib/api/watchlist/removeWatchlist";
 
-const ProductDetailsSlider = ({ auctionDetail }) => {
-  const imagesList = [
-    "/static/user.jpeg",
-    "/static/user.jpeg",
-    "/static/user.jpeg",
-    "/static/user.jpeg",
-  ];
-  const [selectedItemIndex, setSelectedIndex] = useState(3);
+const ProductDetailsSlider = ({ images = [], auctionDetail }) => {
+  const imagesList = Array.isArray(images) ? images.filter(Boolean) : [];
+
+  // If there are no images, don't render the slider section
+  if (imagesList.length === 0) {
+    return null;
+  }
+  const [selectedItemIndex, setSelectedIndex] = useState(0);
   const sliderRef = useRef(null);
   const autoSlideRef = useRef(null);
   const [favourite, setFavourite] = useState(false);
@@ -116,7 +116,7 @@ const ProductDetailsSlider = ({ auctionDetail }) => {
           toast.success("Removed from Watchlist");
         }
       } else {
-        const res = await addWatchlist(id);
+        const res = await addWatchlist(auctionDetail?.id);
         if (res?.data?.success) {
           setFavourite(true);
           setAuctionId(res?.data?.data?.auctionId);
@@ -144,7 +144,7 @@ const ProductDetailsSlider = ({ auctionDetail }) => {
             key={index}
           >
             <Image
-              src={image} // process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
+              src={image}
               width={500}
               height={500}
               alt="item"
@@ -157,7 +157,7 @@ const ProductDetailsSlider = ({ auctionDetail }) => {
       <div className="flex w-full flex-col items-start gap-2">
         <div className="relative grid aspect-square w-full max-w-[470px] place-items-center overflow-hidden rounded-[20px] border border-gray-200/5 bg-black/10">
           <Image
-            src="/static/user.jpeg"
+            src={imagesList[selectedItemIndex]}
             width={500}
             height={500}
             alt="item"

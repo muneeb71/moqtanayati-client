@@ -8,11 +8,13 @@ export async function getSellerOrders() {
     const cookiesStore = await cookies();
     const token = cookiesStore.get("token")?.value;
 
-    const response = await api.get(`/orders`, {
+    console.log("token in orders : ", token);
+
+    const response = await api.get(`/orders/my-orders/detail`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
 
-    console.log("res in orders : ", response.data);
+    // console.log("res in orders : ", response.data);
     return {
       success: response.data.success,
       data: response.data.data,

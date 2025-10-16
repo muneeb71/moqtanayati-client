@@ -8,7 +8,7 @@ import { addProduct } from "@/lib/api/product/add";
 import { cn } from "@/lib/utils";
 import { useProductStore } from "@/providers/product-store-provider";
 import { useProfileStore } from "@/providers/profile-store-provider";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
 const PictureAndVideosForm = () => {
@@ -27,6 +27,7 @@ const PictureAndVideosForm = () => {
   } = useProductStore();
 
   const { store } = useProfileStore((state) => state);
+  const setStore = useProfileStore((state) => state.setStore);
 
   const imageInputRef = useRef(null);
   const videoInputRef = useRef(null);
@@ -36,14 +37,25 @@ const PictureAndVideosForm = () => {
   const [videoPreview, setVideoPreview] = useState(null);
   const errorTimeoutRef = useRef();
   const router = useRouter();
+  const pathname = usePathname();
 
-  // Cleanup preview URLs when component unmounts
+  // Avoid revoking preview URLs on list changes to prevent breaking remaining images
+  // We already revoke URLs when removing a specific image/video
+  // Optional: add an unmount cleanup if needed
   useEffect(() => {
-    return () => {
-      previewUrls.forEach((url) => URL.revokeObjectURL(url));
-      if (videoPreview) URL.revokeObjectURL(videoPreview);
-    };
+    return () => {};
   }, [previewUrls, videoPreview]);
+
+  // When navigation completes (pathname changes to next step), stop loading
+  useEffect(() => {
+    if (
+      isLoading &&
+      pathname?.startsWith("/seller/my-store/product/add/") &&
+      pathname.includes("units-and-dimensions")
+    ) {
+      setIsLoading(false);
+    }
+  }, [pathname, isLoading, setIsLoading]);
 
   // Handle form submission on Enter key
   const handleKeyPress = (e) => {
@@ -84,41 +96,118 @@ const PictureAndVideosForm = () => {
         });
         setId(response.data.id);
         if (response.success) {
-          router.push(`/seller/my-store/product/add/units-and-dimensions?id=${response.data.id}`);
+          // Optimistically update store products count
+          try {
+            const currentProducts = Array.isArray(store?.products)
+              ? store.products
+              : [];
+            const newProduct = {
+              id: response.data.id,
+              name: productTitle,
+              images,
+              address: store?.address || "",
+              createdAt: new Date().toISOString(),
+              status: "DRAFT",
+            };
+            setStore({
+              ...store,
+              products: [...currentProducts, newProduct],
+            });
+          } catch (_) {}
+          router.push(
+            `/seller/my-store/product/add/units-and-dimensions?id=${response.data.id}`,
+          );
+          // Do NOT clear loading here; it will clear when pathname changes
         } else {
           setErrors({
             submit:
               response.message || "Failed to add product. Please try again.",
           });
+          setIsLoading(false);
         }
       } catch (error) {
         setErrors({
-          submit: "An unexpected error occurred. Please try again."+ error,
+          submit: "An unexpected error occurred. Please try again." + error,
         });
-      } finally {
         setIsLoading(false);
       }
     }
   };
 
   const handleImageUpload = (event) => {
-    const files = Array.from(event.target.files);
-    if (files.length > 0) {
-      // Create preview URLs for new images
-      const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
-      setPreviewUrls((prev) => [...prev, ...newPreviewUrls]);
-      setImages([...images, ...files].slice(0, 5));
+    const files = Array.from(event.target.files || []);
+    const MAX_IMAGES = 5;
+
+    if (files.length === 0) return;
+
+    const remainingSlots = Math.max(0, MAX_IMAGES - (images?.length || 0));
+    if (remainingSlots === 0) {
+      setErrors({ images: `You can upload up to ${MAX_IMAGES} images.` });
+      // reset input so the same file selection can trigger again later
+      event.target.value = "";
+      return;
     }
+
+    const filesToAdd = files.slice(0, remainingSlots);
+    if (files.length > remainingSlots) {
+      setErrors({
+        images: `Only ${remainingSlots} more image${remainingSlots > 1 ? "s" : ""} allowed.`,
+      });
+    }
+
+    // Create preview URLs for new images
+    const newPreviewUrls = filesToAdd.map((file) => URL.createObjectURL(file));
+    setPreviewUrls((prev) => [...prev, ...newPreviewUrls]);
+    setImages([...(images || []), ...filesToAdd].slice(0, MAX_IMAGES));
+
+    // reset input selection
+    event.target.value = "";
   };
 
   const handleVideoUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      // Create preview URL for video
-      const videoUrl = URL.createObjectURL(file);
-      setVideoPreview(videoUrl);
-      setVideo(file);
+    const file = (event.target.files || [])[0];
+    if (!file) return;
+
+    if (video) {
+      setErrors({ submit: "Only 1 video is allowed." });
+      event.target.value = "";
+      return;
     }
+
+    // Create preview URL for video
+    const videoUrl = URL.createObjectURL(file);
+    setVideoPreview(videoUrl);
+    setVideo(file);
+
+    // reset input selection
+    event.target.value = "";
+  };
+
+  const handleRemoveImage = (index) => {
+    // Remove only the selected image
+    const nextImages = (images || []).filter((_, i) => i !== index);
+    setImages(nextImages);
+
+    // Revoke and remove only the matching preview URL
+    setPreviewUrls((prev) => {
+      const url = prev[index];
+      if (url) {
+        try {
+          URL.revokeObjectURL(url);
+        } catch (_) {}
+      }
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const handleRemoveVideo = () => {
+    if (videoPreview) {
+      try {
+        URL.revokeObjectURL(videoPreview);
+      } catch (_) {}
+    }
+    setVideoPreview(null);
+    setVideo(null);
   };
 
   return (
@@ -134,22 +223,39 @@ const PictureAndVideosForm = () => {
         {previewUrls.length > 0 && (
           <div className="mb-2 flex flex-wrap gap-2">
             {previewUrls.map((url, idx) => (
-              <img
-                key={idx}
-                src={url}
-                alt={`uploaded-img-${idx}`}
-                className="h-20 w-20 rounded border object-cover"
-              />
+              <div key={idx} className="relative">
+                <img
+                  src={url}
+                  alt={`uploaded-img-${idx}`}
+                  className="h-20 w-20 rounded border object-cover"
+                />
+                <button
+                  type="button"
+                  className="absolute -right-2 -top-2 grid size-6 place-items-center rounded-full bg-red-600 text-white shadow"
+                  onClick={() => handleRemoveImage(idx)}
+                  aria-label={`Remove image ${idx + 1}`}
+                >
+                  ×
+                </button>
+              </div>
             ))}
           </div>
         )}
         {videoPreview && (
-          <div className="mb-2">
+          <div className="relative mb-2">
             <video
               src={videoPreview}
               controls
               className="w-full rounded border object-cover"
             />
+            <button
+              type="button"
+              className="absolute right-2 top-2 rounded-full bg-red-600 px-2 py-1 text-xs text-white shadow"
+              onClick={handleRemoveVideo}
+              aria-label="Remove video"
+            >
+              Remove
+            </button>
           </div>
         )}
         <div className="grid grid-cols-[2fr_1fr] gap-4">

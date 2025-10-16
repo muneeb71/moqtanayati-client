@@ -198,7 +198,9 @@ const PriceAndShippingForm = () => {
           localPickup: localPickup,
           isAuction: pricingFormat === "Auctions",
           auctionDuration: auctionDuration,
-          auctionLaunchDate: auctionLaunchDate,
+          auctionLaunchDate: auctionLaunchDate
+            ? new Date(auctionLaunchDate).toISOString()
+            : null,
           startingBid: startingBid ? parseFloat(startingBid) : 0,
           buyItNow: buyItNow ? parseFloat(buyItNow) : 0,
           minimumOffer: minimumOffer ? parseFloat(minimumOffer) : 0,

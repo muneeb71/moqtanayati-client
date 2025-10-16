@@ -11,9 +11,10 @@ import HeaderDropdown from "./HeaderDropdown";
 import { useProfileStore } from "@/providers/profile-store-provider";
 
 const SellerHeader = () => {
-  const profile = useProfileStore((state) => state.profile);
+  const { avatar } = useProfileStore((state) => state);
 
-  const hasProfileImage = profile?.image && profile.image.trim() !== "";
+  const hasProfileImage =
+    avatar && typeof avatar === "string" && avatar.trim() !== "";
 
   return (
     <header className="flex w-full flex-col items-center justify-center">
@@ -56,7 +57,7 @@ const SellerHeader = () => {
           >
             {hasProfileImage ? (
               <Image
-                src={profile.image}
+                src={avatar}
                 width={250}
                 height={250}
                 alt="user image"
@@ -79,7 +80,7 @@ const SellerHeader = () => {
           >
             {hasProfileImage ? (
               <Image
-                src={profile.image}
+                src={avatar}
                 width={250}
                 height={250}
                 alt="user image"

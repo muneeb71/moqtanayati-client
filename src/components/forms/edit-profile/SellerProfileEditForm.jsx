@@ -119,7 +119,9 @@ const SellerProfileEditForm = () => {
       }
 
       setSaving(true);
+      console.log("formData : ", formData);
       const response = await updateUserProfile({ userId: id, data: formData });
+      console.log("formData response : ", response);
       if (response.success) {
         const {
           name: newName,

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import NotificationCard from "@/components/cards/NotificationCard";
 import NotificationCardSkeleton from "@/components/loaders/NotificationCardSkeleton";
 import { useEffect, useState } from "react";
@@ -15,7 +15,7 @@ const NotificationSection = ({ category = "" }) => {
     setError("");
     getUserNotifications().then(({ success, data, message }) => {
       console.log(success, data);
-      
+
       if (!mounted) return;
       if (success) {
         setNotifications(data?.data);
@@ -31,7 +31,7 @@ const NotificationSection = ({ category = "" }) => {
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-5 py-10 px-5">
+      <div className="flex flex-col gap-5 px-5 py-10">
         <NotificationCardSkeleton />
         <NotificationCardSkeleton />
         <NotificationCardSkeleton />
@@ -43,17 +43,19 @@ const NotificationSection = ({ category = "" }) => {
   }
 
   // Filter notifications by title if category is not 'all' and not empty
-  let filteredNotifications = notifications;
+  let filteredNotifications = notifications || [];
   if (category && category !== "all") {
-    filteredNotifications = notifications.filter(n =>
-      n.title?.toLowerCase().includes(category.toLowerCase())
+    filteredNotifications = (notifications || []).filter((n) =>
+      n.title?.toLowerCase().includes(category.toLowerCase()),
     );
   }
 
   return (
     <div className="no-scrollbar flex w-full flex-col gap-5 overflow-auto px-5 py-7 md:h-[800px]">
       {filteredNotifications.length === 0 ? (
-        <div className="py-10 text-center text-gray-500">No notifications available.</div>
+        <div className="py-10 text-center text-gray-500">
+          No notifications available.
+        </div>
       ) : (
         filteredNotifications.map((notification, index) => (
           <NotificationCard

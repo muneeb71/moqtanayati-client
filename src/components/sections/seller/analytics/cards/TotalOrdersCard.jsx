@@ -16,7 +16,6 @@ const TotalOrdersCard = ({ salesByMonth = [] }) => {
     <div className="flex h-[500px] flex-col gap-8 rounded-[30px] bg-[#F9F9FA] p-5 md:p-8">
       <h1 className="flex flex-col gap-4 text-2xl font-semibold md:flex-row md:items-center">
         Total Orders
-        <span className="font-normal text-black/40">Total Projects</span>
       </h1>
       <div className="flex flex-col gap-5 md:flex-row md:items-center">
         <span className="text-black/40">Operating Status</span>
