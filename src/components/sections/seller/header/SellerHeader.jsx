@@ -9,6 +9,7 @@ import { searchIconSmall } from "@/assets/icons/common-icons";
 import SellerMobileSheet from "./SellerMobileSheet";
 import HeaderDropdown from "./HeaderDropdown";
 import { useProfileStore } from "@/providers/profile-store-provider";
+import NotificationBadge from "@/components/NotificationBadge";
 
 const SellerHeader = () => {
   const { avatar } = useProfileStore((state) => state);
@@ -28,6 +29,7 @@ const SellerHeader = () => {
             loading="eager"
             quality={100}
             priority
+            style={{ width: "auto", height: "auto" }}
           />
         </Link>
 
@@ -47,7 +49,7 @@ const SellerHeader = () => {
             href="/seller/notifications/all"
             className="grid size-12 place-items-center rounded-full border border-[#3F175F1A]"
           >
-            {bellIcon}
+            <NotificationBadge />
           </Link>
 
           {/* Profile Image or Icon */}

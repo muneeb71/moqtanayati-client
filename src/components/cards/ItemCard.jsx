@@ -32,14 +32,50 @@ const ItemCard = ({
       }}
     >
       <div className="rounded-top relative h-[250px] cursor-pointer overflow-hidden sm:h-[188px]">
-        <Image
-          src={image || ""}
-          width={800}
-          height={200}
-          alt={title}
-          loading="lazy"
-          onClick={() => router.push("/buyer/product-details/" + id)}
-        />
+        {image && image.trim() !== "" ? (
+          <Image
+            src={image}
+            width={800}
+            height={200}
+            alt={title}
+            loading="lazy"
+            onClick={() => router.push("/buyer/product-details/" + id)}
+          />
+        ) : (
+          <div
+            className="flex h-full w-full items-center justify-center bg-gray-100"
+            onClick={() => router.push("/buyer/product-details/" + id)}
+          >
+            <div className="flex flex-col items-center justify-center text-gray-400">
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="mb-2"
+              >
+                <path
+                  d="M4 16L8.5 10.5L13 14L16.5 9.5L20 13V4H4V16Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <rect
+                  x="2"
+                  y="2"
+                  width="20"
+                  height="20"
+                  rx="2"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+              </svg>
+              <span className="text-sm">No Image</span>
+            </div>
+          </div>
+        )}
         {pricingFormat == "Auctions" && (
           <button
             className={cn(

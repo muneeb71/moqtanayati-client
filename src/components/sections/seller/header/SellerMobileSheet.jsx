@@ -14,8 +14,21 @@ import { sellerHeaderLinks } from "@/lib/links";
 import Link from "next/link";
 import { searchIconSmall } from "@/assets/icons/common-icons";
 import LogoutUserButton from "@/components/buttons/LogoutUserButton";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const SellerMobileSheet = () => {
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (isLoggingOut) {
+      // if route changes after logout, remove loader
+      setIsLoggingOut(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
   return (
     <Sheet>
       <SheetTrigger>{barsIcon}</SheetTrigger>
@@ -30,6 +43,7 @@ const SellerMobileSheet = () => {
               loading="eager"
               quality={100}
               priority
+              style={{ width: "auto", height: "auto" }}
             />
           </SheetTitle>
         </SheetHeader>
@@ -68,9 +82,16 @@ const SellerMobileSheet = () => {
             ))}
           </div>
 
-          {/* ✅ Logout button */}
-          <LogoutUserButton logoutIcon={logoutIcon} />
+          {/* ✅ Logout button with loader overlay while navigating */}
+          <div onClick={() => setIsLoggingOut(true)}>
+            <LogoutUserButton logoutIcon={logoutIcon} />
+          </div>
         </div>
+        {isLoggingOut && (
+          <div className="fixed inset-0 z-[9999] grid place-items-center bg-black/30">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-white border-t-transparent" />
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );

@@ -1,5 +1,8 @@
+"use client";
+
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const PlaceBidButton = ({
   className = "",
@@ -7,28 +10,71 @@ const PlaceBidButton = ({
   productId,
   ...props
 }) => {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleClick = async () => {
+    if (isLoading) return; // Prevent multiple clicks
+
+    try {
+      setIsLoading(true);
+      console.log(
+        "🔍 [PlaceBidButton] Navigating to product details:",
+        productId,
+      );
+
+      // Navigate to the product details page
+      router.push(`/buyer/product-details/${productId}`);
+
+      // The loading state will be cleared when the component unmounts
+      // or when the navigation completes
+    } catch (error) {
+      console.error("🔍 [PlaceBidButton] Navigation error:", error);
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <Link
-      href={`/buyer/product-details/${productId}`}
+    <button
+      onClick={handleClick}
+      disabled={isLoading}
       className={cn(
-        "flex h-[44px] w-full max-w-[168px] items-center justify-center gap-2.5 rounded-[7px] text-white",
+        "flex h-[44px] w-full max-w-[168px] items-center justify-center gap-2.5 rounded-[7px] text-white transition-opacity",
         type == "primary" ? "bg-russianViolet" : "bg-moonstone",
+        isLoading && "cursor-not-allowed opacity-75",
         className,
       )}
       {...props}
     >
-      {hammerIcon}
-      <span
-        className={cn(
-          type == "primary"
-            ? "text-[12px] leading-[18px]"
-            : "text-[14.4px] leading-[21.6px]",
-        )}
-      >
-        Place your Bid
-      </span>
-      {type == "primary" && chevronRightIcon}
-    </Link>
+      {isLoading ? (
+        <div className="flex items-center gap-2.5">
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          <span
+            className={cn(
+              type == "primary"
+                ? "text-[12px] leading-[18px]"
+                : "text-[14.4px] leading-[21.6px]",
+            )}
+          >
+            Loading...
+          </span>
+        </div>
+      ) : (
+        <>
+          {hammerIcon}
+          <span
+            className={cn(
+              type == "primary"
+                ? "text-[12px] leading-[18px]"
+                : "text-[14.4px] leading-[21.6px]",
+            )}
+          >
+            Place your Bid
+          </span>
+          {type == "primary" && chevronRightIcon}
+        </>
+      )}
+    </button>
   );
 };
 

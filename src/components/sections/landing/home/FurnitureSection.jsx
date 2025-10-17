@@ -1,22 +1,67 @@
+"use client";
+
 import ItemCard from "@/components/cards/ItemCard";
 import CustomLink from "@/components/link/CustomLink";
 import ItemSlider from "@/components/slider/ItemSlider";
-import { dummyItems } from "@/lib/dummy-items";
+import { getPopularProducts } from "@/lib/api/product/getPopularProducts";
+import { useState, useEffect } from "react";
 
-const FurnitureSection = () => {
+const PopularSection = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPopularProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await getPopularProducts();
+
+        console.log("response from getPopularProducts 0 : ", response);
+        console.log("response from getPopularProducts 1: ", response.data);
+
+        if (response.success) {
+          console.log("🔍 [PopularSection] Setting products:", response.data);
+          setProducts(response.data || []);
+        } else {
+          console.error("Error fetching popular products:", response.message);
+          setProducts([]);
+        }
+      } catch (error) {
+        console.error("Error fetching popular products:", error);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPopularProducts();
+  }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center w-full">
-      <div className="flex flex-col w-full max-w-7xl">
-        <div className="flex items-center justify-between w-full px-2 max-w-7xl">
+    <div className="flex w-full flex-col items-center justify-center">
+      <div className="flex w-full max-w-7xl flex-col">
+        <div className="flex w-full max-w-7xl items-center justify-between px-2">
           <h1 className="text-lg font-medium leading-[48px] text-delftBlue md:text-[32px]">
-            Furniture
+            Popular
           </h1>
           {/* <CustomLink className="md:text-[21.8px]">See All</CustomLink> */}
         </div>
       </div>
-      <ItemSlider items={dummyItems} section={"furniture"}/>
+      {loading ? (
+        <div className="flex w-full justify-center py-8">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-moonstone border-t-transparent" />
+        </div>
+      ) : (
+        <>
+          {console.log(
+            "🔍 [PopularSection] Rendering ItemSlider with products:",
+            products,
+          )}
+          <ItemSlider items={products} section={"popular"} />
+        </>
+      )}
     </div>
   );
 };
 
-export default FurnitureSection;
+export default PopularSection;

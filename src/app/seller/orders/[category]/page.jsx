@@ -3,7 +3,9 @@
 import OrderCard from "@/components/cards/OrderCard";
 import { unslugify } from "@/utils/slugify";
 import { getSellerOrders } from "@/lib/api/orders/getSellerOrder";
+import { getSellerOrdersClient } from "@/lib/api/orders/getSellerOrderClient";
 import { useEffect, useState, use, useRef } from "react";
+import { socketManager } from "@/lib/socket-client";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import toast from "react-hot-toast";
 
@@ -16,7 +18,6 @@ const statusMap = {
 export default function OrdersPage({ params }) {
   const { category } = use(params);
   const [orders, setOrders] = useState([]);
-  const hasFetched = useRef(false);
   const storeOrders = (() => {
     try {
       // prefer sellerOrders, fallback to orders
@@ -29,17 +30,14 @@ export default function OrdersPage({ params }) {
   })();
 
   useEffect(() => {
-    // If store already hydrated on login, use it
+    // Prefer store orders when available; otherwise fetch immediately
     if (storeOrders && storeOrders.length) {
       setOrders(storeOrders);
       return;
     }
-    // Otherwise, fetch once as a fallback
-    if (hasFetched.current) return;
-    hasFetched.current = true;
     (async () => {
       try {
-        const res = await getSellerOrders();
+        const res = await getSellerOrdersClient();
         if (res.success === false) {
           toast.error(res.message || "Failed to fetch orders");
           setOrders([]);
@@ -56,9 +54,80 @@ export default function OrdersPage({ params }) {
     })();
   }, [storeOrders?.length]);
 
-  const filteredOrders = orders.filter((order) =>
-    statusMap[category]?.includes(order.status),
-  );
+  // Refresh orders when the page gains focus or visibility returns
+  useEffect(() => {
+    const refetch = async () => {
+      try {
+        const res = await getSellerOrdersClient();
+        if (res?.success) setOrders(res.data || []);
+      } catch (_) {}
+    };
+    const onFocus = () => refetch();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") refetch();
+    };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
+
+  // Listen for realtime order:new events and prepend to list
+  useEffect(() => {
+    let unsubscribe = () => {};
+    (async () => {
+      try {
+        await socketManager.connect();
+        const off = socketManager.on("order:new", async (order) => {
+          console.log("[socket] order:new", {
+            id: order?.id,
+            status: order?.status,
+            createdAt: order?.createdAt,
+          });
+
+          // If payload only includes orderId, or to ensure consistency, refetch orders
+          try {
+            const res = await getSellerOrdersClient();
+            if (res?.success) {
+              setOrders(Array.isArray(res.data) ? res.data : []);
+              return;
+            }
+          } catch (_) {}
+
+          // Fallback: merge minimal payload if it contains full order
+          if (order && order.id) {
+            setOrders((prev) => {
+              const prevList = Array.isArray(prev) ? prev : [];
+              if (prevList.some((o) => o.id === order.id)) return prevList;
+              const next = [order, ...prevList];
+              next.sort(
+                (a, b) =>
+                  new Date(b.createdAt || b.created_at || 0) -
+                  new Date(a.createdAt || a.created_at || 0),
+              );
+              return next;
+            });
+          }
+        });
+        unsubscribe = off;
+      } catch (_) {}
+    })();
+    return () => {
+      try {
+        unsubscribe();
+      } catch (_) {}
+    };
+  }, []);
+
+  const filteredOrders = orders
+    .filter((order) => statusMap[category]?.includes(order.status))
+    .sort((a, b) => {
+      const dateA = new Date(a.createdAt || a.created_at || 0);
+      const dateB = new Date(b.createdAt || b.created_at || 0);
+      return dateB - dateA;
+    });
 
   return (
     <div className="flex w-full max-w-md flex-col gap-2 px-3 py-5">

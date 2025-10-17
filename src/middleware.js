@@ -8,6 +8,8 @@ export function middleware(request) {
   const role = request.cookies.get("role")?.value;
   const { pathname } = new URL(request.url);
 
+  console.log("Middleware - pathname:", pathname, "role:", role);
+
   const isAdminLogin = pathname.startsWith("/admin/login");
   const isAuthPath = pathname.startsWith("/auth");
 
@@ -33,6 +35,7 @@ export function middleware(request) {
     }
 
     if (role === "BUYER" && !pathname.startsWith("/buyer")) {
+      console.log("Redirecting BUYER from", pathname, "to /buyer");
       return NextResponse.redirect(new URL("/buyer", request.url));
     }
   }

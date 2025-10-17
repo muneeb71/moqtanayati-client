@@ -34,6 +34,7 @@ const MobileSheet = () => {
               loading="eager"
               quality={100}
               priority
+              style={{ width: "auto", height: "auto" }}
             />
           </SheetTitle>
         </SheetHeader>

@@ -1,8 +1,26 @@
 import formatDateTime from "@/utils/dateFormatter";
+import { cn } from "@/lib/utils";
 
-const NotificationCard = ({ image, title, desc, time }) => {
+const NotificationCard = ({
+  image,
+  title,
+  desc,
+  time,
+  isHighlighted = false,
+  isRead = false,
+  onClick,
+}) => {
   return (
-    <div className="flex items-center justify-between gap-[50px] rounded-[15px] bg-[#F8F7FB] py-5 pl-5 pr-1.5">
+    <div
+      className={cn(
+        "flex items-center justify-between gap-[50px] rounded-[15px] py-5 pl-5 pr-1.5 transition-all duration-300",
+        isHighlighted
+          ? "border-2 border-blue-300 bg-blue-100 shadow-lg"
+          : "bg-[#F8F7FB]",
+        !isRead && "border-l-4 border-l-blue-500",
+      )}
+      onClick={onClick}
+    >
       <div className="flex flex-col items-start gap-3 sm:flex-row">
         {/* <div className="grid size-[66px] place-items-center overflow-hidden rounded-full">
           <Image

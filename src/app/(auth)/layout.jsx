@@ -13,6 +13,7 @@ const AuthLayout = ({ children }) => {
           alt="Logo"
           quality={100}
           className="rounded-[10px]"
+          style={{ width: "auto", height: "auto" }}
         />
       </div>
       <div className="no-scrollbar z-20 flex h-full min-h-screen w-full max-w-[450px] flex-col justify-center overflow-auto px-5 py-10">
@@ -26,6 +27,7 @@ const AuthLayout = ({ children }) => {
           height={500}
           alt="blob"
           loading="eager"
+          style={{ width: "auto", height: "auto" }}
         />
       </div>
 

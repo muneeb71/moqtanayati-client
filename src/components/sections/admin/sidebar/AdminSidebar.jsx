@@ -18,6 +18,7 @@ const AdminSidebar = () => {
           className="self-center rounded-2xl"
           loading="eager"
           quality={100}
+          style={{ width: "auto", height: "auto" }}
         />
         <SidebarLinks />
       </div>

@@ -11,7 +11,10 @@ import ItemCard from "../cards/ItemCard";
 import { getProducts } from "@/lib/api/product/getAllProducts";
 import dynamic from "next/dynamic";
 
-const RecommendedSectionSkeleton = dynamic(() => import("@/components/loaders/RecommendedSectionSkeleton"), { ssr: false });
+const RecommendedSectionSkeleton = dynamic(
+  () => import("@/components/loaders/RecommendedSectionSkeleton"),
+  { ssr: false },
+);
 
 const ItemSlider = ({ items, section }) => {
   const [api, setApi] = useState();
@@ -41,8 +44,17 @@ const ItemSlider = ({ items, section }) => {
 
   useEffect(() => {
     setMounted(true);
-    getProductsData();
-  }, []);
+
+    // If items are provided (like for popular products), use them directly
+    if (items && items.length > 0) {
+      console.log("🔍 [ItemSlider] Using provided items:", items);
+      setProducts(items);
+      setLoading(false);
+    } else {
+      // Otherwise fetch data as before
+      getProductsData();
+    }
+  }, [items]);
 
   useEffect(() => {
     if (!api) {
@@ -65,7 +77,9 @@ const ItemSlider = ({ items, section }) => {
       <div className="flex w-full max-w-7xl items-center justify-center py-10 text-battleShipGray">
         {section === "recommendations"
           ? "No recommendations for you"
-          : "No furniture items available"}
+          : section === "popular"
+            ? "No popular items available"
+            : "No furniture items available"}
       </div>
     );
   }
@@ -78,26 +92,34 @@ const ItemSlider = ({ items, section }) => {
       className="w-full max-w-7xl overflow-hidden"
     >
       <CarouselContent>
-        {products.map((item, index) => (
-          <CarouselItem
-            key={index}
-            className="flex flex-col items-center gap-5 py-5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
-          >
-            <ItemCard
-              id={item.id}
+        {products.map((item, index) => {
+          console.log(`🔍 [ItemSlider] Product ${index}:`, item);
+          console.log(`🔍 [ItemSlider] Product ${index} images:`, item.images);
+          return (
+            <CarouselItem
               key={index}
-              title={item.name}
-              price={item.price}
-              createdAt={item.createdAt}
-              image={item.images[0]}
-              address={
-                item?.city && item?.country && `${item?.city}, ${item?.country}`
-              }
-              isFavourite={item.isFavourite}
-              pricingFormat={item?.pricingFormat}
-            />
-          </CarouselItem>
-        ))}
+              className="flex flex-col items-center gap-5 py-5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+            >
+              <ItemCard
+                id={item.id}
+                key={index}
+                title={item.name}
+                price={item.price}
+                createdAt={item.createdAt}
+                image={
+                  item.images && item.images.length > 0 ? item.images[0] : null
+                }
+                address={
+                  item?.city &&
+                  item?.country &&
+                  `${item?.city}, ${item?.country}`
+                }
+                isFavourite={item.isFavourite}
+                pricingFormat={item?.pricingFormat}
+              />
+            </CarouselItem>
+          );
+        })}
       </CarouselContent>
     </Carousel>
   );

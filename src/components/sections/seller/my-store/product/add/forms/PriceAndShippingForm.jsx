@@ -156,10 +156,7 @@ const PriceAndShippingForm = () => {
       newErrors.startingBid = "Valid starting bid is required.";
     if (!buyItNow || isNaN(parseFloat(buyItNow)))
       newErrors.buyItNow = "Valid buy it now price is required.";
-    if (!minimumOffer || isNaN(parseFloat(minimumOffer)))
-      newErrors.minimumOffer = "Valid minimum offer is required.";
-    if (!autoAccept || isNaN(parseFloat(autoAccept)))
-      newErrors.autoAccept = "Valid auto-accept price is required.";
+
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
@@ -398,6 +395,11 @@ const PriceAndShippingForm = () => {
                         setBuyItNow(val);
                       }}
                     />
+                    {errors.buyItNow && (
+                      <span className="text-sm text-red-500">
+                        {errors.buyItNow}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1">
                     <Label
@@ -413,6 +415,11 @@ const PriceAndShippingForm = () => {
                         setMinimumOffer(val);
                       }}
                     />
+                    {errors.minimumOffer && (
+                      <span className="text-sm text-red-500">
+                        {errors.minimumOffer}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1">
                     <Label
@@ -428,6 +435,11 @@ const PriceAndShippingForm = () => {
                         setAutoAccept(val);
                       }}
                     />
+                    {errors.autoAccept && (
+                      <span className="text-sm text-red-500">
+                        {errors.autoAccept}
+                      </span>
+                    )}
                   </div>
                 </>
               ) : null}

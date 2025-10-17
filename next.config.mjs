@@ -20,6 +20,15 @@ const nextConfig = {
       },
     ],
   },
+  // Optimize preloading and reduce warnings
+  onDemandEntries: {
+    // period (in ms) where the server will keep pages in the buffer
+    maxInactiveAge: 25 * 1000,
+    // number of pages that should be kept simultaneously without being disposed
+    pagesBufferLength: 2,
+  },
+  // Reduce preload warnings by optimizing resource loading
+  poweredByHeader: false,
   webpack(config, { dev, isServer }) {
     if (dev && !isServer) {
       // Silences warnings in console

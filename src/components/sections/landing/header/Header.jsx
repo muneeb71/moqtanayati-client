@@ -14,9 +14,13 @@ const Header = () => {
 
   const getUserData = async () => {
     const res = await getUserProfile();
+    console.log("🔍 [Header] User profile response:", res);
     if (res?.success) {
+      console.log("🔍 [Header] User data:", res?.data);
+      console.log("🔍 [Header] User avatar:", res?.data?.avatar);
       setUser(res?.data);
     } else {
+      console.error("🔍 [Header] Error fetching user details:", res);
       toast.error("Error fetching user details.");
     }
   };
@@ -35,6 +39,7 @@ const Header = () => {
           loading="eager"
           quality={100}
           priority
+          style={{ width: "auto", height: "auto" }}
         />
         <NavLinks />
         <div className="hidden items-center gap-2 md:flex md:gap-4">
@@ -57,28 +62,74 @@ const Header = () => {
             href="/buyer/profile"
             className="size-12 overflow-hidden rounded-full"
           >
-            <Image
-              src="/static/dummy-user/1.jpeg"
-              width={250}
-              height={250}
-              loading="lazy"
-              alt="user image"
-            />
+            {user?.avatar && user.avatar.trim() !== "" ? (
+              <Image
+                src={user.avatar}
+                width={250}
+                height={250}
+                loading="lazy"
+                alt="user image"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-gray-500"
+                >
+                  <path
+                    d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+            )}
           </Link>
           <HeaderDropdown />
         </div>
         <div className="flex items-center gap-3 md:hidden">
           <Link
-            href="/profile"
+            href="/buyer/profile"
             className="size-10 overflow-hidden rounded-full"
           >
-            <Image
-              src="/static/dummy-user/1.jpeg"
-              width={250}
-              height={250}
-              loading="lazy"
-              alt="user image"
-            />
+            {user?.avatar && user.avatar.trim() !== "" ? (
+              <Image
+                src={user.avatar}
+                width={250}
+                height={250}
+                loading="lazy"
+                alt="user image"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-gray-500"
+                >
+                  <path
+                    d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+            )}
           </Link>
           <MobileSheet />
         </div>

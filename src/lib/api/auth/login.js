@@ -6,11 +6,17 @@ import api from "../axios";
 export async function loginUser(email, password, role, deviceToken) {
   console.log("check role ", role, email, password);
   try {
-    const response = await api.post("sellers/login", {
+    const requestBody = {
       email,
       password,
-      deviceToken,
-    });
+    };
+
+    // Only include deviceToken if it exists
+    if (deviceToken) {
+      requestBody.deviceToken = deviceToken;
+    }
+
+    const response = await api.post("sellers/login", requestBody);
 
     const data = response.data.data;
     const token = data.token;

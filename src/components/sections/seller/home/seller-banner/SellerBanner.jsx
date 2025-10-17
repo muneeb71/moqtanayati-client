@@ -24,6 +24,7 @@ const SellerBanner = () => {
           height={500}
           alt="blob"
           loading="lazy"
+          style={{ width: "auto", height: "auto" }}
         />
       </div>
       <div className="absolute bottom-[-200px] right-0 z-[1] h-[500px] w-[400px] rounded-full bg-white/20"></div>

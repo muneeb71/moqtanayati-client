@@ -2,6 +2,8 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { appName } from "@/lib/app-name";
 import { Toaster } from "react-hot-toast";
+import { NotificationProvider } from "@/providers/notification-provider";
+import { NotificationStoreProvider } from "@/providers/notification-store-provider";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -17,8 +19,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${font.className} antialiased`}>
-        {children}
-        <Toaster />
+        <NotificationProvider>
+          <NotificationStoreProvider>
+            {children}
+            <Toaster />
+          </NotificationStoreProvider>
+        </NotificationProvider>
       </body>
     </html>
   );
