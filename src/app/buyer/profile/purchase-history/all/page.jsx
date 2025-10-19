@@ -1,43 +1,24 @@
 import HistoryCard from "@/components/sections/landing/profile/purchase-history/HistoryCard";
 import { getServerUserOrders } from "@/lib/api/server-axios";
 
-const PurchaseHistoryPage = async () => {
+const AllHistoryPage = async () => {
   // Initialize with empty arrays
   let userHistory = [];
   let filteredHistory = [];
 
   try {
     const res = await getServerUserOrders();
-    console.log("🔍 [PurchaseHistoryPage] API response:", res);
 
     // Ensure we have a valid array
     userHistory = Array.isArray(res?.data) ? res.data : [];
-    console.log("🔍 [PurchaseHistoryPage] User history:", userHistory);
-    console.log(
-      "🔍 [PurchaseHistoryPage] User history length:",
-      userHistory.length,
-    );
 
-    // Show all history for main page
+    // Show all history for "All" category
     filteredHistory = userHistory;
-
-    console.log("🔍 [PurchaseHistoryPage] Filtered history:", filteredHistory);
-    console.log(
-      "🔍 [PurchaseHistoryPage] Filtered history length:",
-      filteredHistory.length,
-    );
   } catch (error) {
-    console.error("🔍 [PurchaseHistoryPage] Error fetching history:", error);
-    console.error("🔍 [PurchaseHistoryPage] Error details:", {
-      message: error?.message,
-      status: error?.status,
-      response: error?.response?.data,
-    });
-
     // If it's an authentication error, show empty state gracefully
     if (error?.response?.status === 401) {
       console.log(
-        "🔍 [PurchaseHistoryPage] Authentication required - showing empty state",
+        "🔍 [AllHistoryPage] Authentication required - showing empty state",
       );
     }
 
@@ -65,4 +46,4 @@ const PurchaseHistoryPage = async () => {
   );
 };
 
-export default PurchaseHistoryPage;
+export default AllHistoryPage;

@@ -17,7 +17,7 @@ export async function getMyBids() {
     return {
       success: response.success,
       message: response.message,
-      data: response.data,
+      data: response.data.data,
     };
   } catch (e) {
     return {

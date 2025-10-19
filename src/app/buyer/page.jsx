@@ -12,12 +12,8 @@ const socket = io("http://localhost:5000", {});
 const BuyerPage = async () => {
   // Fetch auctions data
   const response = await getAllAuctions();
-  console.log("🔍 [BuyerPage] Full API response:", response);
-  console.log("🔍 [BuyerPage] Response data:", response.data);
 
   const auctions = response.auctions || [];
-  console.log("🔍 [BuyerPage] All auctions:", auctions);
-  console.log("🔍 [BuyerPage] Total auctions count:", auctions.length);
 
   // Log each auction's status
   auctions.forEach((auction, index) => {
@@ -30,21 +26,13 @@ const BuyerPage = async () => {
   });
 
   const liveAuctions = auctions.filter((a) => a.status === "LIVE");
-  console.log("🔍 [BuyerPage] Live auctions found:", liveAuctions.length);
-  console.log("🔍 [BuyerPage] Live auctions:", liveAuctions);
 
   const liveAuction = auctions.find((a) => a.status === "LIVE");
-  console.log("🔍 [BuyerPage] Selected live auction:", liveAuction);
 
   const upcomingAuctions = auctions.filter((a) => a.status === "UPCOMING");
-  console.log(
-    "🔍 [BuyerPage] Upcoming auctions found:",
-    upcomingAuctions.length,
-  );
 
   const latestAuction =
     auctions.find((a) => a.status === "UPCOMING") || auctions[0];
-  console.log("🔍 [BuyerPage] Selected latest auction:", latestAuction);
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-5 px-3 pb-20">

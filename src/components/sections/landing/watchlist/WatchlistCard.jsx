@@ -8,24 +8,59 @@ import { useRouter } from "next/navigation";
 const WatchlistCard = ({ item, removeFromWatchlist }) => {
   const [favourite, setFavourite] = useState(true);
   const router = useRouter();
+
+  // Debug: Log the item data to see the structure
+  console.log("🔍 [WatchlistCard] Item data:", item);
+  console.log(
+    "🔍 [WatchlistCard] Product images:",
+    item?.auction?.product?.images,
+  );
+
   const handleCardClick = () => {
     const id = item?.auction?.product?.id;
     if (id) router.push(`/buyer/product-details/${id}`);
   };
   return (
     <div
-      className="grid h-full max-h-[138px] grid-cols-[96px_1fr] overflow-hidden rounded-[12px] bg-white sm:grid-cols-[126px_1fr] cursor-pointer"
+      className="grid h-full max-h-[138px] cursor-pointer grid-cols-[96px_1fr] overflow-hidden rounded-[12px] bg-white sm:grid-cols-[126px_1fr]"
       style={{ boxShadow: "0px 0px 29.85px 2.39px #0000001A" }}
       onClick={handleCardClick}
     >
       <div className="h-full w-full overflow-hidden">
-        <Image
-          src={item?.auction?.product?.images[0]}
-          width={200}
-          height={200}
-          className="h-full w-full object-cover"
-          alt="Image"
-        />
+        {item?.auction?.product?.images &&
+        item.auction.product.images.length > 0 &&
+        item.auction.product.images[0] ? (
+          <Image
+            src={item.auction.product.images[0]}
+            width={200}
+            height={200}
+            className="h-full w-full object-cover"
+            alt="Product image"
+            unoptimized={true} // Allow external images
+            onError={(e) => {
+              console.log("🔍 [WatchlistCard] Image load error:", e);
+              // Hide the image and show fallback
+              e.target.style.display = "none";
+            }}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gray-100">
+            <svg
+              width="40"
+              height="40"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-gray-400"
+            >
+              <path
+                d="M4 16L8.5 10.5L13 14L20.5 4.5L21 5L13.5 15L9 11.5L4 16Z"
+                fill="currentColor"
+              />
+              <path d="M3 19H21V21H3V19Z" fill="currentColor" />
+            </svg>
+          </div>
+        )}
       </div>
       <div className="flex h-full w-full flex-col justify-between p-2">
         <div className="flex justify-between gap-2">
@@ -38,7 +73,10 @@ const WatchlistCard = ({ item, removeFromWatchlist }) => {
               <div className="flex items-center gap-1">
                 <div className="size-[19.1px] min-h-[19.1px] min-w-[19.1px] overflow-hidden rounded-full">
                   <Image
-                    src={item?.auction?.seller?.avatar || "/static/dummy-user/1.jpeg"}
+                    src={
+                      item?.auction?.seller?.avatar ||
+                      "/static/dummy-user/1.jpeg"
+                    }
                     width={100}
                     height={100}
                     className="h-full w-full object-cover"
@@ -56,9 +94,9 @@ const WatchlistCard = ({ item, removeFromWatchlist }) => {
               "grid size-[33px] place-items-center rounded-[4.6px] bg-black/10",
               favourite ? "text-[#F16D6F]" : "text-white",
             )}
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
-              removeFromWatchlist(item?.auction?.id)
+              removeFromWatchlist(item?.auction?.id);
             }}
           >
             {heartIcon}
@@ -68,7 +106,9 @@ const WatchlistCard = ({ item, removeFromWatchlist }) => {
         <div className="flex items-center justify-between gap-5 px-1.5">
           <div className="flex flex-col">
             <span className="text-xs text-black/40">Highest Bid</span>
-            <span className="text-lg font-medium">${item?.auction?.product?.minimumOffer}</span>
+            <span className="text-lg font-medium">
+              ${item?.auction?.product?.minimumOffer}
+            </span>
           </div>
           {/* <button
             className={cn(

@@ -1,10 +1,14 @@
 // lib/axios.ts
 import axios from "axios";
 
-// Helper function to get cookie value
+// Helper function to get cookie value (client-side only)
 const getCookie = (name) => {
-  if (typeof window === "undefined") return null;
+  if (typeof window === "undefined") {
+    // Server-side: return null, will be handled by server components
+    return null;
+  }
 
+  // Client-side: use document.cookie
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
   if (parts.length === 2) return parts.pop().split(";").shift();

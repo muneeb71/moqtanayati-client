@@ -116,6 +116,7 @@ const ItemSlider = ({ items, section }) => {
                 }
                 isFavourite={item.isFavourite}
                 pricingFormat={item?.pricingFormat}
+                buyItNow={item?.buyItNow}
               />
             </CarouselItem>
           );

@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { handleFavoriteClient } from "@/lib/api/product/handleFavoriteClient";
+import toast from "react-hot-toast";
 
 const ItemCard = ({
   id = 1,
@@ -18,10 +20,56 @@ const ItemCard = ({
 }) => {
   const router = useRouter();
   const [favourite, setFavourite] = useState(isFavourite);
+  const [loading, setLoading] = useState(false);
 
   const getHourAgo = () => {
     const now = new Date();
     return now.getHours() - 1 + "hr ago";
+  };
+
+  const handleFavoriteClick = async (e) => {
+    e.stopPropagation(); // Prevent card click
+    if (loading) return;
+
+    setLoading(true);
+    try {
+      const response = await handleFavoriteClient(id, pricingFormat);
+
+      console.log("response from handleFavouriteClient 0 : ", response);
+      console.log("response from handleFavouriteClient 1 : ", response.data);
+      console.log(
+        "response from handleFavouriteClient 2: ",
+        response.data?.data,
+      );
+
+      if (response?.success) {
+        setFavourite(!favourite);
+        if (response?.warning) {
+          toast.success(
+            "Favorite functionality not yet available for this product",
+          );
+        } else if (response?.data?.message === "Item already in watchlist") {
+          // Item is already in watchlist, so it should be marked as favorite
+          setFavourite(true);
+          toast.success("Item is already in your watchlist");
+        } else {
+          toast.success(
+            favourite ? "Removed from favorites" : "Added to favorites",
+          );
+        }
+      } else {
+        if (response?.warning) {
+          toast.warning(response?.warning);
+        } else {
+          toast.error(response?.error || "Failed to update favorites");
+        }
+      }
+    } catch (error) {
+      console.error("Favorite error:", error);
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -79,12 +127,18 @@ const ItemCard = ({
         {pricingFormat == "Auctions" && (
           <button
             className={cn(
-              "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
+              "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10 transition-all duration-200",
               favourite ? "text-[#F16D6F]" : "text-white",
+              loading && "cursor-not-allowed opacity-50",
             )}
-            onClick={() => setFavourite(!favourite)}
+            onClick={handleFavoriteClick}
+            disabled={loading}
           >
-            {heartIcon}
+            {loading ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            ) : (
+              heartIcon
+            )}
           </button>
         )}
       </div>

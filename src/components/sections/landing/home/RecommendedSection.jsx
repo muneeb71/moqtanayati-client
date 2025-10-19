@@ -6,6 +6,7 @@ import ItemSlider from "@/components/slider/ItemSlider";
 import { dummyItems } from "@/lib/dummy-items";
 import { getUserOrdersClient } from "@/lib/api/orders/getUserOrdersClient";
 import { getProductsClient } from "@/lib/api/product/getAllProductsClient";
+import { getWatchlist } from "@/lib/api/watchlist/getWatchlist";
 import { useState, useEffect } from "react";
 
 const RecommendedSection = ({ title = "Recommended For You" }) => {
@@ -20,6 +21,21 @@ const RecommendedSection = ({ title = "Recommended For You" }) => {
         console.log(
           "🔍 [RecommendedSection] Starting to fetch recommended products...",
         );
+
+        // Fetch watchlist data to check which products are already favorited
+        const watchlistResponse = await getWatchlist();
+        const watchlistItems = watchlistResponse.success
+          ? watchlistResponse.data?.data || watchlistResponse.data || []
+          : [];
+        console.log("🔍 [RecommendedSection] Watchlist items:", watchlistItems);
+
+        // Create a set of product IDs that are in the watchlist
+        const watchlistProductIds = new Set();
+        watchlistItems.forEach((item) => {
+          if (item.auction?.product?.id) {
+            watchlistProductIds.add(item.auction.product.id);
+          }
+        });
 
         // First, check if buyer has any orders
         const ordersResponse = await getUserOrdersClient();
@@ -59,11 +75,17 @@ const RecommendedSection = ({ title = "Recommended For You" }) => {
                 ),
             );
 
+            // Add isFavourite property based on watchlist
+            const productsWithFavorites = similarProducts.map((product) => ({
+              ...product,
+              isFavourite: watchlistProductIds.has(product.id),
+            }));
+
             console.log(
               "🔍 [RecommendedSection] Similar products found:",
               similarProducts.length,
             );
-            setProducts(similarProducts);
+            setProducts(productsWithFavorites);
             setSectionTitle("Recommended For You");
           } else {
             // Fallback to dummy items if API fails
@@ -78,11 +100,19 @@ const RecommendedSection = ({ title = "Recommended For You" }) => {
 
           const productsResponse = await getProductsClient();
           if (productsResponse.success && productsResponse.data) {
+            // Add isFavourite property based on watchlist
+            const productsWithFavorites = productsResponse.data.map(
+              (product) => ({
+                ...product,
+                isFavourite: watchlistProductIds.has(product.id),
+              }),
+            );
+
             console.log(
               "🔍 [RecommendedSection] All products found:",
               productsResponse.data.length,
             );
-            setProducts(productsResponse.data);
+            setProducts(productsWithFavorites);
             setSectionTitle("Products");
           } else {
             // Fallback to dummy items if API fails
