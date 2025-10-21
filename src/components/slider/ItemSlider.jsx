@@ -95,6 +95,21 @@ const ItemSlider = ({ items, section }) => {
         {products.map((item, index) => {
           console.log(`🔍 [ItemSlider] Product ${index}:`, item);
           console.log(`🔍 [ItemSlider] Product ${index} images:`, item.images);
+
+          // Check if auction is still live
+          const isAuctionLive = () => {
+            if (item?.pricingFormat?.toLowerCase() !== "auctions") return true;
+
+            if (!item?.auctionLaunchDate || !item?.auctionDuration) return true;
+
+            const launchDate = new Date(item.auctionLaunchDate);
+            const durationInMs = item.auctionDuration * 60 * 60 * 1000; // Convert hours to milliseconds
+            const endDate = new Date(launchDate.getTime() + durationInMs);
+            const now = new Date();
+
+            return now < endDate;
+          };
+
           return (
             <CarouselItem
               key={index}
@@ -104,7 +119,14 @@ const ItemSlider = ({ items, section }) => {
                 id={item.id}
                 key={index}
                 title={item.name}
-                price={item.price}
+                price={
+                  item.price ||
+                  item.startingBid ||
+                  item.buyItNow ||
+                  item.minimumOffer ||
+                  item.autoAccept ||
+                  "Price not available"
+                }
                 createdAt={item.createdAt}
                 image={
                   item.images && item.images.length > 0 ? item.images[0] : null
@@ -117,6 +139,7 @@ const ItemSlider = ({ items, section }) => {
                 isFavourite={item.isFavourite}
                 pricingFormat={item?.pricingFormat}
                 buyItNow={item?.buyItNow}
+                isAuctionLive={isAuctionLive()}
               />
             </CarouselItem>
           );

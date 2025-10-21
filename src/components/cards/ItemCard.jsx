@@ -17,6 +17,7 @@ const ItemCard = ({
   isFavourite = false,
   pricingFormat,
   buyItNow,
+  isAuctionLive = true,
 }) => {
   const router = useRouter();
   const [favourite, setFavourite] = useState(isFavourite);
@@ -124,7 +125,7 @@ const ItemCard = ({
             </div>
           </div>
         )}
-        {pricingFormat == "Auctions" && (
+        {pricingFormat == "Auctions" && isAuctionLive && (
           <button
             className={cn(
               "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10 transition-all duration-200",
@@ -149,10 +150,10 @@ const ItemCard = ({
         <div className="flex items-center justify-between">
           <span className="text-[21px] font-medium leading-[32px]">
             $
-            {price !== 0
-              ? price?.toFixed(2)
-              : buyItNow
-                ? buyItNow?.toFixed(2)
+            {price && price !== 0 && !isNaN(Number(price))
+              ? Number(price).toFixed(2)
+              : buyItNow && !isNaN(Number(buyItNow))
+                ? Number(buyItNow).toFixed(2)
                 : "0.00"}
           </span>
           <span className="text-[15px] leading-[23px] text-black/30">

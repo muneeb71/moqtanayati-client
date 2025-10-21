@@ -34,22 +34,22 @@ const WatchListPage = () => {
   }, []);
 
   const removeWatchlist = async (id) => {
+    console.log("item watchlist id : ", id);
+    // Store the current items for potential rollback
+    const currentItems = items;
+
+    // Optimistically remove the item from local state first
+    setItems((prevItems) => {
+      if (!prevItems) return [];
+      return prevItems.filter((item) => item?.id !== id);
+    });
+
     const res = await removeFromWatchlist(id);
-    if (res?.success) {
+    if (res?.success === true) {
       toast.success("Removed from Watchlist");
-      // Refresh watchlist data
-      setLoading(true);
-      try {
-        const response = await getWatchlist();
-        if (response?.success) {
-          setItems(response.data?.data || response.data || []);
-        }
-      } catch (error) {
-        console.error("Error refreshing watchlist:", error);
-      } finally {
-        setLoading(false);
-      }
     } else {
+      // If removal failed, restore the original items
+      setItems(currentItems);
       toast.error("Failed to remove from watchlist");
     }
   };

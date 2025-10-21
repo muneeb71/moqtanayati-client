@@ -37,13 +37,36 @@ const PopularSection = () => {
         console.log("response from getPopularProducts 1: ", response.data);
 
         if (response.success) {
+          // Filter products based on pricing format and auction status
+          const filteredProducts = (response.data || []).filter((product) => {
+            // Always show fixed price products
+            if (product.pricingFormat?.toLowerCase() === "fixed price") {
+              return true;
+            }
+
+            // For auction products, check if they are live or upcoming
+            if (product.pricingFormat?.toLowerCase() === "auctions") {
+              if (!product.auctionLaunchDate || !product.auctionDuration) {
+                return true; // Show if no auction data (fallback)
+              }
+
+              const launchDate = new Date(product.auctionLaunchDate);
+              const durationInMs = product.auctionDuration * 60 * 60 * 1000; // Convert hours to milliseconds
+              const endDate = new Date(launchDate.getTime() + durationInMs);
+              const now = new Date();
+
+              // Show if auction is live or upcoming (not expired)
+              return now < endDate;
+            }
+
+            return false; // Hide other pricing formats
+          });
+
           // Add isFavourite property based on watchlist
-          const productsWithFavorites = (response.data || []).map(
-            (product) => ({
-              ...product,
-              isFavourite: watchlistProductIds.has(product.id),
-            }),
-          );
+          const productsWithFavorites = filteredProducts.map((product) => ({
+            ...product,
+            isFavourite: watchlistProductIds.has(product.id),
+          }));
 
           console.log(
             "🔍 [PopularSection] Setting products:",

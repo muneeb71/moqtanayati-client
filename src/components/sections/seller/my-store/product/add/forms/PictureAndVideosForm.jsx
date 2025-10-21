@@ -86,6 +86,27 @@ const PictureAndVideosForm = () => {
     if (validate()) {
       try {
         setIsLoading(true);
+
+        console.log("🔍 [PictureAndVideosForm] Store ID:", store?.id);
+
+        // Check if store exists and has an id
+        if (!store || !store.id) {
+          console.error(
+            "🔍 [PictureAndVideosForm] Store is missing or has no ID:",
+            {
+              store,
+              storeId: store?.id,
+              storeKeys: store ? Object.keys(store) : "store is null/undefined",
+            },
+          );
+          setErrors({
+            submit:
+              "Store information is missing. Please ensure you have a store set up before adding products.",
+          });
+          setIsLoading(false);
+          return;
+        }
+
         const response = await addProduct({
           images,
           video,
@@ -94,25 +115,59 @@ const PictureAndVideosForm = () => {
           storeId: store.id,
           status: "DRAFT",
         });
+
+        console.log("🔍 [PictureAndVideosForm] AddProduct response:", response);
+        console.log("🔍 [PictureAndVideosForm] Response data:", response?.data);
+
+        if (!response?.success) {
+          // Handle authentication errors specifically
+          if (
+            response?.message?.includes("Invalid JWT Signature") ||
+            response?.message?.includes("invalid_grant")
+          ) {
+            setErrors({
+              submit: "Your session has expired. Please log in again.",
+            });
+          } else {
+            setErrors({
+              submit:
+                response?.message ||
+                "Failed to create product. Please try again.",
+            });
+          }
+          setIsLoading(false);
+          return;
+        }
+
+        if (!response?.data?.id) {
+          setErrors({
+            submit: "Failed to create product. Please try again.",
+          });
+          setIsLoading(false);
+          return;
+        }
+
         setId(response.data.id);
         if (response.success) {
           // Optimistically update store products count
           try {
-            const currentProducts = Array.isArray(store?.products)
-              ? store.products
-              : [];
-            const newProduct = {
-              id: response.data.id,
-              name: productTitle,
-              images,
-              address: store?.address || "",
-              createdAt: new Date().toISOString(),
-              status: "DRAFT",
-            };
-            setStore({
-              ...store,
-              products: [...currentProducts, newProduct],
-            });
+            if (store) {
+              const currentProducts = Array.isArray(store?.products)
+                ? store.products
+                : [];
+              const newProduct = {
+                id: response.data.id,
+                name: productTitle,
+                images,
+                address: store?.address || "",
+                createdAt: new Date().toISOString(),
+                status: "DRAFT",
+              };
+              setStore({
+                ...store,
+                products: [...currentProducts, newProduct],
+              });
+            }
           } catch (_) {}
           router.push(
             `/seller/my-store/product/add/units-and-dimensions?id=${response.data.id}`,

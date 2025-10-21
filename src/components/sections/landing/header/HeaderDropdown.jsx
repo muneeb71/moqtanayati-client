@@ -16,7 +16,7 @@ import toast from "react-hot-toast";
 const HeaderDropdown = () => {
   const router = useRouter();
 
-  // Logout is handled inside LogoutUserButton
+ 
 
   return (
     <DropdownMenu>

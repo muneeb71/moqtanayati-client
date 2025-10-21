@@ -2,6 +2,7 @@ import api from "../axios";
 
 export async function getUserOrders(filter = "all") {
   try {
+    console.log("in fecthing order");
     const response = await api.get(`/orders`, {
       params: { filter },
     });

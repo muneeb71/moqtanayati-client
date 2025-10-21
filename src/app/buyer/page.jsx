@@ -15,15 +15,15 @@ const BuyerPage = async () => {
 
   const auctions = response.auctions || [];
 
-  // Log each auction's status
-  auctions.forEach((auction, index) => {
-    console.log(`🔍 [BuyerPage] Auction ${index}:`, {
-      id: auction.id,
-      status: auction.status,
-      productName: auction.product?.name,
-      productId: auction.productId,
-    });
-  });
+  // // Log each auction's status
+  // auctions.forEach((auction, index) => {
+  //   console.log(`🔍 [BuyerPage] Auction ${index}:`, {
+  //     id: auction.id,
+  //     status: auction.status,
+  //     productName: auction.product?.name,
+  //     productId: auction.productId,
+  //   });
+  // });
 
   const liveAuctions = auctions.filter((a) => a.status === "LIVE");
 

@@ -1,8 +1,10 @@
-import api from '../axios';
+import api from "../axios";
 
-export const removeFromWatchlist = async (id) => {       
+export const removeFromWatchlist = async (id) => {
   try {
+    console.log("in remove function");
     const response = await api.delete(`/buyers/watchlist/${id}`);
+    console.log("Removing : ", response.data);
     return {
       success: true,
       data: response.data,
@@ -11,7 +13,7 @@ export const removeFromWatchlist = async (id) => {
     // console.log('Error updating cart:', error);
     return {
       success: false,
-      error: error.response?.data?.message || 'Failed to update cart data',
+      error: error.response?.data?.message || "Failed to update cart data",
       status: error.response?.status,
     };
   }

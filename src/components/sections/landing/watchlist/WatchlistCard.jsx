@@ -72,16 +72,35 @@ const WatchlistCard = ({ item, removeFromWatchlist }) => {
               <span className="text-xs font-medium text-black/30">by</span>
               <div className="flex items-center gap-1">
                 <div className="size-[19.1px] min-h-[19.1px] min-w-[19.1px] overflow-hidden rounded-full">
-                  <Image
-                    src={
-                      item?.auction?.seller?.avatar ||
-                      "/static/dummy-user/1.jpeg"
-                    }
-                    width={100}
-                    height={100}
-                    className="h-full w-full object-cover"
-                    alt="user"
-                  />
+                  {item?.auction?.seller?.avatar ? (
+                    <Image
+                      src={item.auction.seller.avatar}
+                      width={100}
+                      height={100}
+                      className="h-full w-full object-cover"
+                      alt="user"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="text-gray-500"
+                      >
+                        <path
+                          d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </div>
+                  )}
                 </div>
                 <span className="text-xs font-medium text-black/70">
                   {item?.auction?.seller?.name}
@@ -96,7 +115,8 @@ const WatchlistCard = ({ item, removeFromWatchlist }) => {
             )}
             onClick={(e) => {
               e.stopPropagation();
-              removeFromWatchlist(item?.auction?.id);
+
+              removeFromWatchlist(item?.id);
             }}
           >
             {heartIcon}
