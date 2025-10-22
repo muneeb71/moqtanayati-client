@@ -16,7 +16,7 @@ const RecommendedSectionSkeleton = dynamic(
   { ssr: false },
 );
 
-const ItemSlider = ({ items, section }) => {
+const ItemSlider = ({ items, section, onNavigate }) => {
   const [api, setApi] = useState();
   const [mounted, setMounted] = useState(false);
   const [products, setProducts] = useState([]);
@@ -47,7 +47,6 @@ const ItemSlider = ({ items, section }) => {
 
     // If items are provided (like for popular products), use them directly
     if (items && items.length > 0) {
-      console.log("🔍 [ItemSlider] Using provided items:", items);
       setProducts(items);
       setLoading(false);
     } else {
@@ -93,9 +92,6 @@ const ItemSlider = ({ items, section }) => {
     >
       <CarouselContent>
         {products.map((item, index) => {
-          console.log(`🔍 [ItemSlider] Product ${index}:`, item);
-          console.log(`🔍 [ItemSlider] Product ${index} images:`, item.images);
-
           // Check if auction is still live
           const isAuctionLive = () => {
             if (item?.pricingFormat?.toLowerCase() !== "auctions") return true;
@@ -140,6 +136,7 @@ const ItemSlider = ({ items, section }) => {
                 pricingFormat={item?.pricingFormat}
                 buyItNow={item?.buyItNow}
                 isAuctionLive={isAuctionLive()}
+                onNavigate={onNavigate}
               />
             </CarouselItem>
           );

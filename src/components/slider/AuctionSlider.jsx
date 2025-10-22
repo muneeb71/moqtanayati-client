@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 const AuctionSlider = () => {
   const [selectedItemIndex, setSelectedIndex] = useState(3);
   const [items, setItems] = useState(dummyItems);
+  const [isNavigating, setIsNavigating] = useState(false);
   const sliderRef = useRef(null);
   const autoSlideRef = useRef(null);
   const router = useRouter();
@@ -42,7 +43,15 @@ const AuctionSlider = () => {
     },
   };
   const handleProductClick = () => {
-    router.push(`/product-details/${items[selectedItemIndex].id}`);
+    try {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("navLoading", "1");
+      }
+    } catch (e) {}
+    setIsNavigating(true);
+    setTimeout(() => {
+      router.push(`/product-details/${items[selectedItemIndex].id}`);
+    }, 0);
   };
 
   return (
@@ -101,6 +110,30 @@ const AuctionSlider = () => {
           </button>
         ))}
       </div>
+      {isNavigating && (
+        <div className="fixed inset-0 z-[9999] grid place-items-center bg-black/30">
+          <svg
+            className="h-8 w-8 animate-spin text-moonstone"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8z"
+            ></path>
+          </svg>
+        </div>
+      )}
     </div>
   );
 };

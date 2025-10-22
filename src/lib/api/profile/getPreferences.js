@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import api from "../axios";
 
-export async function updateAuctionPreference(data) {
+export async function getAuctionPreferences() {
   try {
     const cookieStore = cookies();
     const token = cookieStore.get("token")?.value;
@@ -16,18 +16,19 @@ export async function updateAuctionPreference(data) {
       };
     }
 
-    const response = await api.put("buyers/preferences", data, {
+    const response = await api.get("buyers/preferences", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    const userData = response.data.data;
+
+    console.log("response prefernces: ", response);
+    console.log("response prefernces data: ", response.data);
+    console.log("response prefernces data data: ", response.data.data);
 
     return {
       success: true,
-      data: {
-        ...userData,
-      },
+      data: response.data.data,
     };
   } catch (error) {
     return {
@@ -36,7 +37,7 @@ export async function updateAuctionPreference(data) {
       message:
         error?.response?.data?.message ||
         error.message ||
-        "Could not update auction preferences.",
+        "Could not fetch auction preferences.",
     };
   }
 }

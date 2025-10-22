@@ -11,7 +11,7 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css";
-import { getUserProfile } from "@/lib/api/profile/getProfile";
+import { getAuctionPreferences } from "@/lib/api/profile/getPreferences";
 import toast from "react-hot-toast";
 import { updateAuctionPreference } from "@/lib/api/profile/updatePreference";
 import PreferencesSectionSkeleton from "@/components/loaders/PreferencesSectionSkeleton";
@@ -21,20 +21,25 @@ const BAR_MAX = 20000;
 const PreferencesSection = () => {
   const [categoryInput, setCategoryInput] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedPriceRange, setSelectedPriceRange] = useState([0, BAR_MAX / 2]);
+  const [selectedPriceRange, setSelectedPriceRange] = useState([
+    0,
+    BAR_MAX / 2,
+  ]);
   const [alertEnding, setAlertEnding] = useState(false);
   const [alertNew, setAlertNew] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchPreferences = async () => {
       setLoading(true);
       try {
-        const res = await getUserProfile();
-        
-        const prefs = res?.data?.preferences[0];
-        if (prefs) {
-          setSelectedCategories((prefs.categories || []).map((cat) => ({ title: cat })));
+        const res = await getAuctionPreferences();
+
+        if (res.success && res.data) {
+          const prefs = res.data;
+          setSelectedCategories(
+            (prefs.categories || []).map((cat) => ({ title: cat })),
+          );
           const min = prefs.minPrice ?? 0;
           const max = prefs.maxPrice ?? BAR_MAX;
           setSelectedPriceRange([min, max]);
@@ -47,19 +52,24 @@ const PreferencesSection = () => {
           setAlertNew(false);
         }
       } catch (err) {
-        toast.error("Failed to fetch profile");
+        toast.error("Failed to fetch preferences");
       } finally {
         setLoading(false);
       }
     };
-    fetchProfile();
+    fetchPreferences();
   }, []);
 
   const handleCategoryInput = (e) => setCategoryInput(e.target.value);
   const handleCategoryKeyDown = (e) => {
     if (e.key === "Enter" && categoryInput.trim()) {
-      if (!selectedCategories.some((cat) => cat.title === categoryInput.trim())) {
-        setSelectedCategories([...selectedCategories, { title: categoryInput.trim() }]);
+      if (
+        !selectedCategories.some((cat) => cat.title === categoryInput.trim())
+      ) {
+        setSelectedCategories([
+          ...selectedCategories,
+          { title: categoryInput.trim() },
+        ]);
       }
       setCategoryInput("");
     }
@@ -106,9 +116,7 @@ const PreferencesSection = () => {
   };
 
   if (loading) {
-    return (
-      <PreferencesSectionSkeleton />
-    )
+    return <PreferencesSectionSkeleton />;
   }
 
   return (
@@ -117,20 +125,22 @@ const PreferencesSection = () => {
         <h1 className="text-lg font-medium leading-[28px] text-darkBlue">
           Category Selection
         </h1>
-        <div className="flex gap-2 mb-2">
+        <div className="mb-2 flex gap-2">
           <input
-            className="border-b border-moonstone outline-none bg-transparent px-2 py-1 flex-1"
+            className="flex-1 border-b border-moonstone bg-transparent px-2 py-1 outline-none"
             placeholder="Type and press Enter or click Add"
             value={categoryInput}
             onChange={handleCategoryInput}
             onKeyDown={handleCategoryKeyDown}
           />
           <button
-            className="w-fit text-start font-semibold text-moonstone cursor-pointer"
+            className="w-fit cursor-pointer text-start font-semibold text-moonstone"
             onClick={() => {
               if (
                 categoryInput.trim() &&
-                !selectedCategories.some((cat) => cat.title === categoryInput.trim())
+                !selectedCategories.some(
+                  (cat) => cat.title === categoryInput.trim(),
+                )
               ) {
                 setSelectedCategories([
                   ...selectedCategories,
@@ -141,7 +151,9 @@ const PreferencesSection = () => {
             }}
             disabled={
               !categoryInput.trim() ||
-              selectedCategories.some((cat) => cat.title === categoryInput.trim())
+              selectedCategories.some(
+                (cat) => cat.title === categoryInput.trim(),
+              )
             }
           >
             Add
@@ -172,8 +184,7 @@ const PreferencesSection = () => {
           Price Range
         </h1>
         <div className="flex w-full flex-col items-center">
-          <div className="flex w-full justify-between mb-1">
-          </div>
+          <div className="mb-1 flex w-full justify-between"></div>
           <RangeSlider
             min={0}
             max={BAR_MAX}

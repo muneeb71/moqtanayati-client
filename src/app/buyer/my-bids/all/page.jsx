@@ -8,18 +8,12 @@ const AllBidsPage = async () => {
 
   try {
     const bids = await getMyBids();
-    console.log("🔍 [AllBidsPage] API response:", bids);
 
     // Ensure we have a valid array
     userBids = Array.isArray(bids?.data) ? bids.data : [];
-    console.log("🔍 [AllBidsPage] User bids:", userBids);
-    console.log("🔍 [AllBidsPage] User bids length:", userBids.length);
 
     // Show all bids for "All" category
     filteredBids = userBids;
-
-    console.log("🔍 [AllBidsPage] Filtered bids:", filteredBids);
-    console.log("🔍 [AllBidsPage] Filtered bids length:", filteredBids.length);
   } catch (error) {
     console.error("🔍 [AllBidsPage] Error fetching bids:", error);
     userBids = [];

@@ -5,6 +5,7 @@ import ProductDetailsSlider from "@/components/slider/ProductDetailsSlider";
 import { getProductById } from "@/lib/api/product/getById";
 import { PenLineIcon, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import EditProductButton from "@/components/sections/seller/my-store/product/details/EditProductButton";
 
 const ProductDetailsPage = async ({ params }) => {
   const productId = (await params).id;
@@ -30,17 +31,7 @@ const ProductDetailsPage = async ({ params }) => {
       </PageHeading>
       <div className="flex w-full max-w-7xl flex-col items-center justify-center">
         <div className="flex w-full justify-end">
-          <Link
-            href={`/seller/my-store/product/add?id=${product.id}`}
-            className="flex items-center gap-1"
-          >
-            <div className="grid size-8 place-items-center rounded-full border-2 border-white bg-darkBlue text-white">
-              <PenLineIcon className="size-4" />
-            </div>
-            <span className="text-lg font-medium text-darkBlue">
-              Edit Product
-            </span>
-          </Link>
+          <EditProductButton productId={product.id} />
         </div>
         <div className="grid w-full gap-10 py-10 md:grid-cols-2">
           <div className="flex w-full flex-col gap-4">

@@ -14,10 +14,12 @@ export async function getUserProfile() {
     });
 
     const userId = cookiesStore.get("userId")?.value;
+    const role = cookiesStore.get("role")?.value;
     console.log(
       "🔍 [getUserProfile] User ID from cookies:",
       userId ? `${userId.substring(0, 10)}...` : "null",
     );
+    console.log("🔍 [getUserProfile] User role from cookies:", role);
 
     if (!userId) {
       console.error("🔍 [getUserProfile] No userId found in cookies");
@@ -28,10 +30,13 @@ export async function getUserProfile() {
       };
     }
 
+    // Choose endpoint based on role
+    const endpoint = role === "buyer" ? "buyers/profile/" : "sellers/profile/";
     console.log(
-      "🔍 [getUserProfile] Making API request to: sellers/profile/" + userId,
+      "🔍 [getUserProfile] Making API request to:",
+      endpoint + userId,
     );
-    const response = await api.get("sellers/profile/" + userId);
+    const response = await api.get(endpoint + userId);
     console.log("🔍 [getUserProfile] API response status:", response.status);
     console.log("🔍 [getUserProfile] API response data structure:", {
       hasData: !!response.data,
@@ -61,12 +66,6 @@ export async function getUserProfile() {
           ).toFixed(1)
         : 0;
 
-    console.log("🔍 [getUserProfile] Profile processing completed:", {
-      joinedDate,
-      averageRating,
-      hasReviews: !!userData?.reviews?.length,
-    });
-
     const result = {
       success: true,
       data: {
@@ -76,17 +75,8 @@ export async function getUserProfile() {
       },
     };
 
-    console.log("🔍 [getUserProfile] Returning success result");
     return result;
   } catch (error) {
-    console.error("🔍 [getUserProfile] Error occurred:", {
-      errorMessage: error.message,
-      errorStack: error.stack,
-      responseStatus: error?.response?.status,
-      responseData: error?.response?.data,
-      errorCode: error?.code,
-    });
-
     return {
       success: false,
       data: null,

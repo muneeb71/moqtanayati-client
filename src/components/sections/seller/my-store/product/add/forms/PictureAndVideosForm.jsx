@@ -10,8 +10,9 @@ import { useProductStore } from "@/providers/product-store-provider";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import { updateProductBasics } from "@/lib/api/product/update";
 
-const PictureAndVideosForm = () => {
+const PictureAndVideosForm = ({ editProduct }) => {
   const {
     images,
     video,
@@ -24,6 +25,7 @@ const PictureAndVideosForm = () => {
     setProductTitle,
     setProductDescription,
     setIsLoading,
+    reset,
   } = useProductStore();
 
   const { store } = useProfileStore((state) => state);
@@ -35,9 +37,36 @@ const PictureAndVideosForm = () => {
   const [errors, setErrors] = useState({});
   const [previewUrls, setPreviewUrls] = useState([]);
   const [videoPreview, setVideoPreview] = useState(null);
+  const [serverImageUrls, setServerImageUrls] = useState([]);
   const errorTimeoutRef = useRef();
   const router = useRouter();
   const pathname = usePathname();
+
+  // Prefill or reset store depending on edit mode
+  useEffect(() => {
+    if (editProduct && editProduct.id) {
+      setId(editProduct.id);
+      // Keep store images empty (server images), but show previews for existing URLs
+      const serverImages = Array.isArray(editProduct.images)
+        ? editProduct.images.filter(Boolean)
+        : [];
+      setPreviewUrls(serverImages);
+      setServerImageUrls(serverImages);
+      const serverVideo = Array.isArray(editProduct?.videos)
+        ? editProduct.videos[0]
+        : editProduct?.video;
+      setVideoPreview(serverVideo || null);
+      setVideo(null);
+      setProductTitle(editProduct.name || "");
+      setProductDescription(editProduct.description || "");
+    } else {
+      reset();
+      setPreviewUrls([]);
+      setServerImageUrls([]);
+      setVideoPreview(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editProduct?.id]);
 
   // Avoid revoking preview URLs on list changes to prevent breaking remaining images
   // We already revoke URLs when removing a specific image/video
@@ -83,6 +112,29 @@ const PictureAndVideosForm = () => {
   };
 
   const handleNext = async () => {
+    // If editing, skip add API and go next with existing id
+    if (editProduct && editProduct.id) {
+      try {
+        setIsLoading(true);
+        const resp = await updateProductBasics(editProduct.id, {
+          images, // new uploads only
+          video,
+          name: productTitle,
+          description: productDescription,
+          status: editProduct.status || "DRAFT",
+          existingImageUrls: serverImageUrls,
+        });
+        // ignore errors for now, continue flow
+      } catch (_) {
+      } finally {
+        setIsLoading(false);
+      }
+      router.push(
+        `/seller/my-store/product/add/units-and-dimensions?id=${editProduct.id}`,
+      );
+      return;
+    }
+
     if (validate()) {
       try {
         setIsLoading(true);
@@ -195,7 +247,11 @@ const PictureAndVideosForm = () => {
 
     if (files.length === 0) return;
 
-    const remainingSlots = Math.max(0, MAX_IMAGES - (images?.length || 0));
+    const existingCount = serverImageUrls.length;
+    const remainingSlots = Math.max(
+      0,
+      MAX_IMAGES - ((images?.length || 0) + existingCount),
+    );
     if (remainingSlots === 0) {
       setErrors({ images: `You can upload up to ${MAX_IMAGES} images.` });
       // reset input so the same file selection can trigger again later
@@ -239,8 +295,17 @@ const PictureAndVideosForm = () => {
   };
 
   const handleRemoveImage = (index) => {
-    // Remove only the selected image
-    const nextImages = (images || []).filter((_, i) => i !== index);
+    const serverCount = serverImageUrls.length;
+    if (index < serverCount) {
+      // Removing a server image
+      const nextServer = serverImageUrls.filter((_, i) => i !== index);
+      setServerImageUrls(nextServer);
+      setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+      return;
+    }
+    // Removing a newly added image
+    const newIndex = index - serverCount;
+    const nextImages = (images || []).filter((_, i) => i !== newIndex);
     setImages(nextImages);
 
     // Revoke and remove only the matching preview URL

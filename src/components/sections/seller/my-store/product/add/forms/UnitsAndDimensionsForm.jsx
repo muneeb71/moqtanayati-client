@@ -9,6 +9,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 import { updateProductUnitAndDimensions } from "@/lib/api/product/update";
 import { useProfileStore } from "@/providers/profile-store-provider";
+import { getProductById } from "@/lib/api/product/getById";
 
 const UnitsAndDimensionsForm = () => {
   const {
@@ -48,6 +49,31 @@ const UnitsAndDimensionsForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const productConditionsList = ["New", "Old"];
+
+  // Prefill on edit
+  useEffect(() => {
+    const hydrate = async () => {
+      try {
+        if (!id) return;
+        const p = await getProductById(id);
+        if (!p) return;
+        setStock(p.stock ?? "");
+        setLength(p.length ?? "");
+        setWidth(p.width ?? "");
+        setHeight(p.height ?? "");
+        setWeight(p.weight ?? "");
+        setConditionRating(p.conditionRating ?? "");
+        setProductCategories(
+          Array.isArray(p.categories)
+            ? p.categories
+            : p.productCategories || [],
+        );
+        setProductCondition(p.productCondition || p.condition || "New");
+      } catch (_) {}
+    };
+    hydrate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   // Clear loading when next step route is active
   useEffect(() => {

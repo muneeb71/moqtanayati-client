@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 const PopularSection = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   useEffect(() => {
     const fetchPopularProducts = async () => {
@@ -108,8 +109,36 @@ const PopularSection = () => {
             "🔍 [PopularSection] Rendering ItemSlider with products:",
             products,
           )}
-          <ItemSlider items={products} section={"popular"} />
+          <ItemSlider
+            items={products}
+            section={"popular"}
+            onNavigate={setIsNavigating}
+          />
         </>
+      )}
+      {isNavigating && (
+        <div className="fixed inset-0 z-[9999] grid place-items-center bg-black/30">
+          <svg
+            className="h-8 w-8 animate-spin text-moonstone"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8z"
+            ></path>
+          </svg>
+        </div>
       )}
     </div>
   );

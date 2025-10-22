@@ -17,6 +17,7 @@ const MenuCard = ({
   productId = "",
   highestBid,
   startingBid = 0,
+  showBidButton = true,
 }) => {
   const router = useRouter();
   const [favourite, setFavourite] = useState(isFavourite);
@@ -54,13 +55,13 @@ const MenuCard = ({
   return (
     <>
       <div
-        className="flex w-full cursor-pointer overflow-hidden rounded-[12px]"
+        className="flex min-h-[96px] w-full cursor-pointer overflow-hidden rounded-[12px]"
         style={{
           boxShadow: "0px 0px 10px 2px #0000001A",
         }}
         onClick={() => router.push("/buyer/product-details/" + productId)}
       >
-        <div className="rounded-top relative w-1/4">
+        <div className="rounded-top relative h-24 w-1/4">
           <Image
             src={image || "/static/dummy-items/1.jpeg"}
             width={800}
@@ -70,7 +71,7 @@ const MenuCard = ({
             className="h-full w-full object-cover"
           />
         </div>
-        <div className="flex w-3/4 flex-col px-2.5 py-2">
+        <div className="flex w-3/4 flex-col justify-between px-2.5 py-2">
           <div className="flex flex-col border-b border-black border-opacity-[0.02] pb-1">
             <p className="max-w-[241px] truncate text-nowrap text-[18px] leading-[27px] text-black/70">
               {title}
@@ -89,16 +90,22 @@ const MenuCard = ({
                 ${highestBid?.toFixed(2)}
               </span>
             </div>
-            <button
-              className="rounded-lg bg-moonstone px-4 py-2 text-white transition-colors hover:bg-moonstone/80"
-              onClick={(e) => {
-                e.stopPropagation();
-                setBidPopup(true);
-              }}
-              tabIndex={0}
-            >
-              Bid Now
-            </button>
+            {showBidButton ? (
+              <button
+                className="rounded-lg bg-moonstone px-4 py-2 text-white transition-colors hover:bg-moonstone/80"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setBidPopup(true);
+                }}
+                tabIndex={0}
+              >
+                Bid Now
+              </button>
+            ) : (
+              <div className="rounded-lg bg-gray-400 px-4 py-2 text-white">
+                Auction Ended
+              </div>
+            )}
           </div>
         </div>
       </div>

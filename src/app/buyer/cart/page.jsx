@@ -29,9 +29,12 @@ const CartPage = () => {
     try {
       setLoading(true);
       const res = await getCart();
+      console.log("Cart data : ", res);
       if (res.success) {
         setCart(res?.data?.data?.items);
         setUser(res?.data?.data?.user);
+        // Dispatch custom event to update header cart badge
+        window.dispatchEvent(new CustomEvent("cartUpdated"));
       } else {
         console.log("Failed to fetch cart:", res.error);
       }
@@ -58,6 +61,8 @@ const CartPage = () => {
       );
       setDisableButton(false);
       toast.success("Item Updated Successfully.");
+      // Dispatch custom event to update header cart badge
+      window.dispatchEvent(new CustomEvent("cartUpdated"));
     } catch (error) {
       setDisableButton(false);
       console.log("Update error:", error);
@@ -69,7 +74,11 @@ const CartPage = () => {
     getCartData();
   }, []);
 
-  const placeOrder = () => setOrderPlaced(!isOrderPlaced);
+  const placeOrder = () => {
+    setOrderPlaced(!isOrderPlaced);
+    // Refresh cart data when order is placed
+    getCartData();
+  };
 
   const getItemsCount = () => {
     let count = 0;
@@ -84,7 +93,6 @@ const CartPage = () => {
   if (loading) return <CartSkeleton />;
 
   console.log(cart);
-  
 
   return (
     <div className="flex w-full max-w-7xl flex-col gap-10 py-10">
@@ -92,7 +100,9 @@ const CartPage = () => {
       <div className="grid w-full max-w-7xl gap-10 md:grid-cols-2">
         <div className="flex h-80 w-full flex-col gap-10 overflow-y-auto">
           {cart?.length === 0 ? (
-            <div className="flex items-center justify-center h-full w-full text-xl text-gray-400">No items in cart.</div>
+            <div className="flex h-full w-full items-center justify-center text-xl text-gray-400">
+              No items in cart.
+            </div>
           ) : (
             cart?.map((item, index) => (
               <div
@@ -118,19 +128,48 @@ const CartPage = () => {
                       <div className="flex items-center gap-2">
                         <span className="text-silver">by</span>
                         <div className="relative size-7 overflow-hidden rounded-full">
-                          <Image
-                            src={user?.avatar || "/static/user.jpeg"}
-                            alt="item"
-                            fill
-                            className="object-cover"
-                          />
+                          {user?.avatar ? (
+                            <Image
+                              src={user.avatar}
+                              alt="user"
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="text-gray-500"
+                              >
+                                <path
+                                  d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+                                  fill="currentColor"
+                                />
+                                <path
+                                  d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z"
+                                  fill="currentColor"
+                                />
+                              </svg>
+                            </div>
+                          )}
                         </div>
 
-                        <span className="text-black/70 text-xs">{item.product.store?.name || "Store"}</span>
+                        <span className="text-xs text-black/70">
+                          {item.product.store?.name || "Store"}
+                        </span>
                       </div>
                     </div>
                     <span className="text-3xl font-medium text-black/80">
-                      ${item.price !== 0 ? item.price.toFixed(2) : item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}
+                      $
+                      {item.price !== 0
+                        ? item.price.toFixed(2)
+                        : item.buyItNow
+                          ? item.buyItNow.toFixed(2)
+                          : "0.00"}
                     </span>
                   </div>
                 </div>
@@ -188,8 +227,10 @@ const CartPage = () => {
                 onClick={() => setShowCheckoutSheet(true)}
                 disabled={cart.length === 0}
               >
-                <p className="text-white text-xl font-medium">Checkout</p>
-                <div className="rounded-full w-6 h-6 flex justify-center items-center bg-white/80 text-moonstone">{getItemsCount()}</div>
+                <p className="text-xl font-medium text-white">Checkout</p>
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/80 text-moonstone">
+                  {getItemsCount()}
+                </div>
               </button>
             </div>
             {showCheckoutSheet && (
@@ -201,12 +242,19 @@ const CartPage = () => {
                 open={showCheckoutSheet}
                 onOpenChange={setShowCheckoutSheet}
                 setOrderId={setOrderId}
+                onRefreshCart={getCartData}
               />
             )}
           </div>
         </div>
       </div>
-      {isOrderPlaced && <OrderPlacedPopup orderPlaced={placeOrder} id={orderId}/>}
+      {isOrderPlaced && (
+        <OrderPlacedPopup
+          orderPlaced={placeOrder}
+          id={orderId}
+          onClose={getCartData}
+        />
+      )}
     </div>
   );
 };

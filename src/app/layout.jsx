@@ -4,6 +4,7 @@ import { appName } from "@/lib/app-name";
 import { Toaster } from "react-hot-toast";
 import { NotificationProvider } from "@/providers/notification-provider";
 import { NotificationStoreProvider } from "@/providers/notification-store-provider";
+import { ProductsStoreProvider } from "@/providers/products-store-provider";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -21,8 +22,10 @@ export default function RootLayout({ children }) {
       <body className={`${font.className} antialiased`}>
         <NotificationProvider>
           <NotificationStoreProvider>
-            {children}
-            <Toaster />
+            <ProductsStoreProvider>
+              {children}
+              <Toaster />
+            </ProductsStoreProvider>
           </NotificationStoreProvider>
         </NotificationProvider>
       </body>

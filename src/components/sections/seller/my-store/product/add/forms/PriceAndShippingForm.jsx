@@ -13,6 +13,7 @@ import { Country, City } from "country-state-city";
 import Switch from "react-switch";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import { updateProductPriceAndShipping } from "@/lib/api/product/update";
+import { getProductById } from "@/lib/api/product/getById";
 
 const PriceAndShippingForm = () => {
   const router = useRouter();
@@ -97,6 +98,41 @@ const PriceAndShippingForm = () => {
     }));
     setCountryOptions(countries);
   }, []);
+
+  // Prefill on edit
+  useEffect(() => {
+    const hydrate = async () => {
+      try {
+        if (!id) return;
+        const p = await getProductById(id);
+        if (!p) return;
+        // pricing
+        setPricingFormat(
+          p.pricingFormat === "Auctions" || p.isAuction
+            ? "Auctions"
+            : "Fixed Price",
+        );
+        setPrice(p.price ?? "");
+        setStartingBid(p.startingBid ?? "");
+        setBuyItNow(p.buyItNow ?? "");
+        setMinimumOffer(p.minimumOffer ?? "");
+        setAutoAccept(p.autoAccept ?? "");
+        setAuctionDuration(p.auctionDuration ?? 7);
+        setAuctionLaunchDate(p.auctionLaunchDate ?? "");
+        // shipping/location
+        setShippingMethod(p.shippingMethod || "");
+        setDomesticShippingType(p.domesticShippingType || "");
+        setHandlingTime(p.handlingTime || "");
+        setSelectedCountry(p.country || "");
+        setSelectedCity(p.city || "");
+        setDomesticReturns(!!p.domesticReturns);
+        setInternationalReturns(!!p.internationalReturns);
+        setLocalPickup(!!p.localPickup);
+      } catch (_) {}
+    };
+    hydrate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   // Update cities when country changes
   useEffect(() => {

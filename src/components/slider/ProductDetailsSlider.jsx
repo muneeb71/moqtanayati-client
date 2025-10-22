@@ -11,8 +11,13 @@ import { removeFromWatchlist } from "@/lib/api/watchlist/removeWatchlist";
 const ProductDetailsSlider = ({ images = [], auctionDetail }) => {
   const imagesList = Array.isArray(images) ? images.filter(Boolean) : [];
 
+  console.log("🔍 [ProductDetailsSlider] Images received:", images);
+  console.log("🔍 [ProductDetailsSlider] Images list:", imagesList);
+  console.log("🔍 [ProductDetailsSlider] Auction detail:", auctionDetail);
+
   // If there are no images, don't render the slider section
   if (imagesList.length === 0) {
+    console.log("🔍 [ProductDetailsSlider] No images found, returning null");
     return null;
   }
   const [selectedItemIndex, setSelectedIndex] = useState(0);

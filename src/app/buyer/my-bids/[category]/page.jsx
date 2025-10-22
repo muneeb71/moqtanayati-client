@@ -21,7 +21,9 @@ const MyBidsPage = async ({ params }) => {
     // Filtering logic
     filteredBids = userBids;
     if (category === "active") {
-      filteredBids = userBids.filter((bid) => bid?.auction?.status === "LIVE");
+      filteredBids = userBids.filter(
+        (bid) => bid?.auction?.status === "LIVE" && bid?.status !== "OUTBID",
+      );
     } else if (category === "won") {
       filteredBids = userBids.filter((bid) => bid?.status === "WON");
     } else if (category === "outbid") {
@@ -29,8 +31,21 @@ const MyBidsPage = async ({ params }) => {
     }
     // 'all' or any other: show all
 
+    console.log("🔍 [MyBidsPage] Category:", category);
     console.log("🔍 [MyBidsPage] Filtered bids:", filteredBids);
     console.log("🔍 [MyBidsPage] Filtered bids length:", filteredBids.length);
+
+    // Debug: Show bid statuses for active category
+    if (category === "active") {
+      console.log("🔍 [MyBidsPage] Active bids debug:");
+      userBids.forEach((bid, index) => {
+        console.log(`Bid ${index}:`, {
+          auctionStatus: bid?.auction?.status,
+          bidStatus: bid?.status,
+          included: bid?.auction?.status === "LIVE" && bid?.status !== "OUTBID",
+        });
+      });
+    }
   } catch (error) {
     console.error("🔍 [MyBidsPage] Error fetching bids:", error);
     userBids = [];

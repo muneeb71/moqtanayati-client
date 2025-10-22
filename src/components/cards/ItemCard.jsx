@@ -18,6 +18,7 @@ const ItemCard = ({
   pricingFormat,
   buyItNow,
   isAuctionLive = true,
+  onNavigate,
 }) => {
   const router = useRouter();
   const [favourite, setFavourite] = useState(isFavourite);
@@ -26,6 +27,20 @@ const ItemCard = ({
   const getHourAgo = () => {
     const now = new Date();
     return now.getHours() - 1 + "hr ago";
+  };
+
+  const handleCardClick = () => {
+    if (onNavigate) {
+      onNavigate(true);
+    }
+    try {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("navLoading", "1");
+      }
+    } catch (e) {}
+    setTimeout(() => {
+      router.push("/buyer/product-details/" + id);
+    }, 0);
   };
 
   const handleFavoriteClick = async (e) => {
@@ -88,12 +103,12 @@ const ItemCard = ({
             height={200}
             alt={title}
             loading="lazy"
-            onClick={() => router.push("/buyer/product-details/" + id)}
+            onClick={handleCardClick}
           />
         ) : (
           <div
             className="flex h-full w-full items-center justify-center bg-gray-100"
-            onClick={() => router.push("/buyer/product-details/" + id)}
+            onClick={handleCardClick}
           >
             <div className="flex flex-col items-center justify-center text-gray-400">
               <svg
