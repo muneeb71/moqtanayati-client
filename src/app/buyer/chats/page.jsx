@@ -94,9 +94,52 @@ const ChatPage = () => {
   const sidebarUsers = conversations?.map((c) => {
     const otherUser =
       String(c.userA.id) === String(currentUserId) ? c.userB : c.userA;
-    // Fallback to last message sender info if name/avatar missing
-    const lastMsg =
-      Array.isArray(c.messages) && c.messages.length ? c.messages[0] : null;
+
+    // Get the latest message from chatMeta.messages or c.messages
+    let lastMsg = null;
+    if (
+      c.chatMeta?.messages &&
+      Array.isArray(c.chatMeta.messages) &&
+      c.chatMeta.messages.length > 0
+    ) {
+      // Sort by timestamp to get the latest message
+      console.log(
+        "🔍 [page.jsx] Using chatMeta.messages:",
+        c.chatMeta.messages,
+      );
+      const sortedMessages = c.chatMeta.messages.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0);
+        const dateB = new Date(b.createdAt || 0);
+        return dateB - dateA; // Descending order (newest first)
+      });
+      console.log(
+        "🔍 [page.jsx] Sorted chatMeta messages:",
+        sortedMessages.map((m) => ({
+          content: m.content,
+          createdAt: m.createdAt,
+        })),
+      );
+      lastMsg = sortedMessages[0];
+      console.log("🔍 [page.jsx] Selected lastMsg from chatMeta:", lastMsg);
+    } else if (Array.isArray(c.messages) && c.messages.length > 0) {
+      // Fallback to c.messages and sort to get latest
+      console.log("🔍 [page.jsx] Using c.messages:", c.messages);
+      const sortedMessages = c.messages.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0);
+        const dateB = new Date(b.createdAt || 0);
+        return dateB - dateA; // Descending order (newest first)
+      });
+      console.log(
+        "🔍 [page.jsx] Sorted c.messages:",
+        sortedMessages.map((m) => ({
+          content: m.content,
+          createdAt: m.createdAt,
+        })),
+      );
+      lastMsg = sortedMessages[0];
+      console.log("🔍 [page.jsx] Selected lastMsg from c.messages:", lastMsg);
+    }
+
     const lastSender = lastMsg?.sender;
     return {
       id: otherUser?.id,
@@ -131,10 +174,11 @@ const ChatPage = () => {
           setSelectedUser={handleSidebarSelect}
           loading={loading}
           selectedUserId={userId}
+          setUsers={setConversations}
         />
       )}
       {selectedChat || loading ? (
-        loadingMessages || loading ? (
+        loading ? (
           <ChatWindowSkeleton />
         ) : (
           <ChatWindow

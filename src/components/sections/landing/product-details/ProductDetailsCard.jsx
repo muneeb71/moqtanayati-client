@@ -1,6 +1,7 @@
 "use client";
 import ProductDetailsAuctionTimer from "@/components/timers/ProductDetailsAuctionTimer";
 import QaSectionSheet from "./dialogs/qa-sheet/QaSectionSheet";
+import SellerQaSectionSheet from "./dialogs/qa-sheet/SellerQaSectionSheet";
 import { addItemToCart } from "@/lib/api/cart/addItemToCart";
 import { getCart } from "@/lib/api/cart/getCart";
 import BidPopup from "@/components/popup/BidPopup";
@@ -11,11 +12,13 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import CheckoutSheet from "@/components/sections/landing/cart/CheckoutSheet";
 import OrderPlacedPopup from "@/components/popup/OrderPlacedPopup";
+import { getCookie } from "cookies-next";
 
-const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
+const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
   const [isBidPopupOpen, setIsBidPopupOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [showOrderPlaced, setShowOrderPlaced] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const path = usePathname();
   const id = path.split("/").splice(-1)[0];
   const [bidAmount, setBidAmount] = useState();
@@ -51,6 +54,12 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
   useEffect(() => {
     checkCartStatus();
   }, [item?.id]);
+
+  useEffect(() => {
+    const role = getCookie("role");
+    console.log("🔍 [ProductDetailsCard] User role detected:", role);
+    setUserRole(role);
+  }, []);
 
   const addItem = async () => {
     if (isInCart) {
@@ -100,6 +109,61 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
   };
 
   const isFixedPrice = item?.pricingFormat?.toLowerCase() === "fixed price";
+
+  // Calculate highest bid amount from bids data
+  const getHighestBidAmount = () => {
+    // Check all possible bid field names
+    const possibleBidFields = [
+      bids,
+      item?.auction?.bids,
+      item?.bids,
+      item?.bidsList,
+      item?.bidders,
+      item?.auction?.bidsList,
+      item?.auction?.bidders,
+    ];
+
+    let bidsToUse = [];
+
+    // Find the first non-empty bid field
+    for (const bidField of possibleBidFields) {
+      if (bidField && Array.isArray(bidField) && bidField.length > 0) {
+        bidsToUse = bidField;
+        break;
+      }
+    }
+
+    if (!bidsToUse || bidsToUse.length === 0) {
+      return item?.minimumOffer || item?.startingBid || 0;
+    }
+
+    // Find the highest bid amount
+    const highestBid = bidsToUse.reduce((max, bid) => {
+      const bidAmount = bid.amount || bid.bidAmount || 0;
+      return bidAmount > max ? bidAmount : max;
+    }, 0);
+
+    return highestBid;
+  };
+
+  const highestBidAmount = getHighestBidAmount();
+
+  // Debug logging
+  console.log("🔍 [ProductDetailsCard] Bids prop:", bids);
+  console.log("🔍 [ProductDetailsCard] Auction bids:", item?.auction?.bids);
+  console.log("🔍 [ProductDetailsCard] Item bids:", item?.bids);
+  console.log("🔍 [ProductDetailsCard] Item bidsList:", item?.bidsList);
+  console.log("🔍 [ProductDetailsCard] Item bidders:", item?.bidders);
+  console.log(
+    "🔍 [ProductDetailsCard] Auction bidsList:",
+    item?.auction?.bidsList,
+  );
+  console.log(
+    "🔍 [ProductDetailsCard] Auction bidders:",
+    item?.auction?.bidders,
+  );
+  console.log("🔍 [ProductDetailsCard] Total bids:", totalBids);
+  console.log("🔍 [ProductDetailsCard] Highest bid amount:", highestBidAmount);
 
   const user = {
     name: item?.seller?.name || "Seller",
@@ -168,7 +232,18 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
                   <span className="text-right text-[14.4px] leading-[21px] text-battleShipGray">
                     1hr ago
                   </span>
-                  <QaSectionSheet />
+                  {userRole === "seller" ? (
+                    <SellerQaSectionSheet />
+                  ) : (
+                    <QaSectionSheet />
+                  )}
+                  {/* Debug info - remove in production */}
+                  {process.env.NODE_ENV === "development" && (
+                    <div className="text-xs text-gray-500">
+                      Role: {userRole || "undefined"} | Showing:{" "}
+                      {userRole === "seller" ? "Seller" : "Buyer"} Q&A
+                    </div>
+                  )}
                 </div>
               </div>
               {!isFixedPrice && <ProductDetailsAuctionTimer item={item} />}
@@ -278,7 +353,7 @@ const ProductDetailsCard = ({ item, totalBids, fetchData }) => {
                         {totalBids > 0 ? "Highest Bid" : "Starting Bid"}
                       </h2>
                       <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
-                        ${item?.minimumOffer?.toFixed(2)}
+                        ${highestBidAmount.toFixed(2)}
                       </h1>
                     </div>
                     <div className="flex flex-col">

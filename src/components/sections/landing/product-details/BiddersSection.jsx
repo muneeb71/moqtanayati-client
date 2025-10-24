@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 import bidOnAuction from "@/lib/api/auctions/bid";
 import toast from "react-hot-toast";
 import withdrawBidOfUser from "@/lib/api/auctions/withdrawBid";
+import { getAuctionById } from "@/lib/api/auctions/getById";
 
 function getCookie(name) {
   if (typeof document === "undefined") return null;
@@ -20,31 +21,88 @@ function getCookie(name) {
 }
 const userId = getCookie("userId");
 
-const BiddersSection = ({ data, fetchData }) => {
+const BiddersSection = ({ data, fetchData, item }) => {
   const [selectedBidder, setSelectedBidder] = useState(null);
   const [bidAmount, setBidAmount] = useState(0);
+  const [auctionBids, setAuctionBids] = useState([]);
+  const [loading, setLoading] = useState(false);
   const path = usePathname();
   const id = path.split("/").splice(-1)[0];
   const [requestLoading, setRequestLoading] = useState(false);
 
+  // Debug logging
+  console.log("🔍 [BiddersSection] Bids count:", data?.length || 0);
+  console.log("🔍 [BiddersSection] Item pricing format:", item?.pricingFormat);
+  console.log("🔍 [BiddersSection] Item auction data:", item?.auction);
+
+  // Fetch auction data with bids
+  const fetchAuctionData = async () => {
+    if (item?.pricingFormat === "Auctions") {
+      setLoading(true);
+      try {
+        console.log(
+          "🔍 [BiddersSection] Fetching auction data for product:",
+          id,
+        );
+
+        const auctionData = await getAuctionById(item?.id);
+        console.log("🔍 [BiddersSection] Auction data response:", auctionData);
+
+        if (auctionData?.success && auctionData?.data) {
+          const bids = Array.isArray(auctionData.data) ? auctionData.data : [];
+          setAuctionBids(bids);
+          console.log("🔍 [BiddersSection] Auction bids found:", bids.length);
+        } else if (Array.isArray(auctionData)) {
+          setAuctionBids(auctionData);
+          console.log(
+            "🔍 [BiddersSection] Auction bids found (direct array):",
+            auctionData.length,
+          );
+        }
+      } catch (error) {
+        console.error(
+          "🔍 [BiddersSection] Error fetching auction data:",
+          error,
+        );
+        // Fallback to using the passed data if API fails
+        if (data && data.length > 0) {
+          setAuctionBids(data);
+          console.log("🔍 [BiddersSection] Using fallback data:", data.length);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  // Use auction bids if available, otherwise use passed data
+  const bidsToDisplay = auctionBids.length > 0 ? auctionBids : data;
+
+  useEffect(() => {
+    if (item?.pricingFormat === "Auctions") {
+      fetchAuctionData();
+    }
+  }, [item?.pricingFormat, id]);
+
   const handlePlaceBid = async (bypass) => {
-    if (!bypass && userId !== selectedBidder?.bidder?.id) return toast.error("This is not your bid.");
+    if (!bypass && userId !== selectedBidder?.bidder?.id)
+      return toast.error("This is not your bid.");
     try {
-      setRequestLoading(true)
+      setRequestLoading(true);
       const res = await bidOnAuction({
         productId: id,
         amount: Number(bidAmount),
       });
       if (res.success) {
-        setRequestLoading(false)
+        setRequestLoading(false);
         toast.success(res.message || "Bid placed successfully!");
         fetchData();
       } else {
-        setRequestLoading(false)
+        setRequestLoading(false);
         toast.error(res.message || "Failed to place bid.");
       }
     } catch (err) {
-      setRequestLoading(false)
+      setRequestLoading(false);
       toast.error(
         err?.response?.data?.message || err.message || "Failed to place bid.",
       );
@@ -59,7 +117,8 @@ const BiddersSection = ({ data, fetchData }) => {
   }, [selectedBidder]);
 
   const withdrawBid = async () => {
-    if (userId !== selectedBidder?.bidder?.id) return toast.error("This is not your bid.")
+    if (userId !== selectedBidder?.bidder?.id)
+      return toast.error("This is not your bid.");
     try {
       const res = await withdrawBidOfUser(selectedBidder?.auctionId);
       if (res?.success) {
@@ -75,13 +134,29 @@ const BiddersSection = ({ data, fetchData }) => {
 
   if (requestLoading) {
     return (
-      <div className="w-full h-[100vh] z-50 bg-black/80 inset-0 fixed flex justify-center items-center">
-        <svg className="animate-spin h-10 w-10 text-moonstone" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      <div className="fixed inset-0 z-50 flex h-[100vh] w-full items-center justify-center bg-black/80">
+        <svg
+          className="h-10 w-10 animate-spin text-moonstone"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v8z"
+          ></path>
         </svg>
       </div>
-    )
+    );
   }
 
   return (
@@ -138,12 +213,16 @@ const BiddersSection = ({ data, fetchData }) => {
           <h1 className="text-[32px] font-medium text-black/80">
             Bidders{" "}
             <span className="text-[18px] text-moonstone">
-              ({data?.length || 0})
+              ({bidsToDisplay?.length || 0})
             </span>
           </h1>
           <div className="grid gap-2 sm:grid-cols-2 sm:gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-5">
-            {data?.length > 0 ? (
-              data?.map((bidder, index) => (
+            {loading ? (
+              <div className="col-span-full flex justify-center py-8">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-moonstone border-t-transparent" />
+              </div>
+            ) : bidsToDisplay?.length > 0 ? (
+              bidsToDisplay?.map((bidder, index) => (
                 <BidderCard
                   key={index}
                   bidder={bidder}
@@ -152,7 +231,18 @@ const BiddersSection = ({ data, fetchData }) => {
                 />
               ))
             ) : (
-              <p className="w-full text-red-400">No Bids Yet!</p>
+              <div className="col-span-full py-12 text-center">
+                <div className="mx-auto max-w-md">
+                  <div className="mb-4 text-6xl">🏆</div>
+                  <h3 className="mb-2 text-xl font-semibold text-gray-700">
+                    No Bids Yet!
+                  </h3>
+                  <p className="text-gray-500">
+                    Be the first to place a bid on this auction and start the
+                    bidding war!
+                  </p>
+                </div>
+              </div>
             )}
           </div>
         </div>

@@ -10,8 +10,8 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { getCategories } from "@/lib/api/categories";
+import { getProductsClient } from "@/lib/api/product/getAllProductsClient";
 import { slugify } from "@/utils/slugify";
-import { useProductsStore } from "@/providers/products-store-provider";
 import Autoplay from "embla-carousel-autoplay";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -23,11 +23,6 @@ const CategoriesSlider = () => {
   const [loading, setLoading] = useState(true);
   const [isNavigating, setIsNavigating] = useState(false);
   const router = useRouter();
-  const { products, setProducts, getProductsByCategory } = useProductsStore();
-
-  console.log("🔍 [CategoriesSlider] Store products:", products);
-  console.log("🔍 [CategoriesSlider] Products type:", typeof products);
-  console.log("🔍 [CategoriesSlider] Products length:", products?.length);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -60,23 +55,14 @@ const CategoriesSlider = () => {
         categoryName,
       );
 
-      // Always fetch products directly to avoid store issues
-      console.log(
-        "🔍 [CategoriesSlider] Fetching products for category:",
-        categoryName,
-      );
+      // Use the proper API client function instead of direct fetch
+      const response = await getProductsClient();
+      console.log("🔍 [CategoriesSlider] API response:", response);
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/products/`,
-      );
-      const data = await response.json();
-      console.log("🔍 [CategoriesSlider] All products:", data);
+      if (response.success && response.data) {
+        const allProducts = response.data;
 
-      if (data && (data.data || data)) {
-        const allProducts = data.data || data;
-
-        // Store products in Zustand store for future use
-        setProducts(allProducts);
+        // Products are fetched and stored in sessionStorage for category filtering
 
         // Filter products by category
         const filteredProducts = allProducts.filter((product) => {
@@ -135,6 +121,25 @@ const CategoriesSlider = () => {
               <div className="h-6 w-20 animate-pulse rounded bg-gray-200" />
             </div>
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Show message if no categories available
+  if (!loading && categories.length === 0) {
+    return (
+      <div className="w-full max-w-7xl overflow-hidden px-5">
+        <div className="flex w-full justify-center py-12">
+          <div className="text-center">
+            <div className="mb-4 text-6xl">📂</div>
+            <h3 className="mb-2 text-lg font-semibold text-gray-700">
+              No Categories Available
+            </h3>
+            <p className="text-gray-500">
+              We couldn't find any product categories at the moment.
+            </p>
+          </div>
         </div>
       </div>
     );

@@ -9,18 +9,12 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
-import { useState } from "react";
-import AskQuestion from "../../qa/AskQuestion";
-import ProductQuestionsList from "../../qa/ProductQuestionsList";
+import SellerQaSection from "../../qa/SellerQaSection";
 
-const QaSectionSheet = () => {
+const SellerQaSectionSheet = () => {
   const params = useParams();
   const productId = params?.id;
-  const [refreshKey, setRefreshKey] = useState(0);
 
-  const handleQuestionAdded = () => {
-    setRefreshKey((prev) => prev + 1);
-  };
   return (
     <Sheet>
       <SheetTrigger
@@ -37,14 +31,8 @@ const QaSectionSheet = () => {
           </SheetTitle>
         </SheetHeader>
         <div className="flex h-full w-full flex-col">
-          <div className="flex-1 overflow-y-auto pb-4">
-            <ProductQuestionsList key={refreshKey} productId={productId} />
-          </div>
-          <div className="flex-shrink-0 border-t border-gray-200 bg-white pb-4">
-            <AskQuestion
-              productId={productId}
-              onQuestionAdded={handleQuestionAdded}
-            />
+          <div className="flex-1 overflow-y-auto">
+            <SellerQaSection productId={productId} />
           </div>
         </div>
       </SheetContent>
@@ -52,4 +40,4 @@ const QaSectionSheet = () => {
   );
 };
 
-export default QaSectionSheet;
+export default SellerQaSectionSheet;

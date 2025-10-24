@@ -21,21 +21,62 @@ const OrderStatus = ({ order, onStatusUpdated }) => {
   const router = useRouter();
   // Normalize current delivery status for visualization
   const deriveStatus = (o) => {
+    console.log("🔍 [OrderStatus] deriveStatus - Order data:", {
+      id: o?.id,
+      status: o?.status,
+      deliveryStatus: o?.deliveryStatus,
+    });
+
     const ds = o?.deliveryStatus;
-    if (ds) return ds;
     const s = o?.status;
-    if (s === "COMPLETED") return "DELIVERED";
-    if (s === "PENDING") return "PENDING";
-    if (s === "PROCESSING") return "PROCESSING";
-    if (s === "SHIPPED") return "SHIPPED";
-    return "PENDING";
+
+    // If deliveryStatus exists and is not PENDING, use it
+    if (ds && ds !== "PENDING") {
+      console.log("🔍 [OrderStatus] Using deliveryStatus:", ds);
+      return ds;
+    }
+
+    // If status is more advanced than deliveryStatus, use status
+    if (s === "COMPLETED") {
+      console.log("🔍 [OrderStatus] Status is COMPLETED, returning DELIVERED");
+      return "DELIVERED";
+    }
+    if (s === "PROCESSING") {
+      console.log(
+        "🔍 [OrderStatus] Status is PROCESSING, returning PROCESSING",
+      );
+      return "PROCESSING";
+    }
+    if (s === "SHIPPED") {
+      console.log("🔍 [OrderStatus] Status is SHIPPED, returning SHIPPED");
+      return "SHIPPED";
+    }
+    if (s === "PENDING") {
+      console.log("🔍 [OrderStatus] Status is PENDING, returning PENDING");
+      return "PENDING";
+    }
+
+    // Fallback to deliveryStatus if available, otherwise PENDING
+    const result = ds || "PENDING";
+    console.log("🔍 [OrderStatus] Fallback result:", result);
+    return result;
   };
   const initialStatus = deriveStatus(order);
   const [pending, setPending] = useState(false);
   const [localStatus, setLocalStatus] = useState(initialStatus);
+
   // Keep local status in sync if the order prop updates (e.g., after navigation/back)
   useEffect(() => {
-    setLocalStatus(deriveStatus(order));
+    const newStatus = deriveStatus(order);
+    console.log(
+      "🔍 [OrderStatus] Status sync - Order status:",
+      order?.status,
+      "Delivery status:",
+      order?.deliveryStatus,
+      "Derived status:",
+      newStatus,
+    );
+    setLocalStatus(newStatus);
   }, [order?.deliveryStatus, order?.status, order?.id]);
   // profile store updaters
   let setOrders = null;
@@ -72,10 +113,19 @@ const OrderStatus = ({ order, onStatusUpdated }) => {
         toast.success(`Status updated: ${prev} → ${nextStatus}`, { id: tId });
         setPending(false);
         onStatusUpdated?.(nextStatus);
-        // Ensure fresh data when navigating back/forward
+
+        // Force refresh the page to get updated data from server
         try {
+          console.log(
+            "🔍 [OrderStatus] Refreshing page to get updated order data",
+          );
           router.refresh();
+          // Also try to reload the page after a short delay to ensure server data is fetched
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         } catch (_) {}
+
         // Update profile store orders so lists reflect new status immediately
         try {
           const applyUpdate = (arr) =>
@@ -86,17 +136,25 @@ const OrderStatus = ({ order, onStatusUpdated }) => {
                         ...o,
                         // Always set deliveryStatus to the UI key
                         deliveryStatus: nextStatus,
-                        // If delivered, mark status COMPLETED; if first step, harmonize Pending
+                        // Update status based on the nextStatus
                         status:
                           nextStatus === "DELIVERED"
                             ? "COMPLETED"
                             : nextStatus === "PENDING"
                               ? "PENDING"
-                              : o.status,
+                              : nextStatus === "PROCESSING"
+                                ? "PROCESSING"
+                                : nextStatus === "SHIPPED"
+                                  ? "SHIPPED"
+                                  : o.status,
                       }
                     : o,
                 )
               : arr;
+          console.log(
+            "🔍 [OrderStatus] Updating profile store with status:",
+            nextStatus,
+          );
           if (setOrders) setOrders((prevArr) => applyUpdate(prevArr));
           if (setSellerOrders)
             setSellerOrders((prevArr) => applyUpdate(prevArr));
@@ -113,7 +171,10 @@ const OrderStatus = ({ order, onStatusUpdated }) => {
     }
   };
   return (
-    <div className="flex h-full w-full max-w-xl flex-col gap-5">
+    <div
+      className="flex h-full w-full max-w-xl flex-col gap-5"
+      key={`order-status-${order?.id}-${order?.deliveryStatus}-${order?.status}`}
+    >
       <span className="text-3xl font-medium text-[#1A1A1ACC]">
         Order Status
       </span>

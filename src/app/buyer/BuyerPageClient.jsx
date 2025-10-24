@@ -111,18 +111,9 @@ const BuyerPageClient = () => {
           {latestAuction && !liveAuction && (
             <div className="flex w-full flex-col">
               <h2 className="mb-4 text-center text-2xl font-bold text-moonstone">
-                ⏰ Latest Auction
+                ⏰ Upcoming Auction
               </h2>
               <AuctionSection auction={latestAuction} />
-            </div>
-          )}
-
-          {/* Show message if no auctions */}
-          {!liveAuction && !latestAuction && (
-            <div className="flex w-full flex-col items-center justify-center py-12">
-              <p className="text-lg text-gray-500">
-                No auctions available at the moment
-              </p>
             </div>
           )}
         </div>

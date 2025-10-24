@@ -68,8 +68,16 @@ const NotificationSection = ({ category = "" }) => {
   return (
     <div className="no-scrollbar flex w-full flex-col gap-5 overflow-auto px-5 py-7 md:h-[800px]">
       {filteredNotifications.length === 0 ? (
-        <div className="py-10 text-center text-gray-500">
-          No notifications available.
+        <div className="flex w-full justify-center py-12">
+          <div className="text-center">
+            <div className="mb-4 text-6xl">🔔</div>
+            <h3 className="mb-2 text-lg font-semibold text-gray-700">
+              No Notifications
+            </h3>
+            <p className="text-gray-500">
+              You don't have any notifications at the moment.
+            </p>
+          </div>
         </div>
       ) : (
         filteredNotifications.map((notification, index) => (

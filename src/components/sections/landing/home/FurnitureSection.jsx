@@ -89,6 +89,11 @@ const PopularSection = () => {
     fetchPopularProducts();
   }, []);
 
+  // Don't render anything if no products and not loading
+  if (!loading && products.length === 0) {
+    return null;
+  }
+
   return (
     <div className="flex w-full flex-col items-center justify-center">
       <div className="flex w-full max-w-7xl flex-col">

@@ -542,7 +542,13 @@ const ChatWindow = ({
           ref={messagesContainerRef}
           className="no-scrollbar flex h-full max-h-[63vh] flex-col gap-3 overflow-y-auto border-t-[1.3px] border-[#F0F1F4] py-4"
         >
-          {loading ? (
+          {console.log("🔍 [ChatWindow] Rendering messages:", {
+            loading,
+            messagesLength: messages?.length,
+            messages,
+          })}
+
+          {loading && (!messages || messages.length === 0) ? (
             <div className="py-8 text-center text-gray-400">Loading...</div>
           ) : !messages || messages.length === 0 ? (
             <div className="py-8 text-center text-gray-400">No messages</div>

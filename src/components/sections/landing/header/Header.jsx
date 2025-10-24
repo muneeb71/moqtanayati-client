@@ -7,7 +7,7 @@ import Link from "next/link";
 import HeaderDropdown from "./HeaderDropdown";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { getUserProfile } from "@/lib/api/profile/getProfile";
+import { getUserProfileClient } from "@/lib/api/profile/getProfileClient";
 import { getCart } from "@/lib/api/cart/getCart";
 import toast from "react-hot-toast";
 
@@ -25,14 +25,19 @@ const Header = () => {
   const isCartActive = pathname.includes("/buyer/cart");
 
   const getUserData = async () => {
-    const res = await getUserProfile();
-    console.log("🔍 [Header] User profile response:", res);
-    if (res?.success) {
-      console.log("🔍 [Header] User data:", res?.data);
-      console.log("🔍 [Header] User avatar:", res?.data?.avatar);
-      setUser(res?.data);
-    } else {
-      console.error("🔍 [Header] Error fetching user details:", res);
+    try {
+      const res = await getUserProfileClient();
+      console.log("🔍 [Header] User profile response:", res);
+      if (res?.success) {
+        console.log("🔍 [Header] User data:", res?.data);
+        console.log("🔍 [Header] User avatar:", res?.data?.avatar);
+        setUser(res?.data);
+      } else {
+        console.error("🔍 [Header] Error fetching user details:", res);
+        toast.error(res?.message || "Error fetching user details.");
+      }
+    } catch (error) {
+      console.error("🔍 [Header] Error in getUserData:", error);
       toast.error("Error fetching user details.");
     }
   };

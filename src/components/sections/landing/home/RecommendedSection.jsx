@@ -3,7 +3,6 @@
 import ItemCard from "@/components/cards/ItemCard";
 import CustomLink from "@/components/link/CustomLink";
 import ItemSlider from "@/components/slider/ItemSlider";
-import { dummyItems } from "@/lib/dummy-items";
 import { getUserOrdersClient } from "@/lib/api/orders/getUserOrdersClient";
 import { getProductsClient } from "@/lib/api/product/getAllProductsClient";
 import { getWatchlist } from "@/lib/api/watchlist/getWatchlist";
@@ -114,8 +113,8 @@ const RecommendedSection = ({ title = "Recommended For You" }) => {
             setProducts(productsWithFavorites);
             setSectionTitle("Recommended For You");
           } else {
-            // Fallback to dummy items if API fails
-            setProducts(dummyItems);
+            // No products found, show empty state
+            setProducts([]);
             setSectionTitle("Recommended For You");
           }
         } else {
@@ -164,9 +163,9 @@ const RecommendedSection = ({ title = "Recommended For You" }) => {
             setProducts(productsWithFavorites);
             setSectionTitle("Products");
           } else {
-            // Fallback to dummy items if API fails
-            setProducts(dummyItems);
-            setSectionTitle("Recommended For You");
+            // No products found, show empty state
+            setProducts([]);
+            setSectionTitle("Products");
           }
         }
       } catch (error) {
@@ -174,8 +173,8 @@ const RecommendedSection = ({ title = "Recommended For You" }) => {
           "🔍 [RecommendedSection] Error fetching recommended products:",
           error,
         );
-        // Fallback to dummy items on error
-        setProducts(dummyItems);
+        // Show empty state on error instead of dummy items
+        setProducts([]);
         setSectionTitle("Recommended For You");
       } finally {
         setLoading(false);
@@ -199,12 +198,24 @@ const RecommendedSection = ({ title = "Recommended For You" }) => {
         <div className="flex w-full justify-center py-8">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-moonstone border-t-transparent" />
         </div>
-      ) : (
+      ) : products.length > 0 ? (
         <ItemSlider
           items={products}
           section={"recommendations"}
           onNavigate={setIsNavigating}
         />
+      ) : (
+        <div className="flex w-full justify-center py-12">
+          <div className="text-center">
+            <div className="mb-4 text-6xl">🔍</div>
+            <h3 className="mb-2 text-lg font-semibold text-gray-700">
+              No Products Available
+            </h3>
+            <p className="text-gray-500">
+              We couldn't find any recommended products for you at the moment.
+            </p>
+          </div>
+        </div>
       )}
       {isNavigating && (
         <div className="fixed inset-0 z-[9999] grid place-items-center bg-black/30">

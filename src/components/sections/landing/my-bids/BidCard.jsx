@@ -25,7 +25,7 @@ const BidCard = ({ item }) => {
         boxShadow: "0px 0px 29.85px 2.39px #0000001A",
       }}
       onClick={() =>
-        router.push(`/buyer/product-details/${item?.auction?.productId}`)
+        router.push(`/buyer/product-details/${item?.auction?.product?.id}`)
       }
     >
       <div className="h-full w-full overflow-hidden">
