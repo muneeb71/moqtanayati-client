@@ -12,13 +12,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { leaveReview } from "@/lib/api/profile/leaveReview";
 import { getReviewByOrderId } from "@/lib/api/profile/getReviewByOrderId";
 import { updateReview } from "@/lib/api/profile/updateReview";
 import toast from "react-hot-toast";
 
-const LeaveFeedbackDialog = ({ item }) => {   
+const LeaveFeedbackDialog = ({ item }) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,34 @@ const LeaveFeedbackDialog = ({ item }) => {
   const [reviewId, setReviewId] = useState(null);
   const [initialRating, setInitialRating] = useState(0);
   const [initialComment, setInitialComment] = useState("");
+  const [hasExistingReview, setHasExistingReview] = useState(false);
   const totalRating = 5;
+
+  // Only show for delivered orders
+  if (item?.status !== "DELIVERED") {
+    return null;
+  }
+
+  // Check for existing review on component mount
+  useEffect(() => {
+    const checkExistingReview = async () => {
+      try {
+        const data = await getReviewByOrderId(item?.id);
+        if (data && data.data?.id) {
+          setHasExistingReview(true);
+          setReviewId(data.data.id);
+        } else {
+          setHasExistingReview(false);
+          setReviewId(null);
+        }
+      } catch (err) {
+        setHasExistingReview(false);
+        setReviewId(null);
+      }
+    };
+
+    checkExistingReview();
+  }, [item?.id]);
 
   // Fetch review data when dialog opens
   const [open, setOpen] = useState(false);
@@ -43,9 +70,11 @@ const LeaveFeedbackDialog = ({ item }) => {
         if (data && data.data?.rating) {
           setRating(data.data.rating);
           setInitialRating(data.data.rating);
+          setHasExistingReview(true);
         } else {
           setRating(0);
           setInitialRating(0);
+          setHasExistingReview(false);
         }
         if (data && data.data?.comment) {
           setComment(data.data.comment);
@@ -54,21 +83,28 @@ const LeaveFeedbackDialog = ({ item }) => {
           setComment("");
           setInitialComment("");
         }
-        if (data && data.data?.id) setReviewId(data.data.id);
-        else setReviewId(null);
+        if (data && data.data?.id) {
+          setReviewId(data.data.id);
+          setHasExistingReview(true);
+        } else {
+          setReviewId(null);
+          setHasExistingReview(false);
+        }
       } catch (err) {
         setRating(0);
         setInitialRating(0);
         setComment("");
         setInitialComment("");
         setReviewId(null);
+        setHasExistingReview(false);
       } finally {
         setFetchingReview(false);
       }
     }
   };
 
-  const isReviewUnchanged = reviewId && rating === initialRating && comment === initialComment;
+  const isReviewUnchanged =
+    reviewId && rating === initialRating && comment === initialComment;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,15 +125,16 @@ const LeaveFeedbackDialog = ({ item }) => {
         });
         setInitialRating(rating);
         setInitialComment(comment);
-        toast.success("Review added successfully.")
+        toast.success("Review added successfully.");
       }
       setSuccess(true);
+      setHasExistingReview(true);
     } catch (err) {
-      toast.error("Error adding review.")
+      toast.error("Error adding review.");
       setError("Failed to submit feedback. Please try again.");
     } finally {
       setLoading(false);
-      setOpen(false)
+      setOpen(false);
     }
   };
 
@@ -105,17 +142,22 @@ const LeaveFeedbackDialog = ({ item }) => {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <button className="flex items-baseline text-xs font-medium text-russianViolet sm:gap-1 sm:text-sm">
-          Rate{" "}
-          <span className="hidden sm:flex">Product {chevronRightIcon}</span>
+          {hasExistingReview ? "View" : "Rate"}{" "}
+          <span className="hidden sm:flex">
+            {hasExistingReview ? "Review" : "Product"} {chevronRightIcon}
+          </span>
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-[350px] rounded-[24px] sm:max-w-[471px] sm:rounded-[24px]">
         <DialogHeader>
           <DialogTitle className="border-b-[1.2px] border-[#F0F1F4] pb-4 text-center text-[21.6px] font-medium">
-            Leave Feedback
+            {hasExistingReview ? "Your Review" : "Leave Feedback"}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-10 py-3">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col items-center gap-10 py-3"
+        >
           <div className="flex w-full gap-2">
             <div className="aspect-square h-full max-h-[96px] w-[96px] overflow-hidden rounded-2xl border border-black/5">
               <Image
@@ -137,10 +179,17 @@ const LeaveFeedbackDialog = ({ item }) => {
             </div>
           </div>
           <div className="flex w-full flex-col gap-5">
-            <h1 className="text-darkBlue font-medium">Rate Your Experience</h1>
+            <h1 className="font-medium text-darkBlue">
+              {hasExistingReview ? "Your Rating" : "Rate Your Experience"}
+            </h1>
             <div className="flex items-center gap-2 text-[#F3B95A]">
               {[...Array(totalRating)].map((_, index) => (
-                <button type="button" key={index} onClick={() => setRating(index + 1)}>
+                <button
+                  type="button"
+                  key={index}
+                  onClick={() => !hasExistingReview && setRating(index + 1)}
+                  disabled={hasExistingReview}
+                >
                   <span
                     className={
                       index < rating ? "text-[#F3B95A]" : "text-silver"
@@ -155,20 +204,38 @@ const LeaveFeedbackDialog = ({ item }) => {
           <div className="flex w-full flex-col gap-2">
             {/* <Label text="Write a Review" /> */}
             <TextareaField
-              placeholder="Share your thoughts about the product or seller…"
+              placeholder={
+                hasExistingReview
+                  ? "Your review comment..."
+                  : "Share your thoughts about the product or seller…"
+              }
               className="h-44"
               value={comment}
-              onChange={e => setComment(e.target.value)}
-              disabled={fetchingReview}
+              onChange={(e) => !hasExistingReview && setComment(e.target.value)}
+              disabled={fetchingReview || hasExistingReview}
             />
           </div>
-          {fetchingReview && <div className="text-gray-500 text-sm">Loading review...</div>}
-          {error && <div className="text-red-500 text-sm">{error}</div>}
-          {success && <div className="text-green-600 text-sm">Feedback submitted!</div>}
-          <RoundedButton
-            title={reviewId ? (loading ? "Updating..." : "Update Feedback") : (loading ? "Submitting..." : "Submit Feedback")}
-            disabled={loading || rating === 0 || comment.length === 0 || fetchingReview || (reviewId && isReviewUnchanged)}
-          />
+          {fetchingReview && (
+            <div className="text-sm text-gray-500">Loading review...</div>
+          )}
+          {error && <div className="text-sm text-red-500">{error}</div>}
+          {success && (
+            <div className="text-sm text-green-600">Feedback submitted!</div>
+          )}
+          {!hasExistingReview ? (
+            <RoundedButton
+              type="submit"
+              title={loading ? "Submitting..." : "Submit Feedback"}
+              disabled={
+                loading ||
+                rating === 0 ||
+                comment.length === 0 ||
+                fetchingReview
+              }
+            />
+          ) : (
+            <RoundedButton title="Close" onClick={() => setOpen(false)} />
+          )}
         </form>
       </DialogContent>
     </Dialog>

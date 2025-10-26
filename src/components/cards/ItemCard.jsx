@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { handleFavoriteClient } from "@/lib/api/product/handleFavoriteClient";
+import toast from "react-hot-toast";
 
 const ItemCard = ({
   id = 1,
@@ -14,41 +16,147 @@ const ItemCard = ({
   address = "",
   isFavourite = false,
   pricingFormat,
-  buyItNow
+  buyItNow,
+  isAuctionLive = true,
+  onNavigate,
 }) => {
   const router = useRouter();
   const [favourite, setFavourite] = useState(isFavourite);
+  const [loading, setLoading] = useState(false);
 
   const getHourAgo = () => {
     const now = new Date();
     return now.getHours() - 1 + "hr ago";
   };
 
+  const handleCardClick = () => {
+    if (onNavigate) {
+      onNavigate(true);
+    }
+    try {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("navLoading", "1");
+      }
+    } catch (e) {}
+    setTimeout(() => {
+      router.push("/buyer/product-details/" + id);
+    }, 0);
+  };
+
+  const handleFavoriteClick = async (e) => {
+    e.stopPropagation(); // Prevent card click
+    if (loading) return;
+
+    setLoading(true);
+    try {
+      const response = await handleFavoriteClient(id, pricingFormat);
+
+      console.log("response from handleFavouriteClient 0 : ", response);
+      console.log("response from handleFavouriteClient 1 : ", response.data);
+      console.log(
+        "response from handleFavouriteClient 2: ",
+        response.data?.data,
+      );
+
+      if (response?.success) {
+        setFavourite(!favourite);
+        if (response?.warning) {
+          toast.success(
+            "Favorite functionality not yet available for this product",
+          );
+        } else if (response?.data?.message === "Item already in watchlist") {
+          // Item is already in watchlist, so it should be marked as favorite
+          setFavourite(true);
+          toast.success("Item is already in your watchlist");
+        } else {
+          toast.success(
+            favourite ? "Removed from favorites" : "Added to favorites",
+          );
+        }
+      } else {
+        if (response?.warning) {
+          toast.warning(response?.warning);
+        } else {
+          toast.error(response?.error || "Failed to update favorites");
+        }
+      }
+    } catch (error) {
+      console.error("Favorite error:", error);
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div
-      className="flex w-full flex-col overflow-hidden rounded-[12px] h-72"
+      className="flex h-72 w-full flex-col overflow-hidden rounded-[12px]"
       style={{
         boxShadow: "0px 0px 10px 2px #0000001A",
       }}
     >
       <div className="rounded-top relative h-[250px] cursor-pointer overflow-hidden sm:h-[188px]">
-        <Image
-          src={image || ""}
-          width={800}
-          height={200}
-          alt={title}
-          loading="lazy"
-          onClick={() => router.push("/buyer/product-details/" + id)}
-        />
-        {pricingFormat == "Auctions" && <button
-          className={cn(
-            "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
-            favourite ? "text-[#F16D6F]" : "text-white",
-          )}
-          onClick={() => setFavourite(!favourite)}
-        >
-          {heartIcon}
-        </button>}
+        {image && image.trim() !== "" ? (
+          <Image
+            src={image}
+            width={800}
+            height={200}
+            alt={title}
+            loading="lazy"
+            onClick={handleCardClick}
+          />
+        ) : (
+          <div
+            className="flex h-full w-full items-center justify-center bg-gray-100"
+            onClick={handleCardClick}
+          >
+            <div className="flex flex-col items-center justify-center text-gray-400">
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="mb-2"
+              >
+                <path
+                  d="M4 16L8.5 10.5L13 14L16.5 9.5L20 13V4H4V16Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <rect
+                  x="2"
+                  y="2"
+                  width="20"
+                  height="20"
+                  rx="2"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+              </svg>
+              <span className="text-sm">No Image</span>
+            </div>
+          </div>
+        )}
+        {pricingFormat == "Auctions" && isAuctionLive && (
+          <button
+            className={cn(
+              "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10 transition-all duration-200",
+              favourite ? "text-[#F16D6F]" : "text-white",
+              loading && "cursor-not-allowed opacity-50",
+            )}
+            onClick={handleFavoriteClick}
+            disabled={loading}
+          >
+            {loading ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            ) : (
+              heartIcon
+            )}
+          </button>
+        )}
       </div>
       <div
         className="flex w-full cursor-pointer flex-col px-2.5 py-2"
@@ -56,7 +164,12 @@ const ItemCard = ({
       >
         <div className="flex items-center justify-between">
           <span className="text-[21px] font-medium leading-[32px]">
-            ${price !== 0 ? price?.toFixed(2) : buyItNow ? buyItNow?.toFixed(2) : "0.00"}
+            $
+            {price && price !== 0 && !isNaN(Number(price))
+              ? Number(price).toFixed(2)
+              : buyItNow && !isNaN(Number(buyItNow))
+                ? Number(buyItNow).toFixed(2)
+                : "0.00"}
           </span>
           <span className="text-[15px] leading-[23px] text-black/30">
             {getHourAgo(createdAt)}

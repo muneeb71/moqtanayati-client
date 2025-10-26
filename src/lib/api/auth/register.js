@@ -11,7 +11,7 @@ export async function signUpUser({
   latitude,
   longitude,
   sellerType,
-  isVerified
+  isVerified,
 }) {
   try {
     const response = await api.post("sellers/register", {
@@ -25,8 +25,11 @@ export async function signUpUser({
       latitude,
       longitude,
       sellerType,
-      isVerified
+      isVerified,
     });
+
+    console.log("register response : ", response);
+
     return response.data;
   } catch (error) {
     throw error;

@@ -1,59 +1,69 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import UsersTable from "./UsersTable";
-import { leftChipIcon, rightChipIcon } from "@/assets/icons/admin-icons";
-import { getAllUsers } from "@/lib/api/admin/users/getAllUsers";
+import TablePagination from "@/components/pagination/TablePagination";
+import { BiSearch } from "react-icons/bi";
+import Filter from "@/components/dropdown/filter";
+import useUserStore from "@/stores/useUserStore";
 
 const Users = () => {
+  const {
+    users,
+    usersLoading,
+    selectedRows,
+    currentPage,
+    rowsPerPage,
+    totalPages,
+    totalUsers,
+    searchTerm,
+    sortBy,
+    setSearchTerm,
+    setSortBy,
+    setSelectedRows,
+    toggleRowSelection,
+    setCurrentPage,
+    setDebouncedSearchTerm,
+    fetchUsers,
+    debouncedSearchTerm,
+  } = useUserStore();
+
   const router = useRouter();
-  const [users, setUsers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedRows, setSelectedRows] = useState([]);
+  const tableRef = useRef(null);
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalUsers, setTotalUsers] = useState(0);
-
-  const toggleRowSelection = (email) => {
-    setSelectedRows((prev) =>
-      prev.includes(email)
-        ? prev.filter((item) => item !== email)
-        : [...prev, email]
-    );
-  };
+  const userSortOptions = [
+    { label: "Newest", value: "newest" },
+    { label: "Oldest", value: "oldest" },
+    { label: "Seller", value: "SELLER" },
+    { label: "Buyer", value: "BUYER" },
+  ];
 
   const onViewClick = (id) => {
     router.push(`/admin/users/${id}`);
   };
 
-  async function fetchUsers() {
-    try {
-      const res = await getAllUsers();
-      const fetchedUsers = res?.data?.users || [];
-      const pagination = res?.data?.pagination || {};
-
-      setUsers(fetchedUsers);
-      setCurrentPage(pagination.page || 1);
-      setRowsPerPage(pagination.limit || 10);
-      setTotalPages(pagination.pages || 1);
-      setTotalUsers(pagination.total || fetchedUsers.length);
-    } catch (e) {
-      setUsers([]);
-    }
-  }
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 400);
+    return () => clearTimeout(delay);
+  }, [searchTerm, debouncedSearchTerm]);
 
   useEffect(() => {
-    fetchUsers(currentPage);
-  }, [currentPage]);
+    fetchUsers();
+  }, [currentPage, sortBy, debouncedSearchTerm]);
 
   return (
     <div className="flex h-full max-h-full flex-col overflow-hidden py-6">
-      <div className="flex flex-col gap-3 pb-5">
-        <p className="text-[24px] font-semibold leading-none text-russianViolet">
-          Users
-        </p>
-        <div className="flex flex-row items-center justify-between">
+      <div
+        ref={tableRef}
+        className="mb-5 flex w-full items-end justify-between"
+      >
+        <div className="flex flex-col gap-1">
+          <span className="text-2xl font-semibold text-russianViolet">
+            Users
+          </span>
           <div className="flex flex-row items-center gap-5">
             <p className="text-[18px] font-normal text-davyGray">All Users</p>
             {selectedRows.length > 0 && (
@@ -64,6 +74,27 @@ const Users = () => {
             )}
           </div>
         </div>
+
+        <div className="flex items-center gap-3">
+          <div className="relative w-full max-w-[220px]">
+            <input
+              type="text"
+              placeholder="Search by name or email"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="h-10 w-full rounded-lg border border-silver bg-white pl-10 pr-4 text-gray-700 focus:outline-none focus:ring-1 focus:ring-moonstone"
+            />
+            <BiSearch className="absolute left-3 top-1/2 -translate-y-1/2 transform text-xl text-gray-500" />
+          </div>
+          <Filter
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            sortingOptions={userSortOptions}
+          />
+        </div>
       </div>
 
       <div className="no-scrollbar flex h-full max-h-full w-full max-w-full flex-col overflow-auto rounded-lg">
@@ -73,68 +104,18 @@ const Users = () => {
           currentData={users}
           toggleRowSelection={toggleRowSelection}
           onViewClick={onViewClick}
+          loading={usersLoading}
+          refreshData={fetchUsers}
         />
       </div>
 
-      <div className="flex md:h-20 flex-col md:flex-row md:items-center gap-1 justify-between bg-white py-5 pl-8">
-        <p className="text-sm text-customGray">
-          Showing {1 + (currentPage - 1) * rowsPerPage} -{" "}
-          {Math.min(currentPage * rowsPerPage, totalUsers)} from {totalUsers}
-        </p>
-
-        <div className="mr-10 flex items-center gap-2">
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-lightBlue/20 text-moonstone hover:bg-moonstone/40 disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(currentPage - 1)}
-          >
-            {leftChipIcon}
-          </button>
-
-          {Array.from({ length: totalPages }, (_, i) => {
-            const pageNum = i + 1;
-            if (
-              i === 0 ||
-              i === totalPages - 1 ||
-              Math.abs(currentPage - pageNum) <= 1
-            ) {
-              return (
-                <button
-                  key={i}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-semibold ${
-                    currentPage === pageNum
-                      ? "bg-moonstone text-white"
-                      : "bg-moonstone/10 text-moonstone hover:bg-moonstone/20"
-                  }`}
-                  onClick={() => setCurrentPage(pageNum)}
-                >
-                  {pageNum}
-                </button>
-              );
-            } else if (
-              (i === 1 && currentPage > 3) ||
-              (i === totalPages - 2 && currentPage < totalPages - 2)
-            ) {
-              return (
-                <span
-                  key={i}
-                  className="flex size-8 items-end justify-center rounded-lg bg-moonstone/10 pb-2 text-sm text-moonstone"
-                >
-                  ...
-                </span>
-              );
-            }
-          })}
-
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-moonstone/10 text-moonstone hover:bg-moonstone/40 disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(currentPage + 1)}
-          >
-            {rightChipIcon}
-          </button>
-        </div>
-      </div>
+      <TablePagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        rowsPerPage={rowsPerPage}
+        totalItems={totalUsers}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

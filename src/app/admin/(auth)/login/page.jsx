@@ -11,6 +11,7 @@ const AdminLoginPage = () => {
         alt="blob"
         loading="eager"
         className="absolute left-0 top-0 max-h-[50%] sm:max-w-[50%]"
+        style={{ width: "auto", height: "auto" }}
       />
       <AdminLoginForm />
       <Image
@@ -21,6 +22,7 @@ const AdminLoginPage = () => {
         className="absolute left-10 top-10 rounded-md"
         loading="eager"
         quality={100}
+        style={{ width: "auto", height: "auto" }}
       />
       <div className="absolute right-0 hidden h-full w-1/2 flex-col bg-[#D3EDF0] md:flex">
         <div className="mr-8 mt-8 size-[27px] self-end rounded-full border border-moonstone/30"></div>

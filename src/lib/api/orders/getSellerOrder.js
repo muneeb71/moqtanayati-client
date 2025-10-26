@@ -1,16 +1,29 @@
+"use server";
+
 import { cookies } from "next/headers";
-import api from '../axios';
+import api from "../axios";
 
 export async function getSellerOrders() {
   try {
     const cookiesStore = await cookies();
     const token = cookiesStore.get("token")?.value;
-    const response = await api.get(`/orders/my-orders`, {
+
+    console.log("token in orders : ", token);
+
+    const response = await api.get(`/orders/my-orders/detail`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
-    return response.data;
+
+    // console.log("res in orders : ", response.data);
+    return {
+      success: response.data.success,
+      data: response.data.data,
+    };
   } catch (error) {
-    console.log('Error fetching user orders:', error);
-    throw error.response?.data || error;
+    console.log("Error fetching user orders:", error);
+    return {
+      success: false,
+      data: [],
+    };
   }
-} 
+}

@@ -28,22 +28,20 @@ const DisableProductDialog = ({ product }) => {
   return (
     <div className="flex h-[72px] w-fit items-center justify-between gap-10 rounded-[15px] border border-delftBlue/10 px-4 py-3.5">
       <span className="text-[17px] font-medium text-battleShipGray">
-        Disable this Product
+        {status === "DISABLED" ? "Make it available" : "Disable this Product"}
       </span>
       <Dialog>
         <DialogTrigger
           className={cn(
             "flex h-[24px] w-[48px] items-center rounded-full px-[3px] py-[5px] transition-colors duration-300 ease-in-out",
-            status === "DISABLED"
-              ? "bg-[#9799A8]"
-              : "bg-[#C1C2CB80]",
+            status === "DISABLED" ? "bg-[#9799A8]" : "bg-[#C1C2CB80]",
           )}
         >
           <div
             className={cn(
-              "size-[19px] rounded-full transition-all duration-300 ease-in-out transform",
-              status === "DISABLED" 
-                ? "translate-x-[24px] bg-white" 
+              "size-[19px] transform rounded-full transition-all duration-300 ease-in-out",
+              status === "DISABLED"
+                ? "translate-x-[24px] bg-white"
                 : "translate-x-0 bg-[#9799A8]",
             )}
           ></div>

@@ -17,7 +17,13 @@ const SalesGraph = () => {
 
   const days = useMemo(() => {
     const sales = Array(7).fill(0);
-    sellerOrders?.forEach((order) => {
+    const completedOrders = Array.isArray(sellerOrders)
+      ? sellerOrders.filter(
+          (o) => String(o?.status || "").toUpperCase() === "DELIVERED",
+        )
+      : [];
+
+    completedOrders.forEach((order) => {
       const date = new Date(order.createdAt);
       // getDay: 0 (Sun) - 6 (Sat), shift so 0 is Mon
       let dayIdx = date.getDay();

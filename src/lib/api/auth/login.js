@@ -3,53 +3,73 @@
 import { cookies } from "next/headers";
 import api from "../axios";
 
-export async function loginUser(email, password, role) {
+export async function loginUser(email, password, role, deviceToken) {
+  console.log("check role ", role, email, password);
   try {
-    const response = await api.post("sellers/login", {
+    const requestBody = {
       email,
       password,
-    });
+    };
+
+    // Only include deviceToken if it exists
+    if (deviceToken) {
+      requestBody.deviceToken = deviceToken;
+    }
+
+    const response = await api.post("sellers/login", requestBody);
 
     const data = response.data.data;
+    const token = data.token;
+    const user = data.user;
 
-    const responseProfile = await api.get(`sellers/profile/${data.user.id}`);
-    const profileData = responseProfile.data.data;
+    console.log("token : ", token);
 
-    const cookiesStore = await cookies();
+    // await cookies()
+    const cookieStore = await cookies();
 
-    if (data.user.role.toLowerCase() !== role.toLowerCase()) {
+    if (user.role.toLowerCase() !== role.toLowerCase()) {
       return {
         success: false,
-        message: `You are trying to log in as a ${data.user.role}. Please log in as a ${role}.`,
+        message: `You are trying to log in as a ${user.role}. Please log in as a ${role}.`,
       };
     }
 
-    cookiesStore.set("token", data.token, {
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    // Set cookies (7-day expiration)
+    const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await cookieStore.set("token", token, { expires });
+    await cookieStore.set("userId", user.id, { expires });
+    await cookieStore.set("role", user.role, { expires });
+    await cookieStore.set("survey", JSON.stringify(user.sellerSurvey), {
+      expires,
+    });
+    await cookieStore.set("survey", JSON.stringify(user.sellerSurvey), {
+      expires,
+    });
+    await cookieStore.set("survey", JSON.stringify(user.sellerSurvey), {
+      expires,
     });
 
-    cookiesStore.set("userId", data.user.id, {
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    });
+    // Fetch profile with token in Authorization header
+    let profileResponse;
+    if (role.toLowerCase() === "admin") {
+      profileResponse = await api.get(`admin/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } else {
+      profileResponse = await api.get(`sellers/profile/${user.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    }
 
-    cookiesStore.set("role", data.user.role, {
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    });
-
-    cookiesStore.set("survey", JSON.stringify(data.user.sellerSurvey), {
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    });
+    const profileData = profileResponse.data.data;
 
     if (profileData.store) {
-      cookiesStore.set("storeId", profileData.store.id, {
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-      });
+      await cookieStore.set("storeId", profileData.store.id, { expires });
     }
 
     return response.data;
   } catch (error) {
-    console.log(error);
-    
+    console.error("Login Error:", error);
     return {
       success: false,
       message:

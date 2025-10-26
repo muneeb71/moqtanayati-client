@@ -8,7 +8,7 @@ import {
 import GoBackButton from "@/components/buttons/GoBackButton";
 import PageHeading from "@/components/headings/PageHeading";
 import { useProfileStore } from "@/providers/profile-store-provider";
-import { Pencil } from "lucide-react";
+import { Pencil, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -25,6 +25,7 @@ const SellerProfilePage = () => {
     orders,
     store,
   } = useProfileStore((state) => state);
+
   return (
     <div className="flex w-full flex-col items-center justify-center px-3">
       <PageHeading>
@@ -38,21 +39,30 @@ const SellerProfilePage = () => {
           <Link href="/seller/profile/edit" className="absolute right-5 top-5">
             <Pencil className="size-8 rounded-lg border border-black/10 p-1 text-black/60 transition-all duration-100 ease-in hover:border-black hover:text-black" />
           </Link>
-          <Image
-            src={avatar || "/static/dummy-user/1.jpeg"}
-            width={151}
-            height={151}
-            alt="Profile Image"
-            loading="lazy"
-            quality={100}
-            className="rounded-full"
-          />
+
+          <div className="flex size-32 items-center justify-center overflow-hidden rounded-full bg-gray-200">
+            {avatar && typeof avatar === "string" && avatar.trim() !== "" ? (
+              <Image
+                src={avatar}
+                width={151}
+                height={151}
+                alt="Profile Image"
+                loading="lazy"
+                quality={100}
+                className="rounded-full object-cover"
+              />
+            ) : (
+              <User className="size-16 text-gray-400" />
+            )}
+          </div>
+
           <div className="flex flex-col items-center gap-1">
             <span className="text-2xl font-medium text-darkBlue">{name}</span>
             <span className="font-medium text-battleShipGray">
               Joined {joinedDate}
             </span>
           </div>
+
           <div className="flex w-full max-w-52 gap-8 py-3">
             <div className="flex items-center rounded-lg bg-moonstone/10 px-3 py-1">
               {sellerChatIcon}{" "}
@@ -70,23 +80,25 @@ const SellerProfilePage = () => {
                   ),
                 )}
               </div>
-              <div className="5 flex items-baseline gap-0">
+              <div className="flex items-baseline gap-0">
                 <span className="text-sm">{averageRating}</span>
                 <span className="text-xs">({reviews?.length} Reviews)</span>
               </div>
             </div>
           </div>
+
           <div className="mt-5 flex w-full flex-col gap-4">
             <div className="flex items-center gap-4">
               {profileEmailIcon}
-              <span className="text-">{email}</span>
+              <span>{email}</span>
             </div>
             <div className="flex items-center gap-4">
               {profilePhoneIcon}
-              <span className="text-">{phone}</span>
+              <span>{phone}</span>
             </div>
           </div>
         </div>
+
         <div className="grid h-fit grid-cols-2 gap-3">
           <div className="flex h-fit w-full flex-col gap-2 rounded-2xl bg-[#BEC8F9] px-5 pb-12 pt-4">
             <span className="text-lg text-delftBlue/60">Orders Recieved</span>

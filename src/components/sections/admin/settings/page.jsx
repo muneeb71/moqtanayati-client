@@ -1,11 +1,20 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { Pencil } from "lucide-react";
 import { getAdminProfile } from "@/lib/api/admin/settings/getAdminProfile";
 import { updateAdminProfile } from "@/lib/api/admin/settings/updateAdminProfile";
 import toast from "react-hot-toast";
+import formatDateTime from "@/utils/dateFormatter";
+import ShimmeringCard from "@/components/shimmer/shimmerCard";
+
+const iconMap = {
+  name: "/static/user.svg",
+  phone: "/static/phone.svg",
+  email: "/static/email.svg",
+  cnic: "/static/id.svg",
+  location: "/static/location.svg",
+};
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
@@ -16,21 +25,28 @@ export default function ProfilePage() {
   useEffect(() => {
     async function fetchProfile() {
       try {
+        console.log("profile 000");
         const res = await getAdminProfile();
+        console.log("profile 3 ", res);
         const data = res.data?.data || res.data;
+        console.log("profile created at : ", data.createdAt);
         setProfile({
           name: data.name,
+          joined: data.createdAt,
           phone: data.phone,
           email: data.email,
           cnic: data.nationalId,
           location: data.address,
+          createdAt: data.createdAt,
         });
         setOriginalProfile({
           name: data.name,
+          joined: data.createdAt,
           phone: data.phone,
           email: data.email,
           cnic: data.nationalId,
           location: data.address,
+          createdAt: data.createdAt,
         });
       } catch (err) {
         setProfile(null);
@@ -72,6 +88,7 @@ export default function ProfilePage() {
       if (updated) {
         setProfile({
           name: updated.name,
+          joined: data.createdAt,
           phone: updated.phone,
           email: updated.email,
           cnic: updated.nationalId,
@@ -79,6 +96,7 @@ export default function ProfilePage() {
         });
         setOriginalProfile({
           name: updated.name,
+          joined: data.createdAt,
           phone: updated.phone,
           email: updated.email,
           cnic: updated.nationalId,
@@ -89,6 +107,7 @@ export default function ProfilePage() {
         const data = fresh.data?.data || fresh.data;
         setProfile({
           name: data.name,
+          joined: data.createdAt,
           phone: data.phone,
           email: data.email,
           cnic: data.nationalId,
@@ -96,39 +115,37 @@ export default function ProfilePage() {
         });
         setOriginalProfile({
           name: data.name,
+          joined: data.createdAt,
           phone: data.phone,
           email: data.email,
           cnic: data.nationalId,
           location: data.address,
         });
       }
-    } catch (err) {
-      toast.error(err?.message || "Failed to update profile");
+    } catch (error) {
+      console.log("profile update error :", error);
+      //toast.error("Failed to update profile");
     } finally {
       setUpdating(false);
     }
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#EDF3F7]">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
+    return <ShimmeringCard />;
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#EDF3F7]">
+      <div className="flex min-h-screen items-center justify-center bg-[#EDF3F7]">
         <div className="text-lg text-red-500">Failed to load profile.</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#EDF3F7] flex items-center flex-col justify-center p-4">
-      <div className="w-full max-w-md p-6 rounded-2xl shadow-md bg-white">
-        <div className="flex flex-col items-center mb-6">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#EDF3F7] p-4">
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-md">
+        <div className="mb-6 flex flex-col items-center">
           <Image
             src="/static/testuser.svg"
             alt="User Avatar"
@@ -136,8 +153,10 @@ export default function ProfilePage() {
             height={100}
             className="rounded-full"
           />
-          <h2 className="text-xl font-semibold mt-4">{profile.name || "-"}</h2>
-          <p className="text-gray-500 text-sm">Joined Jan, 2024</p>
+          <h2 className="mt-4 text-xl font-semibold">{profile.name || "-"}</h2>
+          <p className="text-sm text-gray-500">
+            {formatDateTime.formatJoinDate(profile.createdAt)}
+          </p>
         </div>
 
         <div className="space-y-4">
@@ -146,34 +165,55 @@ export default function ProfilePage() {
             { field: "phone", placeholder: "Phone No", value: profile.phone },
             { field: "email", placeholder: "Email", value: profile.email },
             { field: "cnic", placeholder: "National ID", value: profile.cnic },
-            { field: "location", placeholder: "Location", value: profile.location },
+            {
+              field: "location",
+              placeholder: "Location",
+              value: profile.location,
+            },
           ].map(({ field, value, placeholder }) => (
             <div
               key={field}
-              className="flex items-center bg-[#F2F0FE] p-3 rounded-md justify-between"
+              className="flex items-center justify-between rounded-md bg-[#F2F0FE] p-3"
             >
-              <input
-                type="text"
-                value={value || ""}
-                onChange={(e) => handleChange(field, e.target.value)}
-                className="w-full bg-transparent border-none focus:outline-none text-sm"
-                placeholder={placeholder}
-                disabled={field === "email" ? true: false}
-              />
-              {field !== "email" && <Pencil className="w-4 h-4 text-gray-500 ml-2" />}
+              <div className="flex w-full items-center gap-2">
+                <Image
+                  src={iconMap[field]}
+                  alt={`${field} icon`}
+                  width={16}
+                  height={16}
+                  className="object-contain"
+                />
+                <input
+                  type="text"
+                  value={value || ""}
+                  onChange={(e) => handleChange(field, e.target.value)}
+                  className="w-full border-none bg-transparent text-sm focus:outline-none"
+                  placeholder={placeholder}
+                  disabled={field === "email"}
+                />
+              </div>
+              {field !== "email" && (
+                <Image
+                  src="/static/edit.svg"
+                  alt={`${field} icon`}
+                  width={16}
+                  height={16}
+                  className="object-contain"
+                />
+              )}
             </div>
           ))}
         </div>
       </div>
-      <div className="w-full flex justify-center">
+      <div className="mb-20 mt-10 flex w-full justify-center">
         <button
           onClick={handleSave}
-          className=" mt-6 px-32 py-4 bg-moonstone hover:bg-moonstone/80 text-lg font-medium rounded-full text-white text-md"
+          className="text-md mt-6 rounded-full bg-moonstone px-32 py-4 text-lg font-medium text-white hover:bg-moonstone/80"
           disabled={updating}
         >
           {updating ? "Saving..." : "Save"}
         </button>
-        </div>
+      </div>
     </div>
   );
 }

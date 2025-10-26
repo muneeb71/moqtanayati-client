@@ -3,22 +3,51 @@
 import { cn } from "@/lib/utils";
 import { slugify } from "@/utils/slugify";
 import { usePathname, useRouter } from "next/navigation";
+import { useAuctionStore } from "@/providers/auction-store-provider";
 
 const SellerAuctionBar = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const auctionProducts = useAuctionStore((s) => s.auctionProducts) || [];
+
+  const deriveStatus = (a) => {
+    const now = new Date();
+    const launch = new Date(a?.product?.auctionLaunchDate);
+    const durationDays = Number(a?.product?.auctionDuration) || 0;
+    if (!isNaN(launch.getTime()) && durationDays > 0) {
+      const end = new Date(
+        launch.getTime() + durationDays * 24 * 60 * 60 * 1000,
+      );
+      if (now < launch) return "UPCOMING";
+      if (now >= launch && now <= end) return "LIVE";
+      return "HISTORY";
+    }
+    // Fallback to provided status if date data is missing
+    return String(a?.status || "").toUpperCase();
+  };
+
+  const counts = auctionProducts.reduce(
+    (acc, a) => {
+      const s = deriveStatus(a);
+      if (s === "LIVE") acc.live += 1;
+      else if (s === "UPCOMING") acc.upcoming += 1;
+      else if (s === "HISTORY") acc.history += 1;
+      return acc;
+    },
+    { live: 0, upcoming: 0, history: 0 },
+  );
 
   const auctionCategories = [
     {
-      title: "Live",
+      title: `Live${counts.live ? ` (${counts.live})` : ""}`,
       href: "/live",
     },
     {
-      title: "Upcoming",
+      title: `Upcoming${counts.upcoming ? ` (${counts.upcoming})` : ""}`,
       href: "/upcoming",
     },
     {
-      title: "History",
+      title: `History${counts.history ? ` (${counts.history})` : ""}`,
       href: "/history",
     },
   ];
@@ -33,7 +62,7 @@ const SellerAuctionBar = () => {
           key={index}
           className={cn(
             "flex items-center justify-center rounded-[12px] border-[1.5px] px-3 py-1.5 md:px-5 md:py-2.5",
-            pathname === "/seller/auctions/" + slugify(category.href)
+            pathname?.startsWith("/seller/auctions/" + slugify(category.href))
               ? "border-moonstone bg-moonstone text-white"
               : "border-silver hover:border-moonstone hover:bg-moonstone/10",
           )}

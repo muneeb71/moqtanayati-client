@@ -22,6 +22,7 @@ const MainBanner = () => {
               height={500}
               alt="blob"
               loading="lazy"
+              style={{ width: "auto", height: "auto" }}
             />
           </div>
         </div>
@@ -40,7 +41,6 @@ const MainBanner = () => {
         </div>
       </div>
       <div className="relative flex h-full flex-col justify-center overflow-hidden"></div>
-      <SearchInput className="absolute -bottom-[30px] z-10 md:-bottom-[38px]" />
     </div>
   );
 };

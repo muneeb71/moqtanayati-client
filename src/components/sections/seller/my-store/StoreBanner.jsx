@@ -4,7 +4,7 @@ import StoreWallpaperContainer from "./StoreWallpaperContainer";
 
 const StoreBanner = () => {
   return (
-    <div className="mb-24 flex flex-col items-end justify-end gap-48 sm:gap-5">
+    <div className="mb-24 flex w-full flex-col items-end justify-end gap-48 sm:gap-5">
       <div className="relative flex w-full items-center justify-center">
         <StoreWallpaperContainer />
         <ProfileImageContainer />

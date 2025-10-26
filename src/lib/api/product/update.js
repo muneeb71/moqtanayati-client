@@ -74,6 +74,79 @@ export async function updateProductPriceAndShipping(id, data) {
       formData.append("autoAccept", data.autoAccept);
     }
 
+    console.log("product adding : ", formData);
+
+    const response = await api.patch(`products/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (!response.data) {
+      return {
+        success: false,
+        data: null,
+        message: "Invalid response from server",
+      };
+    }
+
+    return {
+      success: true,
+      data: response.data.data || response.data,
+      message: "Product updated successfully",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      data: null,
+      message:
+        error?.response?.data?.message ||
+        error.message ||
+        "Could not update product data.",
+    };
+  }
+}
+
+export async function updateProductBasics(id, data) {
+  try {
+    const formData = new FormData();
+
+    if (data.images && data.images.length > 0) {
+      data.images.forEach((image) => {
+        formData.append("images", image);
+      });
+    }
+
+    // Preserve existing images when editing (server URLs)
+    if (Array.isArray(data.existingImageUrls)) {
+      formData.append(
+        "existingImageUrls",
+        JSON.stringify(data.existingImageUrls),
+      );
+      // Also append as repeated fields for backends expecting array params
+      data.existingImageUrls.forEach((url) => {
+        formData.append("existingImageUrls[]", url);
+        formData.append("existingImages[]", url);
+      });
+      formData.append("mergeImages", "true");
+    }
+
+    if (data.video) {
+      formData.append("video", data.video);
+    }
+
+    if (typeof data.name !== "undefined") {
+      formData.append("name", data.name);
+    }
+
+    if (typeof data.description !== "undefined") {
+      formData.append("description", data.description);
+    }
+
+    if (typeof data.status !== "undefined") {
+      formData.append("status", data.status);
+    }
+
     const response = await api.patch(`products/${id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",

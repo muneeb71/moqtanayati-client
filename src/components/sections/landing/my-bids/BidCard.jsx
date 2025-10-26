@@ -5,36 +5,56 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const BidCard = ({ item }) => {  
+const BidCard = ({ item }) => {
   const [favourite, setFavourite] = useState(item.isFavourite);
-  const highestBid = Math.max(...item.auction.bids.map(bid => bid.amount));
+  const highestBid = Math.max(...item.auction.bids.map((bid) => bid.amount));
   const myBidIsHighest = item.amount === highestBid;
   const router = useRouter();
-  
-  
+
   const statusStyles = {
     HIGHEST: "bg-moonstone/10 text-moonstone",
     WON: "bg-green-100 text-green-700",
     OUTBID: "bg-faluRed/10 text-faluRed",
     RETRACTED: "bg-gray-200 text-gray-500",
   };
-  
+
   return (
     <div
-      className="grid cursor-pointer h-full max-h-[138px] grid-cols-[96px_1fr] overflow-hidden rounded-[12px] bg-white sm:grid-cols-[126px_1fr]"
+      className="grid h-full max-h-[138px] cursor-pointer grid-cols-[96px_1fr] overflow-hidden rounded-[12px] bg-white sm:grid-cols-[126px_1fr]"
       style={{
         boxShadow: "0px 0px 29.85px 2.39px #0000001A",
       }}
-      onClick={()=>router.push(`/buyer/product-details/${item?.auction?.product?.id}`)}
+      onClick={() =>
+        router.push(`/buyer/product-details/${item?.auction?.product?.id}`)
+      }
     >
       <div className="h-full w-full overflow-hidden">
-        <Image
-          src={item?.auction?.product?.images[0]}
-          width={200}
-          height={200}
-          className="h-full w-full object-cover"
-          alt="Image"
-        />
+        {item?.auction?.product?.images[0] ? (
+          <Image
+            src={item.auction.product.images[0]}
+            width={200}
+            height={200}
+            className="h-full w-full object-cover"
+            alt="Product image"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gray-100">
+            <svg
+              width="40"
+              height="40"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-gray-400"
+            >
+              <path
+                d="M4 16L8.5 10.5L13 14L20.5 4.5L21 5L13.5 15L9 11.5L4 16Z"
+                fill="currentColor"
+              />
+              <path d="M3 19H21V21H3V19Z" fill="currentColor" />
+            </svg>
+          </div>
+        )}
       </div>
       <div className="flex h-full w-full flex-col justify-between p-2">
         <div className="flex justify-between gap-2">
@@ -49,7 +69,7 @@ const BidCard = ({ item }) => {
               <div className="flex items-center gap-1">
                 <div className="size-[19.1px] min-h-[19.1px] min-w-[19.1px] overflow-hidden rounded-full">
                   <Image
-                    src={item?.auction?.seller?.avatar || '/static/user.jpeg'}
+                    src={item?.auction?.seller?.avatar || "/static/user.jpeg"}
                     width={100}
                     height={100}
                     className="h-full w-full object-cover"
@@ -78,14 +98,12 @@ const BidCard = ({ item }) => {
             <span className="text-[11.9px] leading-[18px] text-black/40">
               Highest Bid
             </span>
-            <span className="sm:text-lg font-medium">
-              ${highestBid}
-            </span>
+            <span className="font-medium sm:text-lg">${highestBid}</span>
           </div>
           <div
             className={cn(
               statusStyles[item?.status] || "bg-black/10 text-black/60",
-              "h-fit rounded-[8px] px-3 py-1 sm:px-5 sm:py-2 text-sm font-medium leading-[21px]",
+              "h-fit rounded-[8px] px-3 py-1 text-sm font-medium leading-[21px] sm:px-5 sm:py-2",
               "transition-all duration-150 ease-in",
             )}
           >

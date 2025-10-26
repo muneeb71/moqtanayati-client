@@ -47,6 +47,7 @@ export const initProductStore = () => {
 export const createProductStore = (initState = initProductStore()) => {
   return createStore((set, get) => ({
     ...initState,
+    reset: () => set(initProductStore()),
     setId: (id) => set({ id }),
     setImages: (images) => set({ images }),
     setVideo: (video) => set({ video }),

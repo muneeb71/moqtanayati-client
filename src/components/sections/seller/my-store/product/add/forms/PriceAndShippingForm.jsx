@@ -13,6 +13,7 @@ import { Country, City } from "country-state-city";
 import Switch from "react-switch";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import { updateProductPriceAndShipping } from "@/lib/api/product/update";
+import { getProductById } from "@/lib/api/product/getById";
 
 const PriceAndShippingForm = () => {
   const router = useRouter();
@@ -98,6 +99,41 @@ const PriceAndShippingForm = () => {
     setCountryOptions(countries);
   }, []);
 
+  // Prefill on edit
+  useEffect(() => {
+    const hydrate = async () => {
+      try {
+        if (!id) return;
+        const p = await getProductById(id);
+        if (!p) return;
+        // pricing
+        setPricingFormat(
+          p.pricingFormat === "Auctions" || p.isAuction
+            ? "Auctions"
+            : "Fixed Price",
+        );
+        setPrice(p.price ?? "");
+        setStartingBid(p.startingBid ?? "");
+        setBuyItNow(p.buyItNow ?? "");
+        setMinimumOffer(p.minimumOffer ?? "");
+        setAutoAccept(p.autoAccept ?? "");
+        setAuctionDuration(p.auctionDuration ?? 7);
+        setAuctionLaunchDate(p.auctionLaunchDate ?? "");
+        // shipping/location
+        setShippingMethod(p.shippingMethod || "");
+        setDomesticShippingType(p.domesticShippingType || "");
+        setHandlingTime(p.handlingTime || "");
+        setSelectedCountry(p.country || "");
+        setSelectedCity(p.city || "");
+        setDomesticReturns(!!p.domesticReturns);
+        setInternationalReturns(!!p.internationalReturns);
+        setLocalPickup(!!p.localPickup);
+      } catch (_) {}
+    };
+    hydrate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
   // Update cities when country changes
   useEffect(() => {
     if (selectedCountry) {
@@ -156,10 +192,7 @@ const PriceAndShippingForm = () => {
       newErrors.startingBid = "Valid starting bid is required.";
     if (!buyItNow || isNaN(parseFloat(buyItNow)))
       newErrors.buyItNow = "Valid buy it now price is required.";
-    if (!minimumOffer || isNaN(parseFloat(minimumOffer)))
-      newErrors.minimumOffer = "Valid minimum offer is required.";
-    if (!autoAccept || isNaN(parseFloat(autoAccept)))
-      newErrors.autoAccept = "Valid auto-accept price is required.";
+
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
@@ -191,20 +224,22 @@ const PriceAndShippingForm = () => {
           shippingMethod: shippingMethod,
           country: selectedCountry,
           city: selectedCity,
-          handlingTime: handlingTime,
+          handlingTime: handlingTime || "",
           domesticReturns: domesticReturns,
           internationalReturns: internationalReturns,
           domesticShippingType: domesticShippingType,
           localPickup: localPickup,
           isAuction: pricingFormat === "Auctions",
           auctionDuration: auctionDuration,
-          auctionLaunchDate: auctionLaunchDate,
+          auctionLaunchDate: auctionLaunchDate
+            ? new Date(auctionLaunchDate).toISOString()
+            : null,
           startingBid: startingBid ? parseFloat(startingBid) : 0,
           buyItNow: buyItNow ? parseFloat(buyItNow) : 0,
           minimumOffer: minimumOffer ? parseFloat(minimumOffer) : 0,
           autoAccept: autoAccept ? parseFloat(autoAccept) : 0,
           storeId: store.id,
-          status: "ACTIVE"
+          status: "ACTIVE",
         };
 
         const response = await updateProductPriceAndShipping(id, productData);
@@ -396,6 +431,11 @@ const PriceAndShippingForm = () => {
                         setBuyItNow(val);
                       }}
                     />
+                    {errors.buyItNow && (
+                      <span className="text-sm text-red-500">
+                        {errors.buyItNow}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1">
                     <Label
@@ -411,6 +451,11 @@ const PriceAndShippingForm = () => {
                         setMinimumOffer(val);
                       }}
                     />
+                    {errors.minimumOffer && (
+                      <span className="text-sm text-red-500">
+                        {errors.minimumOffer}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1">
                     <Label
@@ -426,6 +471,11 @@ const PriceAndShippingForm = () => {
                         setAutoAccept(val);
                       }}
                     />
+                    {errors.autoAccept && (
+                      <span className="text-sm text-red-500">
+                        {errors.autoAccept}
+                      </span>
+                    )}
                   </div>
                 </>
               ) : null}
@@ -523,6 +573,7 @@ const PriceAndShippingForm = () => {
                   setSelectedOption={setHandlingTime}
                   placeholder="Select handling time"
                 />
+
                 {errors.handlingTime && (
                   <span className="text-sm text-red-500">
                     {errors.handlingTime}

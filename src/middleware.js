@@ -8,6 +8,8 @@ export function middleware(request) {
   const role = request.cookies.get("role")?.value;
   const { pathname } = new URL(request.url);
 
+  console.log("Middleware - pathname:", pathname, "role:", role);
+
   const isAdminLogin = pathname.startsWith("/admin/login");
   const isAuthPath = pathname.startsWith("/auth");
 
@@ -18,22 +20,22 @@ export function middleware(request) {
   if (!token && !userId && (isAdminLogin || isAuthPath)) {
     return NextResponse.next();
   }
-  
 
   if (userId) {
     if (role === "ADMIN" && !pathname.startsWith("/admin")) {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
     if (role === "SELLER") {
-      if (!survey && !pathname.startsWith("/survey")) {
-        return NextResponse.redirect(new URL("/survey", request.url));
-      }
-      if (survey && !pathname.startsWith("/seller")) {
+      // if (!survey && !pathname.startsWith("/survey")) {
+      //   return NextResponse.redirect(new URL("/survey", request.url));
+      // }
+      if (!survey && !pathname.startsWith("/seller")) {
         return NextResponse.redirect(new URL("/seller", request.url));
       }
     }
 
     if (role === "BUYER" && !pathname.startsWith("/buyer")) {
+      console.log("Redirecting BUYER from", pathname, "to /buyer");
       return NextResponse.redirect(new URL("/buyer", request.url));
     }
   }

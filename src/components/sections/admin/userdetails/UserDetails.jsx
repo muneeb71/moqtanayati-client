@@ -1,16 +1,91 @@
+import React, { useState, useEffect } from "react";
 import { recentBids } from "@/lib/recent-bids";
-import { recentPurchases } from "@/lib/recent-purchases";
+//import { recentPurchases } from "@/lib/recent-purchases";
 import Image from "next/image";
 import { BiTrash } from "react-icons/bi";
 import { IoMdPin } from "react-icons/io";
+import { getUserById } from "@/lib/api/admin/users/getUserById";
 
-const UserDetails = () => {
+import formatDateTime from "@/utils/dateFormatter";
+import { getMyBidsDetail } from "@/lib/api/auctions/getMyBidsDetail";
+import UserSkeleton from "@/components/shimmer/userSkeleton";
+
+const UserDetails = ({ userId }) => {
+  const [user, setUser] = useState(null);
+  const [purchases, setRecentPurchases] = useState(null);
+  const [bids, setRecentBids] = useState(null);
+  const [auction, setRecentListings] = useState(null);
+  const [totalPurchases, setTotalPurchases] = useState(0);
+  const [totalSpent, setTotalSpent] = useState(0);
+
+  async function fetchUserDetail() {
+    try {
+      console.log("1");
+      const res = await getUserById(userId);
+      console.log("2 ", res);
+      const fetchedUser = res.user || {};
+
+      console.log("3 : ", fetchedUser.role);
+      const isSeller = fetchedUser.role === "SELLER";
+
+      const purchaseData = isSeller
+        ? res.sales || []
+        : fetchedUser.orders || [];
+
+      const totalDeliveredPurchases = purchaseData.filter(
+        (p) => p.status === "DELIVERED",
+      );
+
+      const purchase = totalDeliveredPurchases.length;
+
+      const spent = totalDeliveredPurchases.reduce(
+        (sum, p) => sum + p.totalAmount,
+        0,
+      );
+
+      const listing = isSeller ? fetchedUser.auctions || [] : [];
+
+      setUser(fetchedUser);
+      setRecentPurchases(purchaseData);
+      setTotalPurchases(purchase);
+      setTotalSpent(spent);
+      setRecentListings(listing);
+    } catch (e) {
+      setUser([]);
+      setRecentPurchases([]);
+      setTotalPurchases(0);
+      setTotalSpent(0);
+      setRecentListings([]);
+    }
+  }
+
+  async function fetchRecentBids() {
+    try {
+      const res = await getMyBidsDetail(userId);
+
+      const fetchedBids = res.data || [];
+
+      setRecentBids(fetchedBids);
+    } catch (e) {
+      setRecentBids([]);
+    }
+  }
+
+  useEffect(() => {
+    if (!userId) return;
+
+    fetchUserDetail();
+    fetchRecentBids();
+  }, [userId]);
+
+  if (!user) return <UserSkeleton />;
+
   return (
     <div className="flex h-full max-h-full flex-col gap-10 pb-10">
       <div className="flex flex-row justify-between rounded-xl bg-white px-5 py-5 lg:px-10">
         <div className="flex flex-row items-center gap-5">
           <Image
-            src={"/testuser.svg"}
+            src={"/static/testuser.svg"}
             width={150}
             height={150}
             alt="Profile Image"
@@ -22,21 +97,21 @@ const UserDetails = () => {
             <div className="flex flex-col">
               <div className="flex flex-col gap-1 xl:flex-row xl:gap-5">
                 <p className="text-[18px] font-semibold text-eerieBlack lg:text-[23px]">
-                  Kristin Watson
+                  {user.name}
                 </p>
                 <div className="flex w-[50%] items-center justify-center rounded-lg bg-customGreen/10 px-5 py-1 lg:w-fit">
-                  <p className="text-[14px] text-customGreen">Active</p>
+                  <p className="text-[14px] text-customGreen">
+                    {user.accountStatus}
+                  </p>
                 </div>
               </div>
               <p className="mt-4 text-eerieBlack lg:text-[19px] xl:mt-0">
-                Buyer
+                {user.role}
               </p>
             </div>
             <div className="flex flex-row items-center gap-1">
               <IoMdPin className="text-[17px] text-moonstone" />
-              <p className="lg: text-[13px] text-delftBlue">
-                Islamabad, Pakistan
-              </p>
+              <p className="lg: text-[13px] text-delftBlue">{user.address}</p>
             </div>
           </div>
         </div>
@@ -48,25 +123,33 @@ const UserDetails = () => {
           <BiTrash className="text-[18px] sm:text-[26px]" />
         </button>
       </div>
-      <div className="grid h-full w-full gap-0 xl:grid-cols-[1fr_331px] lg:gap-4">
+      <div className="grid h-full w-full gap-0 lg:gap-4 xl:grid-cols-[1fr_331px]">
         <div className="flex flex-col gap-5">
           <div className="grid grid-cols-2 gap-3 lg:gap-5 xl:grid-cols-4">
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
-              <p className="text-[14px] text-lightGray/60">Bids Placed</p>
+              <p className="text-[14px] text-lightGray/60">
+                Bids {user?.role === "SELLER" ? "" : "Placed"}
+              </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
-                40
+                {user?.role === "SELLER"
+                  ? auction.length || 0
+                  : bids?.length || 0}
               </p>
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
-              <p className="text-[14px] text-lightGray/60">Purchases</p>
+              <p className="text-[14px] text-lightGray/60">
+                {user?.role === "SELLER" ? "Sold Items" : "Purchases"}
+              </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
-                15
+                {totalPurchases}
               </p>
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
-              <p className="text-[14px] text-lightGray/60">Spent</p>
+              <p className="text-[14px] text-lightGray/60">
+                {user?.role === "SELLER" ? "Earned" : "Spent"}
+              </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
-                $1200
+                ${totalSpent}
               </p>
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
@@ -78,8 +161,9 @@ const UserDetails = () => {
           </div>
           <div className="flex h-full flex-col gap-4">
             <p className="text-[18px] font-semibold text-eerieBlack">
-              Recent Bids
+              Recent {user?.role === "SELLER" ? "Listings" : "Bids"}
             </p>
+
             <div className="no-scrollbar flex h-full max-h-[335px] max-w-[93vw] overflow-auto rounded-lg">
               <table className="max-h-full w-full">
                 <thead className="sticky top-0 text-nowrap bg-white">
@@ -88,60 +172,119 @@ const UserDetails = () => {
                       Product
                     </th>
                     <th className="text-customeBlue py-5 pl-8 font-semibold">
-                      Current Bid
+                      {user?.role === "SELLER" ? "Highest Bid" : "Current Bid"}
                     </th>
+
+                    {user?.role === "SELLER" && (
+                      <th className="text-customeBlue py-5 pl-8 font-semibold">
+                        No of Bidders
+                      </th>
+                    )}
+
                     <th className="text-customeBlue py-5 pl-8 font-semibold">
                       Status
                     </th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  {recentBids?.map((bid, index) => (
-                    <tr
-                      key={index}
-                      className="border-b border-gray-200 bg-white"
-                    >
-                      <td className="py-5 pl-8">
-                        <div className="flex items-center gap-2">
-                          <Image
-                            src={"/product.svg"}
-                            width={50}
-                            height={50}
-                            alt="Profile Image"
-                            loading="lazy"
-                            quality={100}
-                            className="rounded-full"
-                          />
-                          <div>
-                            <p className="text-[16px] font-semibold text-customBlue">
-                              {bid?.products}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-5 pl-8 text-[16px] text-customGray">
-                        {bid?.currentBid}
-                      </td>
-                      <td className="py-5 pl-8">
-                        <span
-                          className={`rounded-lg px-5 py-1 text-[14px] font-semibold ${
-                            bid.status === "Winning"
-                              ? "bg-customGreen/10 text-customGreen"
-                              : "bg-black/10 text-eerieBlack/40"
-                          }`}
+                  {user?.role === "SELLER"
+                    ? auction?.map((auctionItem, index) => {
+                        const bids = auctionItem.bids || [];
+                        const highestBid = bids.reduce(
+                          (max, bid) => (bid.amount > max ? bid.amount : max),
+                          0,
+                        );
+                        const noOfBidders = bids.length;
+
+                        return (
+                          <tr
+                            key={index}
+                            className="border-b border-gray-200 bg-white"
+                          >
+                            <td className="py-5 pl-8">
+                              <div className="flex items-center gap-2">
+                                <Image
+                                  src={"/static/product.svg"}
+                                  width={50}
+                                  height={50}
+                                  alt="Product Image"
+                                  loading="lazy"
+                                  quality={100}
+                                  className="rounded-full"
+                                />
+                                <div>
+                                  <p className="text-[16px] font-semibold text-customBlue">
+                                    {auctionItem?.product.name}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+
+                            <td className="py-5 pl-8 text-[16px] text-customGray">
+                              ${highestBid}
+                            </td>
+
+                            <td className="py-5 pl-8 text-[16px] text-customGray">
+                              {noOfBidders}
+                            </td>
+
+                            <td className="py-5 pl-8">
+                              <span className="rounded-lg bg-moonstone/10 px-5 py-1 text-[14px] font-semibold text-moonstone">
+                                Active
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    : bids?.map((bid, index) => (
+                        <tr
+                          key={index}
+                          className="border-b border-gray-200 bg-white"
                         >
-                          {bid?.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                          <td className="py-5 pl-8">
+                            <div className="flex items-center gap-2">
+                              <Image
+                                src={"/static/product.svg"}
+                                width={50}
+                                height={50}
+                                alt="Product Image"
+                                loading="lazy"
+                                quality={100}
+                                className="rounded-full"
+                              />
+                              <div>
+                                <p className="text-[16px] font-semibold text-customBlue">
+                                  {bid?.auction.product.name}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="py-5 pl-8 text-[16px] text-customGray">
+                            ${bid?.amount}
+                          </td>
+
+                          <td className="py-5 pl-8">
+                            <span
+                              className={`rounded-lg px-5 py-1 text-[14px] font-semibold ${
+                                bid.status === "HIGHEST"
+                                  ? "bg-customGreen/10 text-customGreen"
+                                  : "bg-black/10 text-eerieBlack/40"
+                              }`}
+                            >
+                              {bid?.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
                 </tbody>
               </table>
             </div>
           </div>
           <div className="flex h-full flex-col gap-4 pb-10">
             <p className="text-[18px] font-semibold text-eerieBlack">
-              Recent Purchases
+              Recent {user?.role === "SELLER" ? "Sales" : "Purchases"}
             </p>
             <div className="no-scrollbar flex h-full max-h-[335px] max-w-[93vw] overflow-auto rounded-lg">
               <table className="max-h-full w-full">
@@ -162,7 +305,7 @@ const UserDetails = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentPurchases?.map((purchase, index) => (
+                  {purchases?.map((purchase, index) => (
                     <tr
                       key={index}
                       className="border-b border-gray-200 bg-white"
@@ -170,7 +313,7 @@ const UserDetails = () => {
                       <td className="py-5 pl-8">
                         <div className="flex items-center gap-2">
                           <Image
-                            src={"/product.svg"}
+                            src={"/static/product.svg"}
                             width={50}
                             height={50}
                             alt="Profile Image"
@@ -180,27 +323,33 @@ const UserDetails = () => {
                           />
                           <div>
                             <p className="text-[16px] font-semibold text-customBlue">
-                              {purchase?.product}
+                              {purchase?.product.name}
                             </p>
                           </div>
                         </div>
                       </td>
                       <td className="py-5 pl-8 text-[16px] text-customGray">
-                        {purchase?.price}
+                        ${purchase?.totalAmount}
                       </td>
                       <td className="py-5 pl-8">
                         <span
                           className={`rounded-lg px-5 py-1 text-[14px] font-semibold ${
-                            purchase?.status === "Delivered"
+                            purchase?.status === "DELIVERED"
                               ? "bg-customGreen/10 text-customGreen"
-                              : "bg-black/10 text-eerieBlack/40"
+                              : purchase?.status === "CANCELLED"
+                                ? "bg-faluRed/10 text-faluRed"
+                                : purchase?.status === "PENDING"
+                                  ? "bg-moonstone/10 text-moonstone"
+                                  : purchase?.status === "PROCESSING"
+                                    ? "bg-yellow/10 text-yellow"
+                                    : "bg-black/10 text-eerieBlack/40"
                           }`}
                         >
                           {purchase?.status}
                         </span>
                       </td>
                       <td className="py-5 pl-8 text-[16px] text-customGray">
-                        {purchase?.date}
+                        {formatDateTime.formatDate(purchase.createdAt)}
                       </td>
                     </tr>
                   ))}
@@ -216,23 +365,25 @@ const UserDetails = () => {
           <div className="flex flex-col gap-6">
             <div className="flex flex-col">
               <p className="text-sm text-battleShipGray">Full Name</p>
-              <p className="text-davyGray font-medium">Kristian Waston</p>
+              <p className="font-medium text-davyGray">{user.name}</p>
             </div>
             <div className="flex flex-col">
               <p className="text-sm text-battleShipGray">Email</p>
-              <p className="text-davyGray font-medium">kristian@mumtlkaty.com</p>
+              <p className="font-medium text-davyGray">{user.email}</p>
             </div>
             <div className="flex flex-col">
               <p className="text-sm text-battleShipGray">Phone No.</p>
-              <p className="text-davyGray font-medium">+92 333 66 13900</p>
+              <p className="font-medium text-davyGray">{user.phone}</p>
             </div>
             <div className="flex flex-col">
               <p className="text-sm text-battleShipGray">Address</p>
-              <p className="text-davyGray font-medium">Lane 10, Hostel City, Islamabad</p>
+              <p className="font-medium text-davyGray">{user.address}</p>
             </div>
             <div className="flex flex-col">
               <p className="text-sm text-battleShipGray">Registration Date</p>
-              <p className="text-davyGray font-medium">26 June, 2024</p>
+              <p className="font-medium text-davyGray">
+                {formatDateTime.formatDate(user.registrationDate)}
+              </p>
             </div>
           </div>
         </div>

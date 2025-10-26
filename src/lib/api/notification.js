@@ -20,6 +20,9 @@ export async function getUserNotifications() {
       };
     }
     const response = await api.get(`/notification/user/${userId}`);
+    console.log("notification response : ", response);
+    console.log("notification response data : ", response.data);
+
     if (!response.data) {
       return {
         success: false,
@@ -42,4 +45,4 @@ export async function getUserNotifications() {
         "Could not fetch notifications.",
     };
   }
-} 
+}

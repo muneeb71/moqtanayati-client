@@ -1,8 +1,12 @@
-import api from '../axios';
+import api from "../axios";
 
 export const getCart = async () => {
   try {
-    const response = await api.get('/buyers/cart');
+    const response = await api.get("/buyers/cart");
+    console.log("Cart response : ", response);
+    console.log("Cart response : ", response);
+    console.log("Cart response : ", response);
+
     return {
       success: true,
       data: response.data,
@@ -11,7 +15,7 @@ export const getCart = async () => {
     // console.log('Error fetching cart:', error);
     return {
       success: false,
-      error: error.response?.data?.message || 'Failed to fetch cart data',
+      error: error.response?.data?.message || "Failed to fetch cart data",
       status: error.response?.status,
     };
   }

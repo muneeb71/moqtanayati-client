@@ -22,10 +22,10 @@ const SignUpForm4 = ({ role = "" }) => {
     latitude,
     longitude,
     sellerType,
-    isVerified
+    isVerified,
   } = useRegisterStore((state) => state);
 
-  const [type, setType] = useState()
+  const [type, setType] = useState();
 
   const handleRegisterUser = async () => {
     const roleUppercase = role.toUpperCase();
@@ -42,10 +42,11 @@ const SignUpForm4 = ({ role = "" }) => {
       isVerified: true,
       sellerType: role === "buyer" ? "INDIVIDUAL" : sellerType || "BUSINESS",
     };
+    console.log("register payload : ", payload);
     const response = await signUpUser(payload);
-
+    console.log("register response 2 : ", response);
     if (response.success) {
-      router.push("/auth/" + role + "/login");
+      router.push(`/${role}/login`);
     }
   };
 

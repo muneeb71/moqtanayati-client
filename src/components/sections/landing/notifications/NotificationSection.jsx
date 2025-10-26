@@ -1,37 +1,57 @@
-"use client"
+"use client";
 import NotificationCard from "@/components/cards/NotificationCard";
 import NotificationCardSkeleton from "@/components/loaders/NotificationCardSkeleton";
 import { useEffect, useState } from "react";
-import { getUserNotifications } from "@/lib/api/notification";
+import { useNotifications } from "@/hooks/useNotifications";
+import { useSearchParams } from "next/navigation";
 
 const NotificationSection = ({ category = "" }) => {
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const {
+    getNotificationsByCategory,
+    loading,
+    error,
+    fetchNotifications,
+    setHighlightedNotification,
+    clearHighlightedNotification,
+    highlightedNotificationId,
+    markAsRead,
+  } = useNotifications();
+
+  const [mounted, setMounted] = useState(false);
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get("highlight");
+
+  const notifications = getNotificationsByCategory(category);
+
+  // Avoid hydration mismatch: render stable skeleton until mounted
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    setError("");
-    getUserNotifications().then(({ success, data, message }) => {
-      console.log(success, data);
-      
-      if (!mounted) return;
-      if (success) {
-        setNotifications(data?.data);
-      } else {
-        setError(message || "Failed to fetch notifications.");
-      }
-      setLoading(false);
-    });
-    return () => {
-      mounted = false;
-    };
+    // Refresh notifications when category changes
+    if (fetchNotifications) {
+      fetchNotifications();
+    }
   }, [category]);
 
-  if (loading) {
+  // Handle highlighting from URL parameter
+  useEffect(() => {
+    if (highlightId) {
+      setHighlightedNotification(highlightId);
+
+      // Clear highlight after 3 seconds
+      const timer = setTimeout(() => {
+        clearHighlightedNotification();
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [highlightId, setHighlightedNotification, clearHighlightedNotification]);
+
+  if (!mounted || loading) {
     return (
-      <div className="flex flex-col gap-5 py-10 px-5">
+      <div className="flex flex-col gap-5 px-5 py-10">
         <NotificationCardSkeleton />
         <NotificationCardSkeleton />
         <NotificationCardSkeleton />
@@ -42,26 +62,39 @@ const NotificationSection = ({ category = "" }) => {
     return <div className="py-10 text-center text-red-500">{error}</div>;
   }
 
-  // Filter notifications by title if category is not 'all' and not empty
-  let filteredNotifications = notifications;
-  if (category && category !== "all") {
-    filteredNotifications = notifications.filter(n =>
-      n.title?.toLowerCase().includes(category.toLowerCase())
-    );
-  }
+  // Use store-provided category filtering result directly
+  const filteredNotifications = notifications || [];
 
   return (
     <div className="no-scrollbar flex w-full flex-col gap-5 overflow-auto px-5 py-7 md:h-[800px]">
       {filteredNotifications.length === 0 ? (
-        <div className="py-10 text-center text-gray-500">No notifications available.</div>
+        <div className="flex w-full justify-center py-12">
+          <div className="text-center">
+            <div className="mb-4 text-6xl">🔔</div>
+            <h3 className="mb-2 text-lg font-semibold text-gray-700">
+              No Notifications
+            </h3>
+            <p className="text-gray-500">
+              You don't have any notifications at the moment.
+            </p>
+          </div>
+        </div>
       ) : (
         filteredNotifications.map((notification, index) => (
           <NotificationCard
-            key={index}
+            key={notification.id || index}
             // image={notification.image}
             title={notification.title}
-            desc={notification.message}
+            desc={notification.body || notification.message}
             time={notification.createdAt}
+            isHighlighted={highlightedNotificationId === notification.id}
+            isRead={notification.isRead}
+            onClick={() => {
+              // Mark as read when clicked
+              if (!notification.isRead) {
+                markAsRead(notification.id);
+              }
+            }}
           />
         ))
       )}

@@ -11,9 +11,12 @@ import ItemCard from "../cards/ItemCard";
 import { getProducts } from "@/lib/api/product/getAllProducts";
 import dynamic from "next/dynamic";
 
-const RecommendedSectionSkeleton = dynamic(() => import("@/components/loaders/RecommendedSectionSkeleton"), { ssr: false });
+const RecommendedSectionSkeleton = dynamic(
+  () => import("@/components/loaders/RecommendedSectionSkeleton"),
+  { ssr: false },
+);
 
-const ItemSlider = ({ items, section }) => {
+const ItemSlider = ({ items, section, onNavigate }) => {
   const [api, setApi] = useState();
   const [mounted, setMounted] = useState(false);
   const [products, setProducts] = useState([]);
@@ -41,8 +44,16 @@ const ItemSlider = ({ items, section }) => {
 
   useEffect(() => {
     setMounted(true);
-    getProductsData();
-  }, []);
+
+    // If items are provided (like for popular products), use them directly
+    if (items && items.length > 0) {
+      setProducts(items);
+      setLoading(false);
+    } else {
+      // Otherwise fetch data as before
+      getProductsData();
+    }
+  }, [items]);
 
   useEffect(() => {
     if (!api) {
@@ -65,7 +76,9 @@ const ItemSlider = ({ items, section }) => {
       <div className="flex w-full max-w-7xl items-center justify-center py-10 text-battleShipGray">
         {section === "recommendations"
           ? "No recommendations for you"
-          : "No furniture items available"}
+          : section === "popular"
+            ? "No popular items available"
+            : "No furniture items available"}
       </div>
     );
   }
@@ -78,26 +91,56 @@ const ItemSlider = ({ items, section }) => {
       className="w-full max-w-7xl overflow-hidden"
     >
       <CarouselContent>
-        {products.map((item, index) => (
-          <CarouselItem
-            key={index}
-            className="flex flex-col items-center gap-5 py-5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
-          >
-            <ItemCard
-              id={item.id}
+        {products.map((item, index) => {
+          // Check if auction is still live
+          const isAuctionLive = () => {
+            if (item?.pricingFormat?.toLowerCase() !== "auctions") return true;
+
+            if (!item?.auctionLaunchDate || !item?.auctionDuration) return true;
+
+            const launchDate = new Date(item.auctionLaunchDate);
+            const durationInMs = item.auctionDuration * 60 * 60 * 1000; // Convert hours to milliseconds
+            const endDate = new Date(launchDate.getTime() + durationInMs);
+            const now = new Date();
+
+            return now < endDate;
+          };
+
+          return (
+            <CarouselItem
               key={index}
-              title={item.name}
-              price={item.price}
-              createdAt={item.createdAt}
-              image={item.images[0]}
-              address={
-                item?.city && item?.country && `${item?.city}, ${item?.country}`
-              }
-              isFavourite={item.isFavourite}
-              pricingFormat={item?.pricingFormat}
-            />
-          </CarouselItem>
-        ))}
+              className="flex flex-col items-center gap-5 py-5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+            >
+              <ItemCard
+                id={item.id}
+                key={index}
+                title={item.name}
+                price={
+                  item.price ||
+                  item.startingBid ||
+                  item.buyItNow ||
+                  item.minimumOffer ||
+                  item.autoAccept ||
+                  "Price not available"
+                }
+                createdAt={item.createdAt}
+                image={
+                  item.images && item.images.length > 0 ? item.images[0] : null
+                }
+                address={
+                  item?.city &&
+                  item?.country &&
+                  `${item?.city}, ${item?.country}`
+                }
+                isFavourite={item.isFavourite}
+                pricingFormat={item?.pricingFormat}
+                buyItNow={item?.buyItNow}
+                isAuctionLive={isAuctionLive()}
+                onNavigate={onNavigate}
+              />
+            </CarouselItem>
+          );
+        })}
       </CarouselContent>
     </Carousel>
   );

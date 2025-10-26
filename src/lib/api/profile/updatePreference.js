@@ -8,15 +8,19 @@ export async function updateAuctionPreference(data) {
     const cookieStore = cookies();
     const token = cookieStore.get("token")?.value;
 
-    const response = await api.put(
-      "sellers/profile/set/auction-preferences",
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    if (!token) {
+      return {
+        success: false,
+        data: null,
+        message: "No authentication token found",
+      };
+    }
+
+    const response = await api.put("buyers/preferences", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const userData = response.data.data;
 
     return {
@@ -32,7 +36,7 @@ export async function updateAuctionPreference(data) {
       message:
         error?.response?.data?.message ||
         error.message ||
-        "Could not update password.",
+        "Could not update auction preferences.",
     };
   }
 }

@@ -9,11 +9,9 @@ import { getConversations } from "@/lib/api/chat/getConversations";
 import { getMessages } from "@/lib/api/chat/getMessages";
 import { createChat } from "@/lib/api/chat/createChat";
 import { useProfileStore } from "@/providers/profile-store-provider";
-import { io } from "socket.io-client";
+import { socketManager } from "@/lib/socket-client";
 import ChatSidebarSkeleton from "@/components/loaders/chats/ChatSidebarSkeleton";
 import ChatWindowSkeleton from "@/components/loaders/chats/ChatWindowSkeleton";
-
-const SOCKET_URL = "http://localhost:8000";
 
 const ChatPage = () => {
   const searchParams = useSearchParams();
@@ -26,7 +24,6 @@ const ChatPage = () => {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const router = useRouter();
-  const socketRef = useRef(null);
   const [selectedUserId, setSelectedUserId] = useState(userIdFromParams);
 
   useEffect(() => {
@@ -54,7 +51,7 @@ const ChatPage = () => {
       let chat = conversations.find(
         (c) =>
           String(c.userA.id) === String(selectedUserId) ||
-          String(c.userB.id) === String(selectedUserId)
+          String(c.userB.id) === String(selectedUserId),
       );
       if (!chat) {
         try {
@@ -65,7 +62,7 @@ const ChatPage = () => {
           chat = updatedConversations.find(
             (c) =>
               String(c.userA.id) === String(selectedUserId) ||
-              String(c.userB.id) === String(selectedUserId)
+              String(c.userB.id) === String(selectedUserId),
           );
         } catch (e) {
           chat = null;
@@ -86,14 +83,10 @@ const ChatPage = () => {
     // eslint-disable-next-line
   }, [selectedUserId, conversations]);
 
-  // SOCKET.IO LOGIC
+  // SOCKET.IO LOGIC using socketManager
   useEffect(() => {
     if (!currentUserId) return;
-    if (!socketRef.current) {
-      socketRef.current = io(SOCKET_URL, { query: { userId: currentUserId } });
-    }
-    const socket = socketRef.current;
-    
+
     const handleNewMessage = (msg) => {
       setMessages((prev) => {
         if (prev.find((m) => m.id === msg.id)) return prev;
@@ -112,50 +105,80 @@ const ChatPage = () => {
       });
     };
 
-    socket.on("receive_message", handleNewMessage);
+    const offReceiveMessage = socketManager.on(
+      "receive_message",
+      handleNewMessage,
+    );
 
     return () => {
-      socket.off("receive_message", handleNewMessage);
+      offReceiveMessage();
     };
   }, [currentUserId, selectedChat?.id]);
 
   // Join/Leave rooms when chat selection changes
   useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket || !selectedChat?.id) return;
+    if (!selectedChat?.id) return;
 
-    socket.emit("join_conversation", { conversationId: selectedChat.id });
+    socketManager.socket?.emit("join_conversation", {
+      conversationId: selectedChat.id,
+    });
 
     return () => {
-      socket.emit("leave_conversation", { conversationId: selectedChat.id });
+      socketManager.socket?.emit("leave_conversation", {
+        conversationId: selectedChat.id,
+      });
     };
   }, [selectedChat?.id]);
-
-  // Disconnect socket on unmount
-  useEffect(() => {
-    const socket = socketRef.current;
-    return () => {
-      if (socket) {
-        socket.disconnect();
-      }
-    };
-  }, []);
 
   const handleSidebarSelect = (user) => {
     if (!user) return;
     setSelectedUserId(user.id);
+    // Find the chat object for this user
+    const chat = conversations.find(
+      (c) =>
+        String(c.userA.id) === String(user.id) ||
+        String(c.userB.id) === String(user.id),
+    );
+    if (chat) {
+      setSelectedChat(chat);
+    }
     router.push(`/seller/chats?id=${user.id}`);
   };
 
   const sidebarUsers = conversations?.map((c) => {
     const otherUser =
       String(c.userA.id) === String(currentUserId) ? c.userB : c.userA;
+
+    // Get the latest message from chatMeta.messages or c.messages
+    let lastMsg = null;
+    if (
+      c.chatMeta?.messages &&
+      Array.isArray(c.chatMeta.messages) &&
+      c.chatMeta.messages.length > 0
+    ) {
+      // Sort by timestamp to get the latest message
+      const sortedMessages = c.chatMeta.messages.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0);
+        const dateB = new Date(b.createdAt || 0);
+        return dateB - dateA; // Descending order (newest first)
+      });
+      lastMsg = sortedMessages[0];
+    } else if (Array.isArray(c.messages) && c.messages.length > 0) {
+      // Fallback to c.messages and sort to get latest
+      const sortedMessages = c.messages.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0);
+        const dateB = new Date(b.createdAt || 0);
+        return dateB - dateA; // Descending order (newest first)
+      });
+      lastMsg = sortedMessages[0];
+    }
+
     return {
       id: otherUser.id,
       name: otherUser.name,
       avatar: otherUser.avatar,
-      lastMessage: c.messages?.[0]?.content || "",
-      lastMessageTime: c.messages?.[0]?.createdAt || "",
+      lastMessage: lastMsg?.content || "",
+      lastMessageTime: lastMsg?.createdAt || "",
       chatMeta: c,
     };
   });
@@ -183,10 +206,17 @@ const ChatPage = () => {
           setSelectedUser={handleSidebarSelect}
           loading={loading}
           selectedUserId={selectedUserId}
+          setUsers={setConversations}
         />
       )}
+      {console.log("🔍 [seller-chat] Render state:", {
+        selectedChat: !!selectedChat,
+        loading,
+        selectedUserId,
+        messagesLength: mappedMessages?.length,
+      })}
       {selectedChat || loading ? (
-        loadingMessages || loading ? (
+        loading ? (
           <ChatWindowSkeleton />
         ) : (
           <ChatWindow

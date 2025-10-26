@@ -29,8 +29,14 @@ const OtpForm = ({ role }) => {
     try {
       const otpValue = otp.join("");
       const isEmail = emailOrPhone.includes("@");
-      await verifyForgotOtp(isEmail ? { email: emailOrPhone, otp: otpValue } : { phone: emailOrPhone, otp: otpValue });
-      router.push(`/auth/${role}/login/forget-password/new-password?emailOrPhone=${encodeURIComponent(emailOrPhone)}`);
+      await verifyForgotOtp(
+        isEmail
+          ? { email: emailOrPhone, otp: otpValue }
+          : { phone: emailOrPhone, otp: otpValue },
+      );
+      router.push(
+        `/${role}/login/forget-password/new-password?emailOrPhone=${encodeURIComponent(emailOrPhone)}`,
+      );
     } catch (err) {
       setError(err?.response?.data?.message || "Failed to verify OTP.");
     } finally {
@@ -39,7 +45,10 @@ const OtpForm = ({ role }) => {
   };
 
   return (
-    <form className="flex w-full flex-col gap-10 pt-20 md:gap-[66px] md:pt-10 lg:pt-0" onSubmit={handleSubmit}>
+    <form
+      className="flex w-full flex-col gap-10 pt-20 md:gap-[66px] md:pt-10 lg:pt-0"
+      onSubmit={handleSubmit}
+    >
       <div className="flex w-full flex-col gap-16">
         <div className="flex w-full flex-col gap-2">
           <h1 className="text-xl md:text-[33px] md:leading-[50px]">
@@ -51,10 +60,13 @@ const OtpForm = ({ role }) => {
           </p>
         </div>
         <div className="flex flex-col gap-2 self-center">
-          <Label text="Enter OTP" className="text-[19px] text-eerieBlack ml-7" />
+          <Label
+            text="Enter OTP"
+            className="ml-7 text-[19px] text-eerieBlack"
+          />
           <OtpInput value={otp} onChange={handleOtpChange} />
         </div>
-        {error && <span className="text-red-500 self-center">{error}</span>}
+        {error && <span className="self-center text-red-500">{error}</span>}
         <div className="flex flex-col items-center gap-5 self-center">
           <RoundedButton
             title={loading ? "Verifying..." : "Verify Code"}

@@ -30,7 +30,7 @@ const ChatPage = () => {
         setConversations(data);
         // Try to find the chat with userId
         let chat = data.find(
-          (c) => c.userAId === userId || c.userBId === userId
+          (c) => c.userAId === userId || c.userBId === userId,
         );
         if (!chat && userId) {
           // If not found, create it
@@ -40,7 +40,7 @@ const ChatPage = () => {
             const updated = await getConversations();
             setConversations(updated);
             chat = updated.find(
-              (c) => c.userAId === userId || c.userBId === userId
+              (c) => c.userAId === userId || c.userBId === userId,
             );
           } catch (e) {
             chat = null;
@@ -57,13 +57,24 @@ const ChatPage = () => {
     // eslint-disable-next-line
   }, [userId]);
 
+  // Function to sort messages by timestamp
+  const sortMessages = (messages) => {
+    return messages.sort((a, b) => {
+      const dateA = new Date(a.createdAt || 0);
+      const dateB = new Date(b.createdAt || 0);
+      return dateA - dateB; // Ascending order (oldest to newest)
+    });
+  };
+
   useEffect(() => {
     const fetchMessages = async () => {
       if (selectedChat && selectedChat.id) {
         setLoadingMessages(true);
         try {
           const msgs = await getMessages(selectedChat.id);
-          setMessages(msgs);
+          // Sort messages by createdAt timestamp (oldest first, newest last)
+          const sortedMessages = sortMessages(msgs);
+          setMessages(sortedMessages);
         } catch (error) {
           setMessages([]);
         } finally {
@@ -77,14 +88,15 @@ const ChatPage = () => {
   }, [selectedChat]);
 
   return (
-    <div className="grid min-h-[90vh] w-full max-w-[1172px] md:grid-cols-[2fr_3fr] gap-3 lg:gap-7 py-5 md:py-12">
+    <div className="grid min-h-[90vh] w-full max-w-[1172px] gap-3 py-5 md:grid-cols-[2fr_3fr] md:py-12 lg:gap-7">
       <ChatSidebar
         users={conversations}
         selectedUser={selectedChat}
         setSelectedUser={(user) => {
           setSelectedChat(user);
           if (user && (user.userAId || user.userBId)) {
-            const otherId = user.userAId === userId ? user.userBId : user.userAId;
+            const otherId =
+              user.userAId === userId ? user.userBId : user.userAId;
             router.push(`/buyer/chats/${otherId}`);
           }
         }}
@@ -98,10 +110,11 @@ const ChatPage = () => {
         newMessage={newMessage}
         setNewMessage={setNewMessage}
         messages={messages}
+        setMessages={setMessages}
         loading={loadingMessages}
       />
     </div>
   );
 };
 
-export default ChatPage; 
+export default ChatPage;

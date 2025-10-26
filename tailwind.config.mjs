@@ -31,7 +31,8 @@ export default {
         lightBlue: "#0770AD",
         iconGray: "#A3A9B6",
         lightGray: "#585B5E",
-        grayishWhite: "#F8F7FB"
+        grayishWhite: "#F8F7FB",
+        yellow: "#F3B95A",
       },
       borderRadius: {
         lg: "var(--radius)",

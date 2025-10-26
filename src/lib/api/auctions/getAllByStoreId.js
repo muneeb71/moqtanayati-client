@@ -9,6 +9,8 @@ export async function getAuctionsBySellerId() {
     const userId = cookiesStore.get("userId").value;
     const response = await api.get(`auctions/seller/${userId}`);
 
+    console.log("res in auctions : ", response.data.data);
+
     return response.data.data;
   } catch (error) {
     console.log("Error fetching auctions:", error);

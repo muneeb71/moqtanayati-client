@@ -8,8 +8,19 @@ import toast from "react-hot-toast";
 import { getWatchlistById } from "@/lib/api/watchlist/getWatchlistById";
 import { removeFromWatchlist } from "@/lib/api/watchlist/removeWatchlist";
 
-const ProductDetailsSlider = ({ images, id, pricingFormat }) => {
-  const [selectedItemIndex, setSelectedIndex] = useState(3);
+const ProductDetailsSlider = ({ images = [], auctionDetail }) => {
+  const imagesList = Array.isArray(images) ? images.filter(Boolean) : [];
+
+  console.log("🔍 [ProductDetailsSlider] Images received:", images);
+  console.log("🔍 [ProductDetailsSlider] Images list:", imagesList);
+  console.log("🔍 [ProductDetailsSlider] Auction detail:", auctionDetail);
+
+  // If there are no images, don't render the slider section
+  if (imagesList.length === 0) {
+    console.log("🔍 [ProductDetailsSlider] No images found, returning null");
+    return null;
+  }
+  const [selectedItemIndex, setSelectedIndex] = useState(0);
   const sliderRef = useRef(null);
   const autoSlideRef = useRef(null);
   const [favourite, setFavourite] = useState(false);
@@ -18,12 +29,12 @@ const ProductDetailsSlider = ({ images, id, pricingFormat }) => {
 
   const goToNextSlide = () => {
     setSelectedIndex((prevIndex) =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1,
+      prevIndex === imagesList.length - 1 ? 0 : prevIndex + 1,
     );
   };
 
   const getWatchlistStatus = async () => {
-    const auction = await getWatchlistById(id);
+    const auction = await getWatchlistById(auctionDetail.id);
     if (auction?.data?.success) {
       setFavourite(true);
       setAuctionId(auction?.data?.data?.auctionId);
@@ -31,7 +42,7 @@ const ProductDetailsSlider = ({ images, id, pricingFormat }) => {
   };
 
   useEffect(() => {
-    if (pricingFormat === "Auctions"){
+    if (auctionDetail?.pricingFormat === "Auctions") {
       getWatchlistStatus();
     }
   }, []);
@@ -104,17 +115,16 @@ const ProductDetailsSlider = ({ images, id, pricingFormat }) => {
   const addToWatchlist = async () => {
     try {
       if (favourite) {
-
         const res = await removeFromWatchlist(auctionId);
         if (res?.data?.success) {
           setFavourite(false);
-          toast.success("Removed from Watchlist")
+          toast.success("Removed from Watchlist");
         }
       } else {
-        const res = await addWatchlist(id);
+        const res = await addWatchlist(auctionDetail?.id);
         if (res?.data?.success) {
           setFavourite(true);
-          setAuctionId(res?.data?.data?.auctionId)
+          setAuctionId(res?.data?.data?.auctionId);
           toast.success("Item Added to Watchlist.");
         } else {
           toast.error("Failed to add item to Watchlist.");
@@ -132,14 +142,14 @@ const ProductDetailsSlider = ({ images, id, pricingFormat }) => {
         ref={sliderRef}
         className="no-scrollbar flex h-full max-h-[461px] min-w-[103px] max-w-[94vw] justify-between gap-2.5 self-center overflow-scroll sm:max-w-[400px] md:max-w-full lg:flex-col"
       >
-        {images.map((image, index) => (
+        {imagesList.map((image, index) => (
           <button
             onClick={() => setSelectedIndex(index)}
             className="grid min-h-[84px] w-[103px] min-w-[103px] place-items-center overflow-hidden rounded-[10px] border border-transparent bg-black/10 transition-all duration-200 ease-in hover:border-moonstone"
             key={index}
           >
             <Image
-              src={image} // process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
+              src={image}
               width={500}
               height={500}
               alt="item"
@@ -152,24 +162,24 @@ const ProductDetailsSlider = ({ images, id, pricingFormat }) => {
       <div className="flex w-full flex-col items-start gap-2">
         <div className="relative grid aspect-square w-full max-w-[470px] place-items-center overflow-hidden rounded-[20px] border border-gray-200/5 bg-black/10">
           <Image
-            src={
-              images[selectedItemIndex] //process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
-            }
+            src={imagesList[selectedItemIndex]}
             width={500}
             height={500}
             alt="item"
             loading="lazy"
             className="h-full w-full object-cover"
           />
-          {pricingFormat === "Auctions" && <button
-            className={cn(
-              "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
-              favourite ? "text-[#F16D6F]" : "text-white",
-            )}
-            onClick={addToWatchlist}
-          >
-            {heartIcon}
-          </button>}
+          {auctionDetail?.pricingFormat === "Auctions" && (
+            <button
+              className={cn(
+                "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
+                favourite ? "text-[#F16D6F]" : "text-white",
+              )}
+              onClick={addToWatchlist}
+            >
+              {heartIcon}
+            </button>
+          )}
         </div>
       </div>
     </div>

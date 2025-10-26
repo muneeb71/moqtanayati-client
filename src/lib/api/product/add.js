@@ -11,11 +11,11 @@ export async function addProduct(data) {
         formData.append(`images`, image);
       });
     }
-    
+
     if (data.video) {
       formData.append("video", data.video);
     }
-    
+
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("storeId", data.storeId);

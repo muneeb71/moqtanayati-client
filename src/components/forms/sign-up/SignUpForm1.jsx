@@ -9,6 +9,8 @@ import RoundedButton from "@/components/buttons/RoundedButton";
 import InputField from "@/components/form-fields/InputField";
 import Label from "@/components/form-fields/Label";
 import CustomLink from "@/components/link/CustomLink";
+import { sendEmailOtp } from "@/lib/api/auth/email-verification";
+import { sendPhoneOtp } from "@/lib/api/auth/phone-verification";
 import { useRegisterStore } from "@/providers/register-provider";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -20,8 +22,9 @@ const SignUpForm1 = ({ role: propRole }) => {
 
   const role = propRole || searchParams.get("role") || "buyer";
 
-  const { name, email, phone, setName, setEmail, setPhone } = useRegisterStore((state) => state);
-  
+  const { name, email, phone, setName, setEmail, setPhone } = useRegisterStore(
+    (state) => state,
+  );
 
   const [emailVerified, setEmailVerified] = useState(false);
   const [phoneVerified, setPhoneVerified] = useState(false);
@@ -40,25 +43,55 @@ const SignUpForm1 = ({ role: propRole }) => {
     }
   }, [setEmail, setPhone]);
 
-  const handleVerifyEmail = () => {
+  const handleVerifyEmail = async () => {
+    console.log("email : ", email);
     if (!name || !email) {
       toast.error("Please fill in your name and email.");
       return;
     }
-    router.push(`/auth/${role}/sign-up/email-otp?email=${encodeURIComponent(email)}&role=${role}`);
+
+    try {
+      console.log("send otp", email);
+      const res = await sendEmailOtp(email);
+
+      if (res.success) {
+        toast.success("OTP sent to your email.");
+        router.push(
+          `/${role}/sign-up/email-otp?email=${encodeURIComponent(email)}&role=${role}`,
+        );
+      } else {
+        toast.error(res.message || "Failed to send OTP.");
+      }
+    } catch (e) {
+      toast.error("Failed to send OTP.");
+    }
   };
 
-  const handleVerifyPhone = () => {
-    if (!name || !email || !phone) {
-      toast.error("Please fill in all fields (name, email, and phone).");
-      return;
-    }
-    if (!emailVerified) {
-      toast.error("Please verify your email first.");
-      return;
-    }
-    router.push(`/auth/${role}/sign-up/phone-otp?phone=${encodeURIComponent(phone)}&role=${role}`);
-  };
+  // const handleVerifyPhone = async () => {
+  //   if (!name || !email || !phone) {
+  //     toast.error("Please fill in all fields (name, email, and phone).");
+  //     return;
+  //   }
+  //   if (!emailVerified) {
+  //     toast.error("Please verify your email first.");
+  //     return;
+  //   }
+  //   try {
+  //     console.log("send otp to phone", phone);
+  //     const res = await sendPhoneOtp(phone);
+
+  //     if (res.success) {
+  //       toast.success("OTP sent to your phone.");
+  //       router.push(
+  //         `/${role}/sign-up/phone-otp?phone=${encodeURIComponent(phone)}&role=${role}`,
+  //       );
+  //     } else {
+  //       toast.error(res.message || "Failed to send OTP.");
+  //     }
+  //   } catch (e) {
+  //     toast.error("Failed to send OTP.");
+  //   }
+  // };
 
   return (
     <>
@@ -107,16 +140,17 @@ const SignUpForm1 = ({ role: propRole }) => {
             showIcon
             className="min-w-72"
           />
-        ) : !phoneVerified ? (
-          <RoundedButton
-            onClick={handleVerifyPhone}
-            title="Verify Phone"
-            showIcon
-            className="min-w-72"
-          />
         ) : (
+          // : !phoneVerified ? (
+          //   <RoundedButton
+          //     onClick={handleVerifyPhone}
+          //     title="Verify Phone"
+          //     showIcon
+          //     className="min-w-72"
+          //   />
+          // )
           <RoundedButton
-            onClick={() => router.push(`/auth/${role}/sign-up/id-proof`)}
+            onClick={() => router.push(`/${role}/sign-up/id-proof`)}
             title="Continue to ID Proof"
             showIcon
             className="min-w-72"
@@ -124,7 +158,7 @@ const SignUpForm1 = ({ role: propRole }) => {
         )}
         <div className="flex items-center gap-1">
           Already have an account?{" "}
-          <CustomLink href={"/auth/" + role + "/login"}>Sign in</CustomLink>
+          <CustomLink href={"/" + role + "/login"}>Sign in</CustomLink>
         </div>
       </div>
     </>

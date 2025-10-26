@@ -1,7 +1,7 @@
 "use client";
 
 import ProductDetailsAuctionTimer from "@/components/timers/ProductDetailsAuctionTimer";
-import QaSectionSheet from "../../../../landing/product-details/dialogs/qa-sheet/QaSectionSheet";
+import SellerQaSectionSheet from "../../../../landing/product-details/dialogs/qa-sheet/SellerQaSectionSheet";
 import { productHeartIcon } from "@/assets/icons/seller-icons";
 import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
@@ -55,7 +55,7 @@ const StoreProductDetailsCard = ({ item }) => {
       const response = await updateProductStock(item.id, newStock);
       if (response) {
         setStock(newStock);
-        toast.success("Stock updated.")
+        toast.success("Stock updated.");
       }
     } catch (error) {
       console.log("Error updating stock:", error);
@@ -65,13 +65,13 @@ const StoreProductDetailsCard = ({ item }) => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       const newValue = parseInt(editValue);
       if (!isNaN(newValue) && newValue >= 0) {
         handleStockUpdate(newValue);
         setIsEditing(false);
       }
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       setIsEditing(false);
       setEditValue(stock);
     }
@@ -93,14 +93,19 @@ const StoreProductDetailsCard = ({ item }) => {
                   {item?.name}
                 </h2>
                 <h1 className="text-[24px] font-medium leading-[40px] md:text-[28.8px] md:leading-[43px]">
-                  ${item?.price !== 0 ? item?.price?.toFixed(2) : item?.buyItNow ? item?.buyItNow?.toFixed(2) : "0.00"}
+                  $
+                  {item?.price !== 0
+                    ? item?.price?.toFixed(2)
+                    : item?.buyItNow
+                      ? item?.buyItNow?.toFixed(2)
+                      : "0.00"}
                 </h1>
               </div>
               <div className="flex flex-col justify-end gap-2.5">
                 <span className="text-right text-[14.4px] leading-[21px] text-battleShipGray">
                   {formatTimeAgo(item?.createdAt)}
                 </span>
-                <QaSectionSheet />
+                <SellerQaSectionSheet />
               </div>
             </div>
             <div className="flex w-full items-end justify-between gap-5">
@@ -138,12 +143,12 @@ const StoreProductDetailsCard = ({ item }) => {
                   onChange={(e) => setEditValue(e.target.value)}
                   onKeyDown={handleKeyPress}
                   onBlur={handleBlur}
-                  className="w-20 text-center text-2xl font-medium text-darkBlue border border-moonstone rounded-md px-2"
+                  className="w-20 rounded-md border border-moonstone px-2 text-center text-2xl font-medium text-darkBlue"
                   autoFocus
                 />
               ) : (
-                <span 
-                  className="text-2xl font-medium text-darkBlue cursor-pointer"
+                <span
+                  className="cursor-pointer text-2xl font-medium text-darkBlue"
                   onClick={() => {
                     setIsEditing(true);
                     setEditValue(stock);

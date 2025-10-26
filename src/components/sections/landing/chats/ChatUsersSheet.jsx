@@ -8,10 +8,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { MenuIcon } from "lucide-react";
+import { MenuIcon, User } from "lucide-react";
 import Image from "next/image";
 
-const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {  
+const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {
   return (
     <Sheet>
       <SheetTrigger>
@@ -40,24 +40,71 @@ const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {
                   className="flex w-full cursor-pointer items-start justify-between py-2 transition-all duration-200 ease-in hover:bg-black/10"
                 >
                   <div className="flex w-full items-center gap-3">
-                    <div className="grid size-[36px] min-w-[36px] place-items-center overflow-hidden rounded-full">
-                      <Image
-                        src={user.avatar || "/static/dummy-user/1.jpeg"}
-                        width={100}
-                        height={100}
-                        alt={user.name}
-                        className="h-full w-full object-cover"
-                      />
+                    <div className="grid size-[36px] min-w-[36px] place-items-center overflow-hidden rounded-full bg-gray-100">
+                      {user.image ||
+                      user.userB?.avatar ||
+                      user.userA?.avatar ? (
+                        <Image
+                          src={
+                            user.image ||
+                            user.userB?.avatar ||
+                            user.userA?.avatar
+                          }
+                          width={100}
+                          height={100}
+                          alt={
+                            user.name ||
+                            user.userB?.name ||
+                            user.userA?.name ||
+                            "User"
+                          }
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <User className="h-5 w-5 text-gray-400" />
+                      )}
                     </div>
                     <div className="flex w-full flex-col">
                       <h1 className="text-sm font-medium text-russianViolet">
-                        {user.name}
+                        {user.name ||
+                          user.userB?.name ||
+                          user.userA?.name ||
+                          "User"}
                       </h1>
                       <p className="max-w-[190px] truncate text-xs leading-[17.5px] text-[#595C75]">
-                        {user.lastMessage ? <span>{user.lastMessage}</span> : <span className="italic text-gray-400">No messages</span>}
+                        {(() => {
+                          const messages = user.chatMeta?.messages || [];
+                          const lastMessage = messages[messages.length - 1];
+                          return lastMessage ? (
+                            <>
+                              {lastMessage.senderId === user.userAId && (
+                                <span className="font-medium">You: </span>
+                              )}
+                              <span
+                                className={
+                                  lastMessage.senderId !== user.userAId
+                                    ? "font-medium text-moonstone"
+                                    : ""
+                                }
+                              >
+                                {lastMessage.content}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="italic text-gray-400">
+                              No messages
+                            </span>
+                          );
+                        })()}
                       </p>
                       <span className="text-end text-[10px] text-[#9799A8]">
-                        {user.lastMessageTime ? user.lastMessageTime : ""}
+                        {(() => {
+                          const messages = user.chatMeta?.messages || [];
+                          const lastMessage = messages[messages.length - 1];
+                          return lastMessage && lastMessage.createdAt
+                            ? new Date(lastMessage.createdAt).toLocaleString()
+                            : "";
+                        })()}
                       </span>
                     </div>
                   </div>

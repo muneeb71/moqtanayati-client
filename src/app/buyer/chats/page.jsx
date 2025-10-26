@@ -47,22 +47,31 @@ const ChatPage = () => {
       }
       setLoadingMessages(true);
       let chat = conversations.find(
-        (c) => String(c.userA.id) === String(userId) || String(c.userB.id) === String(userId)
+        (c) =>
+          String(c.userA.id) === String(userId) ||
+          String(c.userB.id) === String(userId),
       );
+
       if (!chat) {
-        try {
-          await createChat(userId);
-          const updatedRes = await getConversations();
-          const updatedConversations = updatedRes?.data || [];
-          setConversations(updatedConversations);
-          chat = updatedConversations.find(
-            (c) => String(c.userA.id) === String(userId) || String(c.userB.id) === String(userId)
-          );
-        } catch (e) {
-          chat = null;
-        }
+        // Create a temporary chat object for new conversations
+        // This allows the user to start typing before the chat is actually created
+        const tempChat = {
+          id: `temp_${userId}`, // Temporary ID
+          userA: { id: currentUserId },
+          userB: {
+            id: userId,
+            // Name and avatar will be populated when chat is created via socket
+          },
+          isTemporary: true, // Flag to indicate this is a temporary chat
+          chatMeta: { messages: [] },
+        };
+        setSelectedChat(tempChat);
+        setMessages([]);
+        setLoadingMessages(false);
+        return;
       }
-      setSelectedChat(chat || null);
+
+      setSelectedChat(chat);
       if (chat && chat.id) {
         getMessages(userId)
           .then((res) => setMessages(res?.data || []))
@@ -75,7 +84,7 @@ const ChatPage = () => {
     };
     fetchChatAndMessages();
     // eslint-disable-next-line
-  }, [userId, conversations]);
+  }, [userId, conversations, currentUserId]);
 
   const handleSidebarSelect = (user) => {
     if (!user) return;
@@ -83,13 +92,61 @@ const ChatPage = () => {
   };
 
   const sidebarUsers = conversations?.map((c) => {
-    const otherUser = String(c.userA.id) === String(currentUserId) ? c.userB : c.userA;
+    const otherUser =
+      String(c.userA.id) === String(currentUserId) ? c.userB : c.userA;
+
+    // Get the latest message from chatMeta.messages or c.messages
+    let lastMsg = null;
+    if (
+      c.chatMeta?.messages &&
+      Array.isArray(c.chatMeta.messages) &&
+      c.chatMeta.messages.length > 0
+    ) {
+      // Sort by timestamp to get the latest message
+      console.log(
+        "🔍 [page.jsx] Using chatMeta.messages:",
+        c.chatMeta.messages,
+      );
+      const sortedMessages = c.chatMeta.messages.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0);
+        const dateB = new Date(b.createdAt || 0);
+        return dateB - dateA; // Descending order (newest first)
+      });
+      console.log(
+        "🔍 [page.jsx] Sorted chatMeta messages:",
+        sortedMessages.map((m) => ({
+          content: m.content,
+          createdAt: m.createdAt,
+        })),
+      );
+      lastMsg = sortedMessages[0];
+      console.log("🔍 [page.jsx] Selected lastMsg from chatMeta:", lastMsg);
+    } else if (Array.isArray(c.messages) && c.messages.length > 0) {
+      // Fallback to c.messages and sort to get latest
+      console.log("🔍 [page.jsx] Using c.messages:", c.messages);
+      const sortedMessages = c.messages.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0);
+        const dateB = new Date(b.createdAt || 0);
+        return dateB - dateA; // Descending order (newest first)
+      });
+      console.log(
+        "🔍 [page.jsx] Sorted c.messages:",
+        sortedMessages.map((m) => ({
+          content: m.content,
+          createdAt: m.createdAt,
+        })),
+      );
+      lastMsg = sortedMessages[0];
+      console.log("🔍 [page.jsx] Selected lastMsg from c.messages:", lastMsg);
+    }
+
+    const lastSender = lastMsg?.sender;
     return {
-      id: otherUser.id,
-      name: otherUser.name,
-      avatar: otherUser.avatar,
-      lastMessage: c.messages?.[0]?.content || "",
-      lastMessageTime: c.messages?.[0]?.createdAt || "",
+      id: otherUser?.id,
+      name: otherUser?.name || lastSender?.name,
+      avatar: otherUser?.avatar || lastSender?.avatar,
+      lastMessage: lastMsg?.content || "",
+      lastMessageTime: lastMsg?.createdAt || "",
       chatMeta: c,
     };
   });
@@ -105,9 +162,9 @@ const ChatPage = () => {
     },
     senderId: msg.senderId,
   }));
-    
+
   return (
-    <div className="grid min-h-[90vh] w-full max-w-[1172px] md:grid-cols-[2fr_3fr] gap-3 lg:gap-7 py-5 md:py-12">
+    <div className="grid min-h-[90vh] w-full max-w-[1172px] gap-3 py-5 md:grid-cols-[2fr_3fr] md:py-12 lg:gap-7">
       {loading ? (
         <ChatSidebarSkeleton />
       ) : (
@@ -117,10 +174,11 @@ const ChatPage = () => {
           setSelectedUser={handleSidebarSelect}
           loading={loading}
           selectedUserId={userId}
+          setUsers={setConversations}
         />
       )}
       {selectedChat || loading ? (
-        loadingMessages || loading ? (
+        loading ? (
           <ChatWindowSkeleton />
         ) : (
           <ChatWindow
@@ -137,7 +195,7 @@ const ChatPage = () => {
           />
         )
       ) : (
-        <div className="flex w-full items-center justify-center text-gray-400 text-lg min-h-[300px]">
+        <div className="flex min-h-[300px] w-full items-center justify-center text-lg text-gray-400">
           No chat selected
         </div>
       )}
