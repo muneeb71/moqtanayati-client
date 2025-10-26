@@ -1,6 +1,9 @@
 import HistoryCard from "@/components/sections/landing/profile/purchase-history/HistoryCard";
 import { getServerUserOrders } from "@/lib/api/server-axios";
 
+// Force dynamic rendering to allow cookies usage
+export const dynamic = 'force-dynamic';
+
 const AllHistoryPage = async () => {
   // Initialize with empty arrays
   let userHistory = [];

@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { NotificationProvider } from "@/providers/notification-provider";
 import { NotificationStoreProvider } from "@/providers/notification-store-provider";
 import { ProductsStoreProvider } from "@/providers/products-store-provider";
+import { SurveyStoreProvider } from "@/providers/survey-store-provider";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -23,8 +24,10 @@ export default function RootLayout({ children }) {
         <NotificationProvider>
           <NotificationStoreProvider>
             <ProductsStoreProvider>
-              {children}
-              <Toaster />
+              <SurveyStoreProvider>
+                {children}
+                <Toaster />
+              </SurveyStoreProvider>
             </ProductsStoreProvider>
           </NotificationStoreProvider>
         </NotificationProvider>

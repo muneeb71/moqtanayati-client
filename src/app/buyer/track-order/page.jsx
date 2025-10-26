@@ -1,8 +1,11 @@
+import { Suspense } from "react";
 import TrackOrder from "@/components/sections/landing/track-order/page"
 
 const page = () => {
   return (
-    <TrackOrder />
+    <Suspense fallback={<div>Loading...</div>}>
+      <TrackOrder />
+    </Suspense>
   )
 }
 

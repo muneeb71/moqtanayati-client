@@ -4,7 +4,7 @@ import { BiSolidTrash } from "react-icons/bi";
 import { BsFillEyeFill } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
 import formatDateTime from "@/utils/dateFormatter";
-import ShimmerRow from "@/components/shimmer/ShimmerRow";
+import ShimmerRow from "@/components/shimmer/shimmerRow";
 import toast from "react-hot-toast";
 import { deleteReportById } from "@/lib/api/admin/reports/deleteReportById";
 

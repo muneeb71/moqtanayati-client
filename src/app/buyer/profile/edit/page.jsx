@@ -1,5 +1,4 @@
-"use client";
-
+import { Suspense } from "react";
 import RoundedButton from "@/components/buttons/RoundedButton";
 import PageHeading from "@/components/headings/PageHeading";
 import EditProfileCard from "@/components/sections/landing/profile/cards/EditProfileCard";
@@ -10,7 +9,9 @@ const EditProfilePage = () => {
       <PageHeading>
         <span className="text-">Profile</span>
       </PageHeading>
-      <EditProfileCard />
+      <Suspense fallback={<div>Loading...</div>}>
+        <EditProfileCard />
+      </Suspense>
     </div>
   );
 };
