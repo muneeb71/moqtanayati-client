@@ -1,3 +1,5 @@
+"use client";
+
 import { RegisterStoreProvider } from "@/providers/register-provider";
 import Image from "next/image";
 import SafeImage from "@/components/ui/SafeImage";
