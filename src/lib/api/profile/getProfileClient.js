@@ -11,10 +11,6 @@ export async function getUserProfileClient() {
     const role = getCookie("role");
     const token = getCookie("token");
 
-    console.log(
-      "🔍 [getUserProfileClient] User ID from cookies:",
-      userId ? `${userId.substring(0, 10)}...` : "null",
-    );
     console.log("🔍 [getUserProfileClient] User role from cookies:", role);
     console.log("🔍 [getUserProfileClient] Token present:", !!token);
 
@@ -38,14 +34,6 @@ export async function getUserProfileClient() {
 
     // Choose endpoint based on role
     const endpoint = role === "buyer" ? "buyers/profile/" : "sellers/profile/";
-    console.log(
-      "🔍 [getUserProfileClient] Making API request to:",
-      endpoint + userId,
-    );
-    console.log(
-      "🔍 [getUserProfileClient] Full URL will be:",
-      `${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000"}/${endpoint}${userId}`,
-    );
 
     const response = await api.get(endpoint + userId);
     console.log(

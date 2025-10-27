@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import api from "@/lib/api/axios";
 
 // GET - Get my questions
 export async function GET(request) {
@@ -21,18 +22,15 @@ export async function GET(request) {
 
     console.log("🔍 [Q&A API] Fetching user questions for user:", userId);
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/buyers/questions?page=${page}&limit=${limit}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+    // Use the standard api.get method with query parameters
+    const response = await api.get(`/buyers/questions`, {
+      params: {
+        page,
+        limit,
       },
-    );
+    });
 
-    const data = await response.json();
+    const data = response.data;
 
     if (data.success) {
       return NextResponse.json({

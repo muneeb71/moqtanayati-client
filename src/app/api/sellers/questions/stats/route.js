@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import api from "@/lib/api/axios";
 
 // GET - Get Q&A statistics
 export async function GET() {
@@ -17,18 +18,10 @@ export async function GET() {
 
     console.log("🔍 [Q&A API] Fetching Q&A stats for seller:", userId);
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/sellers/questions/stats`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    // Use the standard api.get method
+    const response = await api.get(`/sellers/questions/stats`);
 
-    const data = await response.json();
+    const data = response.data;
 
     if (data.success) {
       return NextResponse.json({
