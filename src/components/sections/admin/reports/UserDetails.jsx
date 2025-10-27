@@ -30,6 +30,31 @@ const UserDetails = () => {
         const res = await getUserById(id);
         const fetchedData = res;
 
+        // Debug: Log the user data structure to see what fields are available
+        console.log("User data structure:", fetchedData?.user);
+        console.log(
+          "Available user fields:",
+          Object.keys(fetchedData?.user || {}),
+        );
+
+        // Debug: Log listings and watchlists to see image structure
+        console.log("Listings data:", fetchedData?.listings);
+        console.log("Watchlists data:", fetchedData?.user?.watchlists);
+        if (fetchedData?.listings?.[0]) {
+          console.log("First listing structure:", fetchedData.listings[0]);
+          console.log("First listing images:", fetchedData.listings[0].images);
+        }
+        if (fetchedData?.user?.watchlists?.[0]) {
+          console.log(
+            "First watchlist structure:",
+            fetchedData.user.watchlists[0],
+          );
+          console.log(
+            "First watchlist product images:",
+            fetchedData.user.watchlists[0].auction?.product?.images,
+          );
+        }
+
         const orders =
           role === "BUYER"
             ? (fetchedData?.user?.orders ?? [])
@@ -69,15 +94,39 @@ const UserDetails = () => {
     <div className="flex h-full max-h-full flex-col gap-10 pb-10">
       <div className="flex flex-row justify-between rounded-xl bg-white px-5 py-5 lg:px-10">
         <div className="flex flex-row items-center gap-5">
-          <Image
-            src={"/static/testuser.svg"}
-            width={150}
-            height={150}
-            alt="Profile Image"
-            loading="lazy"
-            quality={100}
-            className="h-[100px] w-[100px] rounded-full lg:h-[150px] lg:w-[150px]"
-          />
+          {userDetail?.user?.avatar ||
+          userDetail?.user?.profileImage ||
+          userDetail?.user?.profile_image ? (
+            <Image
+              src={
+                userDetail?.user?.avatar ||
+                userDetail?.user?.profileImage ||
+                userDetail?.user?.profile_image
+              }
+              width={150}
+              height={150}
+              alt="Profile Image"
+              loading="lazy"
+              quality={100}
+              className="h-[100px] w-[100px] rounded-full object-cover lg:h-[150px] lg:w-[150px]"
+            />
+          ) : (
+            <div className="flex h-[100px] w-[100px] items-center justify-center rounded-full bg-gray-200 lg:h-[150px] lg:w-[150px]">
+              <svg
+                className="h-12 w-12 text-gray-500 lg:h-16 lg:w-16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </div>
+          )}
           <div className="flex flex-col gap-1 xl:gap-4">
             <div className="flex flex-col">
               <div className="flex flex-col gap-1 xl:flex-row xl:gap-5">
@@ -169,13 +218,41 @@ const UserDetails = () => {
                       className="relative ml-4 min-w-[280px] rounded-lg bg-white shadow-md"
                     >
                       <div className="relative">
-                        <Image
-                          src="/static/prod.jpg"
-                          width={280}
-                          height={200}
-                          alt="Product"
-                          className="h-[200px] w-full rounded-t-lg object-cover"
-                        />
+                        {item.images && item.images.length > 0 ? (
+                          <Image
+                            src={
+                              Array.isArray(item.images)
+                                ? item.images[0]
+                                : item.images
+                            }
+                            width={280}
+                            height={200}
+                            alt="Product"
+                            className="h-[200px] w-full rounded-t-lg object-cover"
+                            onError={(e) => {
+                              console.log(
+                                "Product image load error, using fallback",
+                              );
+                              e.target.src = "/static/prod.jpg";
+                            }}
+                          />
+                        ) : (
+                          <div className="flex h-[200px] w-full items-center justify-center rounded-t-lg bg-gray-200">
+                            <svg
+                              className="h-16 w-16 text-gray-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </div>
+                        )}
                         <button className="absolute right-3 top-3 rounded-full bg-white/80 p-2">
                           <svg
                             width="20"
@@ -195,9 +272,23 @@ const UserDetails = () => {
                         <p className="mb-2 text-xl font-semibold text-eerieBlack">
                           <span>
                             $
-                            {item.price !== null
-                              ? item.price.toFixed(2)
-                              : "0.00"}
+                            {item.pricingFormat === "Auctions"
+                              ? item.startingBid !== null
+                                ? item.startingBid.toFixed(2)
+                                : item.buyItNow !== null
+                                  ? item.buyItNow.toFixed(2)
+                                  : item.minimumOffer !== null
+                                    ? item.minimumOffer.toFixed(2)
+                                    : item.autoAccept !== null
+                                      ? item.autoAccept.toFixed(2)
+                                      : "0.00"
+                              : item.pricingFormat === "Fixed Price"
+                                ? item.price !== null
+                                  ? item.price.toFixed(2)
+                                  : "0.00"
+                                : item.price !== null
+                                  ? item.price.toFixed(2)
+                                  : "0.00"}
                           </span>
                         </p>
                         <p className="mb-1 line-clamp-1 text-sm font-medium text-eerieBlack">
@@ -224,13 +315,42 @@ const UserDetails = () => {
                       className="relative ml-4 min-w-[280px] rounded-lg bg-white shadow-md"
                     >
                       <div className="relative">
-                        <Image
-                          src="/static/prod.jpg"
-                          width={280}
-                          height={200}
-                          alt="Product"
-                          className="h-[200px] w-full rounded-t-lg object-cover"
-                        />
+                        {item.auction?.product?.images &&
+                        item.auction.product.images.length > 0 ? (
+                          <Image
+                            src={
+                              Array.isArray(item.auction.product.images)
+                                ? item.auction.product.images[0]
+                                : item.auction.product.images
+                            }
+                            width={280}
+                            height={200}
+                            alt="Product"
+                            className="h-[200px] w-full rounded-t-lg object-cover"
+                            onError={(e) => {
+                              console.log(
+                                "Product image load error, using fallback",
+                              );
+                              e.target.src = "/static/prod.jpg";
+                            }}
+                          />
+                        ) : (
+                          <div className="flex h-[200px] w-full items-center justify-center rounded-t-lg bg-gray-200">
+                            <svg
+                              className="h-16 w-16 text-gray-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </div>
+                        )}
                         <button className="absolute right-3 top-3 rounded-full bg-white/80 p-2">
                           <svg
                             width="20"
@@ -248,7 +368,25 @@ const UserDetails = () => {
 
                       <div className="p-4">
                         <p className="mb-2 text-xl font-semibold text-eerieBlack">
-                          ${item.auction?.product.price}
+                          $
+                          {item.auction?.product?.pricingFormat === "Auctions"
+                            ? item.auction?.product?.startingBid !== null
+                              ? item.auction.product.startingBid.toFixed(2)
+                              : item.auction?.product?.buyItNow !== null
+                                ? item.auction.product.buyItNow.toFixed(2)
+                                : item.auction?.product?.minimumOffer !== null
+                                  ? item.auction.product.minimumOffer.toFixed(2)
+                                  : item.auction?.product?.autoAccept !== null
+                                    ? item.auction.product.autoAccept.toFixed(2)
+                                    : "0.00"
+                            : item.auction?.product?.pricingFormat ===
+                                "Fixed Price"
+                              ? item.auction?.product?.price !== null
+                                ? item.auction.product.price.toFixed(2)
+                                : "0.00"
+                              : item.auction?.product?.price !== null
+                                ? item.auction.product.price.toFixed(2)
+                                : "0.00"}
                         </p>
                         <p className="mb-1 line-clamp-1 text-sm font-medium text-eerieBlack">
                           {item.auction.product.name},{" "}

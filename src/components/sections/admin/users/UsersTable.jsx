@@ -76,13 +76,37 @@ const UsersTable = ({ onViewClick, currentData, loading }) => {
               </td>
               <td className="py-5">
                 <div className="flex items-center gap-2">
-                  <Image
-                    src={user.avatar || "/static/dummy-user/1.jpeg"}
-                    width={50}
-                    height={50}
-                    alt="Profile Image"
-                    className="rounded-full"
-                  />
+                  {user.avatar || user.profileImage || user.profile_image ? (
+                    <Image
+                      src={
+                        user.avatar || user.profileImage || user.profile_image
+                      }
+                      width={50}
+                      height={50}
+                      alt="Profile Image"
+                      className="h-[50px] w-[50px] rounded-full object-cover"
+                      onError={(e) => {
+                        console.log("User avatar load error, using fallback");
+                        e.target.src = "/static/user.svg";
+                      }}
+                    />
+                  ) : (
+                    <div className="flex h-[50px] w-[50px] items-center justify-center rounded-full bg-gray-200">
+                      <svg
+                        className="h-7 w-7 text-gray-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                      </svg>
+                    </div>
+                  )}
                   <div>
                     <p className="text-[16px] font-semibold text-customBlue">
                       {user.name}

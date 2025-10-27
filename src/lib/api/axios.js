@@ -30,6 +30,12 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // Don't set Content-Type for FormData - let browser handle it
+    if (config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+    }
+
     return config;
   },
   (error) => Promise.reject(error),
@@ -38,7 +44,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.code === "ECONNREFUSED") {
+    if (error.code === "ECONNREFUSED" || error.code === "ERR_NETWORK") {
       console.error(
         "❌ API Connection Error: Backend server is not running or unreachable",
       );
@@ -46,6 +52,7 @@ api.interceptors.response.use(
         "Please check if your backend server is running and the API URL is correct",
       );
       console.error("Current API URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
+      console.error("Full error:", error);
     }
 
     if (error.response?.status === 401) {

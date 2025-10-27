@@ -54,10 +54,15 @@ const SignUpForm1 = ({ role: propRole }) => {
       console.log("send otp", email);
       const res = await sendEmailOtp(email);
 
+      console.log("res data email verify : ", res.data?.otp);
+
       if (res.success) {
         toast.success("OTP sent to your email.");
+
+        // Pass the OTP in the URL if it's available in the response
+        const otpParam = res.data?.otp ? `&otp=${res.data.otp}` : "";
         router.push(
-          `/${role}/sign-up/email-otp?email=${encodeURIComponent(email)}&role=${role}`,
+          `/${role}/sign-up/email-otp?email=${encodeURIComponent(email)}&role=${role}${otpParam}`,
         );
       } else {
         toast.error(res.message || "Failed to send OTP.");
@@ -67,31 +72,31 @@ const SignUpForm1 = ({ role: propRole }) => {
     }
   };
 
-  // const handleVerifyPhone = async () => {
-  //   if (!name || !email || !phone) {
-  //     toast.error("Please fill in all fields (name, email, and phone).");
-  //     return;
-  //   }
-  //   if (!emailVerified) {
-  //     toast.error("Please verify your email first.");
-  //     return;
-  //   }
-  //   try {
-  //     console.log("send otp to phone", phone);
-  //     const res = await sendPhoneOtp(phone);
+  const handleVerifyPhone = async () => {
+    if (!name || !email || !phone) {
+      toast.error("Please fill in all fields (name, email, and phone).");
+      return;
+    }
+    if (!emailVerified) {
+      toast.error("Please verify your email first.");
+      return;
+    }
+    try {
+      console.log("send otp to phone", phone);
+      const res = await sendPhoneOtp(phone);
 
-  //     if (res.success) {
-  //       toast.success("OTP sent to your phone.");
-  //       router.push(
-  //         `/${role}/sign-up/phone-otp?phone=${encodeURIComponent(phone)}&role=${role}`,
-  //       );
-  //     } else {
-  //       toast.error(res.message || "Failed to send OTP.");
-  //     }
-  //   } catch (e) {
-  //     toast.error("Failed to send OTP.");
-  //   }
-  // };
+      if (res.success) {
+        toast.success("OTP sent to your phone.");
+        router.push(
+          `/${role}/sign-up/phone-otp?phone=${encodeURIComponent(phone)}&role=${role}`,
+        );
+      } else {
+        toast.error(res.message || "Failed to send OTP.");
+      }
+    } catch (e) {
+      toast.error("Failed to send OTP.");
+    }
+  };
 
   return (
     <>
@@ -140,15 +145,14 @@ const SignUpForm1 = ({ role: propRole }) => {
             showIcon
             className="min-w-72"
           />
+        ) : !phoneVerified ? (
+          <RoundedButton
+            onClick={handleVerifyPhone}
+            title="Verify Phone"
+            showIcon
+            className="min-w-72"
+          />
         ) : (
-          // : !phoneVerified ? (
-          //   <RoundedButton
-          //     onClick={handleVerifyPhone}
-          //     title="Verify Phone"
-          //     showIcon
-          //     className="min-w-72"
-          //   />
-          // )
           <RoundedButton
             onClick={() => router.push(`/${role}/sign-up/id-proof`)}
             title="Continue to ID Proof"

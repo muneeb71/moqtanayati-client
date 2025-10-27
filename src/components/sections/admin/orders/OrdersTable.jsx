@@ -184,10 +184,7 @@ const OrdersTable = () => {
                           </span>
                           <div className="flex items-center gap-1">
                             <Image
-                              src={
-                                data.seller.avatar ||
-                                "/static/dummy-user/1.jpeg"
-                              }
+                              src={data.seller.avatar}
                               width={18}
                               height={18}
                               alt="Seller"
