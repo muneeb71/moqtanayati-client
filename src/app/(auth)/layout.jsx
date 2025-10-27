@@ -9,7 +9,7 @@ const AuthLayout = ({ children }) => {
     <div className="relative flex h-full w-full justify-center bg-[#FFFFFE]">
       <div className="absolute top-0 z-10 flex w-full flex-col items-start justify-between px-10 py-10">
         <Image
-          src="/static/logo.png"
+          src="/api/static/logo.png"
           width={161}
           height={81}
           loading="eager"

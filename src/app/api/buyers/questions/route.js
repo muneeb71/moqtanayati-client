@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import api from "@/lib/api/axios";
 
 // GET - Get my questions
 export async function GET(request) {
@@ -11,7 +12,7 @@ export async function GET(request) {
     if (!token || !userId) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -21,15 +22,15 @@ export async function GET(request) {
 
     console.log("🔍 [Q&A API] Fetching user questions for user:", userId);
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/buyers/questions?page=${page}&limit=${limit}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    // Use the standard api.get method with query parameters
+    const response = await api.get(`/buyers/questions`, {
+      params: {
+        page,
+        limit,
       },
     });
 
-    const data = await response.json();
+    const data = response.data;
 
     if (data.success) {
       return NextResponse.json({
@@ -46,15 +47,18 @@ export async function GET(request) {
       });
     } else {
       return NextResponse.json(
-        { success: false, message: data.message || "Failed to fetch questions" },
-        { status: 400 }
+        {
+          success: false,
+          message: data.message || "Failed to fetch questions",
+        },
+        { status: 400 },
       );
     }
   } catch (error) {
     console.error("🔍 [Q&A API] Error fetching user questions:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import api from "@/lib/api/axios";
 
 // DELETE - Delete my unanswered question
 export async function DELETE(request, { params }) {
@@ -18,18 +19,10 @@ export async function DELETE(request, { params }) {
 
     console.log("🔍 [Q&A API] Deleting question:", questionId);
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/buyers/questions/${questionId}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    // Use the standard api.delete method
+    const response = await api.delete(`/buyers/questions/${questionId}`);
 
-    const data = await response.json();
+    const data = response.data;
 
     if (data.success) {
       return NextResponse.json({

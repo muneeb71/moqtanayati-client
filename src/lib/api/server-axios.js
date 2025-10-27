@@ -8,13 +8,13 @@ export const createServerApi = () => {
   const token = cookieStore.get("token")?.value;
 
   return axios.create({
-    baseURL:
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api",
+    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
     headers: {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
     },
     withCredentials: true,
+    timeout: 10000, // 10 second timeout
   });
 };
 
