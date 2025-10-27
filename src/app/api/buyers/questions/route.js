@@ -11,7 +11,7 @@ export async function GET(request) {
     if (!token || !userId) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -21,13 +21,16 @@ export async function GET(request) {
 
     console.log("🔍 [Q&A API] Fetching user questions for user:", userId);
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/buyers/questions?page=${page}&limit=${limit}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/buyers/questions?page=${page}&limit=${limit}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     const data = await response.json();
 
@@ -46,15 +49,18 @@ export async function GET(request) {
       });
     } else {
       return NextResponse.json(
-        { success: false, message: data.message || "Failed to fetch questions" },
-        { status: 400 }
+        {
+          success: false,
+          message: data.message || "Failed to fetch questions",
+        },
+        { status: 400 },
       );
     }
   } catch (error) {
     console.error("🔍 [Q&A API] Error fetching user questions:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

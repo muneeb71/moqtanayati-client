@@ -19,7 +19,7 @@ export async function DELETE(request, { params }) {
     console.log("🔍 [Q&A API] Deleting question:", questionId);
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/buyers/questions/${questionId}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/buyers/questions/${questionId}`,
       {
         method: "DELETE",
         headers: {

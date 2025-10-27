@@ -15,6 +15,7 @@ export const createServerApi = () => {
       ...(token && { Authorization: `Bearer ${token}` }),
     },
     withCredentials: true,
+    timeout: 10000, // 10 second timeout
   });
 };
 

@@ -18,7 +18,7 @@ export async function GET() {
     console.log("🔍 [Q&A API] Fetching Q&A stats for seller:", userId);
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/sellers/questions/stats`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/sellers/questions/stats`,
       {
         method: "GET",
         headers: {

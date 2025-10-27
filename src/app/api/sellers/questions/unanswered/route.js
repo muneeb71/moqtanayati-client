@@ -25,7 +25,7 @@ export async function GET(request) {
     );
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/sellers/questions/unanswered?page=${page}&limit=${limit}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/sellers/questions/unanswered?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {

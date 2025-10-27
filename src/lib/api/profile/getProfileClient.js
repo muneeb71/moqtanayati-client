@@ -44,7 +44,7 @@ export async function getUserProfileClient() {
     );
     console.log(
       "🔍 [getUserProfileClient] Full URL will be:",
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/${endpoint}${userId}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000"}/${endpoint}${userId}`,
     );
 
     const response = await api.get(endpoint + userId);

@@ -16,11 +16,12 @@ const getCookie = (name) => {
 };
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api",
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
   withCredentials: true,
+  timeout: 10000, // 10 second timeout
 });
 
 api.interceptors.request.use(
@@ -37,9 +38,20 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.code === "ECONNREFUSED") {
+      console.error(
+        "❌ API Connection Error: Backend server is not running or unreachable",
+      );
+      console.error(
+        "Please check if your backend server is running and the API URL is correct",
+      );
+      console.error("Current API URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
+    }
+
     if (error.response?.status === 401) {
       console.log("Unauthorized");
     }
+
     return Promise.reject(error);
   },
 );
