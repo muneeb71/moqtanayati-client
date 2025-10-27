@@ -1,5 +1,8 @@
+"use client";
+
 import { RegisterStoreProvider } from "@/providers/register-provider";
 import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 
 const AuthLayout = ({ children }) => {
   return (
@@ -14,6 +17,11 @@ const AuthLayout = ({ children }) => {
           quality={100}
           className="rounded-[10px]"
           style={{ width: "auto", height: "auto" }}
+          onError={(e) => {
+            console.error("Logo image failed to load:", e);
+            e.target.style.display = "none";
+          }}
+          priority
         />
       </div>
       <div className="no-scrollbar z-20 flex h-full min-h-screen w-full max-w-[450px] flex-col justify-center overflow-auto px-5 py-10">
@@ -28,6 +36,10 @@ const AuthLayout = ({ children }) => {
           alt="blob"
           loading="eager"
           style={{ width: "auto", height: "auto" }}
+          onError={(e) => {
+            console.error("Blob background image failed to load:", e);
+            e.target.style.display = "none";
+          }}
         />
       </div>
 
@@ -37,8 +49,12 @@ const AuthLayout = ({ children }) => {
           width={712}
           height={712}
           loading="lazy"
-          alt="Logo"
+          alt="Login background"
           quality={100}
+          onError={(e) => {
+            console.error("Login background image failed to load:", e);
+            e.target.style.display = "none";
+          }}
         />
       </div>
     </div>

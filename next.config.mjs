@@ -19,7 +19,10 @@ const nextConfig = {
         pathname: "/**",
       },
     ],
+    unoptimized: false,
   },
+  // Ensure static assets are properly served
+  assetPrefix: process.env.NODE_ENV === "production" ? "" : "",
   // Optimize preloading and reduce warnings
   onDemandEntries: {
     // period (in ms) where the server will keep pages in the buffer

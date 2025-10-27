@@ -34,7 +34,7 @@ class SocketManager {
     // const url = process.env.NEXT_PUBLIC_SOCKET_URL || window.location.origin;
     // const path = process.env.NEXT_PUBLIC_SOCKET_PATH || "/socket.io";
 
-    const url = "http://localhost:3000";
+    const url = process.env.NEXT_PUBLIC_SOCKET_URL;
     const path = "/socket.io";
 
     console.log("[socket] connecting", { url });
