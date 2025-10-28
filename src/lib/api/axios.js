@@ -15,6 +15,16 @@ const getCookie = (name) => {
   return null;
 };
 
+console.log(
+  "process.env.NEXT_PUBLIC_API_BASE_URL: ",
+  process.env.NEXT_PUBLIC_API_BASE_URL,
+);
+if (!process.env.NEXT_PUBLIC_API_BASE_URL) {
+  console.warn(
+    "WARN: NEXT_PUBLIC_API_BASE_URL is not set. API calls will fail unless the backend URL is configured.",
+  );
+}
+
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: {
@@ -45,14 +55,22 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.code === "ECONNREFUSED" || error.code === "ERR_NETWORK") {
-      console.error(
-        "❌ API Connection Error: Backend server is not running or unreachable",
-      );
-      console.error(
-        "Please check if your backend server is running and the API URL is correct",
-      );
-      console.error("Current API URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
-      console.error("Full error:", error);
+      // Throttle repeated logs to avoid console spam
+      if (!globalThis.__lastNetworkErrorLogAt)
+        globalThis.__lastNetworkErrorLogAt = 0;
+      const now = Date.now();
+      if (now - globalThis.__lastNetworkErrorLogAt > 8000) {
+        globalThis.__lastNetworkErrorLogAt = now;
+        console.error(
+          "❌ API Connection Error: Backend server is not running or unreachable",
+        );
+        console.error(
+          "Please check if your backend server is running and the API URL is correct",
+        );
+        console.error("Current API URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
+        if (error.config?.url) console.error("Request URL:", error.config.url);
+        console.error("Full error:", error);
+      }
     }
 
     if (error.response?.status === 401) {

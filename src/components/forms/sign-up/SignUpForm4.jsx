@@ -26,8 +26,10 @@ const SignUpForm4 = ({ role = "" }) => {
   } = useRegisterStore((state) => state);
 
   const [type, setType] = useState();
+  const [registerLoading, setRegisterLoading] = useState(false);
 
   const handleRegisterUser = async () => {
+    if (registerLoading) return;
     const roleUppercase = role.toUpperCase();
     const payload = {
       role: roleUppercase,
@@ -43,10 +45,26 @@ const SignUpForm4 = ({ role = "" }) => {
       sellerType: role === "buyer" ? "INDIVIDUAL" : sellerType || "BUSINESS",
     };
     console.log("register payload : ", payload);
-    const response = await signUpUser(payload);
-    console.log("register response 2 : ", response);
-    if (response.success) {
-      router.push(`/${role}/login`);
+    setRegisterLoading(true);
+
+    try {
+      const response = await signUpUser(payload);
+      console.log("register response 2 : ", response);
+      if (response?.success) {
+        router.push(`/${role}/login`);
+      } else {
+        // show error to user
+        alert(response?.message || "Registration failed");
+        setRegisterLoading(false);
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Registration failed",
+      );
+      setRegisterLoading(false);
     }
   };
 
@@ -97,10 +115,17 @@ const SignUpForm4 = ({ role = "" }) => {
           }
         />
         {latitude && longitude && address && (
-          <SecondaryButton
-            title="Register Account"
-            onClick={() => handleRegisterUser()}
-          />
+          <div className="flex items-center gap-2">
+            <SecondaryButton
+              type="button"
+              title={registerLoading ? "Registering..." : "Register Account"}
+              onClick={handleRegisterUser}
+              disabled={registerLoading}
+            />
+            {registerLoading && (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            )}
+          </div>
         )}
       </div>
     </div>

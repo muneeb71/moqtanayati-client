@@ -12,7 +12,7 @@ const ProductDetailsLayout = ({ children }) => {
           <div className="mb-4 flex w-full justify-start">
             <Link
               href="/"
-              className="flex items-center gap-2 rounded-lg py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              className="flex items-center gap-2 rounded-lg py-2 text-sm font-medium text-gray-700 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Home

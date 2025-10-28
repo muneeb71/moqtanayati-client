@@ -11,16 +11,20 @@ const SidebarLink = ({ link, onLoadingChange }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [targetPath, setTargetPath] = useState(null);
+  const [subLoadingHref, setSubLoadingHref] = useState(null);
 
   // Clear loading state when pathname changes to the target
   useEffect(() => {
     if (
-      loading &&
-      targetPath &&
-      (pathname === targetPath || pathname.startsWith(targetPath))
+      (loading || subLoadingHref) &&
+      ((targetPath &&
+        (pathname === targetPath || pathname.startsWith(targetPath))) ||
+        (subLoadingHref &&
+          (pathname === subLoadingHref || pathname.startsWith(subLoadingHref))))
     ) {
       console.log("✅ Navigation completed, clearing loading state");
       setLoading(false);
+      setSubLoadingHref(null);
       // Only clear global loading for main links, not sub-links
       if (!link.subLinks) {
         onLoadingChange?.(false);
@@ -29,13 +33,17 @@ const SidebarLink = ({ link, onLoadingChange }) => {
     }
   }, [pathname, loading, targetPath, onLoadingChange, link.subLinks]);
 
-  const handleNavigation = async (href) => {
+  const handleNavigation = async (href, isSub = false) => {
     if (loading) return;
 
     console.log("🚀 Starting navigation to:", href);
-    setLoading(true);
+    if (isSub) {
+      setSubLoadingHref(href);
+    } else {
+      setLoading(true);
+    }
     // Only show global loading for main links, not sub-links
-    if (!link.subLinks) {
+    if (!link.subLinks && !isSub) {
       onLoadingChange?.(true);
     }
     setTargetPath(href);
@@ -49,9 +57,10 @@ const SidebarLink = ({ link, onLoadingChange }) => {
 
       // Fallback: clear loading state after 3 seconds max
       setTimeout(() => {
-        if (loading) {
+        if (loading || subLoadingHref === href) {
           console.log("⏰ Fallback: clearing loading state after timeout");
           setLoading(false);
+          setSubLoadingHref(null);
           if (!link.subLinks) {
             onLoadingChange?.(false);
           }
@@ -61,6 +70,7 @@ const SidebarLink = ({ link, onLoadingChange }) => {
     } catch (error) {
       console.error("❌ Navigation error:", error);
       setLoading(false);
+      setSubLoadingHref(null);
       if (!link.subLinks) {
         onLoadingChange?.(false);
       }
@@ -83,7 +93,9 @@ const SidebarLink = ({ link, onLoadingChange }) => {
           )}
           onClick={() => setOpen((prev) => !prev)}
         >
-          {link.icon}
+          <span className="inline-flex h-6 w-6 items-center justify-center [&_*]:fill-current [&_*]:stroke-current">
+            {link.icon}
+          </span>
           {link.title}
         </button>
         {open && (
@@ -91,7 +103,7 @@ const SidebarLink = ({ link, onLoadingChange }) => {
             {link.subLinks.map((sub, idx) => (
               <button
                 key={idx}
-                onClick={() => handleNavigation(sub.href || "/admin")}
+                onClick={() => handleNavigation(sub.href || "/admin", true)}
                 disabled={loading}
                 className={cn(
                   "rounded-lg px-4 py-2 text-left text-base transition-colors duration-200 ease-in-out",
@@ -101,7 +113,7 @@ const SidebarLink = ({ link, onLoadingChange }) => {
                   loading && "cursor-not-allowed opacity-50",
                 )}
               >
-                {loading ? (
+                {subLoadingHref === sub.href ? (
                   <div className="flex items-center gap-2">
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                     Loading...
@@ -130,7 +142,9 @@ const SidebarLink = ({ link, onLoadingChange }) => {
         loading && "cursor-not-allowed opacity-50",
       )}
     >
-      {link.icon}
+      <span className="inline-flex h-6 w-6 items-center justify-center [&_*]:fill-current [&_*]:stroke-current">
+        {link.icon}
+      </span>
       {loading ? (
         <div className="flex items-center gap-2">
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>

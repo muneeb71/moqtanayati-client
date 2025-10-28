@@ -109,7 +109,7 @@ const StoreProductDetailsCard = ({ item }) => {
               </div>
             </div>
             <div className="flex w-full items-end justify-between gap-5">
-              {item?.price ? (
+              {item?.pricingFormat === "Fixed Price" ? (
                 "Fixed Price"
               ) : (
                 <ProductDetailsAuctionTimer item={item} />

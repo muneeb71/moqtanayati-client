@@ -88,6 +88,14 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
 
   const bid = async () => {
     try {
+      // Validate minimum allowed bid based on the value shown above (highest or starting)
+      const numericBid = Number(bidAmount);
+      const minAllowed = Number(highestBidAmount) || 0;
+      if (Number.isNaN(numericBid) || numericBid < minAllowed) {
+        toast.error(`Your offer must be at least $${minAllowed.toFixed(2)}.`);
+        return;
+      }
+
       setRequestLoading(true);
       const res = await bidOnAuction({ productId: id, amount: bidAmount });
       if (res.success) {
@@ -237,13 +245,6 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                   ) : (
                     <QaSectionSheet />
                   )}
-                  {/* Debug info - remove in production */}
-                  {process.env.NODE_ENV === "development" && (
-                    <div className="text-xs text-gray-500">
-                      Role: {userRole || "undefined"} | Showing:{" "}
-                      {userRole === "seller" ? "Seller" : "Buyer"} Q&A
-                    </div>
-                  )}
                 </div>
               </div>
               {!isFixedPrice && <ProductDetailsAuctionTimer item={item} />}
@@ -357,91 +358,115 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                       </h1>
                     </div>
                     <div className="flex flex-col">
-                      <h2 className="text-[14.4px] leading-[21.6px] text-black/40">
-                        Buy Now for
-                      </h2>
-                      <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
-                        ${item?.buyItNow?.toFixed(2)}
-                      </h1>
+                      {item?.pricingFormat === "Fixed Price" ? (
+                        <>
+                          <h2 className="text-[14.4px] leading-[21.6px] text-black/40">
+                            Buy Now for
+                          </h2>
+                          <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
+                            ${item?.buyItNow?.toFixed(2)}
+                          </h1>
+                        </>
+                      ) : null}
                     </div>
                   </div>
                   <div className="flex w-1/2 flex-col space-y-3">
                     <button
+                      type="button"
                       className="flex w-full items-center justify-center gap-3 rounded-lg bg-moonstone py-4 text-white"
-                      onClick={() => setIsBidPopupOpen(true)}
+                      onClick={() => {
+                        console.log(
+                          "🔍 [ProductDetailsCard] Making offer status",
+                          item?.status,
+                        );
+                        if (item?.status === "SOLD") {
+                          toast.error("This auction is sold.");
+                          return;
+                        }
+                        if (item?.status === "UPCOMING") {
+                          toast.error(
+                            "This auction is not available right now.",
+                          );
+                          return;
+                        }
+
+                        setIsBidPopupOpen(true);
+                      }}
                       disabled={
-                        item?.status === "SOLD" || item?.status === "DRAFT"
+                        item?.status === "SOLD" || item?.status === "UPCOMING"
                       }
                     >
                       <img src={"/static/bid.svg"} />
                       <p>Make Offer</p>
                     </button>
-                    <div className="flex items-center justify-between gap-2">
-                      <button
-                        className={`flex h-[52.8px] w-[60px] items-center justify-center rounded-lg border-[2px] ${
-                          isInCart
-                            ? "border-green-500 bg-green-50"
-                            : "border-moonstone"
-                        }`}
-                        onClick={addItem}
-                        disabled={
-                          item?.status === "SOLD" ||
-                          item?.status === "DRAFT" ||
-                          isInCart
-                        }
-                        title={
-                          isInCart
-                            ? `Already in cart (${cartQuantity} items)`
-                            : "Add to cart"
-                        }
-                      >
-                        {isInCart ? (
-                          <div className="flex flex-col items-center">
-                            <svg
-                              className="h-5 w-5 text-green-600"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            <span className="text-xs font-bold text-green-600">
-                              {cartQuantity}
-                            </span>
-                          </div>
-                        ) : (
-                          <Image
-                            width={24}
-                            height={24}
-                            alt="cart"
-                            src={"/static/moonstonecart.svg"}
-                          />
-                        )}
-                      </button>
-                      <button
-                        disabled={
-                          item?.status === "SOLD" || item?.status === "DRAFT"
-                        }
-                        className={`flex h-[52.8px] items-center rounded-lg border-[2px] px-8 text-[14.4px] font-medium ${
-                          isInCart
-                            ? "border-green-500 bg-green-50 text-green-600"
-                            : "border-moonstone text-moonstone"
-                        }`}
-                        onClick={handleBuyNow}
-                        title={
-                          isInCart
-                            ? "Item is already in cart - proceed to checkout"
-                            : "Buy this item now"
-                        }
-                      >
-                        {isInCart ? "Proceed to Checkout" : "Buy Now"}
-                      </button>
-                    </div>
+                    {item?.pricingFormat === "Fixed Price" ? (
+                      <div className="flex items-center justify-between gap-2">
+                        <button
+                          className={`flex h-[52.8px] w-[60px] items-center justify-center rounded-lg border-[2px] ${
+                            isInCart
+                              ? "border-green-500 bg-green-50"
+                              : "border-moonstone"
+                          }`}
+                          onClick={addItem}
+                          disabled={
+                            item?.status === "SOLD" ||
+                            item?.status === "DRAFT" ||
+                            isInCart
+                          }
+                          title={
+                            isInCart
+                              ? `Already in cart (${cartQuantity} items)`
+                              : "Add to cart"
+                          }
+                        >
+                          {isInCart ? (
+                            <div className="flex flex-col items-center">
+                              <svg
+                                className="h-5 w-5 text-green-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M5 13l4 4L19 7"
+                                />
+                              </svg>
+                              <span className="text-xs font-bold text-green-600">
+                                {cartQuantity}
+                              </span>
+                            </div>
+                          ) : (
+                            <Image
+                              width={24}
+                              height={24}
+                              alt="cart"
+                              src={"/static/moonstonecart.svg"}
+                            />
+                          )}
+                        </button>
+                        <button
+                          disabled={
+                            item?.status === "SOLD" || item?.status === "DRAFT"
+                          }
+                          className={`flex h-[52.8px] items-center rounded-lg border-[2px] px-8 text-[14.4px] font-medium ${
+                            isInCart
+                              ? "border-green-500 bg-green-50 text-green-600"
+                              : "border-moonstone text-moonstone"
+                          }`}
+                          onClick={handleBuyNow}
+                          title={
+                            isInCart
+                              ? "Item is already in cart - proceed to checkout"
+                              : "Buy this item now"
+                          }
+                        >
+                          {isInCart ? "Proceed to Checkout" : "Buy Now"}
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </>
@@ -454,7 +479,7 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
           open={isBidPopupOpen}
           handleBid={bid}
           onBidChange={(e) => setBidAmount(e)}
-          onOpenChange={() => setIsBidPopupOpen(false)}
+          onOpenChange={(open) => setIsBidPopupOpen(open)}
         />
       )}
       {isCheckoutOpen && (

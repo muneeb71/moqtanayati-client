@@ -16,9 +16,17 @@ const AdminSidebar = () => {
 
   return (
     <div
-      className="flex max-h-screen w-full max-w-[287px] flex-col justify-between overflow-auto rounded-[40px] bg-[#1C1C1C] px-3.5 py-16"
+      className="relative flex max-h-screen w-full max-w-[287px] flex-col justify-between overflow-auto rounded-[40px] bg-[#1C1C1C] px-3.5 py-16"
       style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
     >
+      {isLoading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center rounded-[40px] bg-black/50">
+          <div className="flex flex-col items-center gap-3 rounded-lg bg-white p-6">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600"></div>
+            <p className="text-sm font-medium text-gray-700">Loading...</p>
+          </div>
+        </div>
+      )}
       <div className="mb-10 flex w-full flex-col gap-16">
         <Image
           src="/static/logo.png"
@@ -31,14 +39,11 @@ const AdminSidebar = () => {
           style={{ width: "auto", height: "auto" }}
         />
         <SidebarLinks onLoadingChange={handleLoadingChange} />
-        {isLoading && (
-          <div className="mt-4 flex items-center justify-center gap-2 text-sm text-[#878C90]">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#878C90] border-t-transparent"></div>
-            Navigating...
-          </div>
-        )}
       </div>
-      <LogoutButton logoutIcon={logoutIcon} />
+      <LogoutButton
+        logoutIcon={logoutIcon}
+        onLoadingChange={handleLoadingChange}
+      />
     </div>
   );
 };

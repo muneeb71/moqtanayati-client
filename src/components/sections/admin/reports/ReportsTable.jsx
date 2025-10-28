@@ -36,13 +36,14 @@ const ReportTable = ({
   };
 
   const handleViewClick = async (userId) => {
+    if (viewLoading) return; // prevent double clicks
     setViewLoading(userId);
     try {
       await onViewClick(userId);
+      // Do not clear here; component will unmount on navigation
     } catch (error) {
       console.error("View error:", error);
       toast.error("Failed to load report details");
-    } finally {
       setViewLoading(null);
     }
   };
@@ -101,17 +102,11 @@ const ReportTable = ({
               </td>
               <td className="py-5">
                 <div className="flex items-center gap-2">
-                  {report.user.avatar ||
-                  report.user.profileImage ||
-                  report.user.profile_image ? (
+                  {report.user.avatar ? (
                     <Image
-                      src={
-                        report.user.avatar ||
-                        report.user.profileImage ||
-                        report.user.profile_image
-                      }
-                      width={34}
-                      height={34}
+                      src={report.user.avatar}
+                      width={40}
+                      height={40}
                       alt="User Avatar"
                       loading="lazy"
                       quality={100}

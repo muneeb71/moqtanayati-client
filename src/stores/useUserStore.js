@@ -55,6 +55,7 @@ const useUserStore = create((set, get) => ({
         search: debouncedSearchTerm.trim(),
         filter: sortBy.trim(),
       });
+
       const { users = [], pagination = {} } = res?.data || {};
       set({
         users,

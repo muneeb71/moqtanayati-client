@@ -175,7 +175,7 @@ const UnitsAndDimensionsForm = () => {
         {/* ================= LEFT SIDE ================= */}
         <div className="flex w-full flex-col gap-5">
           {[
-            { label: "Available units", value: stock, set: setStock },
+            { label: "Available units/stock", value: stock, set: setStock },
             { label: "Length 0.00 in", value: length, set: setLength },
             { label: "Width 0.00 in", value: width, set: setWidth },
             { label: "Height 0.00 in", value: height, set: setHeight },

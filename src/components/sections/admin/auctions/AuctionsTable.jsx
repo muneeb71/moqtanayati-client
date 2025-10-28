@@ -296,7 +296,10 @@ const AuctionsTable = () => {
                       </div>
                     </td>
                     <td>
-                      <ActionsDropdownButton auctionId={auction.id} />
+                      <ActionsDropdownButton
+                        auctionId={auction.id}
+                        status={auction.status}
+                      />
                     </td>
                   </tr>
                 );

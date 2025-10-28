@@ -8,6 +8,7 @@ export class NotificationHandler {
     this.messaging = null;
     this.isInitialized = false;
     this.tokenRefreshInterval = null;
+    this.serviceWorkerRegistration = null;
   }
 
   async initialize() {
@@ -19,6 +20,9 @@ export class NotificationHandler {
         console.log("Firebase messaging not supported");
         return false;
       }
+
+      // Ensure a non-redirecting service worker is registered at a stable path
+      this.serviceWorkerRegistration = await this.registerServiceWorker();
 
       // Set up foreground message handling
       onMessage(this.messaging, (payload) => {
@@ -35,6 +39,28 @@ export class NotificationHandler {
     } catch (error) {
       console.error("Failed to initialize notification handler:", error);
       return false;
+    }
+  }
+
+  async registerServiceWorker() {
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+      return null;
+    }
+    try {
+      // Must be at public/firebase-messaging-sw.js and not behind any redirect
+      const registration = await navigator.serviceWorker.register(
+        "/firebase-messaging-sw.js",
+        { scope: "/" },
+      );
+      // Wait until active/ready to avoid race conditions
+      await navigator.serviceWorker.ready;
+      return registration;
+    } catch (e) {
+      console.error(
+        "Failed to register service worker for FCM. Ensure /firebase-messaging-sw.js is served without redirects.",
+        e,
+      );
+      return null;
     }
   }
 
@@ -142,6 +168,9 @@ export class NotificationHandler {
       const { getToken } = await import("firebase/messaging");
       const token = await getToken(this.messaging, {
         vapidKey: process.env.NEXT_PUBLIC_FCM_VAPID_KEY,
+        serviceWorkerRegistration:
+          this.serviceWorkerRegistration ||
+          (await navigator.serviceWorker.ready),
       });
 
       if (token && this.isValidToken(token)) {
@@ -159,6 +188,14 @@ export class NotificationHandler {
         return null;
       } else if (error.code === "messaging/permission-default") {
         console.log("Notification permission not requested yet");
+        return null;
+      } else if (
+        error?.message?.includes("redirect") ||
+        error?.code === "messaging/failed-service-worker-registration"
+      ) {
+        console.error(
+          "Service worker registration failed (likely due to a redirect). Verify that /firebase-messaging-sw.js is accessible directly with no redirects.",
+        );
         return null;
       } else {
         console.error("Token refresh failed:", error);

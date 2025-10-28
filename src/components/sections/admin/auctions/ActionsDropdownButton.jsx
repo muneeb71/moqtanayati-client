@@ -3,8 +3,9 @@
 import { EllipsisVertical } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import useAuctionStore from "@/stores/useAuctionStore";
+import toast from "react-hot-toast";
 
-const ActionsDropdownButton = ({ auctionId }) => {
+const ActionsDropdownButton = ({ auctionId, status }) => {
   const [actionsDropdown, setActionsDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
@@ -28,8 +29,19 @@ const ActionsDropdownButton = ({ auctionId }) => {
   }, []);
 
   const handleCancelAuction = async () => {
-    await cancelAuction(auctionId);
-    setActionsDropdown(false);
+    if (status === "ENDED") {
+      toast("It's already ENDED", { icon: "⚠️" });
+      setActionsDropdown(false);
+      return;
+    }
+    try {
+      await cancelAuction(auctionId);
+      toast.success("Auction cancelled");
+    } catch (e) {
+      toast.error("Failed to cancel auction");
+    } finally {
+      setActionsDropdown(false);
+    }
   };
 
   return (

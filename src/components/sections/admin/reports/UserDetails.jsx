@@ -1,10 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import { IoChevronDown } from "react-icons/io5";
 import { BiTrash } from "react-icons/bi";
 import { IoMdPin } from "react-icons/io";
 import { getUserById } from "@/lib/api/admin/users/getUserById";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import api from "@/lib/api/axios";
 import { useParams } from "next/navigation";
 import formatDateTime from "@/utils/dateFormatter";
 import {
@@ -17,12 +20,18 @@ import UserDetailsShimmer from "@/components/shimmer/userDetailsShimmer";
 const UserDetails = () => {
   const params = useParams();
   const id = params?.id;
+  const router = useRouter();
 
   const [userDetail, setUserDetail] = useState(null);
   const [totalSpent, setTotalSpent] = useState(null);
+  const [totalSales, setTotalSales] = useState(0);
   const [ordersPlaced, setOrdersPlaced] = useState(null);
   const [toReceive, setToReceive] = useState(null);
+  const [completedOrders, setCompletedOrders] = useState(0);
+  const [pendingOrders, setPendingOrders] = useState(0);
   const [role, setRole] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchUserDetail = async () => {
@@ -79,6 +88,9 @@ const UserDetails = () => {
         setTotalSpent(spent);
         setOrdersPlaced(orders.length);
         setToReceive(role === "BUYER" ? received : pending);
+        setCompletedOrders(fetchedData?.completedOrdersCount ?? 0);
+        setPendingOrders(fetchedData?.pendingOrdersCount ?? 0);
+        setTotalSales(fetchedData?.totalSales ?? 0);
       } catch (err) {
         console.error("Failed to fetch user detail", err);
         setUserDetail([]);
@@ -87,6 +99,71 @@ const UserDetails = () => {
 
     fetchUserDetail();
   }, [userDetail]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showDropdown && !event.target.closest(".dropdown-container")) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showDropdown]);
+
+  const deleteUser = async () => {
+    try {
+      setIsLoading(true);
+      await api.delete(`/admin/users/${id}`);
+      router.push("/admin/reports");
+    } catch (e) {
+      console.error("Delete user failed", e);
+    } finally {
+      setIsLoading(false);
+      setShowDropdown(false);
+    }
+  };
+
+  const toggleUserStatus = async () => {
+    try {
+      setIsLoading(true);
+      const newStatus =
+        userDetail?.user?.accountStatus === "DISABLED" ? "ACTIVE" : "DISABLED";
+      if (newStatus === "DISABLED") {
+        await api.patch(`/admin/users/${id}/disable`);
+      } else {
+        await api.patch(`/admin/users/${id}/status`, { status: newStatus });
+      }
+      // reflect locally
+      setUserDetail((prev) => ({
+        ...prev,
+        user: { ...(prev?.user || {}), accountStatus: newStatus },
+      }));
+    } catch (e) {
+      console.error("Update status failed", e);
+    } finally {
+      setIsLoading(false);
+      setShowDropdown(false);
+    }
+  };
+
+  // Derive favourite category (for BUYER): from most interested product (first item)
+  const favouriteCategory = (() => {
+    if (role !== "BUYER") return null;
+    const firstWatch = userDetail?.user?.watchlists?.[0];
+    const product = firstWatch?.auction?.product;
+    if (!product) return null;
+    if (Array.isArray(product.categories) && product.categories.length > 0) {
+      return product.categories[0];
+    }
+    if (
+      typeof product.category === "string" &&
+      product.category.trim().length
+    ) {
+      return product.category.trim();
+    }
+    return null;
+  })();
 
   return userDetail === null ? (
     <UserDetailsShimmer />
@@ -134,8 +211,22 @@ const UserDetails = () => {
                   {userDetail?.user.name}
                 </p>
 
-                <div className="flex w-[50%] items-center justify-center rounded-lg bg-customGreen/10 px-5 py-1 lg:w-fit">
-                  <p className="text-[14px] text-customGreen">
+                <div
+                  className={
+                    `flex w-[50%] items-center justify-center rounded-lg px-5 py-1 lg:w-fit ` +
+                    (userDetail?.user?.accountStatus === "DISABLED"
+                      ? "bg-faluRed/10"
+                      : "bg-customGreen/10")
+                  }
+                >
+                  <p
+                    className={
+                      `text-[14px] ` +
+                      (userDetail?.user?.accountStatus === "DISABLED"
+                        ? "text-faluRed"
+                        : "text-customGreen")
+                    }
+                  >
                     {userDetail?.user.accountStatus}
                   </p>
                 </div>
@@ -156,13 +247,88 @@ const UserDetails = () => {
             </div>
           </div>
         </div>
-        <button className="hidden h-fit rounded-lg border border-faluRed bg-transparent px-10 py-3 text-faluRed hover:bg-faluRed hover:text-white lg:flex">
-          Disable/Delete
-        </button>
+        {/* Desktop Dropdown */}
+        <div className="dropdown-container relative hidden lg:block">
+          <button
+            onClick={() => setShowDropdown(!showDropdown)}
+            disabled={isLoading}
+            className="flex h-fit items-center gap-2 rounded-lg border border-faluRed bg-transparent px-8 py-2.5 text-faluRed hover:bg-faluRed hover:text-white disabled:opacity-50"
+          >
+            {isLoading ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            ) : (
+              <>
+                {userDetail?.user?.accountStatus === "DISABLED"
+                  ? "Enable User"
+                  : "Disable/Delete"}
+                <IoChevronDown className="h-4 w-4" />
+              </>
+            )}
+          </button>
+          {showDropdown && (
+            <div className="absolute right-0 top-full z-10 w-44 -translate-y-px transform rounded-lg border border-gray-200 bg-white shadow-lg">
+              <button
+                onClick={toggleUserStatus}
+                className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                {userDetail?.user?.accountStatus === "DISABLED"
+                  ? "Enable User"
+                  : "Disable User"}
+              </button>
+              <button
+                onClick={deleteUser}
+                className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+              >
+                Delete User
+              </button>
+              <button
+                onClick={() => setShowDropdown(false)}
+                className="w-full px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
 
-        <button className="flex h-fit rounded-lg border border-faluRed bg-transparent p-3 text-faluRed hover:bg-faluRed hover:text-white lg:hidden">
-          <BiTrash className="text-[18px] sm:text-[26px]" />
-        </button>
+        {/* Mobile Dropdown */}
+        <div className="dropdown-container relative lg:hidden">
+          <button
+            onClick={() => setShowDropdown(!showDropdown)}
+            disabled={isLoading}
+            className="flex h-fit items-center gap-2 rounded-lg border border-faluRed bg-transparent p-3 text-faluRed hover:bg-faluRed hover:text-white disabled:opacity-50"
+          >
+            {isLoading ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            ) : (
+              <BiTrash className="text-[18px] sm:text-[26px]" />
+            )}
+          </button>
+          {showDropdown && (
+            <div className="absolute right-0 top-full z-10 w-44 -translate-y-px transform rounded-lg border border-gray-200 bg-white shadow-lg">
+              <button
+                onClick={toggleUserStatus}
+                className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                {userDetail?.user?.accountStatus === "DISABLED"
+                  ? "Enable User"
+                  : "Disable User"}
+              </button>
+              <button
+                onClick={deleteUser}
+                className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+              >
+                Delete User
+              </button>
+              <button
+                onClick={() => setShowDropdown(false)}
+                className="w-full px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid h-full w-full gap-0 lg:gap-4 xl:grid-cols-[1fr_331px]">
@@ -173,7 +339,7 @@ const UserDetails = () => {
                 {role == "BUYER" ? "Total Spent" : "Total Sales"}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
-                ${totalSpent}
+                ${role == "BUYER" ? totalSpent : totalSales}
               </p>
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
@@ -181,7 +347,7 @@ const UserDetails = () => {
                 {role == "BUYER" ? "Orders Placed" : "Completed Orders"}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
-                {ordersPlaced}
+                {role == "BUYER" ? ordersPlaced : completedOrders}
               </p>
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
@@ -189,7 +355,7 @@ const UserDetails = () => {
                 {role == "BUYER" ? "To Receive" : "Pending Orders"}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
-                {toReceive}
+                {role == "BUYER" ? toReceive : pendingOrders}
               </p>
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
@@ -197,7 +363,7 @@ const UserDetails = () => {
                 {role == "BUYER" ? "Favorite Category" : "Collections"}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
-                {role == "BUYER" ? "Fashion" : "$119.99"}
+                {role == "BUYER" ? favouriteCategory : "$0"}
               </p>
             </div>
           </div>
@@ -253,7 +419,7 @@ const UserDetails = () => {
                             </svg>
                           </div>
                         )}
-                        <button className="absolute right-3 top-3 rounded-full bg-white/80 p-2">
+                        {/* <button className="absolute right-3 top-3 rounded-full bg-white/80 p-2">
                           <svg
                             width="20"
                             height="18"
@@ -265,7 +431,7 @@ const UserDetails = () => {
                               fill="#FF6B6B"
                             />
                           </svg>
-                        </button>
+                        </button> */}
                       </div>
 
                       <div className="p-4">
@@ -295,14 +461,13 @@ const UserDetails = () => {
                           {item.name}, {item.conditionRating}
                           /10 condition..
                         </p>
-                        {!item.city ||
-                          (!item.country && (
-                            <div className="flex items-center gap-1 text-xs text-davyGray">
-                              <span>
-                                {item.city},{item.country}
-                              </span>
-                            </div>
-                          ))}
+                        {(!item.city || !item.country) && (
+                          <div className="flex items-center gap-1 text-xs text-davyGray">
+                            <span>
+                              {item.city},{item.country}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -351,7 +516,7 @@ const UserDetails = () => {
                             </svg>
                           </div>
                         )}
-                        <button className="absolute right-3 top-3 rounded-full bg-white/80 p-2">
+                        {/* <button className="absolute right-3 top-3 rounded-full bg-white/80 p-2">
                           <svg
                             width="20"
                             height="18"
@@ -363,7 +528,7 @@ const UserDetails = () => {
                               fill="#FF6B6B"
                             />
                           </svg>
-                        </button>
+                        </button> */}
                       </div>
 
                       <div className="p-4">
@@ -393,15 +558,15 @@ const UserDetails = () => {
                           {item.auction.product.conditionRating}
                           /10 condition..
                         </p>
-                        {!item.auction.product.city ||
-                          (!item.auction.product.country && (
-                            <div className="flex items-center gap-1 text-xs text-davyGray">
-                              <span>
-                                {item.auction.product.city},
-                                {item.auction.product.country}
-                              </span>
-                            </div>
-                          ))}
+                        {(!item.auction.product.city ||
+                          !item.auction.product.country) && (
+                          <div className="flex items-center gap-1 text-xs text-davyGray">
+                            <span>
+                              {item.auction.product.city},
+                              {item.auction.product.country}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -470,10 +635,10 @@ const UserDetails = () => {
 
       {/* Payment Breakdown */}
       <div className="flex flex-col gap-4 pb-2">
-        <p className="text-[18px] font-semibold text-eerieBlack">
+        {/* <p className="text-[18px] font-semibold text-eerieBlack">
           Payment Breakdown
-        </p>
-        <div className="rounded-lg bg-white p-6">
+        </p> */}
+        {/* <div className="rounded-lg bg-white p-6">
           <table className="w-full">
             <thead>
               <tr className="border-b text-left">
@@ -658,12 +823,12 @@ const UserDetails = () => {
                   })}
             </tbody>
           </table>
-        </div>
+        </div> */}
       </div>
 
       {role === "SELLER" && (
         <div className="-mt-10 flex flex-col gap-4">
-          <p className="text-lg font-medium text-eerieBlack">
+          {/* <p className="text-lg font-medium text-eerieBlack">
             Collections Overview
           </p>
           <div className="mb-10 rounded-lg bg-white p-6">
@@ -725,7 +890,7 @@ const UserDetails = () => {
                 </tr>
               </tbody>
             </table>
-          </div>
+          </div> */}
         </div>
       )}
     </div>

@@ -31,7 +31,9 @@ const ProductDetailsPage = async ({ params }) => {
       </PageHeading>
       <div className="flex w-full max-w-7xl flex-col items-center justify-center">
         <div className="flex w-full justify-end">
-          <EditProductButton productId={product.id} />
+          {product?.pricingFormat !== "Auctions" ? (
+            <EditProductButton productId={product.id} />
+          ) : null}
         </div>
         <div className="grid w-full gap-10 py-10 md:grid-cols-2">
           <div className="flex w-full flex-col gap-4">

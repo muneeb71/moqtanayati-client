@@ -8,15 +8,15 @@ const RegisterSteps = ({ role }) => {
   const steps = [
     {
       title: "Personal Details",
-      href: "/auth/" + role + "/sign-up",
+      href: "/" + role + "/sign-up",
     },
     {
       title: "ID Proof",
-      href: "/auth/" + role + "/sign-up/id-proof",
+      href: "/" + role + "/sign-up/id-proof",
     },
     {
       title: "Password",
-      href: "/auth/" + role + "/sign-up/password",
+      href: "/" + role + "/sign-up/password",
     },
   ];
 
@@ -29,14 +29,13 @@ const RegisterSteps = ({ role }) => {
       </h1>
       <div className="grid w-full grid-cols-3 gap-5 px-2">
         {steps.map((step, index) => {
+          const base = "/" + role + "/sign-up";
           const isActive =
             index === 0 || // Personal Details always active
             (index === 1 &&
-              [
-                "/auth/" + role + "/sign-up/id-proof",
-                "/auth/" + role + "/sign-up/password",
-              ].includes(pathname)) ||
-            (index === 2 && pathname === "/auth/" + role + "/sign-up/password");
+              (pathname === base + "/id-proof" ||
+                pathname === base + "/password")) ||
+            (index === 2 && pathname === base + "/password");
 
           return (
             <Link href={step.href} className="flex flex-col gap-1" key={index}>

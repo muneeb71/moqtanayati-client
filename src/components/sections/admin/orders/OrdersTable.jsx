@@ -56,9 +56,12 @@ const OrdersTable = () => {
         search: debouncedSearchTerm.trim(),
         filter: sortBy.trim(),
       });
+      console.log("getAllOrders response:", res);
+      console.log("getAllOrders data:", res?.data);
       const pagination = res?.data?.pagination || {};
 
       const fetchedOrders = res?.data?.orders;
+      console.log("fetchedOrders sample:", fetchedOrders?.[0]);
 
       setOrders(fetchedOrders);
 
@@ -169,29 +172,75 @@ const OrdersTable = () => {
                   <tr key={index} className="border-b border-silver/30">
                     <td>
                       <div className="flex items-center gap-2 px-5 py-4">
-                        <Image
-                          src={data.product.images[0]}
-                          width={44}
-                          height={44}
-                          alt="Product"
-                          loading="lazy"
-                          quality={100}
-                          className="rounded-full border border-black/10"
-                        />
+                        {data?.product?.images && data.product.images[0] ? (
+                          <Image
+                            src={data.product.images[0]}
+                            width={44}
+                            height={44}
+                            alt="Product"
+                            loading="lazy"
+                            quality={100}
+                            className="h-[44px] w-[44px] rounded-full border border-black/10 object-cover"
+                            onError={(e) => {
+                              try {
+                                e.target.src = "/static/prod.jpg";
+                              } catch {}
+                            }}
+                          />
+                        ) : (
+                          <div className="flex h-[44px] w-[44px] items-center justify-center rounded-full border border-black/10 bg-gray-200">
+                            <svg
+                              className="h-5 w-5 text-gray-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </div>
+                        )}
                         <div className="flex flex-col gap-1">
                           <span className="text-sm font-medium text-darkBlue">
                             {data.product.name}
                           </span>
                           <div className="flex items-center gap-1">
-                            <Image
-                              src={data.seller.avatar}
-                              width={18}
-                              height={18}
-                              alt="Seller"
-                              loading="lazy"
-                              quality={100}
-                              className="rounded-full border border-black/10"
-                            />
+                            {data?.seller?.avatar ? (
+                              <Image
+                                src={data.seller.avatar}
+                                width={18}
+                                height={18}
+                                alt="Seller"
+                                loading="lazy"
+                                quality={100}
+                                className="h-[18px] w-[18px] rounded-full border border-black/10 object-cover"
+                                onError={(e) => {
+                                  try {
+                                    e.target.src = "/static/user.svg";
+                                  } catch {}
+                                }}
+                              />
+                            ) : (
+                              <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-gray-200">
+                                <svg
+                                  className="h-3.5 w-3.5 text-gray-500"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={1.5}
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                  />
+                                </svg>
+                              </div>
+                            )}
                             <span className="text-[10px] text-battleShipGray">
                               {data.seller.name}
                             </span>
@@ -201,15 +250,38 @@ const OrdersTable = () => {
                     </td>
                     <td>
                       <div className="flex items-center gap-3 px-5 py-4">
-                        <Image
-                          src={data.user.avatar || "/static/dummy-user/1.jpeg"}
-                          width={44}
-                          height={44}
-                          alt="Buyer"
-                          loading="lazy"
-                          quality={100}
-                          className="rounded-full"
-                        />
+                        {data?.user?.avatar ? (
+                          <Image
+                            src={data.user.avatar}
+                            width={44}
+                            height={44}
+                            alt="Buyer"
+                            loading="lazy"
+                            quality={100}
+                            className="h-[44px] w-[44px] rounded-full object-cover"
+                            onError={(e) => {
+                              try {
+                                e.target.src = "/static/user.svg";
+                              } catch {}
+                            }}
+                          />
+                        ) : (
+                          <div className="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-gray-200">
+                            <svg
+                              className="h-6 w-6 text-gray-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                              />
+                            </svg>
+                          </div>
+                        )}
                         <span className="text-sm font-medium text-[#667085]">
                           {data.user.name}
                         </span>

@@ -6,6 +6,7 @@ import { BsFillEyeFill } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
 import ShimmerRow from "@/components/shimmer/shimmerRow";
 import useUserStore from "@/stores/useUserStore";
+import { useState } from "react";
 
 const UsersTable = ({ onViewClick, currentData, loading }) => {
   const {
@@ -19,6 +20,15 @@ const UsersTable = ({ onViewClick, currentData, loading }) => {
     handleSave,
     deleteUser,
   } = useUserStore();
+
+  const [loadingById, setLoadingById] = useState({});
+
+  const setRowLoading = (id, action, isLoading) => {
+    setLoadingById((prev) => ({
+      ...prev,
+      [id]: isLoading ? action : undefined,
+    }));
+  };
 
   return (
     <table className="min-w-[1200px] rounded-lg">
@@ -76,21 +86,52 @@ const UsersTable = ({ onViewClick, currentData, loading }) => {
               </td>
               <td className="py-5">
                 <div className="flex items-center gap-2">
-                  {user.avatar || user.profileImage || user.profile_image ? (
-                    <Image
-                      src={
-                        user.avatar || user.profileImage || user.profile_image
-                      }
-                      width={50}
-                      height={50}
-                      alt="Profile Image"
-                      className="h-[50px] w-[50px] rounded-full object-cover"
-                      onError={(e) => {
-                        console.log("User avatar load error, using fallback");
-                        e.target.src = "/static/user.svg";
-                      }}
-                    />
-                  ) : (
+                  {(() => {
+                    const rawAvatar =
+                      user.avatar ||
+                      user.profileImage ||
+                      user.profile_image ||
+                      user.avatarUrl ||
+                      user.photo ||
+                      user.image;
+                    const apiBase = (
+                      process.env.NEXT_PUBLIC_API_BASE_URL || ""
+                    ).replace(/\/?api$/, "");
+                    const normalized =
+                      typeof rawAvatar === "string"
+                        ? rawAvatar.trim()
+                        : rawAvatar;
+                    const resolvedAvatar =
+                      typeof normalized === "string" && normalized.length > 0
+                        ? normalized.startsWith("/")
+                          ? `${apiBase}${normalized}`
+                          : normalized
+                        : undefined;
+                    return resolvedAvatar ? (
+                      <Image
+                        src={resolvedAvatar}
+                        width={50}
+                        height={50}
+                        alt="Profile Image"
+                        unoptimized
+                        className="h-[50px] w-[50px] rounded-full object-cover"
+                        onError={(e) => {
+                          console.log("User avatar load error, using fallback");
+                          e.target.src = "/static/user.svg";
+                        }}
+                      />
+                    ) : (
+                      <></>
+                    );
+                  })()}
+                  {!(
+                    user.avatar ||
+                    user.profileImage ||
+                    user.profile_image ||
+                    user.avatarUrl ||
+                    user.photo ||
+                    user.image
+                  ) && (
                     <div className="flex h-[50px] w-[50px] items-center justify-center rounded-full bg-gray-200">
                       <svg
                         className="h-7 w-7 text-gray-500"
@@ -178,14 +219,24 @@ const UsersTable = ({ onViewClick, currentData, loading }) => {
                   {editingUserId === user.id ? (
                     <>
                       <button
-                        onClick={() => handleSave(user.id)}
-                        className="text-sm text-green-600 hover:underline"
+                        onClick={async () => {
+                          if (loadingById[user.id] === "save") return;
+                          setRowLoading(user.id, "save", true);
+                          try {
+                            await handleSave(user.id);
+                          } finally {
+                            setRowLoading(user.id, undefined, false);
+                          }
+                        }}
+                        className="text-sm text-green-600 hover:underline disabled:opacity-60"
+                        disabled={loadingById[user.id] === "save"}
                       >
-                        Save
+                        {loadingById[user.id] === "save" ? "Saving..." : "Save"}
                       </button>
                       <button
                         onClick={() => setEditingUserId(null)}
-                        className="text-sm text-red-500 hover:underline"
+                        className="text-sm text-red-500 hover:underline disabled:opacity-60"
+                        disabled={loadingById[user.id] === "save"}
                       >
                         Cancel
                       </button>
@@ -202,14 +253,43 @@ const UsersTable = ({ onViewClick, currentData, loading }) => {
                       }}
                     />
                   )}
-                  <BsFillEyeFill
-                    onClick={() => onViewClick(user.id)}
-                    className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700"
-                  />
-                  <BiSolidTrash
-                    onClick={() => deleteUser(user.id)}
-                    className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700"
-                  />
+                  {loadingById[user.id] === "view" ? (
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-iconGray border-t-transparent" />
+                  ) : (
+                    <BsFillEyeFill
+                      onClick={async () => {
+                        if (loadingById[user.id]) return;
+                        setRowLoading(user.id, "view", true);
+                        try {
+                          await new Promise((r) => setTimeout(r, 150));
+                          onViewClick(user.id);
+                        } finally {
+                          // Will unmount on route change; keep brief spinner for UX
+                          setTimeout(
+                            () => setRowLoading(user.id, undefined, false),
+                            1200,
+                          );
+                        }
+                      }}
+                      className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700"
+                    />
+                  )}
+                  {loadingById[user.id] === "delete" ? (
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-iconGray border-t-transparent" />
+                  ) : (
+                    <BiSolidTrash
+                      onClick={async () => {
+                        if (loadingById[user.id]) return;
+                        setRowLoading(user.id, "delete", true);
+                        try {
+                          await deleteUser(user.id);
+                        } finally {
+                          setRowLoading(user.id, undefined, false);
+                        }
+                      }}
+                      className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700"
+                    />
+                  )}
                 </div>
               </td>
             </tr>

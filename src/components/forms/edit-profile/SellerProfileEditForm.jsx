@@ -11,7 +11,7 @@ import {
 import RoundedButton from "@/components/buttons/RoundedButton";
 import InputField from "@/components/form-fields/InputField";
 import PageHeading from "@/components/headings/PageHeading";
-import { PenLine, User as UserIcon } from "lucide-react";
+import { ArrowLeft, PenLine, User as UserIcon } from "lucide-react";
 import Image from "next/image";
 
 import { useRouter } from "next/navigation";
@@ -160,7 +160,20 @@ const SellerProfileEditForm = () => {
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-10 px-3 py-10">
-      <PageHeading>Profile {">"} Edit Profile</PageHeading>
+      <div className="flex w-full max-w-4xl items-center justify-between">
+        <PageHeading>
+          <button
+            type="button"
+            onClick={() => router.push("/seller/profile")}
+            className="flex items-center gap-2 py-1.5 text-sm text-black transition-colors hover:text-black"
+          >
+            <ArrowLeft className="size-4" />
+            Back
+          </button>
+          Profile {">"} Edit Profile
+        </PageHeading>
+        <span className="invisible">placeholder</span>
+      </div>
       <div className="flex w-full max-w-md flex-col items-center rounded-2xl border border-black/10 p-5 pt-10">
         {saving && (
           <div className="mb-3 w-full rounded-md bg-black/5 p-2 text-center text-sm text-battleShipGray">
