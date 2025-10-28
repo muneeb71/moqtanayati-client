@@ -163,21 +163,20 @@ const SignUpForm1 = ({ role: propRole }) => {
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
             )}
           </div>
+        ) : !phoneVerified ? (
+          <RoundedButton
+            onClick={handleVerifyPhone}
+            title="Verify Phone"
+            showIcon
+            disabled={phoneLoading}
+            rightIcon={
+              phoneLoading ? (
+                <span className="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              ) : undefined
+            }
+            className="min-w-72"
+          />
         ) : (
-          // : !phoneVerified ? (
-          //   <RoundedButton
-          //     onClick={handleVerifyPhone}
-          //     title="Verify Phone"
-          //     showIcon
-          //     disabled={phoneLoading}
-          //     rightIcon={
-          //       phoneLoading ? (
-          //         <span className="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-          //       ) : undefined
-          //     }
-          //     className="min-w-72"
-          //   />
-          // )
           <div className="flex items-center gap-2">
             <RoundedButton
               type="button"
