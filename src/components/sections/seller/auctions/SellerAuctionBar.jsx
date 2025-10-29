@@ -11,19 +11,28 @@ const SellerAuctionBar = () => {
   const auctionProducts = useAuctionStore((s) => s.auctionProducts) || [];
 
   const deriveStatus = (a) => {
-    const now = new Date();
-    const launch = new Date(a?.product?.auctionLaunchDate);
-    const durationDays = Number(a?.product?.auctionDuration) || 0;
-    if (!isNaN(launch.getTime()) && durationDays > 0) {
-      const end = new Date(
-        launch.getTime() + durationDays * 24 * 60 * 60 * 1000,
-      );
-      if (now < launch) return "UPCOMING";
-      if (now >= launch && now <= end) return "LIVE";
-      return "HISTORY";
+    // Prefer server-provided status when present
+    const serverStatus = String(
+      a?.status || a?.product?.status || "",
+    ).toUpperCase();
+    if (serverStatus) {
+      if (serverStatus === "ENDED") return "HISTORY";
+      return serverStatus;
     }
-    // Fallback to provided status if date data is missing
-    return String(a?.status || "").toUpperCase();
+
+    // Fallback: derive from launch date + duration
+    const now = new Date();
+    const launchRaw = a?.product?.auctionLaunchDate;
+    const durationDays = Number(a?.product?.auctionDuration) || 0;
+    const launch = launchRaw ? new Date(launchRaw) : null;
+
+    if (!launch || isNaN(launch.getTime())) return "HISTORY";
+    if (durationDays <= 0) return now < launch ? "UPCOMING" : "HISTORY";
+
+    const end = new Date(launch.getTime() + durationDays * 24 * 60 * 60 * 1000);
+    if (now < launch) return "UPCOMING";
+    if (now >= launch && now < end) return "LIVE"; // strictly before end
+    return "HISTORY";
   };
 
   const counts = auctionProducts.reduce(

@@ -6,9 +6,10 @@ import { saveSellerSurvey } from "@/lib/api/seller-survey/save";
 import { useSurveyStore } from "@/providers/survey-store-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
-const ConsentForm = ({ userId }) => {
+const ConsentForm = ({ userId, userData }) => {
   const {
     sellerEntity,
     haveProducts,
@@ -22,23 +23,51 @@ const ConsentForm = ({ userId }) => {
 
   const router = useRouter();
 
+  const [submitting, setSubmitting] = useState(false);
+
   const handleAgreeButton = async () => {
+    if (!sellerEntity) {
+      toast.error("Please select your seller entity first.");
+      router.push("/survey/entity");
+      return;
+    }
+    if (!goal) {
+      toast.error("Please select your goal first.");
+      router.push("/survey/goal");
+      return;
+    }
+    if (!userId) {
+      toast.error(
+        "User data is missing. Please restart the registration process.",
+      );
+      router.push("/seller/login");
+      return;
+    }
+    setSubmitting(true);
     setConsent(true);
-    const surveyData = {
-      userId: userId,
-      entity: sellerEntity,
-      hasProducts: haveProducts,
-      hasExperience: haveExperience,
-      goal,
-      productAndServices: productsAndServices,
-      homeSupplies,
-      consent,
-    };
-    const response = await saveSellerSurvey(surveyData);
-    if (response.success) {
-      router.push("/seller");
-    } else {
-      toast.error(response.message);
+    try {
+      const surveyData = {
+        userId: userId,
+        entity: sellerEntity,
+        hasProducts: haveProducts,
+        hasExperience: haveExperience,
+        goal,
+        productAndServices: productsAndServices,
+        homeSupplies,
+        consent: true,
+        iban: userData?.iban || "",
+      };
+      const response = await saveSellerSurvey(surveyData);
+      if (response.success) {
+        router.push("/seller");
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      console.error("Survey submission error:", error);
+      toast.error("Failed to submit survey");
+    } finally {
+      setSubmitting(false);
     }
   };
   return (
@@ -61,8 +90,10 @@ const ConsentForm = ({ userId }) => {
       <RoundedButton
         onClick={() => handleAgreeButton()}
         className="w-full"
-        title="Agree and Start Now"
-        showIcon
+        title={submitting ? "Submitting..." : "Agree and Start Now"}
+        showIcon={!submitting}
+        loading={submitting || undefined}
+        disabled={submitting}
       />
       <SecondaryButton
         title="Discover all Features"

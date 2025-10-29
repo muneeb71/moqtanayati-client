@@ -65,8 +65,12 @@ const SellerReviewCard = ({ seller }) => {
 
   const handleChatWithSeller = () => {
     if (seller?.id) {
-      // Navigate to chat page - it will create a new chat if one doesn't exist
-      router.push(`/buyer/chats?id=${seller.id}`);
+      const qp = new URLSearchParams({
+        id: String(seller.id),
+        name: seller?.name || "",
+        avatar: seller?.avatar || "",
+      });
+      router.push(`/buyer/chats?${qp.toString()}`);
     }
   };
 

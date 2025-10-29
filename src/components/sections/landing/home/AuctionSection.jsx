@@ -15,7 +15,9 @@ const AuctionSection = ({ auction }) => {
             <span className="max-w-[315px] text-[11px] leading-[18px] text-[#8A8A8A]">
               {auction?.product?.description}
             </span>
-            <PlaceBidButton productId={auction?.productId} />
+            {auction?.status === "LIVE" && (
+              <PlaceBidButton productId={auction?.productId} />
+            )}
           </div>
           <div className="flex w-full items-center justify-center md:justify-start">
             <AuctionTimer

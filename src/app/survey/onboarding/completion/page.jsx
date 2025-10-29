@@ -3,22 +3,77 @@
 import { useRouter } from "next/navigation";
 import { marketingFeatures, steps } from "@/lib/dummy-onboarding";
 import { ChevronLeft, ChevronRight } from "lucide-react/dist/cjs/lucide-react";
+import { useSurveyStore } from "@/providers/survey-store-provider";
+import { saveSurvey } from "@/lib/api/survey/saveSurvey";
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 const page = () => {
   const router = useRouter();
+  const [userData, setUserData] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const {
+    sellerEntity,
+    haveProducts,
+    haveExperience,
+    goal,
+    productsAndServices,
+    homeSupplies,
+    consent,
+  } = useSurveyStore((state) => state);
+
+  useEffect(() => {
+    // Get user data from sessionStorage
+    const storedUserData = sessionStorage.getItem("surveyUserData");
+    if (storedUserData) {
+      setUserData(JSON.parse(storedUserData));
+    } else {
+      // If no user data, redirect to login
+      router.push("/seller/login");
+    }
+  }, [router]);
 
   const goBack = () => {
     router.back();
-  }
+  };
 
-  const handleNext = () => {
-      router.push("/seller");
+  const handleNext = async () => {
+    if (!userData) return;
+
+    setSubmitting(true);
+    try {
+      const response = await saveSurvey({
+        userId: userData.id,
+        entity: sellerEntity,
+        hasProducts: haveProducts,
+        hasExperience: haveExperience,
+        goal: goal,
+        productAndServices: productsAndServices,
+        homeSupplies: homeSupplies,
+        consent: consent,
+      });
+
+      if (response.success) {
+        toast.success("Survey completed successfully!");
+        // Clear survey data from sessionStorage
+        sessionStorage.removeItem("surveyUserData");
+        // Redirect to login page
+        router.push("/seller/login");
+      } else {
+        toast.error(response.message || "Failed to submit survey");
+      }
+    } catch (error) {
+      console.error("Survey submission error:", error);
+      toast.error("Failed to submit survey");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <>
-      <div className="w-full  flex flex-col items-center justify-center">
-        <h1 className="mb-2 text-[22px] font-semibold text-black/80 w-full text-start">
+      <div className="flex w-full flex-col items-center justify-center">
+        <h1 className="mb-2 w-full text-start text-[22px] font-semibold text-black/80">
           Boost&nbsp; Your Sales with
           <br />
           Smart Marketing!
@@ -56,11 +111,21 @@ const page = () => {
           Go Back
         </button>
         <button
-          className="flex w-full max-w-xs items-center justify-center gap-2 rounded-full bg-moonstone py-3 text-base font-medium text-white transition hover:bg-moonstone/90"
+          className="flex w-full max-w-xs items-center justify-center gap-2 rounded-full bg-moonstone py-3 text-base font-medium text-white transition hover:bg-moonstone/90 disabled:opacity-50"
           onClick={handleNext}
+          disabled={submitting}
         >
-          Finish
-          <ChevronRight className="h-5 w-5" />
+          {submitting ? (
+            <>
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              Submitting...
+            </>
+          ) : (
+            <>
+              Finish
+              <ChevronRight className="h-5 w-5" />
+            </>
+          )}
         </button>
       </div>
     </>

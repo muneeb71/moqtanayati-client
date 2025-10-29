@@ -4,6 +4,7 @@ import RoundedButton from "@/components/buttons/RoundedButton";
 import { useSurveyStore } from "@/providers/survey-store-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import OptionButton from "./OptionButton";
 
@@ -14,8 +15,14 @@ const StartSellingForm = ({ role }) => {
   ];
 
   const router = useRouter();
+  const [navigating, setNavigating] = useState(false);
 
   const { haveProducts, setHaveProducts } = useSurveyStore((state) => state);
+
+  const handleNext = () => {
+    setNavigating(true);
+    router.push("/survey/experience");
+  };
 
   return (
     <div className="flex flex-col justify-center bg-white px-4">
@@ -42,9 +49,11 @@ const StartSellingForm = ({ role }) => {
         ))}
       </div>
       <RoundedButton
-        title="Next"
-        showIcon
-        onClick={() => router.push("/survey/experience")}
+        title={navigating ? "Loading..." : "Next"}
+        showIcon={!navigating}
+        loading={navigating || undefined}
+        onClick={handleNext}
+        disabled={navigating}
       />
     </div>
   );

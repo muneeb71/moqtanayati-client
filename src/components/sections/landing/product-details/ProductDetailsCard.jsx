@@ -371,34 +371,49 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                     </div>
                   </div>
                   <div className="flex w-1/2 flex-col space-y-3">
-                    <button
-                      type="button"
-                      className="flex w-full items-center justify-center gap-3 rounded-lg bg-moonstone py-4 text-white"
-                      onClick={() => {
-                        console.log(
-                          "🔍 [ProductDetailsCard] Making offer status",
-                          item?.status,
-                        );
-                        if (item?.status === "SOLD") {
-                          toast.error("This auction is sold.");
-                          return;
-                        }
-                        if (item?.status === "UPCOMING") {
-                          toast.error(
-                            "This auction is not available right now.",
-                          );
-                          return;
-                        }
+                    {item?.pricingFormat === "Auctions" ? (
+                      item?.status === "SOLD" ? (
+                        <button
+                          type="button"
+                          className="flex w-full items-center justify-center gap-3 rounded-lg bg-red-500 py-4 text-white"
+                          disabled={true}
+                        >
+                          <img src={"/static/bid.svg"} />
+                          <p>SOLD</p>
+                        </button>
+                      ) : item?.status === "UPCOMING" ? (
+                        <button
+                          type="button"
+                          className="flex w-full items-center justify-center gap-3 rounded-lg bg-yellow py-4 text-white"
+                          disabled={true}
+                        >
+                          <img src={"/static/bid.svg"} />
+                          <p>UPCOMING</p>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="flex w-full items-center justify-center gap-3 rounded-lg bg-moonstone py-4 text-white"
+                          onClick={() => {
+                            if (item?.status === "SOLD") {
+                              toast.error("This auction is sold.");
+                              return;
+                            }
+                            if (item?.status === "DRAFT") {
+                              toast.error(
+                                "This auction is not available right now.",
+                              );
+                              return;
+                            }
+                            setIsBidPopupOpen(true);
+                          }}
+                        >
+                          <img src={"/static/bid.svg"} />
+                          <p>Make Offer</p>
+                        </button>
+                      )
+                    ) : null}
 
-                        setIsBidPopupOpen(true);
-                      }}
-                      disabled={
-                        item?.status === "SOLD" || item?.status === "UPCOMING"
-                      }
-                    >
-                      <img src={"/static/bid.svg"} />
-                      <p>Make Offer</p>
-                    </button>
                     {item?.pricingFormat === "Fixed Price" ? (
                       <div className="flex items-center justify-between gap-2">
                         <button

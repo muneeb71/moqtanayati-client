@@ -1,11 +1,78 @@
-import DraftsSection from "@/components/sections/seller/home/DraftsSection";
-import SellerBanner from "@/components/sections/seller/home/seller-banner/SellerBanner";
+"use client";
 
-const SurveyPage = async () => {
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
+const SurveyPage = () => {
+  const router = useRouter();
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [navigating, setNavigating] = useState(false);
+
+  useEffect(() => {
+    // Get user data from sessionStorage
+    const storedUserData = sessionStorage.getItem("surveyUserData");
+    if (storedUserData) {
+      setUserData(JSON.parse(storedUserData));
+    } else {
+      // If no user data, redirect to login
+      router.push("/seller/login");
+    }
+    setLoading(false);
+  }, [router]);
+
+  const handleStart = () => {
+    setNavigating(true);
+    router.push("/survey/entity");
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-moonstone border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (!userData) {
+    return null; // Will redirect
+  }
+
   return (
-    <div className="flex w-full flex-col items-center justify-center px-3">
-      <SellerBanner />
-      <DraftsSection />
+    <div className="flex h-full flex-col pb-10 pt-28">
+      <h1 className="text-center text-4xl">👋</h1>
+      <h2 className="mt-4 text-center text-3xl text-darkBlue">
+        Welcome {userData.name}
+      </h2>
+      <p className="mt-2 text-center text-base text-darkBlue/50">
+        We would love to learn more about you and your business through short
+        questions designed to personalize your experience.{" "}
+      </p>
+      <div className="mt-8 flex w-full justify-center">
+        <p className="flex w-56 items-center justify-center rounded-lg bg-russianViolet/10 px-2 py-1 text-russianViolet">
+          Estimated Time: 1 Minute
+        </p>
+      </div>
+      <div className="flex w-full justify-center">
+        <button
+          onClick={handleStart}
+          disabled={navigating}
+          className="mt-56 flex h-14 w-72 items-center justify-center rounded-full bg-moonstone font-medium text-white transition hover:bg-moonstone/90 disabled:opacity-50"
+        >
+          {navigating ? (
+            <>
+              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              Starting...
+            </>
+          ) : (
+            <>
+              Lets Start <ChevronRight />
+            </>
+          )}
+        </button>
+      </div>
     </div>
   );
 };

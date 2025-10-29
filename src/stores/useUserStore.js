@@ -87,13 +87,29 @@ const useUserStore = create((set, get) => ({
   // ==================== Delete User ===================
   deleteUser: async (userId) => {
     try {
-      console.log("in delete");
-      await deleteUserFromDb(userId);
-      console.log("after delete");
-      toast.success("User deleted");
-      get().fetchUsers();
-      console.log("after fetching delete");
+      console.log("Deleting user:", userId);
+      const response = await deleteUserFromDb(userId);
+      console.log("Delete response:", response);
+
+      // Check if the response indicates success
+      if (response?.success || response?.message || response === undefined) {
+        toast.success("User deleted successfully");
+        // Remove user from local state immediately for better UX
+        const { users } = get();
+        set({
+          users: users.filter((user) => user.id !== userId),
+          selectedRows: get().selectedRows.filter((email) => {
+            const userToDelete = users.find((u) => u.id === userId);
+            return email !== userToDelete?.email;
+          }),
+        });
+        // Refresh the list to get updated counts
+        get().fetchUsers();
+      } else {
+        throw new Error("Unexpected response format");
+      }
     } catch (error) {
+      console.error("Delete user error:", error);
       toast.error("Failed to delete user");
     }
   },

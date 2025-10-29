@@ -33,6 +33,7 @@ const ChatWindow = ({
     userName: "",
   });
   const currentUserId = useProfileStore((s) => s.id);
+  const currentUserAvatar = useProfileStore((s) => s.avatar);
   const messagesContainerRef = useRef(null);
   const typingTimeoutRef = useRef(null);
 
@@ -66,6 +67,13 @@ const ChatWindow = ({
   console.log("🔍 [ChatWindow] otherUser:", otherUser);
   console.log("🔍 [ChatWindow] selectedUser:", selectedUser);
 
+  const firstNonEmpty = (...values) => {
+    for (const v of values) {
+      if (typeof v === "string" && v.trim().length > 0) return v;
+    }
+    return null;
+  };
+
   useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
@@ -98,6 +106,22 @@ const ChatWindow = ({
           socketManager.socket?.emit("join_conversation", {
             conversationId: selectedUser.id,
           });
+
+          // Mark messages as read when opening the conversation
+          try {
+            socketManager.socket?.emit("mark_messages_read", {
+              conversationId: selectedUser.id,
+              userId: currentUserId,
+            });
+            // Optimistically mark as read locally for messages from other user
+            setMessages((prev) =>
+              (prev || []).map((m) =>
+                String(m.senderId) !== String(currentUserId)
+                  ? { ...m, read: true }
+                  : m,
+              ),
+            );
+          } catch (_) {}
         } else {
           console.log(
             "🔍 [ChatWindow] Skipping join_conversation for temporary chat",
@@ -107,9 +131,31 @@ const ChatWindow = ({
         // Listen for messages
         const offReceiveMessage = socketManager.on("receive_message", (msg) => {
           console.log("🔍 [ChatWindow] Received message via socket:", msg);
+          console.log("🔍 [ChatWindow] Incoming msg read:", msg?.read);
           console.log("🔍 [ChatWindow] Current sending state:", sending);
           console.log("🔍 [ChatWindow] Message senderId:", msg.senderId);
           console.log("🔍 [ChatWindow] Current userId:", currentUserId);
+
+          // Enrich sender object to ensure correct avatar/name
+          try {
+            if (!msg.sender || !msg.sender.avatar || !msg.sender.name) {
+              const a = selectedUser?.userA;
+              const b = selectedUser?.userB;
+              if (a && String(msg.senderId) === String(a.id)) {
+                msg.sender = {
+                  id: a.id,
+                  name: a.name || msg.sender?.name,
+                  avatar: a.avatar || msg.sender?.avatar,
+                };
+              } else if (b && String(msg.senderId) === String(b.id)) {
+                msg.sender = {
+                  id: b.id,
+                  name: b.name || msg.sender?.name,
+                  avatar: b.avatar || msg.sender?.avatar,
+                };
+              }
+            }
+          } catch (_) {}
 
           setMessages((prev) => {
             // Check if message already exists (avoid duplicates)
@@ -118,8 +164,18 @@ const ChatWindow = ({
               return prev;
             }
 
+            // Remove optimistic temp message for the same content/sender (if any)
+            const withoutTemp = prev.filter((m) => {
+              const isTemp =
+                typeof m.id === "string" && m.id.startsWith("temp_");
+              if (!isTemp) return true;
+              const sameSender = String(m.senderId) === String(msg.senderId);
+              const sameContent = m.content === msg.content;
+              return !(sameSender && sameContent);
+            });
+
             console.log("🔍 [ChatWindow] Adding new message to chat");
-            const newMessages = [...prev, msg];
+            const newMessages = [...withoutTemp, { ...msg, read: !!msg.read }];
             // Sort messages by timestamp to maintain chronological order
             return newMessages.sort((a, b) => {
               const dateA = new Date(a.createdAt || 0);
@@ -127,6 +183,26 @@ const ChatWindow = ({
               return dateA - dateB; // Ascending order (oldest to newest)
             });
           });
+
+          // If the message is from the other user and this conversation is open, mark read
+          try {
+            if (
+              String(msg.senderId) !== String(currentUserId) &&
+              selectedUser &&
+              !selectedUser.isTemporary
+            ) {
+              socketManager.socket?.emit("mark_messages_read", {
+                conversationId: selectedUser.id,
+                userId: currentUserId,
+              });
+              // Optimistically flag the incoming message as read
+              setMessages((prev) =>
+                (prev || []).map((m) =>
+                  m.id === msg.id ? { ...m, read: true } : m,
+                ),
+              );
+            }
+          } catch (_) {}
 
           // Update conversations array to reflect the new message in sidebar
           if (setUsers && selectedUser) {
@@ -230,12 +306,60 @@ const ChatWindow = ({
           },
         );
 
+        // Listen for read receipts from server
+        const offMessagesMarkedRead = socketManager.on(
+          "messages_marked_read",
+          ({ conversationId, chatId, userId }) => {
+            try {
+              // Only process for this open conversation
+              const convId = conversationId || chatId;
+              if (
+                selectedUser &&
+                !selectedUser.isTemporary &&
+                String(convId) === String(selectedUser.id)
+              ) {
+                // Update local messages: mark OUR sent messages as read
+                setMessages((prev) =>
+                  (prev || []).map((m) =>
+                    String(m.senderId) === String(currentUserId)
+                      ? { ...m, read: true }
+                      : m,
+                  ),
+                );
+
+                // Also update conversations list (sidebar preview)
+                if (setUsers) {
+                  setUsers((prevConversations) =>
+                    (prevConversations || []).map((c) => {
+                      if (String(c.id) !== String(selectedUser.id)) return c;
+                      const updatedMsgs = (c.chatMeta?.messages || []).map(
+                        (m) =>
+                          String(m.senderId) === String(currentUserId)
+                            ? { ...m, read: true }
+                            : m,
+                      );
+                      return {
+                        ...c,
+                        chatMeta: {
+                          ...(c.chatMeta || {}),
+                          messages: updatedMsgs,
+                        },
+                      };
+                    }),
+                  );
+                }
+              }
+            } catch (_) {}
+          },
+        );
+
         // Combine cleanup functions
         unsubscribe = () => {
           try {
             offReceiveMessage();
             offChatError();
             offUserTyping && offUserTyping();
+            offMessagesMarkedRead && offMessagesMarkedRead();
             if (!selectedUser.isTemporary) {
               socketManager.socket?.emit("leave_conversation", {
                 conversationId: selectedUser.id,
@@ -319,6 +443,7 @@ const ChatWindow = ({
         content: messageToSend,
         senderId: currentUserId,
         createdAt: new Date().toISOString(),
+        read: false,
       };
 
       // Listen for chat creation response
@@ -358,6 +483,8 @@ const ChatWindow = ({
           conversationId: realChat.id,
           content: messageToSend,
         });
+
+        // Keep loader until we receive our own echo or error
 
         // Remove the event listeners
         socketManager.socket.off("chat_created", handleChatCreated);
@@ -422,6 +549,7 @@ const ChatWindow = ({
         content: messageToSend,
         createdAt: new Date().toISOString(),
         sender: { name: "You", avatar: null },
+        read: false,
       };
 
       setUsers((prevConversations) => {
@@ -468,6 +596,8 @@ const ChatWindow = ({
         !!selectedUser,
       );
     }
+
+    // Keep loader until our send is echoed back or an error occurs
   };
 
   if (!selectedUser) {
@@ -553,6 +683,14 @@ const ChatWindow = ({
           ) : !messages || messages.length === 0 ? (
             <div className="py-8 text-center text-gray-400">No messages</div>
           ) : (
+            (console.log(
+              "🔍 [ChatWindow] Message read flags:",
+              messages.map((m) => ({
+                id: m.id,
+                read: m.read,
+                senderId: m.senderId,
+              })),
+            ),
             messages.map((msg, index) => {
               const isMine = msg.senderId === currentUserId;
               return (
@@ -573,22 +711,67 @@ const ChatWindow = ({
                       )}
                     >
                       <div className="grid size-[24px] place-items-center overflow-hidden rounded-full">
-                        <Image
-                          src={
-                            isMine
-                              ? msg.sender?.avatar ||
-                                "/static/dummy-user/1.jpeg"
-                              : msg.sender?.avatar ||
-                                selectedUser.image ||
-                                selectedUser.userB?.avatar ||
+                        {(() => {
+                          // Resolve sender avatar deterministically using senderId mapping
+                          const mappedSenderAvatar = (() => {
+                            if (!selectedUser) return null;
+                            const aId = selectedUser.userA?.id;
+                            const bId = selectedUser.userB?.id;
+                            if (String(msg.senderId) === String(aId)) {
+                              return (
                                 selectedUser.userA?.avatar ||
-                                "/static/dummy-user/1.jpeg"
-                          }
-                          width={100}
-                          height={100}
-                          alt="notification"
-                          className="h-full w-full object-cover"
-                        />
+                                selectedUser.userA?.image ||
+                                null
+                              );
+                            }
+                            if (String(msg.senderId) === String(bId)) {
+                              return (
+                                selectedUser.userB?.avatar ||
+                                selectedUser.userB?.image ||
+                                null
+                              );
+                            }
+                            return null;
+                          })();
+
+                          // Strict fallbacks to avoid showing the other user's avatar incorrectly
+                          const avatarUrl = isMine
+                            ? firstNonEmpty(
+                                msg.sender?.avatar,
+                                currentUserAvatar,
+                              )
+                            : firstNonEmpty(
+                                msg.sender?.avatar,
+                                mappedSenderAvatar,
+                              );
+                          return avatarUrl ? (
+                            <Image
+                              src={avatarUrl}
+                              width={100}
+                              height={100}
+                              alt="message user"
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="text-gray-400"
+                            >
+                              <path
+                                d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+                                fill="currentColor"
+                              />
+                              <path
+                                d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          );
+                        })()}
                       </div>
                       <span className="hidden text-xs md:inline">
                         {isMine
@@ -623,13 +806,34 @@ const ChatWindow = ({
                           isMine ? "text-white" : "text-[#4D4D4D]",
                         )}
                       >
-                        {deliverIcon}
+                        {isMine ? (
+                          !!msg.read ? (
+                            // Double tick (delivered/read)
+                            <span className="inline-flex -space-x-1">
+                              {deliverIcon}
+                              <span className="-ml-1 inline-block">
+                                {deliverIcon}
+                              </span>
+                            </span>
+                          ) : (
+                            // Single tick (sent/unread)
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                            >
+                              <path d="M9 16.17l-3.88-3.88a1 1 0 10-1.41 1.41l4.59 4.59a1 1 0 001.41 0l10-10a1 1 0 10-1.41-1.41L9 16.17z" />
+                            </svg>
+                          )
+                        ) : null}
                       </div>
                     </div>
                   </div>
                 </div>
               );
-            })
+            }))
           )}
           {sending && (
             <div className="flex justify-end">

@@ -50,24 +50,42 @@ const AuctionResults = ({ auctionType }) => {
   };
 
   const baseFiltered = auctions.filter((auction) => {
-    const now = new Date();
-    const launchDate = new Date(auction.product.auctionLaunchDate);
+    const type = auctionType?.toLowerCase();
+    const serverStatus = (auction.status || auction.product?.status || "")
+      .toString()
+      .toLowerCase();
 
-    const endDate = new Date(
-      launchDate.getTime() +
-        auction.product.auctionDuration * 24 * 60 * 60 * 1000,
-    );
-
-    let status;
-    if (now < launchDate) {
-      status = "upcoming";
-    } else if (now >= launchDate && now <= endDate) {
-      status = "live";
-    } else {
-      status = "history";
+    // Prefer server-provided status when available
+    if (serverStatus) {
+      const normalized = serverStatus === "ended" ? "history" : serverStatus;
+      return normalized === type;
     }
 
-    return status === auctionType?.toLowerCase();
+    // Fallback: derive from launchDate + duration
+    const now = new Date();
+    const launchDateRaw = auction.product?.auctionLaunchDate;
+    const durationDays = Number(auction.product?.auctionDuration) || 0;
+
+    const launchDate = launchDateRaw ? new Date(launchDateRaw) : null;
+
+    let derived;
+    if (!launchDate || Number.isNaN(launchDate.getTime())) {
+      // If launch date invalid, default to history so it won't appear live mistakenly
+      derived = "history";
+    } else if (durationDays <= 0) {
+      // No duration means it ends immediately at launch
+      derived = now < launchDate ? "upcoming" : "history";
+    } else {
+      const endDate = new Date(
+        launchDate.getTime() + durationDays * 24 * 60 * 60 * 1000,
+      );
+      if (now < launchDate) derived = "upcoming";
+      else if (now >= launchDate && now < endDate)
+        derived = "live"; // strictly before end
+      else derived = "history";
+    }
+
+    return derived === type;
   });
 
   // Build options (categories, locations, years)

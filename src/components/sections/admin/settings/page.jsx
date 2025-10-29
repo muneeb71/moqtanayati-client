@@ -22,6 +22,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [originalProfile, setOriginalProfile] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [imgFailed, setImgFailed] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -104,6 +105,7 @@ export default function ProfilePage() {
       const reader = new FileReader();
       reader.onload = (e) => {
         setImagePreview(e.target.result);
+        setImgFailed(false);
       };
       reader.readAsDataURL(file);
     }
@@ -112,6 +114,7 @@ export default function ProfilePage() {
   const removeImage = () => {
     setImageFile(null);
     setImagePreview(null);
+    setImgFailed(false);
   };
 
   const togglePasswordVisibility = (field) => {
@@ -303,13 +306,66 @@ export default function ProfilePage() {
       <div className="mx-auto w-full max-w-md rounded-2xl bg-white p-6 shadow-md">
         <div className="mb-6 flex flex-col items-center">
           <div className="relative">
-            <Image
-              src={imagePreview || profileImage || "/static/user.svg"}
-              alt="User Avatar"
-              width={100}
-              height={100}
-              className="h-[100px] w-[100px] rounded-full object-cover"
-            />
+            {(() => {
+              const resolved = (() => {
+                if (imagePreview) return imagePreview;
+                if (!profileImage || imgFailed) return null;
+                const isAbsolute = /^https?:\/\//i.test(profileImage);
+                const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+                const prefixed = isAbsolute
+                  ? profileImage
+                  : `${base.replace(/\/$/, "")}${profileImage.startsWith("/") ? "" : "/"}${profileImage}`;
+                const sep = prefixed.includes("?") ? "&" : "?";
+                return `${prefixed}${sep}t=${Date.now()}`;
+              })();
+              console.log("[AdminSettings] avatar preview:", imagePreview);
+              console.log(
+                "[AdminSettings] avatar raw profileImage:",
+                profileImage,
+              );
+              console.log("[AdminSettings] avatar resolved src:", resolved);
+              return null;
+            })()}
+            {imagePreview || (profileImage && !imgFailed) ? (
+              <Image
+                src={(() => {
+                  if (imagePreview) return imagePreview;
+                  const isAbsolute = /^https?:\/\//i.test(profileImage);
+                  const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+                  const prefixed = isAbsolute
+                    ? profileImage
+                    : `${base.replace(/\/$/, "")}${profileImage.startsWith("/") ? "" : "/"}${profileImage}`;
+                  const sep = prefixed.includes("?") ? "&" : "?";
+                  return `${prefixed}${sep}t=${Date.now()}`;
+                })()}
+                alt="User Avatar"
+                width={100}
+                height={100}
+                className="h-[100px] w-[100px] rounded-full object-cover"
+                unoptimized
+                onError={() => setImgFailed(true)}
+              />
+            ) : (
+              <div className="grid h-[100px] w-[100px] place-items-center rounded-full bg-gray-200">
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-gray-500"
+                >
+                  <path
+                    d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M12 14c-4.418 0-8 3.582-8 8h16c0-4.418-3.582-8-8-8z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+            )}
             {!imagePreview && (
               <div className="absolute -bottom-2 -right-2">
                 <label

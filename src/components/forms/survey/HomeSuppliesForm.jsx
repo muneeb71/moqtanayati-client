@@ -10,12 +10,18 @@ import { useSurveyStore } from "@/providers/survey-store-provider";
 import { X } from "lucide-react/dist/cjs/lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
+import { useState } from "react";
 
 const HomeSuppliesForm = ({ role }) => {
   const router = useRouter();
+  const [navigating, setNavigating] = useState(false);
 
   const { homeSupplies, toggleHomeSupply } = useSurveyStore((state) => state);
+
+  const handleNext = () => {
+    setNavigating(true);
+    router.push("/survey/consent");
+  };
 
   return (
     <div className="flex flex-col justify-center bg-white px-4">
@@ -51,9 +57,11 @@ const HomeSuppliesForm = ({ role }) => {
         })}
       </div>
       <RoundedButton
-        title="Next"
-        showIcon
-        onClick={() => router.push("/survey/consent")}
+        title={navigating ? "Loading..." : "Next"}
+        showIcon={!navigating}
+        loading={navigating || undefined}
+        onClick={handleNext}
+        disabled={navigating}
       />
     </div>
   );

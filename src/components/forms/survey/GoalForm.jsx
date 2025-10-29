@@ -4,6 +4,7 @@ import RoundedButton from "@/components/buttons/RoundedButton";
 import { useSurveyStore } from "@/providers/survey-store-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import OptionButton from "./OptionButton";
 
@@ -16,8 +17,14 @@ const GoalForm = () => {
   ];
 
   const router = useRouter();
+  const [navigating, setNavigating] = useState(false);
 
   const { goal, setGoal } = useSurveyStore((state) => state);
+
+  const handleNext = () => {
+    setNavigating(true);
+    router.push("/survey/product-and-services");
+  };
 
   return (
     <div className="flex flex-col justify-center bg-white px-4">
@@ -47,11 +54,11 @@ const GoalForm = () => {
         ))}
       </div>
       <RoundedButton
-        title="Next"
-        showIcon
-        onClick={() =>
-          router.push("/survey/product-and-services")
-        }
+        title={navigating ? "Loading..." : "Next"}
+        showIcon={!navigating}
+        loading={navigating || undefined}
+        onClick={handleNext}
+        disabled={navigating}
       />
     </div>
   );

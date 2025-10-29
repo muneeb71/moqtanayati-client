@@ -5,14 +5,20 @@ import { productAndServicesCategories } from "@/lib/categories";
 import { useSurveyStore } from "@/providers/survey-store-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
+import { useState } from "react";
 
 const ProductAndServicesForm = ({ role }) => {
   const router = useRouter();
+  const [navigating, setNavigating] = useState(false);
 
   const { productsAndServices, toggleProductAndService } = useSurveyStore(
     (state) => state,
   );
+
+  const handleNext = () => {
+    setNavigating(true);
+    router.push("/survey/home-supplies");
+  };
 
   return (
     <div className="flex flex-col justify-center bg-white px-4">
@@ -60,9 +66,11 @@ const ProductAndServicesForm = ({ role }) => {
         })}
       </div>
       <RoundedButton
-        title="Next"
-        showIcon
-        onClick={() => router.push("/survey/home-supplies")}
+        title={navigating ? "Loading..." : "Next"}
+        showIcon={!navigating}
+        loading={navigating || undefined}
+        onClick={handleNext}
+        disabled={navigating}
       />
     </div>
   );

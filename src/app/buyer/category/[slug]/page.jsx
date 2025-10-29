@@ -133,6 +133,10 @@ const CategoryPage = () => {
     );
   }
 
+  const visibleProducts = (products || []).filter(
+    (p) => p?.pricingFormat !== "Auctions",
+  );
+
   return (
     <div className="flex w-full flex-col items-center justify-center px-3">
       <div className="flex w-full max-w-7xl flex-col items-center gap-10 py-20">
@@ -191,7 +195,7 @@ const CategoryPage = () => {
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <h1 className="text-[21px] font-medium leading-[31px]">
-                  {products.length}{" "}
+                  {visibleProducts.length}{" "}
                   <span className="font-normal text-battleShipGray">
                     Results
                   </span>
@@ -201,8 +205,8 @@ const CategoryPage = () => {
           </div>
 
           <div className="grid w-full grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 md:grid-cols-3">
-            {products.length > 0 ? (
-              products.map((item, index) => {
+            {visibleProducts.length > 0 ? (
+              visibleProducts.map((item, index) => {
                 return (
                   <ItemCard
                     key={index}
