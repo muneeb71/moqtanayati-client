@@ -169,17 +169,19 @@ const ProductDetailsSlider = ({ images = [], auctionDetail }) => {
             loading="lazy"
             className="h-full w-full object-cover"
           />
-          {auctionDetail?.pricingFormat === "Auctions" && (
-            <button
-              className={cn(
-                "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
-                favourite ? "text-[#F16D6F]" : "text-white",
-              )}
-              onClick={addToWatchlist}
-            >
-              {heartIcon}
-            </button>
-          )}
+          {auctionDetail?.pricingFormat === "Auctions" &&
+            auctionDetail?.status === "UPCOMING" &&
+            auction?.status === "LIVE" && (
+              <button
+                className={cn(
+                  "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
+                  favourite ? "text-[#F16D6F]" : "text-white",
+                )}
+                onClick={addToWatchlist}
+              >
+                {heartIcon}
+              </button>
+            )}
         </div>
       </div>
     </div>

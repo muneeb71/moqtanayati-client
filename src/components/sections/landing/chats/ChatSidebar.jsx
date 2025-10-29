@@ -28,10 +28,8 @@ const ChatSidebar = ({
     // Listen for new messages to update sidebar
     const offReceiveMessage = socketManager.on("receive_message", (msg) => {
       console.log("🔍 [ChatSidebar] Received message via socket:", msg);
-      console.log(
-        "🔍 [ChatSidebar] Message conversationId:",
-        msg.conversationId,
-      );
+      const convId = msg.conversationId || msg.chatId;
+      console.log("🔍 [ChatSidebar] Message conversationId:", convId);
       console.log("🔍 [ChatSidebar] Message senderId:", msg.senderId);
 
       // Update the conversations to reflect the new message
@@ -52,16 +50,13 @@ const ChatSidebar = ({
 
           // Check if this message belongs to this conversation
           // Match by conversationId first, then by participants
-          const isMatchingConversation =
-            conversation.id === msg.conversationId ||
-            (conversation.userA?.id === msg.senderId &&
-              conversation.userB?.id !== currentUserId) ||
-            (conversation.userB?.id === msg.senderId &&
-              conversation.userA?.id !== currentUserId) ||
-            (conversation.userA?.id !== currentUserId &&
-              conversation.userB?.id === msg.senderId) ||
-            (conversation.userB?.id !== currentUserId &&
-              conversation.userA?.id === msg.senderId);
+          const hasConvId = convId !== undefined && convId !== null;
+          const isMatchingConversation = hasConvId
+            ? String(conversation.id) === String(convId)
+            : (String(conversation.userA?.id) === String(msg.senderId) &&
+                String(conversation.userB?.id) === String(currentUserId)) ||
+              (String(conversation.userB?.id) === String(msg.senderId) &&
+                String(conversation.userA?.id) === String(currentUserId));
 
           if (isMatchingConversation) {
             console.log(
@@ -98,6 +93,13 @@ const ChatSidebar = ({
               latestMessage,
             );
 
+            const isFromOtherUser =
+              String(msg.senderId) !== String(currentUserId);
+            // Simple: bump count on any incoming message from other user
+            const nextUnread = isFromOtherUser
+              ? (conversation.unreadCount || 0) + 1
+              : conversation.unreadCount || 0;
+
             return {
               ...conversation,
               lastMessage: latestMessage.content,
@@ -107,6 +109,7 @@ const ChatSidebar = ({
                 ...conversation.chatMeta,
                 messages: updatedMessages,
               },
+              unreadCount: nextUnread,
             };
           }
           return conversation;
@@ -117,12 +120,64 @@ const ChatSidebar = ({
       });
     });
 
+    // Listen for messages marked read to clear unread badge
+    const offMarkedRead = socketManager.on(
+      "messages_marked_read",
+      ({ conversationId, userId }) => {
+        // When this conversation gets read by either party, clear unread for this convo
+        setUsers((prev) =>
+          (prev || []).map((c) =>
+            String(c.id) === String(conversationId)
+              ? { ...c, unreadCount: 0 }
+              : c,
+          ),
+        );
+      },
+    );
+
+    // Periodic refresh as fallback (server doesn't broadcast to user room on new messages)
+    const refresh = () => {
+      try {
+        socketManager.socket?.emit("get_conversations", {
+          userId: currentUserId,
+        });
+      } catch (_) {}
+    };
+    const offConvoList = socketManager.on(
+      "conversations_list",
+      (convos = []) => {
+        setUsers((prev) => {
+          const prevById = new Map((prev || []).map((p) => [String(p.id), p]));
+          // Preserve any live-unread bumps; don't overwrite with computed 0
+          const mapped = (convos || []).map((c) => {
+            const msgs = c.chatMeta?.messages || [];
+            const computedUnread = msgs.filter(
+              (m) => String(m.senderId) !== String(currentUserId) && !m.read,
+            ).length;
+            const existing = prevById.get(String(c.id));
+            const preserved =
+              existing && typeof existing.unreadCount === "number"
+                ? existing.unreadCount
+                : 0;
+            const unreadCount = Math.max(preserved, computedUnread);
+            return { ...c, unreadCount };
+          });
+          return mapped;
+        });
+      },
+    );
+    const intervalId = setInterval(refresh, 5000);
+    refresh();
+
     // Cleanup on unmount
     return () => {
       console.log("🔍 [ChatSidebar] Cleaning up socket listeners");
       offReceiveMessage();
+      offMarkedRead && offMarkedRead();
+      offConvoList && offConvoList();
+      clearInterval(intervalId);
     };
-  }, [currentUserId, setUsers]);
+  }, [currentUserId, setUsers, selectedUserId]);
   return (
     <div className="hidden w-full flex-col rounded-[30px] border border-black/10 bg-[#F9F9F9] px-[20px] py-[30px] md:flex">
       <h1 className="border-b-[1.3px] border-[#F0F1F4] pb-[32px] text-center text-[23px] leading-[31px] text-delftBlue">
@@ -142,12 +197,14 @@ const ChatSidebar = ({
           />
         </div>
         <div className="flex w-full flex-col">
-          {loading ? (
-            <div className="py-8 text-center text-gray-400">Loading...</div>
-          ) : filteredUsers.length === 0 ? (
+          {filteredUsers.length === 0 ? (
             <div className="py-8 text-center text-gray-400">No chats</div>
           ) : (
             filteredUsers.map((user, index) => {
+              const isSelected =
+                String(user.chatMeta?.id || "") ===
+                  String(selectedUserId || "") ||
+                String(user.id || "") === String(selectedUserId || "");
               // Get the last message from the user object
               // The page.jsx already extracts lastMessage as a string
               const lastMessage = user.lastMessage;
@@ -167,8 +224,20 @@ const ChatSidebar = ({
               return (
                 <div
                   key={user.id || index}
-                  onClick={() => setSelectedUser(user)}
-                  className={`flex w-full cursor-pointer items-start justify-between py-2 transition-all duration-200 ease-in hover:bg-black/10 ${user.id === selectedUserId ? "border-l-4 border-moonstone bg-moonstone/10" : ""}`}
+                  onClick={() => {
+                    setSelectedUser(user);
+                    // Clear unread badge when opening
+                    if (setUsers && (user.id || user.chatMeta?.id)) {
+                      setUsers((prev) =>
+                        (prev || []).map((c) =>
+                          String(c.id) === String(user.chatMeta?.id)
+                            ? { ...c, unreadCount: 0 }
+                            : c,
+                        ),
+                      );
+                    }
+                  }}
+                  className={`flex w-full cursor-pointer items-start justify-between py-2 transition-all duration-200 ease-in hover:bg-black/10 ${isSelected ? "border-l-4 border-moonstone bg-moonstone/10" : ""}`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="grid size-[60px] place-items-center overflow-hidden rounded-full bg-gray-100">
@@ -202,7 +271,7 @@ const ChatSidebar = ({
                           user.userA?.name ||
                           "User"}
                       </h1>
-                      <p className="max-w-[200px] truncate text-[13.17px] leading-[17.5px] text-[#595C75]">
+                      <p className="max-w-[200px] truncate pr-1 text-[13.17px] leading-[17.5px] text-[#595C75]">
                         {lastMessage ? (
                           <span className="font-medium text-moonstone">
                             {lastMessage}
@@ -213,13 +282,21 @@ const ChatSidebar = ({
                           </span>
                         )}
                       </p>
+                      {user.unreadCount > 0 && (
+                        <span className="grid min-w-5 place-items-center rounded-full bg-moonstone px-1.5 text-[11px] leading-[17.5px] text-white">
+                          {user.unreadCount}
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <span className="mt-2 text-nowrap text-[11px] leading-[17.5px] text-[#9799A8]">
-                    {user.lastMessageTime
-                      ? new Date(user.lastMessageTime).toLocaleString()
-                      : ""}
-                  </span>
+
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-nowrap text-[11px] leading-[17.5px] text-[#9799A8]">
+                      {user.lastMessageTime
+                        ? new Date(user.lastMessageTime).toLocaleString()
+                        : ""}
+                    </span>
+                  </div>
                 </div>
               );
             })

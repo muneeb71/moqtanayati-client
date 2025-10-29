@@ -28,6 +28,7 @@ const PreferencesSection = () => {
   const [alertEnding, setAlertEnding] = useState(false);
   const [alertNew, setAlertNew] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [saveLoading, setSaveLoading] = useState(false);
 
   useEffect(() => {
     const fetchPreferences = async () => {
@@ -104,6 +105,7 @@ const PreferencesSection = () => {
       alertNew,
     };
     try {
+      setSaveLoading(true);
       const res = await updateAuctionPreference(data);
       if (res.success) {
         toast.success("Preferences updated!");
@@ -112,6 +114,8 @@ const PreferencesSection = () => {
       }
     } catch (err) {
       toast.error("Update failed");
+    } finally {
+      setSaveLoading(false);
     }
   };
 
@@ -237,6 +241,8 @@ const PreferencesSection = () => {
         title="Save Preferences"
         className="my-10 w-fit self-center"
         onClick={handleSavePreferences}
+        loading={saveLoading || undefined}
+        disabled={saveLoading}
       />
     </div>
   );

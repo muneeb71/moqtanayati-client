@@ -18,6 +18,8 @@ const MenuCard = ({
   highestBid,
   startingBid = 0,
   showBidButton = true,
+  status = "",
+  isAlreadyBidded = false,
 }) => {
   const router = useRouter();
   const [favourite, setFavourite] = useState(isFavourite);
@@ -109,7 +111,27 @@ const MenuCard = ({
                 ${highestBid?.toFixed(2)}
               </span>
             </div>
-            {showBidButton ? (
+            {status === "UPCOMING" ? (
+              <div className="rounded-lg bg-gray-400 px-4 py-2 text-white">
+                Upcoming
+              </div>
+            ) : status === "ENDED" ? (
+              <div className="rounded-lg bg-gray-400 px-4 py-2 text-white">
+                Auction Ended
+              </div>
+            ) : isAlreadyBidded ? (
+              <button
+                type="button"
+                className="rounded-lg bg-moonstone px-4 py-2 text-white transition-colors hover:bg-moonstone/80"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setBidPopup(true);
+                }}
+                tabIndex={0}
+              >
+                Bid Again
+              </button>
+            ) : showBidButton ? (
               <button
                 type="button"
                 className="rounded-lg bg-moonstone px-4 py-2 text-white transition-colors hover:bg-moonstone/80"

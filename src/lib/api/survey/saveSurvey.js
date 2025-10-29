@@ -1,9 +1,6 @@
-"use server";
-
-import { cookies } from "next/headers";
 import api from "../axios";
 
-export async function saveSellerSurvey({
+export async function saveSurvey({
   userId,
   entity,
   hasProducts,
@@ -12,10 +9,8 @@ export async function saveSellerSurvey({
   productAndServices,
   homeSupplies,
   consent,
-  iban,
 }) {
   try {
-    const cookiesStore = await cookies();
     const response = await api.post("survey/save", {
       userId,
       entity,
@@ -25,23 +20,7 @@ export async function saveSellerSurvey({
       productAndServices,
       homeSupplies,
       consent,
-      iban,
     });
-
-    if (response.data.success) {
-      const sellerSurvey = {
-        userId,
-        entity,
-        hasProducts,
-        hasExperience,
-        goal,
-        productAndServices,
-        homeSupplies,
-        consent,
-        iban,
-      };
-      cookiesStore.set("survey", JSON.stringify(sellerSurvey));
-    }
 
     return response.data;
   } catch (error) {

@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const CategoryLayout = async ({ params, children }) => {
   const categorySlug = (await params).slug;
-  const category = unslugify(categorySlug);
+  const category = unslugify(decodeURIComponent(categorySlug));
   return (
     <div className="flex w-full flex-col items-center px-3">
       {/* Back to Home Button */}
@@ -17,10 +17,10 @@ const CategoryLayout = async ({ params, children }) => {
           <div className="flex w-full max-w-7xl justify-start">
             <Link
               href="/"
-              className="flex items-center gap-2 rounded-lg py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              className="flex items-center gap-2 rounded-lg py-2 text-sm font-medium text-gray-700 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Home
+              Back
             </Link>
           </div>
 

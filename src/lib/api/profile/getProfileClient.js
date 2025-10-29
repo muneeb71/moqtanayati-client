@@ -36,23 +36,8 @@ export async function getUserProfileClient() {
     const endpoint = role === "buyer" ? "buyers/profile/" : "sellers/profile/";
 
     const response = await api.get(endpoint + userId);
-    console.log(
-      "🔍 [getUserProfileClient] API response status:",
-      response.status,
-    );
-    console.log("🔍 [getUserProfileClient] API response data structure:", {
-      hasData: !!response.data,
-      dataKeys: response.data ? Object.keys(response.data) : "no data",
-      hasUserData: !!response.data?.data,
-    });
 
     const userData = response.data.data;
-    console.log("🔍 [getUserProfileClient] User data extracted:", {
-      hasUserData: !!userData,
-      userDataKeys: userData ? Object.keys(userData) : "no user data",
-      userId: userData?.id,
-      userEmail: userData?.email,
-    });
 
     const date = new Date(userData?.createdAt);
     const options = { year: "numeric", month: "short" };

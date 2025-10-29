@@ -19,14 +19,23 @@ const ProfileCard = () => {
   const [phone, setPhone] = useState("");
   const [socialMedia, setSocialMedia] = useState("");
   const [joined, setJoined] = useState("");
+  const [avatar, setAvatar] = useState(null);
+  const [imgFailed, setImgFailed] = useState(false);
 
   const getProfile = async () => {
-    const res = await getUserProfile();  
-    setName(res?.data?.name);
-    setEmail(res?.data?.email);
-    setPhone(res?.data?.phone);
-    setSocialMedia()
-    setJoined(res?.data?.joinedDate)
+    const res = await getUserProfile();
+    setName(res?.data?.name || "");
+    setEmail(res?.data?.email || "");
+    setPhone(res?.data?.phone || "");
+    setSocialMedia(res?.data?.socialMedia || "");
+    setJoined(res?.data?.joinedDate || "");
+    setAvatar(
+      res?.data?.avatar ||
+        res?.data?.profileImage ||
+        res?.data?.profile_image ||
+        null,
+    );
+    setImgFailed(false);
   };
 
   useEffect(() => {
@@ -36,20 +45,49 @@ const ProfileCard = () => {
   return (
     <div className="flex w-full flex-col gap-2 rounded-[20px] border border-black/10 p-3">
       <Link
-        href={`/buyer/profile/edit?name=${name}&email=${email}&phone=${phone}&joined=${joined}`}
+        href={`/buyer/profile/edit?name=${name}&email=${email}&phone=${phone}&joined=${joined}&avatar=${encodeURIComponent(avatar || "")}`}
         className="flex items-center gap-1 self-end rounded-full border border-delftBlue/20 px-2 py-1.5 text-[14px] font-medium text-delftBlue hover:border-delftBlue"
       >
         {profilePenIcon} Edit Profile
       </Link>
       <div className="flex flex-col items-center">
         <div className="mb-2 grid size-[128px] place-items-center overflow-hidden rounded-full">
-          <Image
-            src="/static/dummy-user/1.jpeg"
-            width={100}
-            height={100}
-            alt="User profile image"
-            className="h-full w-full object-cover"
-          />
+          {avatar && !imgFailed ? (
+            <Image
+              src={(() => {
+                const isAbsolute = /^https?:\/\//i.test(avatar);
+                if (isAbsolute) return avatar;
+                const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+                return `${base.replace(/\/$/, "")}${avatar.startsWith("/") ? "" : "/"}${avatar}`;
+              })()}
+              width={100}
+              height={100}
+              alt="User profile image"
+              className="h-full w-full object-cover"
+              unoptimized
+              onError={() => setImgFailed(true)}
+            />
+          ) : (
+            <div className="grid size-[128px] place-items-center rounded-full bg-gray-200">
+              <svg
+                width="56"
+                height="56"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="text-gray-500"
+              >
+                <path
+                  d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M12 14c-4.418 0-8 3.582-8 8h16c0-4.418-3.582-8-8-8z"
+                  fill="currentColor"
+                />
+              </svg>
+            </div>
+          )}
         </div>
         <h1 className="text-center text-[21.6px] font-medium text-darkBlue">
           {name}
@@ -89,14 +127,14 @@ const ProfileCard = () => {
         </div>
         <div className="flex w-full flex-col gap-1">
           {/* <Label className="text-normal leading-[25px]" text="Social Media" /> */}
-          <InputField
+          {/* <InputField
             icon={<TiSocialAtCircular />}
             iconClassName="text-moonstone text-[23px]"
             value={socialMedia}
             placeholder="Social Media"
             onChange={(e) => setSocialMedia(e.target.value)}
             customIcon={true}
-          />
+          /> */}
         </div>
       </div>
     </div>

@@ -9,6 +9,7 @@ export const initSurveyStore = () => {
     productsAndServices: [],
     homeSupplies: [],
     consent: false,
+    userData: null,
   };
 };
 
@@ -20,6 +21,7 @@ export const defaultInitState = {
   productsAndServices: [],
   homeSupplies: [],
   consent: false,
+  userData: null,
 };
 
 export const createSurveyStore = (initState = defaultInitState) => {
@@ -51,5 +53,7 @@ export const createSurveyStore = (initState = defaultInitState) => {
       set(() => ({ homeSupplies: updated }));
     },
     setConsent: (consent) => set(() => ({ consent })),
+    setUserData: (userData) => set(() => ({ userData })),
+    clearUserData: () => set(() => ({ userData: null })),
   }));
 };

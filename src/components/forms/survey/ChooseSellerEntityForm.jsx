@@ -6,10 +6,17 @@ import { sellerEntities } from "@/lib/seller-entities";
 import { useSurveyStore } from "@/providers/survey-store-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-const ChooseSellerEntityForm = ({ role }) => {
+const ChooseSellerEntityForm = ({ userData }) => {
   const router = useRouter();
   const { sellerEntity, setSellerEntity } = useSurveyStore((state) => state);
+  const [navigating, setNavigating] = useState(false);
+
+  const handleGetStarted = () => {
+    setNavigating(true);
+    router.push("/survey/start-selling");
+  };
 
   return (
     <div className="flex flex-col gap-12 py-5">
@@ -37,10 +44,12 @@ const ChooseSellerEntityForm = ({ role }) => {
       </div>
 
       <RoundedButton
-        title="Get Started"
-        showIcon
+        title={navigating ? "Starting..." : "Get Started"}
+        showIcon={!navigating}
+        loading={navigating || undefined}
         className="w-fit self-center px-16"
-        onClick={() => router.push("/survey/start-selling")}
+        onClick={handleGetStarted}
+        disabled={navigating}
       />
     </div>
   );

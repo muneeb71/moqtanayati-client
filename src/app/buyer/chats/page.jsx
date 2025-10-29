@@ -11,10 +11,13 @@ import ChatUsersSheet from "@/components/sections/landing/chats/ChatUsersSheet";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import ChatSidebarSkeleton from "@/components/loaders/chats/ChatSidebarSkeleton";
 import ChatWindowSkeleton from "@/components/loaders/chats/ChatWindowSkeleton";
+import { socketManager } from "@/lib/socket-client";
 
 const ChatPage = () => {
   const searchParams = useSearchParams();
   const userId = searchParams.get("id");
+  const userName = searchParams.get("name") || "";
+  const userAvatar = searchParams.get("avatar") || "";
   const currentUserId = useProfileStore((s) => s.id);
   const [conversations, setConversations] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -23,6 +26,13 @@ const ChatPage = () => {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    // Ensure we join our user room to receive sidebar updates
+    if (currentUserId) {
+      socketManager.joinUser(currentUserId).catch(() => {});
+    }
+  }, [currentUserId]);
 
   useEffect(() => {
     const fetchConvos = async () => {
@@ -60,7 +70,8 @@ const ChatPage = () => {
           userA: { id: currentUserId },
           userB: {
             id: userId,
-            // Name and avatar will be populated when chat is created via socket
+            name: userName || undefined,
+            avatar: userAvatar || undefined,
           },
           isTemporary: true, // Flag to indicate this is a temporary chat
           chatMeta: { messages: [] },
@@ -88,6 +99,15 @@ const ChatPage = () => {
 
   const handleSidebarSelect = (user) => {
     if (!user) return;
+    // Immediately select the conversation if we have its id
+    const convoId = user?.chatMeta?.id;
+    if (convoId) {
+      const convo = conversations.find((c) => String(c.id) === String(convoId));
+      if (convo) {
+        setSelectedChat(convo);
+      }
+    }
+    // Keep URL param behavior (used to create/find chat when needed)
     router.push(`/buyer/chats?id=${user.id}`);
   };
 
@@ -141,13 +161,25 @@ const ChatPage = () => {
     }
 
     const lastSender = lastMsg?.sender;
+    const isQueryUser = String(otherUser?.id) === String(userId);
+    const computedUnread = (c.chatMeta?.messages || []).filter(
+      (m) => String(m.senderId) !== String(currentUserId) && !m.read,
+    ).length;
+
     return {
       id: otherUser?.id,
-      name: otherUser?.name || lastSender?.name,
-      avatar: otherUser?.avatar || lastSender?.avatar,
+      name:
+        otherUser?.name ||
+        lastSender?.name ||
+        (isQueryUser ? userName : "User"),
+      avatar:
+        otherUser?.avatar ||
+        lastSender?.avatar ||
+        (isQueryUser ? userAvatar : ""),
       lastMessage: lastMsg?.content || "",
       lastMessageTime: lastMsg?.createdAt || "",
       chatMeta: c,
+      unreadCount: c.unreadCount ?? computedUnread,
     };
   });
 
@@ -161,7 +193,13 @@ const ChatPage = () => {
       avatar: msg.sender?.avatar,
     },
     senderId: msg.senderId,
+    read: msg.read,
   }));
+
+  console.log(
+    "🔍 [page.jsx] mappedMessages read flags:",
+    mappedMessages.map((m) => ({ id: m.id, read: m.read })),
+  );
 
   return (
     <div className="grid min-h-[90vh] w-full max-w-[1172px] gap-3 py-5 md:grid-cols-[2fr_3fr] md:py-12 lg:gap-7">
@@ -173,7 +211,7 @@ const ChatPage = () => {
           selectedUser={selectedChat}
           setSelectedUser={handleSidebarSelect}
           loading={loading}
-          selectedUserId={userId}
+          selectedUserId={selectedChat?.id}
           setUsers={setConversations}
         />
       )}

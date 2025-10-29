@@ -51,7 +51,26 @@ const SignUpForm4 = ({ role = "" }) => {
       const response = await signUpUser(payload);
       console.log("register response 2 : ", response);
       if (response?.success) {
-        router.push(`/${role}/login`);
+        // Check if user is a BUSINESS seller, redirect to survey
+        if (roleUppercase === "SELLER" && payload.sellerType === "BUSINESS") {
+          // Store user data in sessionStorage for survey
+          sessionStorage.setItem(
+            "surveyUserData",
+            JSON.stringify({
+              id: response.data?.user?.id || response.data?.id,
+              name: payload.name,
+              email: payload.email,
+              phone: payload.phone,
+              address: payload.address,
+              nationalId: payload.nationalId,
+              sellerType: payload.sellerType,
+            }),
+          );
+          router.push("/survey");
+        } else {
+          // For buyers and individual sellers, go to login
+          router.push(`/${role}/login`);
+        }
       } else {
         // show error to user
         alert(response?.message || "Registration failed");

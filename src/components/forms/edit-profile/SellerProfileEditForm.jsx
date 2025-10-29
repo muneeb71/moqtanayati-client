@@ -184,7 +184,7 @@ const SellerProfileEditForm = () => {
           <div className="flex size-32 items-center justify-center overflow-hidden rounded-full bg-gray-200">
             {hasAvatar ? (
               <Image
-                className="size-32 min-w-32 object-cover"
+                className="z-0 size-32 min-w-32 object-cover"
                 src={
                   typeof avatarPreview === "string"
                     ? avatarPreview
@@ -205,7 +205,7 @@ const SellerProfileEditForm = () => {
 
           <button
             type="button"
-            className="absolute bottom-1 right-2 grid size-7 place-items-center rounded-full border border-white bg-russianViolet"
+            className="absolute bottom-1 right-2 z-10 grid size-7 place-items-center rounded-full border border-white bg-russianViolet"
             onClick={handlePenClick}
             aria-label="Change profile picture"
           >

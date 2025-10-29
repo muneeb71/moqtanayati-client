@@ -7,6 +7,7 @@ import { getAllAuctions } from "@/lib/api/auctions/getAll";
 import { getAuctionPreferences } from "@/lib/api/profile/getPreferences";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getCookie } from "cookies-next";
 
 const ResultItems = ({ items }) => {
   const pathname = usePathname();
@@ -369,6 +370,12 @@ const ResultItems = ({ items }) => {
               highestBid={item.product.minimumOffer}
               startingBid={item?.product?.startingBid}
               showBidButton={getFilterType() !== "history"}
+              status={item?.status}
+              isAlreadyBidded={
+                item?.bids?.some(
+                  (bid) => bid.bidderId === getCookie("userId"),
+                ) || false
+              }
             />
           ))
         ) : (

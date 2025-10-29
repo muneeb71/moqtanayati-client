@@ -91,12 +91,17 @@ const SignUpForm1 = ({ role: propRole }) => {
     try {
       setPhoneLoading(true);
       console.log("send otp to phone", phone);
-      const res = await sendPhoneOtp(phone);
+      const res = await sendPhoneOtp({ phone });
 
       if (res.success) {
         toast.success("OTP sent to your phone.");
+        // Pass the OTP in the URL if it's available in the response
+        const otpParam = res.data?.otp ? `&otp=${res.data.otp}` : "";
+
         router.push(
-          `/${role}/sign-up/phone-otp?phone=${encodeURIComponent(phone)}&role=${role}`,
+          `/${role}/sign-up/phone-otp?phone=${encodeURIComponent(phone)}&role=${role}&emailVerified=${emailVerified}&email=${encodeURIComponent(
+            email,
+          )}${otpParam}`,
         );
       } else {
         toast.error(res.message || "Failed to send OTP.");
@@ -166,14 +171,9 @@ const SignUpForm1 = ({ role: propRole }) => {
         ) : !phoneVerified ? (
           <RoundedButton
             onClick={handleVerifyPhone}
-            title="Verify Phone"
+            title={phoneLoading ? "Verifying..." : "Verify Phone"}
             showIcon
             disabled={phoneLoading}
-            rightIcon={
-              phoneLoading ? (
-                <span className="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              ) : undefined
-            }
             className="min-w-72"
           />
         ) : (

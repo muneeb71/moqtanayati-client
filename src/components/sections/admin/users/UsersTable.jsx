@@ -7,6 +7,7 @@ import { MdEdit } from "react-icons/md";
 import ShimmerRow from "@/components/shimmer/shimmerRow";
 import useUserStore from "@/stores/useUserStore";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 const UsersTable = ({ onViewClick, currentData, loading }) => {
   const {
@@ -283,6 +284,8 @@ const UsersTable = ({ onViewClick, currentData, loading }) => {
                         setRowLoading(user.id, "delete", true);
                         try {
                           await deleteUser(user.id);
+                        } catch (_) {
+                          // Store handles toasts; avoid duplicates
                         } finally {
                           setRowLoading(user.id, undefined, false);
                         }

@@ -7,7 +7,8 @@ const BidderCard = ({ bidder = {}, selectedBidder, setSelectedBidder }) => {
   const name = bidder?.bidder?.name || "Unnamed Bidder";
   const amount =
     typeof bidder?.amount === "number" ? bidder?.amount.toFixed(2) : "0.00";
-  const createdAt = bidder?.bidder.createdAt;
+  // Use bid creation time, fallback to bidder profile time if missing
+  const createdAt = bidder?.createdAt || bidder?.bidder?.createdAt;
 
   const handleBidderClick = () => {
     setSelectedBidder(bidder);
