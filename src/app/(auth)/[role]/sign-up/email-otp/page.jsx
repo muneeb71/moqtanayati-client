@@ -15,6 +15,7 @@ const EmailOtpForm = () => {
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
   const role = searchParams.get("role") || "buyer";
+  const otpFromUrl = searchParams.get("otp");
   const router = useRouter();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [verifying, setVerifying] = useState(false);
@@ -34,9 +35,14 @@ const EmailOtpForm = () => {
   //   setSending(false);
   // };
 
-  // useEffect(() => {
-  //   if (email) sendOtp();
-  // }, [email]);
+  // Pre-fill OTP if it's provided in the URL
+  useEffect(() => {
+    if (otpFromUrl && otpFromUrl.length === 6) {
+      const otpArray = otpFromUrl.split("").map((digit) => digit);
+      setOtp(otpArray);
+      console.log("Pre-filled OTP from URL:", otpFromUrl);
+    }
+  }, [otpFromUrl]);
 
   const handleVerifyOtp = async () => {
     const otpValue = otp.join("");
@@ -70,6 +76,13 @@ const EmailOtpForm = () => {
 
       if (res.success) {
         toast.success("OTP resent to your email.");
+
+        // Pre-fill the new OTP if it's available in the response
+        if (res.data?.otp && res.data.otp.length === 6) {
+          const otpArray = res.data.otp.split("").map((digit) => digit);
+          setOtp(otpArray);
+          console.log("Pre-filled new OTP from resend:", res.data.otp);
+        }
       } else {
         toast.error(res.error || "Failed to resend OTP.");
       }

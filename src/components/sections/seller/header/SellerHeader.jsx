@@ -1,7 +1,7 @@
 "use client";
 
 import { bellIcon } from "@/assets/icons/header-icons";
-import { UserIcon } from "lucide-react";
+import { Loader2, UserIcon } from "lucide-react";
 import Image from "next/image";
 import NavLinks from "./SellerNavLinks";
 import Link from "next/link";
@@ -10,9 +10,25 @@ import SellerMobileSheet from "./SellerMobileSheet";
 import HeaderDropdown from "./HeaderDropdown";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import NotificationBadge from "@/components/NotificationBadge";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const SellerHeader = () => {
   const { avatar } = useProfileStore((state) => state);
+  const router = useRouter();
+  const pathname = usePathname();
+  const [notifLoading, setNotifLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
+
+  // Clear loading when route changes to the target
+  useEffect(() => {
+    if (pathname?.startsWith("/seller/notifications")) {
+      setNotifLoading(false);
+    }
+    if (pathname === "/seller/profile") {
+      setProfileLoading(false);
+    }
+  }, [pathname]);
 
   const hasProfileImage =
     avatar && typeof avatar === "string" && avatar.trim() !== "";
@@ -37,27 +53,49 @@ const SellerHeader = () => {
 
         {/* Desktop View */}
         <div className="hidden items-center gap-2 md:flex md:gap-4">
-          <Link
+          {/* <Link
             href="/search"
             className="grid size-12 place-items-center rounded-full border border-[#3F175F1A]"
           >
             {searchIconSmall}
-          </Link>
+          </Link> */}
           <div className="h-[44px] w-[1px] bg-[#3F175F1A]" />
 
-          <Link
-            href="/seller/notifications/all"
-            className="grid size-12 place-items-center rounded-full border border-[#3F175F1A]"
+          <button
+            type="button"
+            onClick={() => {
+              if (notifLoading) return;
+              setNotifLoading(true);
+              router.push("/seller/notifications/all");
+            }}
+            className={`grid size-12 place-items-center rounded-full border ${
+              pathname?.startsWith("/seller/notifications")
+                ? "border-primary text-primary"
+                : "border-[#3F175F1A]"
+            }`}
           >
-            <NotificationBadge />
-          </Link>
+            {notifLoading ? (
+              <Loader2 className="size-5 animate-spin" />
+            ) : (
+              <NotificationBadge />
+            )}
+          </button>
 
           {/* Profile Image or Icon */}
-          <Link
-            href="/seller/profile"
-            className="flex size-12 items-center justify-center overflow-hidden rounded-full bg-gray-200"
+          <button
+            type="button"
+            onClick={() => {
+              if (profileLoading) return;
+              setProfileLoading(true);
+              router.push("/seller/profile");
+            }}
+            className={`flex size-12 items-center justify-center overflow-hidden rounded-full ${
+              pathname === "/seller/profile" ? "ring-primary ring-2" : ""
+            } bg-gray-200`}
           >
-            {hasProfileImage ? (
+            {profileLoading ? (
+              <Loader2 className="size-5 animate-spin text-gray-500" />
+            ) : hasProfileImage ? (
               <Image
                 src={avatar}
                 width={250}
@@ -69,18 +107,27 @@ const SellerHeader = () => {
             ) : (
               <UserIcon className="size-6 text-gray-400" />
             )}
-          </Link>
+          </button>
 
           <HeaderDropdown />
         </div>
 
         {/* Mobile View */}
         <div className="flex items-center gap-3 md:hidden">
-          <Link
-            href="/seller/profile"
-            className="flex size-10 items-center justify-center overflow-hidden rounded-full bg-gray-200"
+          <button
+            type="button"
+            onClick={() => {
+              if (profileLoading) return;
+              setProfileLoading(true);
+              router.push("/seller/profile");
+            }}
+            className={`flex size-10 items-center justify-center overflow-hidden rounded-full ${
+              pathname === "/seller/profile" ? "ring-primary ring-2" : ""
+            } bg-gray-200`}
           >
-            {hasProfileImage ? (
+            {profileLoading ? (
+              <Loader2 className="size-4 animate-spin text-gray-500" />
+            ) : hasProfileImage ? (
               <Image
                 src={avatar}
                 width={250}
@@ -92,7 +139,7 @@ const SellerHeader = () => {
             ) : (
               <UserIcon className="size-5 text-gray-400" />
             )}
-          </Link>
+          </button>
           <SellerMobileSheet />
         </div>
       </div>

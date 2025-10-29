@@ -28,6 +28,9 @@ const SignUpForm1 = ({ role: propRole }) => {
 
   const [emailVerified, setEmailVerified] = useState(false);
   const [phoneVerified, setPhoneVerified] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [phoneLoading, setPhoneLoading] = useState(false);
+  const [continueLoading, setContinueLoading] = useState(false);
 
   // On mount, check for emailVerified/phoneVerified and email/phone in query params
   useEffect(() => {
@@ -44,6 +47,7 @@ const SignUpForm1 = ({ role: propRole }) => {
   }, [setEmail, setPhone]);
 
   const handleVerifyEmail = async () => {
+    if (emailLoading) return;
     console.log("email : ", email);
     if (!name || !email) {
       toast.error("Please fill in your name and email.");
@@ -51,47 +55,58 @@ const SignUpForm1 = ({ role: propRole }) => {
     }
 
     try {
+      setEmailLoading(true);
       console.log("send otp", email);
       const res = await sendEmailOtp(email);
 
+      console.log("res data email verify : ", res.data?.otp);
+
       if (res.success) {
         toast.success("OTP sent to your email.");
+
+        // Pass the OTP in the URL if it's available in the response
+        const otpParam = res.data?.otp ? `&otp=${res.data.otp}` : "";
         router.push(
-          `/${role}/sign-up/email-otp?email=${encodeURIComponent(email)}&role=${role}`,
+          `/${role}/sign-up/email-otp?email=${encodeURIComponent(email)}&role=${role}${otpParam}`,
         );
       } else {
         toast.error(res.message || "Failed to send OTP.");
       }
     } catch (e) {
       toast.error("Failed to send OTP.");
+      setEmailLoading(false);
     }
   };
 
-  // const handleVerifyPhone = async () => {
-  //   if (!name || !email || !phone) {
-  //     toast.error("Please fill in all fields (name, email, and phone).");
-  //     return;
-  //   }
-  //   if (!emailVerified) {
-  //     toast.error("Please verify your email first.");
-  //     return;
-  //   }
-  //   try {
-  //     console.log("send otp to phone", phone);
-  //     const res = await sendPhoneOtp(phone);
+  const handleVerifyPhone = async () => {
+    if (phoneLoading) return;
+    if (!name || !email || !phone) {
+      toast.error("Please fill in all fields (name, email, and phone).");
+      return;
+    }
+    if (!emailVerified) {
+      toast.error("Please verify your email first.");
+      return;
+    }
+    try {
+      setPhoneLoading(true);
+      console.log("send otp to phone", phone);
+      const res = await sendPhoneOtp(phone);
 
-  //     if (res.success) {
-  //       toast.success("OTP sent to your phone.");
-  //       router.push(
-  //         `/${role}/sign-up/phone-otp?phone=${encodeURIComponent(phone)}&role=${role}`,
-  //       );
-  //     } else {
-  //       toast.error(res.message || "Failed to send OTP.");
-  //     }
-  //   } catch (e) {
-  //     toast.error("Failed to send OTP.");
-  //   }
-  // };
+      if (res.success) {
+        toast.success("OTP sent to your phone.");
+        router.push(
+          `/${role}/sign-up/phone-otp?phone=${encodeURIComponent(phone)}&role=${role}`,
+        );
+      } else {
+        toast.error(res.message || "Failed to send OTP.");
+      }
+    } catch (e) {
+      toast.error("Failed to send OTP.");
+    } finally {
+      setPhoneLoading(false);
+    }
+  };
 
   return (
     <>
@@ -134,27 +149,57 @@ const SignUpForm1 = ({ role: propRole }) => {
       </div>
       <div className="flex flex-col items-center gap-8 self-center">
         {!emailVerified ? (
+          <div className="flex items-center gap-2">
+            <RoundedButton
+              type="button"
+              onClick={handleVerifyEmail}
+              title="Verify Email"
+              showIcon
+              disabled={emailLoading}
+              loading={emailLoading.toString()}
+              className="min-w-72"
+            />
+            {emailLoading && (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            )}
+          </div>
+        ) : !phoneVerified ? (
           <RoundedButton
-            onClick={handleVerifyEmail}
-            title="Verify Email"
+            onClick={handleVerifyPhone}
+            title="Verify Phone"
             showIcon
+            disabled={phoneLoading}
+            rightIcon={
+              phoneLoading ? (
+                <span className="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              ) : undefined
+            }
             className="min-w-72"
           />
         ) : (
-          // : !phoneVerified ? (
-          //   <RoundedButton
-          //     onClick={handleVerifyPhone}
-          //     title="Verify Phone"
-          //     showIcon
-          //     className="min-w-72"
-          //   />
-          // )
-          <RoundedButton
-            onClick={() => router.push(`/${role}/sign-up/id-proof`)}
-            title="Continue to ID Proof"
-            showIcon
-            className="min-w-72"
-          />
+          <div className="flex items-center gap-2">
+            <RoundedButton
+              type="button"
+              onClick={async () => {
+                if (continueLoading) return;
+                setContinueLoading(true);
+                try {
+                  await new Promise((r) => setTimeout(r, 100));
+                  router.push(`/${role}/sign-up/id-proof`);
+                } catch (_) {
+                  setContinueLoading(false);
+                }
+              }}
+              title="Continue to ID Proof"
+              showIcon
+              disabled={continueLoading}
+              loading={continueLoading.toString()}
+              className="min-w-72"
+            />
+            {continueLoading && (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            )}
+          </div>
         )}
         <div className="flex items-center gap-1">
           Already have an account?{" "}

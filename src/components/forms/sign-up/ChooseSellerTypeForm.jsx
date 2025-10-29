@@ -5,10 +5,13 @@ import SellerTypeCard from "@/components/cards/SellerType";
 import { sellerTypes } from "@/lib/seller-types";
 import { useRegisterStore } from "@/providers/register-provider";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const ChooseSellerTypeForm = ({ role }) => {
   const router = useRouter();
   const { sellerType, setSellerType } = useRegisterStore((state) => state);
+
+  const [loading, setLoading] = useState(false);
 
   return (
     <div className="flex flex-col gap-12">
@@ -29,12 +32,30 @@ const ChooseSellerTypeForm = ({ role }) => {
         ))}
       </div>
 
-      <RoundedButton
-        title="Get Started"
-        showIcon
-        className="w-fit self-center px-16"
-        onClick={() => router.push("/" + role + "/sign-up")}
-      />
+      <div className="w-fit self-center">
+        <div className="flex items-center gap-2">
+          <RoundedButton
+            title={loading ? "Loading..." : "Get Started"}
+            showIcon
+            className="px-16"
+            onClick={async () => {
+              if (loading) return;
+              setLoading(true);
+              try {
+                await new Promise((r) => setTimeout(r, 100));
+                router.push("/" + role + "/sign-up");
+              } catch (_) {
+                setLoading(false);
+              }
+            }}
+            disabled={loading}
+            loading={loading.toString()}
+          />
+          {loading && (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          )}
+        </div>
+      </div>
     </div>
   );
 };

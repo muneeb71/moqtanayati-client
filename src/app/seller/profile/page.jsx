@@ -8,11 +8,16 @@ import {
 import GoBackButton from "@/components/buttons/GoBackButton";
 import PageHeading from "@/components/headings/PageHeading";
 import { useProfileStore } from "@/providers/profile-store-provider";
-import { Pencil, User } from "lucide-react";
+import { Loader2, Pencil, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const SellerProfilePage = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [editLoading, setEditLoading] = useState(false);
   const {
     name,
     email,
@@ -36,9 +41,21 @@ const SellerProfilePage = () => {
       </PageHeading>
       <div className="grid w-full max-w-4xl gap-16 pb-28 pt-10 md:grid-cols-[4fr_6fr]">
         <div className="relative flex w-full flex-col items-center justify-center gap-2 rounded-3xl border border-black/10 bg-[#F8F7FB] p-6">
-          <Link href="/seller/profile/edit" className="absolute right-5 top-5">
-            <Pencil className="size-8 rounded-lg border border-black/10 p-1 text-black/60 transition-all duration-100 ease-in hover:border-black hover:text-black" />
-          </Link>
+          <button
+            type="button"
+            onClick={() => {
+              if (editLoading) return;
+              setEditLoading(true);
+              router.push("/seller/profile/edit");
+            }}
+            className="absolute right-5 top-5"
+          >
+            {editLoading ? (
+              <Loader2 className="size-8 animate-spin rounded-lg border border-black/10 p-1 text-black/60" />
+            ) : (
+              <Pencil className="size-8 rounded-lg border border-black/10 p-1 text-black/60 transition-all duration-100 ease-in hover:border-black hover:text-black" />
+            )}
+          </button>
 
           <div className="flex size-32 items-center justify-center overflow-hidden rounded-full bg-gray-200">
             {avatar && typeof avatar === "string" && avatar.trim() !== "" ? (

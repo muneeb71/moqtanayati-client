@@ -59,7 +59,6 @@ const DraftCard = ({ draft }) => {
       >
         <div className="flex items-center justify-between">
           <span className="text-[21px] font-medium leading-[32px]">
-            {draft.price || draft.buyItNow ? $ : ""}
             {draft.price ? draft.price?.toFixed(2) : draft.buyItNow?.toFixed(2)}
           </span>
           <span className="text-[15px] leading-[23px] text-black/30">

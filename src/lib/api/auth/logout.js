@@ -24,18 +24,39 @@
 
 import { useRouter } from "next/navigation";
 import { deleteCookie } from "cookies-next";
+import { useState } from "react";
 
-export default function LogoutButton({ logoutIcon }) {
+export default function LogoutButton({ logoutIcon, onLoadingChange }) {
   const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const logoutUser = () => {
-    deleteCookie("token");
-    deleteCookie("userId");
-    deleteCookie("role");
-    deleteCookie("survey");
-    deleteCookie("storeId");
+  const logoutUser = async () => {
+    if (isLoggingOut) return; // Prevent multiple clicks
 
-    router.push("/admin/login");
+    setIsLoggingOut(true);
+    onLoadingChange?.(true);
+
+    try {
+      // Add a small delay to show the loading state
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      deleteCookie("token");
+      deleteCookie("userId");
+      deleteCookie("role");
+      deleteCookie("survey");
+      deleteCookie("storeId");
+
+      router.push("/admin/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      // Do not clear loaders here; let the route change unmount clear UI
+      // In case of navigation delays (>4s), auto-clear to avoid being stuck
+      setTimeout(() => {
+        setIsLoggingOut(false);
+        onLoadingChange?.(false);
+      }, 4000);
+    }
   };
 
   return (
@@ -43,8 +64,14 @@ export default function LogoutButton({ logoutIcon }) {
       className="mt-auto flex cursor-pointer items-center gap-2 px-3.5"
       onClick={logoutUser}
     >
-      {logoutIcon}
-      <p className="text-red-400">Logout</p>
+      {isLoggingOut ? (
+        <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-500 border-t-transparent"></div>
+      ) : (
+        logoutIcon
+      )}
+      <p className="text-red-500">
+        {isLoggingOut ? "Logging out..." : "Logout"}
+      </p>
     </div>
   );
 }

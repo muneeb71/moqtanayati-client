@@ -1,17 +1,35 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import { bellIcon } from "@/assets/icons/header-icons";
 import { useAdminProfile } from "@/hooks/useAdminProfile";
 
 const AdminHeader = () => {
   const router = useRouter();
   const { profile, loading, error } = useAdminProfile();
+  const [navLoading, setNavLoading] = useState(false);
+  const pathname = usePathname();
 
-  const handleBellClick = () => {
-    router.push("/admin/notifications");
+  const handleBellClick = async () => {
+    if (navLoading) return;
+    setNavLoading(true);
+    try {
+      await new Promise((r) => setTimeout(r, 100));
+      router.push("/admin/notifications");
+    } finally {
+      // do not clear; header will unmount on route change
+    }
   };
+
+  // Clear nav loader when route changes (in case header persists across pages)
+  if (navLoading && pathname?.startsWith("/admin/notifications")) {
+    // synchronous guard to drop spinner once we're on target path
+    // avoids spinner sticking when layout persists
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    setNavLoading(false);
+  }
 
   // Get profile image with fallback
   const getProfileImage = () => {
@@ -36,7 +54,11 @@ const AdminHeader = () => {
           className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-slate-100"
           onClick={handleBellClick}
         >
-          {bellIcon}
+          {navLoading ? (
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
+          ) : (
+            bellIcon
+          )}
         </div>
 
         <div className="flex items-center gap-2">

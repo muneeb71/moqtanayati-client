@@ -207,8 +207,8 @@ export const adminLinks = [
     href: "/admin/payments",
     icon: paymentIcon,
     subLinks: [
-      { title: "Cash", href: "/admin/payment/cod" },
-      { title: "Third Party", href: "/admin/payment/online" },
+      { title: "Cash", href: "/admin/payments/cash" },
+      { title: "Third Party", href: "/admin/payments/third-party" },
     ],
   },
   {

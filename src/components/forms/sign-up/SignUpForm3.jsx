@@ -7,6 +7,7 @@ import Label from "@/components/form-fields/Label";
 import CustomLink from "@/components/link/CustomLink";
 import { useRegisterStore } from "@/providers/register-provider";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 const SignUpForm3 = ({ role }) => {
@@ -14,7 +15,10 @@ const SignUpForm3 = ({ role }) => {
   const { password, confirmPassword, setPassword, setConfirmPassword } =
     useRegisterStore((state) => state);
 
-  const handleNextClick = () => {
+  const [loading, setLoading] = useState(false);
+
+  const handleNextClick = async () => {
+    if (loading) return;
     if (!password) {
       toast.error("Please enter password");
       return;
@@ -28,7 +32,13 @@ const SignUpForm3 = ({ role }) => {
       return;
     }
 
-    router.push(`/${role}/location-selection`);
+    try {
+      setLoading(true);
+      await new Promise((r) => setTimeout(r, 100));
+      router.push(`/${role}/location-selection`);
+    } catch (_) {
+      setLoading(false);
+    }
   };
   return (
     <>
@@ -57,11 +67,19 @@ const SignUpForm3 = ({ role }) => {
         </div>
       </div>
       <div className="flex flex-col items-center gap-8 self-center">
-        <RoundedButton
-          onClick={() => handleNextClick()}
-          title="Create my account"
-          className="min-w-72"
-        />
+        <div className="flex items-center gap-2">
+          <RoundedButton
+            type="button"
+            onClick={handleNextClick}
+            title="Create my account"
+            className="min-w-72"
+            disabled={loading}
+            loading={loading.toString()}
+          />
+          {loading && (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          )}
+        </div>
         <div className="flex items-center gap-1">
           Already have an account?{" "}
           <CustomLink href={"/auth/" + role + "/login"}>Sign in</CustomLink>

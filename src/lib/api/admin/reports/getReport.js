@@ -10,6 +10,9 @@ export async function getReport({
     const response = await api.get(
       `/admin/reports?role=${role}&page=${currentPage}&search=${search}&filter=${filter}`,
     );
+
+    console.log("response resports: ", response);
+
     return response;
   } catch (error) {
     throw error.response?.data || error;

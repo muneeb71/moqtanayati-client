@@ -32,6 +32,18 @@ const MenuCard = ({
 
   const bidOnAuction = async () => {
     try {
+      // Enforce minimum allowed amount: startingBid > highestBid > price
+      const minAllowed =
+        (startingBid && startingBid > 0 && startingBid) ||
+        (highestBid && highestBid > 0 && highestBid) ||
+        (price && price > 0 && price) ||
+        0;
+      if (!bidAmount || Number(bidAmount) < Number(minAllowed)) {
+        toast.error(
+          `Your offer must be at least $${Number(minAllowed).toFixed(2)}.`,
+        );
+        return;
+      }
       const res = await bidOnAuctionApi({ productId, amount: bidAmount });
       if (res.success) {
         setLatestBid(res.data.amount);
@@ -60,6 +72,13 @@ const MenuCard = ({
           boxShadow: "0px 0px 10px 2px #0000001A",
         }}
         onClick={() => router.push("/buyer/product-details/" + productId)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            router.push("/buyer/product-details/" + productId);
+          }
+        }}
       >
         <div className="rounded-top relative h-24 w-1/4">
           <Image
@@ -92,6 +111,7 @@ const MenuCard = ({
             </div>
             {showBidButton ? (
               <button
+                type="button"
                 className="rounded-lg bg-moonstone px-4 py-2 text-white transition-colors hover:bg-moonstone/80"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -115,7 +135,7 @@ const MenuCard = ({
           handleBid={bidOnAuction}
           bidAmount={bidAmount}
           onBidChange={setBidAmount}
-          onOpenChange={() => setBidPopup(false)}
+          onOpenChange={(open) => setBidPopup(open)}
         />
       )}
     </>

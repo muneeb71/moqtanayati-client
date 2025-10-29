@@ -7,6 +7,7 @@ import formatDateTime from "@/utils/dateFormatter";
 import ShimmerRow from "@/components/shimmer/shimmerRow";
 import toast from "react-hot-toast";
 import { deleteReportById } from "@/lib/api/admin/reports/deleteReportById";
+import { useState } from "react";
 
 const ReportTable = ({
   selectedRows,
@@ -17,6 +18,8 @@ const ReportTable = ({
   role,
   loading,
 }) => {
+  const [viewLoading, setViewLoading] = useState(null);
+
   const isAllSelected =
     Array.isArray(currentData) &&
     selectedRows.length === currentData.length &&
@@ -29,6 +32,19 @@ const ReportTable = ({
       toast.success("Report deleted");
     } catch {
       toast.error("Report not deleted. Try again!");
+    }
+  };
+
+  const handleViewClick = async (userId) => {
+    if (viewLoading) return; // prevent double clicks
+    setViewLoading(userId);
+    try {
+      await onViewClick(userId);
+      // Do not clear here; component will unmount on navigation
+    } catch (error) {
+      console.error("View error:", error);
+      toast.error("Failed to load report details");
+      setViewLoading(null);
     }
   };
 
@@ -86,15 +102,33 @@ const ReportTable = ({
               </td>
               <td className="py-5">
                 <div className="flex items-center gap-2">
-                  <Image
-                    src="/static/dummy-user/1.jpeg"
-                    width={34}
-                    height={34}
-                    alt="Buyer"
-                    loading="lazy"
-                    quality={100}
-                    className="rounded-full"
-                  />
+                  {report.user.avatar ? (
+                    <Image
+                      src={report.user.avatar}
+                      width={40}
+                      height={40}
+                      alt="User Avatar"
+                      loading="lazy"
+                      quality={100}
+                      className="h-[34px] w-[34px] rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-gray-200">
+                      <svg
+                        className="h-5 w-5 text-gray-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                      </svg>
+                    </div>
+                  )}
                   <div>
                     <p className="text-[16px] font-semibold text-customBlue">
                       {report.user.name}
@@ -117,10 +151,16 @@ const ReportTable = ({
               <td className="py-5 pl-8">
                 <div className="flex flex-row gap-2">
                   {/* <MdEdit className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700" /> */}
-                  <BsFillEyeFill
-                    onClick={() => onViewClick(report.user.id)}
-                    className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700"
-                  />
+                  {viewLoading === report.user.id ? (
+                    <div className="flex h-5 w-5 items-center justify-center">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600"></div>
+                    </div>
+                  ) : (
+                    <BsFillEyeFill
+                      onClick={() => handleViewClick(report.user.id)}
+                      className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700"
+                    />
+                  )}
                   {/* <BiSolidTrash
                     onClick={() => deleteReport(report.id)}
                     className="cursor-pointer text-[20px] text-iconGray hover:text-gray-700"

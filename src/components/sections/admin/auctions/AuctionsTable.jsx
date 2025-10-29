@@ -137,7 +137,7 @@ const AuctionsTable = () => {
             ) : (
               auctions.map((auction) => {
                 const product = auction.product;
-                const imageUrl = product.images?.[0] || "/fallback.png";
+                const imageUrl = product.images?.[0];
                 const seller = auction.seller;
                 const startingBid = product.startingBid ?? 0;
                 const bids = auction.bids ?? [];
@@ -153,26 +153,80 @@ const AuctionsTable = () => {
                         href={`/admin/auctions/${auction.id}`}
                         className="flex items-center gap-2 px-5 py-4"
                       >
-                        <Image
-                          src={imageUrl}
-                          width={44}
-                          height={44}
-                          alt="Product"
-                          loading="lazy"
-                          className="rounded-full border border-black/10"
-                        />
+                        {imageUrl ? (
+                          <Image
+                            src={imageUrl}
+                            width={44}
+                            height={44}
+                            alt="Product"
+                            loading="lazy"
+                            className="h-[44px] w-[44px] rounded-full border border-black/10 object-cover"
+                            onError={(e) => {
+                              console.log(
+                                "Product image load error, using fallback",
+                              );
+                              e.target.src = "/static/prod.jpg";
+                            }}
+                          />
+                        ) : (
+                          <div className="flex h-[44px] w-[44px] items-center justify-center rounded-full border border-black/10 bg-gray-200">
+                            <svg
+                              className="h-6 w-6 text-gray-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </div>
+                        )}
                         <div className="flex flex-col gap-1">
                           <span className="text-sm font-medium text-darkBlue">
                             {product.name}
                           </span>
                           <div className="flex items-center gap-1">
-                            <Image
-                              src="/static/dummy-user/1.jpeg"
-                              width={18}
-                              height={18}
-                              alt="Seller"
-                              className="rounded-full border border-black/10"
-                            />
+                            {seller.avatar ||
+                            seller.profileImage ||
+                            seller.profile_image ? (
+                              <Image
+                                src={
+                                  seller.avatar ||
+                                  seller.profileImage ||
+                                  seller.profile_image
+                                }
+                                width={18}
+                                height={18}
+                                alt="Seller"
+                                className="h-[18px] w-[18px] rounded-full border border-black/10 object-cover"
+                                onError={(e) => {
+                                  console.log(
+                                    "Seller avatar load error, using fallback",
+                                  );
+                                  e.target.src = "/static/user.svg";
+                                }}
+                              />
+                            ) : (
+                              <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full border border-black/10 bg-gray-200">
+                                <svg
+                                  className="h-3 w-3 text-gray-500"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={1.5}
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                  />
+                                </svg>
+                              </div>
+                            )}
                             <span className="text-[10px] text-battleShipGray">
                               {seller.name}
                             </span>
@@ -242,7 +296,10 @@ const AuctionsTable = () => {
                       </div>
                     </td>
                     <td>
-                      <ActionsDropdownButton auctionId={auction.id} />
+                      <ActionsDropdownButton
+                        auctionId={auction.id}
+                        status={auction.status}
+                      />
                     </td>
                   </tr>
                 );

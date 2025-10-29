@@ -1,10 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import { IoChevronDown } from "react-icons/io5";
 import { BiTrash } from "react-icons/bi";
 import { IoMdPin } from "react-icons/io";
 import { getUserById } from "@/lib/api/admin/users/getUserById";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import api from "@/lib/api/axios";
 import { useParams } from "next/navigation";
 import formatDateTime from "@/utils/dateFormatter";
 import {
@@ -17,18 +20,49 @@ import UserDetailsShimmer from "@/components/shimmer/userDetailsShimmer";
 const UserDetails = () => {
   const params = useParams();
   const id = params?.id;
+  const router = useRouter();
 
   const [userDetail, setUserDetail] = useState(null);
   const [totalSpent, setTotalSpent] = useState(null);
+  const [totalSales, setTotalSales] = useState(0);
   const [ordersPlaced, setOrdersPlaced] = useState(null);
   const [toReceive, setToReceive] = useState(null);
+  const [completedOrders, setCompletedOrders] = useState(0);
+  const [pendingOrders, setPendingOrders] = useState(0);
   const [role, setRole] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchUserDetail = async () => {
       try {
         const res = await getUserById(id);
         const fetchedData = res;
+
+        // Debug: Log the user data structure to see what fields are available
+        console.log("User data structure:", fetchedData?.user);
+        console.log(
+          "Available user fields:",
+          Object.keys(fetchedData?.user || {}),
+        );
+
+        // Debug: Log listings and watchlists to see image structure
+        console.log("Listings data:", fetchedData?.listings);
+        console.log("Watchlists data:", fetchedData?.user?.watchlists);
+        if (fetchedData?.listings?.[0]) {
+          console.log("First listing structure:", fetchedData.listings[0]);
+          console.log("First listing images:", fetchedData.listings[0].images);
+        }
+        if (fetchedData?.user?.watchlists?.[0]) {
+          console.log(
+            "First watchlist structure:",
+            fetchedData.user.watchlists[0],
+          );
+          console.log(
+            "First watchlist product images:",
+            fetchedData.user.watchlists[0].auction?.product?.images,
+          );
+        }
 
         const orders =
           role === "BUYER"
@@ -54,6 +88,9 @@ const UserDetails = () => {
         setTotalSpent(spent);
         setOrdersPlaced(orders.length);
         setToReceive(role === "BUYER" ? received : pending);
+        setCompletedOrders(fetchedData?.completedOrdersCount ?? 0);
+        setPendingOrders(fetchedData?.pendingOrdersCount ?? 0);
+        setTotalSales(fetchedData?.totalSales ?? 0);
       } catch (err) {
         console.error("Failed to fetch user detail", err);
         setUserDetail([]);
@@ -63,21 +100,110 @@ const UserDetails = () => {
     fetchUserDetail();
   }, [userDetail]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showDropdown && !event.target.closest(".dropdown-container")) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showDropdown]);
+
+  const deleteUser = async () => {
+    try {
+      setIsLoading(true);
+      await api.delete(`/admin/users/${id}`);
+      router.push("/admin/reports");
+    } catch (e) {
+      console.error("Delete user failed", e);
+    } finally {
+      setIsLoading(false);
+      setShowDropdown(false);
+    }
+  };
+
+  const toggleUserStatus = async () => {
+    try {
+      setIsLoading(true);
+      const newStatus =
+        userDetail?.user?.accountStatus === "DISABLED" ? "ACTIVE" : "DISABLED";
+      if (newStatus === "DISABLED") {
+        await api.patch(`/admin/users/${id}/disable`);
+      } else {
+        await api.patch(`/admin/users/${id}/status`, { status: newStatus });
+      }
+      // reflect locally
+      setUserDetail((prev) => ({
+        ...prev,
+        user: { ...(prev?.user || {}), accountStatus: newStatus },
+      }));
+    } catch (e) {
+      console.error("Update status failed", e);
+    } finally {
+      setIsLoading(false);
+      setShowDropdown(false);
+    }
+  };
+
+  // Derive favourite category (for BUYER): from most interested product (first item)
+  const favouriteCategory = (() => {
+    if (role !== "BUYER") return null;
+    const firstWatch = userDetail?.user?.watchlists?.[0];
+    const product = firstWatch?.auction?.product;
+    if (!product) return null;
+    if (Array.isArray(product.categories) && product.categories.length > 0) {
+      return product.categories[0];
+    }
+    if (
+      typeof product.category === "string" &&
+      product.category.trim().length
+    ) {
+      return product.category.trim();
+    }
+    return null;
+  })();
+
   return userDetail === null ? (
     <UserDetailsShimmer />
   ) : (
     <div className="flex h-full max-h-full flex-col gap-10 pb-10">
       <div className="flex flex-row justify-between rounded-xl bg-white px-5 py-5 lg:px-10">
         <div className="flex flex-row items-center gap-5">
-          <Image
-            src={"/static/testuser.svg"}
-            width={150}
-            height={150}
-            alt="Profile Image"
-            loading="lazy"
-            quality={100}
-            className="h-[100px] w-[100px] rounded-full lg:h-[150px] lg:w-[150px]"
-          />
+          {userDetail?.user?.avatar ||
+          userDetail?.user?.profileImage ||
+          userDetail?.user?.profile_image ? (
+            <Image
+              src={
+                userDetail?.user?.avatar ||
+                userDetail?.user?.profileImage ||
+                userDetail?.user?.profile_image
+              }
+              width={150}
+              height={150}
+              alt="Profile Image"
+              loading="lazy"
+              quality={100}
+              className="h-[100px] w-[100px] rounded-full object-cover lg:h-[150px] lg:w-[150px]"
+            />
+          ) : (
+            <div className="flex h-[100px] w-[100px] items-center justify-center rounded-full bg-gray-200 lg:h-[150px] lg:w-[150px]">
+              <svg
+                className="h-12 w-12 text-gray-500 lg:h-16 lg:w-16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </div>
+          )}
           <div className="flex flex-col gap-1 xl:gap-4">
             <div className="flex flex-col">
               <div className="flex flex-col gap-1 xl:flex-row xl:gap-5">
@@ -85,8 +211,22 @@ const UserDetails = () => {
                   {userDetail?.user.name}
                 </p>
 
-                <div className="flex w-[50%] items-center justify-center rounded-lg bg-customGreen/10 px-5 py-1 lg:w-fit">
-                  <p className="text-[14px] text-customGreen">
+                <div
+                  className={
+                    `flex w-[50%] items-center justify-center rounded-lg px-5 py-1 lg:w-fit ` +
+                    (userDetail?.user?.accountStatus === "DISABLED"
+                      ? "bg-faluRed/10"
+                      : "bg-customGreen/10")
+                  }
+                >
+                  <p
+                    className={
+                      `text-[14px] ` +
+                      (userDetail?.user?.accountStatus === "DISABLED"
+                        ? "text-faluRed"
+                        : "text-customGreen")
+                    }
+                  >
                     {userDetail?.user.accountStatus}
                   </p>
                 </div>
@@ -107,13 +247,88 @@ const UserDetails = () => {
             </div>
           </div>
         </div>
-        <button className="hidden h-fit rounded-lg border border-faluRed bg-transparent px-10 py-3 text-faluRed hover:bg-faluRed hover:text-white lg:flex">
-          Disable/Delete
-        </button>
+        {/* Desktop Dropdown */}
+        <div className="dropdown-container relative hidden lg:block">
+          <button
+            onClick={() => setShowDropdown(!showDropdown)}
+            disabled={isLoading}
+            className="flex h-fit items-center gap-2 rounded-lg border border-faluRed bg-transparent px-8 py-2.5 text-faluRed hover:bg-faluRed hover:text-white disabled:opacity-50"
+          >
+            {isLoading ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            ) : (
+              <>
+                {userDetail?.user?.accountStatus === "DISABLED"
+                  ? "Enable User"
+                  : "Disable/Delete"}
+                <IoChevronDown className="h-4 w-4" />
+              </>
+            )}
+          </button>
+          {showDropdown && (
+            <div className="absolute right-0 top-full z-10 w-44 -translate-y-px transform rounded-lg border border-gray-200 bg-white shadow-lg">
+              <button
+                onClick={toggleUserStatus}
+                className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                {userDetail?.user?.accountStatus === "DISABLED"
+                  ? "Enable User"
+                  : "Disable User"}
+              </button>
+              <button
+                onClick={deleteUser}
+                className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+              >
+                Delete User
+              </button>
+              <button
+                onClick={() => setShowDropdown(false)}
+                className="w-full px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
 
-        <button className="flex h-fit rounded-lg border border-faluRed bg-transparent p-3 text-faluRed hover:bg-faluRed hover:text-white lg:hidden">
-          <BiTrash className="text-[18px] sm:text-[26px]" />
-        </button>
+        {/* Mobile Dropdown */}
+        <div className="dropdown-container relative lg:hidden">
+          <button
+            onClick={() => setShowDropdown(!showDropdown)}
+            disabled={isLoading}
+            className="flex h-fit items-center gap-2 rounded-lg border border-faluRed bg-transparent p-3 text-faluRed hover:bg-faluRed hover:text-white disabled:opacity-50"
+          >
+            {isLoading ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            ) : (
+              <BiTrash className="text-[18px] sm:text-[26px]" />
+            )}
+          </button>
+          {showDropdown && (
+            <div className="absolute right-0 top-full z-10 w-44 -translate-y-px transform rounded-lg border border-gray-200 bg-white shadow-lg">
+              <button
+                onClick={toggleUserStatus}
+                className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+              >
+                {userDetail?.user?.accountStatus === "DISABLED"
+                  ? "Enable User"
+                  : "Disable User"}
+              </button>
+              <button
+                onClick={deleteUser}
+                className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+              >
+                Delete User
+              </button>
+              <button
+                onClick={() => setShowDropdown(false)}
+                className="w-full px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid h-full w-full gap-0 lg:gap-4 xl:grid-cols-[1fr_331px]">
@@ -124,7 +339,7 @@ const UserDetails = () => {
                 {role == "BUYER" ? "Total Spent" : "Total Sales"}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
-                ${totalSpent}
+                ${role == "BUYER" ? totalSpent : totalSales}
               </p>
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
@@ -132,7 +347,7 @@ const UserDetails = () => {
                 {role == "BUYER" ? "Orders Placed" : "Completed Orders"}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
-                {ordersPlaced}
+                {role == "BUYER" ? ordersPlaced : completedOrders}
               </p>
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
@@ -140,7 +355,7 @@ const UserDetails = () => {
                 {role == "BUYER" ? "To Receive" : "Pending Orders"}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
-                {toReceive}
+                {role == "BUYER" ? toReceive : pendingOrders}
               </p>
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
@@ -148,7 +363,7 @@ const UserDetails = () => {
                 {role == "BUYER" ? "Favorite Category" : "Collections"}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
-                {role == "BUYER" ? "Fashion" : "$119.99"}
+                {role == "BUYER" ? favouriteCategory : "$0"}
               </p>
             </div>
           </div>
@@ -169,14 +384,42 @@ const UserDetails = () => {
                       className="relative ml-4 min-w-[280px] rounded-lg bg-white shadow-md"
                     >
                       <div className="relative">
-                        <Image
-                          src="/static/prod.jpg"
-                          width={280}
-                          height={200}
-                          alt="Product"
-                          className="h-[200px] w-full rounded-t-lg object-cover"
-                        />
-                        <button className="absolute right-3 top-3 rounded-full bg-white/80 p-2">
+                        {item.images && item.images.length > 0 ? (
+                          <Image
+                            src={
+                              Array.isArray(item.images)
+                                ? item.images[0]
+                                : item.images
+                            }
+                            width={280}
+                            height={200}
+                            alt="Product"
+                            className="h-[200px] w-full rounded-t-lg object-cover"
+                            onError={(e) => {
+                              console.log(
+                                "Product image load error, using fallback",
+                              );
+                              e.target.src = "/static/prod.jpg";
+                            }}
+                          />
+                        ) : (
+                          <div className="flex h-[200px] w-full items-center justify-center rounded-t-lg bg-gray-200">
+                            <svg
+                              className="h-16 w-16 text-gray-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </div>
+                        )}
+                        {/* <button className="absolute right-3 top-3 rounded-full bg-white/80 p-2">
                           <svg
                             width="20"
                             height="18"
@@ -188,30 +431,43 @@ const UserDetails = () => {
                               fill="#FF6B6B"
                             />
                           </svg>
-                        </button>
+                        </button> */}
                       </div>
 
                       <div className="p-4">
                         <p className="mb-2 text-xl font-semibold text-eerieBlack">
                           <span>
                             $
-                            {item.price !== null
-                              ? item.price.toFixed(2)
-                              : "0.00"}
+                            {item.pricingFormat === "Auctions"
+                              ? item.startingBid !== null
+                                ? item.startingBid.toFixed(2)
+                                : item.buyItNow !== null
+                                  ? item.buyItNow.toFixed(2)
+                                  : item.minimumOffer !== null
+                                    ? item.minimumOffer.toFixed(2)
+                                    : item.autoAccept !== null
+                                      ? item.autoAccept.toFixed(2)
+                                      : "0.00"
+                              : item.pricingFormat === "Fixed Price"
+                                ? item.price !== null
+                                  ? item.price.toFixed(2)
+                                  : "0.00"
+                                : item.price !== null
+                                  ? item.price.toFixed(2)
+                                  : "0.00"}
                           </span>
                         </p>
                         <p className="mb-1 line-clamp-1 text-sm font-medium text-eerieBlack">
                           {item.name}, {item.conditionRating}
                           /10 condition..
                         </p>
-                        {!item.city ||
-                          (!item.country && (
-                            <div className="flex items-center gap-1 text-xs text-davyGray">
-                              <span>
-                                {item.city},{item.country}
-                              </span>
-                            </div>
-                          ))}
+                        {(!item.city || !item.country) && (
+                          <div className="flex items-center gap-1 text-xs text-davyGray">
+                            <span>
+                              {item.city},{item.country}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -224,14 +480,43 @@ const UserDetails = () => {
                       className="relative ml-4 min-w-[280px] rounded-lg bg-white shadow-md"
                     >
                       <div className="relative">
-                        <Image
-                          src="/static/prod.jpg"
-                          width={280}
-                          height={200}
-                          alt="Product"
-                          className="h-[200px] w-full rounded-t-lg object-cover"
-                        />
-                        <button className="absolute right-3 top-3 rounded-full bg-white/80 p-2">
+                        {item.auction?.product?.images &&
+                        item.auction.product.images.length > 0 ? (
+                          <Image
+                            src={
+                              Array.isArray(item.auction.product.images)
+                                ? item.auction.product.images[0]
+                                : item.auction.product.images
+                            }
+                            width={280}
+                            height={200}
+                            alt="Product"
+                            className="h-[200px] w-full rounded-t-lg object-cover"
+                            onError={(e) => {
+                              console.log(
+                                "Product image load error, using fallback",
+                              );
+                              e.target.src = "/static/prod.jpg";
+                            }}
+                          />
+                        ) : (
+                          <div className="flex h-[200px] w-full items-center justify-center rounded-t-lg bg-gray-200">
+                            <svg
+                              className="h-16 w-16 text-gray-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </div>
+                        )}
+                        {/* <button className="absolute right-3 top-3 rounded-full bg-white/80 p-2">
                           <svg
                             width="20"
                             height="18"
@@ -243,27 +528,45 @@ const UserDetails = () => {
                               fill="#FF6B6B"
                             />
                           </svg>
-                        </button>
+                        </button> */}
                       </div>
 
                       <div className="p-4">
                         <p className="mb-2 text-xl font-semibold text-eerieBlack">
-                          ${item.auction?.product.price}
+                          $
+                          {item.auction?.product?.pricingFormat === "Auctions"
+                            ? item.auction?.product?.startingBid !== null
+                              ? item.auction.product.startingBid.toFixed(2)
+                              : item.auction?.product?.buyItNow !== null
+                                ? item.auction.product.buyItNow.toFixed(2)
+                                : item.auction?.product?.minimumOffer !== null
+                                  ? item.auction.product.minimumOffer.toFixed(2)
+                                  : item.auction?.product?.autoAccept !== null
+                                    ? item.auction.product.autoAccept.toFixed(2)
+                                    : "0.00"
+                            : item.auction?.product?.pricingFormat ===
+                                "Fixed Price"
+                              ? item.auction?.product?.price !== null
+                                ? item.auction.product.price.toFixed(2)
+                                : "0.00"
+                              : item.auction?.product?.price !== null
+                                ? item.auction.product.price.toFixed(2)
+                                : "0.00"}
                         </p>
                         <p className="mb-1 line-clamp-1 text-sm font-medium text-eerieBlack">
                           {item.auction.product.name},{" "}
                           {item.auction.product.conditionRating}
                           /10 condition..
                         </p>
-                        {!item.auction.product.city ||
-                          (!item.auction.product.country && (
-                            <div className="flex items-center gap-1 text-xs text-davyGray">
-                              <span>
-                                {item.auction.product.city},
-                                {item.auction.product.country}
-                              </span>
-                            </div>
-                          ))}
+                        {(!item.auction.product.city ||
+                          !item.auction.product.country) && (
+                          <div className="flex items-center gap-1 text-xs text-davyGray">
+                            <span>
+                              {item.auction.product.city},
+                              {item.auction.product.country}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -332,10 +635,10 @@ const UserDetails = () => {
 
       {/* Payment Breakdown */}
       <div className="flex flex-col gap-4 pb-2">
-        <p className="text-[18px] font-semibold text-eerieBlack">
+        {/* <p className="text-[18px] font-semibold text-eerieBlack">
           Payment Breakdown
-        </p>
-        <div className="rounded-lg bg-white p-6">
+        </p> */}
+        {/* <div className="rounded-lg bg-white p-6">
           <table className="w-full">
             <thead>
               <tr className="border-b text-left">
@@ -520,12 +823,12 @@ const UserDetails = () => {
                   })}
             </tbody>
           </table>
-        </div>
+        </div> */}
       </div>
 
       {role === "SELLER" && (
         <div className="-mt-10 flex flex-col gap-4">
-          <p className="text-lg font-medium text-eerieBlack">
+          {/* <p className="text-lg font-medium text-eerieBlack">
             Collections Overview
           </p>
           <div className="mb-10 rounded-lg bg-white p-6">
@@ -587,7 +890,7 @@ const UserDetails = () => {
                 </tr>
               </tbody>
             </table>
-          </div>
+          </div> */}
         </div>
       )}
     </div>
