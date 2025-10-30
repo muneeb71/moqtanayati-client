@@ -124,6 +124,11 @@ const Header = () => {
     };
   }, []);
 
+  const [profileLoading, setProfileLoading] = useState(false);
+  // Reset profile loader when route changes (header persists across pages)
+  useEffect(() => {
+    setProfileLoading(false);
+  }, [pathname]);
   return (
     <header className="flex w-full flex-col items-center justify-center">
       <div className="flex w-full max-w-7xl items-center justify-between px-4 py-4 md:px-5">
@@ -221,7 +226,12 @@ const Header = () => {
           </div>
           <Link
             href="/buyer/profile"
-            className="size-12 overflow-hidden rounded-full"
+            className="relative size-12 overflow-hidden rounded-full"
+            onClick={() => {
+              if (profileLoading) return;
+              setProfileLoading(true);
+            }}
+            aria-busy={profileLoading || undefined}
           >
             {user?.avatar && user.avatar.trim() !== "" ? (
               <Image
@@ -251,6 +261,11 @@ const Header = () => {
                     fill="currentColor"
                   />
                 </svg>
+              </div>
+            )}
+            {profileLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/5">
+                <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
               </div>
             )}
           </Link>

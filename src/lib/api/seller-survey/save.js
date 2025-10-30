@@ -13,6 +13,8 @@ export async function saveSellerSurvey({
   homeSupplies,
   consent,
   iban,
+  cr,
+  vat,
 }) {
   try {
     const cookiesStore = await cookies();
@@ -26,8 +28,12 @@ export async function saveSellerSurvey({
       homeSupplies,
       consent,
       iban,
+      cr,
+      vat,
     });
 
+    console.log("response : ", response);
+    console.log("response.data : ", response.data);
     if (response.data.success) {
       const sellerSurvey = {
         userId,
@@ -39,8 +45,11 @@ export async function saveSellerSurvey({
         homeSupplies,
         consent,
         iban,
+        cr,
+        vat,
       };
       cookiesStore.set("survey", JSON.stringify(sellerSurvey));
+      console.log("sellerSurvey : ", sellerSurvey);
     }
 
     return response.data;

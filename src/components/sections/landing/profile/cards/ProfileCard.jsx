@@ -10,10 +10,12 @@ import {
 } from "@/assets/icons/profile-icons";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { TiSocialAtCircular } from "react-icons/ti";
 import { getUserProfile } from "@/lib/api/profile/getProfile";
 
 const ProfileCard = () => {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -42,13 +44,30 @@ const ProfileCard = () => {
     getProfile();
   }, []);
 
+  const [editLoading, setEditLoading] = useState(false);
   return (
     <div className="flex w-full flex-col gap-2 rounded-[20px] border border-black/10 p-3">
       <Link
         href={`/buyer/profile/edit?name=${name}&email=${email}&phone=${phone}&joined=${joined}&avatar=${encodeURIComponent(avatar || "")}`}
-        className="flex items-center gap-1 self-end rounded-full border border-delftBlue/20 px-2 py-1.5 text-[14px] font-medium text-delftBlue hover:border-delftBlue"
+        className="relative flex items-center gap-1 self-end rounded-full border border-delftBlue/20 px-2 py-1.5 text-[14px] font-medium text-delftBlue hover:border-delftBlue"
+        onClick={(e) => {
+          if (editLoading) {
+            e.preventDefault();
+            return;
+          }
+          setEditLoading(true);
+          e.preventDefault();
+          router.push(
+            `/buyer/profile/edit?name=${name}&email=${email}&phone=${phone}&joined=${joined}&avatar=${encodeURIComponent(avatar || "")}`,
+          );
+        }}
+        aria-busy={editLoading || undefined}
       >
-        {profilePenIcon} Edit Profile
+        {editLoading ? (
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+        ) : (
+          <>{profilePenIcon} Edit Profile</>
+        )}
       </Link>
       <div className="flex flex-col items-center">
         <div className="mb-2 grid size-[128px] place-items-center overflow-hidden rounded-full">

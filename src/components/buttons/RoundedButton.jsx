@@ -21,6 +21,7 @@ const RoundedButton = ({
   ),
   showIcon = false,
   className = "",
+  loading, // prevent forwarding boolean to DOM
   ...props
 }) => {
   return (
@@ -29,9 +30,16 @@ const RoundedButton = ({
         "flex h-[64px] min-w-fit items-center justify-center gap-3 text-nowrap rounded-full bg-moonstone px-8 text-lg font-medium text-white transition-all duration-200 ease-in hover:bg-delftBlue disabled:bg-battleShipGray",
         className,
       )}
+      aria-busy={Boolean(loading) || undefined}
       {...props}
     >
-      {title} {showIcon && icon}
+      {loading ? (
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+      ) : (
+        <>
+          {title} {showIcon && icon}
+        </>
+      )}
     </button>
   );
 };

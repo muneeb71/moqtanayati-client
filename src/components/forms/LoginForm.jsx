@@ -224,7 +224,13 @@ const LoginForm = ({ role }) => {
           }
         } catch (_) {}
         console.log("suc : ", response.data.user.role.toLowerCase());
-        const rolePath = `/seller`;
+        const roleLower = String(response.data.user.role || "").toLowerCase();
+        const rolePath =
+          roleLower === "admin"
+            ? "/admin"
+            : roleLower === "seller"
+              ? "/seller"
+              : "/buyer";
         router.push(rolePath);
 
         // Establish socket connection and join user room for realtime updates (non-blocking)
@@ -311,7 +317,7 @@ const LoginForm = ({ role }) => {
           type="submit"
           className="w-fit px-10"
           disabled={isPending}
-          loading={isPending.toString()}
+          loading={isPending || undefined}
           title={isPending ? "Logging in..." : "Log into your account"}
         />
         <div className="flex items-center gap-1 text-sm font-medium text-battleShipGray">

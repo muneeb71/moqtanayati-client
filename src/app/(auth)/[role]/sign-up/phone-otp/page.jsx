@@ -32,7 +32,7 @@ const PhoneOtpForm = () => {
     }
   }, [otpFromUrl]);
 
-  // Send OTP on mount
+  // Send OTP on mount (only if OTP wasn't just sent and provided via URL)
   useEffect(() => {
     const sendOtp = async () => {
       setSending(true);
@@ -42,6 +42,7 @@ const PhoneOtpForm = () => {
         console.log("Phone OTP response:", res);
 
         if (res.success) {
+          // Avoid double toast: this page only toasts on auto-send if no OTP in URL
           toast.success("OTP sent to your phone.");
 
           // Pre-fill the OTP if it's available in the response
@@ -60,8 +61,8 @@ const PhoneOtpForm = () => {
       }
       setSending(false);
     };
-    if (phone) sendOtp();
-  }, [phone]);
+    if (phone && !otpFromUrl) sendOtp();
+  }, [phone, otpFromUrl]);
 
   const handleVerifyOtp = async () => {
     const otpValue = otp.join("");
@@ -145,7 +146,7 @@ const PhoneOtpForm = () => {
             className="w-fit self-center px-16"
             onClick={handleVerifyOtp}
             disabled={verifying || otp.join("").length !== 6}
-            loading={verifying.toString()}
+            loading={verifying || undefined}
           />
           <div className="flex items-center gap-1 text-sm font-medium text-battleShipGray">
             Didn't receive the code?

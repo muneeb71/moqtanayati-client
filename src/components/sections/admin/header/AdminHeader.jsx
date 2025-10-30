@@ -2,14 +2,15 @@
 
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { bellIcon } from "@/assets/icons/header-icons";
 import { useAdminProfile } from "@/hooks/useAdminProfile";
 
 const AdminHeader = () => {
   const router = useRouter();
-  const { profile, loading, error } = useAdminProfile();
+  const { profile, loading, error, refetch } = useAdminProfile();
   const [navLoading, setNavLoading] = useState(false);
+  const [cacheBust, setCacheBust] = useState(0);
   const pathname = usePathname();
 
   const handleBellClick = async () => {
@@ -25,11 +26,24 @@ const AdminHeader = () => {
 
   // Clear nav loader when route changes (in case header persists across pages)
   if (navLoading && pathname?.startsWith("/admin/notifications")) {
-    // synchronous guard to drop spinner once we're on target path
-    // avoids spinner sticking when layout persists
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     setNavLoading(false);
   }
+
+  // Listen for profile updates from settings to refresh avatar
+  useEffect(() => {
+    const handler = () => {
+      refetch?.();
+      setCacheBust(Date.now());
+    };
+    if (typeof window !== "undefined") {
+      window.addEventListener("admin_profile_updated", handler);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("admin_profile_updated", handler);
+      }
+    };
+  }, [refetch]);
 
   // Get profile image with fallback
   const getProfileImage = () => {
@@ -67,7 +81,7 @@ const AdminHeader = () => {
               <div className="h-full w-full animate-pulse rounded-full bg-gray-200" />
             ) : (
               <Image
-                src={getProfileImage()}
+                src={`${getProfileImage()}${getProfileImage().includes("?") ? "&" : "?"}t=${cacheBust || 0}`}
                 alt="Admin profile"
                 width={40}
                 height={40}

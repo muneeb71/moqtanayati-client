@@ -37,13 +37,15 @@ const SignUpForm3 = ({ role }) => {
       await new Promise((r) => setTimeout(r, 100));
       router.push(`/${role}/location-selection`);
     } catch (_) {
+      // noop
+    } finally {
       setLoading(false);
     }
   };
   return (
     <>
       <div className="flex w-full flex-col gap-5 px-2 py-10">
-        <h1 className="text-lg md:text-2xl">Tell us about yourself</h1>
+        <h1 className="text-lg md:text-2xl">Secure Your Account</h1>
         <div className="flex w-full flex-col">
           <Label text="Password" />
           <InputField
@@ -74,11 +76,8 @@ const SignUpForm3 = ({ role }) => {
             title="Create my account"
             className="min-w-72"
             disabled={loading}
-            loading={loading.toString()}
+            loading={loading || undefined}
           />
-          {loading && (
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-          )}
         </div>
         <div className="flex items-center gap-1">
           Already have an account?{" "}

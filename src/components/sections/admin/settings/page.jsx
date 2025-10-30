@@ -229,6 +229,13 @@ export default function ProfilePage() {
         avatar: data.avatar || data.profileImage,
       });
       setProfileImage(data.avatar || data.profileImage);
+
+      // Notify other parts of the app (e.g., header) to refresh avatar
+      if (typeof window !== "undefined") {
+        try {
+          window.dispatchEvent(new CustomEvent("admin_profile_updated"));
+        } catch (_) {}
+      }
     } catch (error) {
       console.log("Profile update error:", error);
 
