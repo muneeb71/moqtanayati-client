@@ -41,10 +41,10 @@ const CategoriesSlider = () => {
       setIsNavigating(true);
       // No API call; simply navigate with the category as a query param to filter on the category page
       sessionStorage.setItem("categoryName", categoryName);
-      router.push(`/buyer/search?q=${encodeURIComponent(categoryName)}`);
+      router.push(`/buyer/search?category=${encodeURIComponent(categoryName)}`);
     } catch (error) {
       console.error("Error navigating to category:", error);
-      router.push(`/buyer/search?q=${encodeURIComponent(categoryName)}`);
+      router.push(`/buyer/search?category=${encodeURIComponent(categoryName)}`);
     } finally {
       setIsNavigating(false);
     }
