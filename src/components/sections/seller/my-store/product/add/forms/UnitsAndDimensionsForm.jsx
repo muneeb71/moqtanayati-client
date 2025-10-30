@@ -8,8 +8,12 @@ import { XIcon } from "lucide-react/dist/cjs/lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 import { updateProductUnitAndDimensions } from "@/lib/api/product/update";
+import { productAndServicesCategories } from "@/lib/categories";
 import { useProfileStore } from "@/providers/profile-store-provider";
+import { getUserProfileClient } from "@/lib/api/profile/getProfileClient";
 import { getProductById } from "@/lib/api/product/getById";
+import { getCookie } from "cookies-next";
+import { getSellerSurvey } from "@/lib/api/seller-survey/getSurvey";
 
 const UnitsAndDimensionsForm = () => {
   const {
@@ -47,6 +51,12 @@ const UnitsAndDimensionsForm = () => {
 
   const [categoryInput, setCategoryInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [categoryQuery, setCategoryQuery] = useState("");
+  const [modalSelection, setModalSelection] = useState([]);
+  const [allowedCategories, setAllowedCategories] = useState(
+    productAndServicesCategories || [],
+  );
 
   const productConditionsList = ["New", "Old"];
 
@@ -74,6 +84,81 @@ const UnitsAndDimensionsForm = () => {
     hydrate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  // Determine allowed categories based on seller type and survey selection
+  useEffect(() => {
+    const decideCategories = async () => {
+      try {
+        const res = await getUserProfileClient();
+        const user = res?.data || {};
+        const sellerType = (
+          user?.sellerType ||
+          user?.sellertype ||
+          ""
+        ).toUpperCase();
+        const userId = user?.id || user?._id;
+        let survey = user?.sellerSurvey || user?.survey || user?.surveyDetail;
+        let rawSelected =
+          survey?.productAndServices || survey?.productandservices;
+
+        // If seller is BUSINESS but survey not present in profile, fetch from API
+        if (
+          !rawSelected &&
+          (user?.sellerType || "").toUpperCase() === "BUSINESS"
+        ) {
+          const sv = await getSellerSurvey(userId);
+          const svData = sv?.data || sv; // backend may return {data:{...}} or raw
+          survey = svData || survey || {};
+          rawSelected =
+            survey?.productAndServices || survey?.productandservices || [];
+          console.log("[UnitsAndDimensions] Loaded survey from API.");
+        }
+        if (!rawSelected) rawSelected = [];
+        // Normalize survey selection to array of lowercase tokens
+        const selectedArray = Array.isArray(rawSelected)
+          ? rawSelected
+          : typeof rawSelected === "string"
+            ? rawSelected.split(/[;,|]/)
+            : [];
+        const selectedLower = new Set(
+          selectedArray
+            .map((s) =>
+              String(s || "")
+                .trim()
+                .toLowerCase(),
+            )
+            .filter(Boolean),
+        );
+        if (sellerType === "BUSINESS" && selectedLower.size > 0) {
+          console.log(
+            "[UnitsAndDimensions] BUSINESS seller — survey productAndServices (raw):",
+            rawSelected,
+          );
+          console.log(
+            "[UnitsAndDimensions] BUSINESS seller — normalized selection (lowercased):",
+            Array.from(selectedLower),
+          );
+          const filtered = (productAndServicesCategories || []).filter((c) => {
+            const label = String(c.label || "").toLowerCase();
+            const value = String(c.value || "").toLowerCase();
+            return selectedLower.has(label) || selectedLower.has(value);
+          });
+          console.log(
+            "[UnitsAndDimensions] BUSINESS seller — allowed categories after filter:",
+            filtered.map((c) => c.label),
+          );
+          if (filtered.length > 0) {
+            setAllowedCategories(filtered);
+            return;
+          }
+        }
+        setAllowedCategories(productAndServicesCategories || []);
+      } catch (_) {
+        setAllowedCategories(productAndServicesCategories || []);
+      }
+    };
+    decideCategories();
+  }, []);
 
   // Clear loading when next step route is active
   useEffect(() => {
@@ -251,70 +336,54 @@ const UnitsAndDimensionsForm = () => {
             )}
           </div>
 
-          {/* ✅ Fixed category input */}
-          <div className="flex flex-col gap-1">
-            <InputField
-              type="text"
-              placeholder="Add category of your product"
-              value={categoryInput}
-              onChange={(e) => {
-                const val = e.target.value;
-                if (val.includes(",")) {
-                  const parts = val
-                    .split(",")
-                    .map((c) => c.trim().toLowerCase())
-                    .filter(Boolean);
-                  const merged = Array.from(
-                    new Set([...(productCategories || []), ...parts]),
-                  );
-                  setProductCategories(merged);
-                  setCategoryInput("");
-                } else {
-                  setCategoryInput(val);
-                }
+          {/* ✅ Category multi-select via popup */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm text-battleShipGray">
+              Select Categories
+            </label>
+            <button
+              type="button"
+              onClick={() => {
+                setCategoryQuery("");
+                setModalSelection(
+                  Array.isArray(productCategories) ? productCategories : [],
+                );
+                setShowCategoryModal(true);
               }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && categoryInput.trim() !== "") {
-                  const parts = categoryInput
-                    .split(",")
-                    .map((c) => c.trim())
-                    .filter(Boolean);
-                  const merged = Array.from(
-                    new Set([...(productCategories || []), ...parts]),
-                  );
-                  setProductCategories(merged);
-                  setCategoryInput("");
-                  e.preventDefault();
-                }
-              }}
-            />
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-left text-sm hover:border-moonstone focus:border-moonstone focus:outline-none"
+            >
+              {Array.isArray(productCategories) && productCategories.length > 0
+                ? `${productCategories.length} selected`
+                : "Choose product & services"}
+            </button>
 
-            {/* Category tags */}
-            {productCategories && productCategories.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-1">
-                {productCategories.map((cat, idx) => (
-                  <span
-                    key={idx}
-                    className="relative flex items-center rounded-full bg-moonstone px-2 py-1 text-[10px] font-light text-white"
-                  >
-                    {cat}
-                    <button
-                      type="button"
-                      className="ml-1 focus:outline-none"
-                      onClick={() => {
-                        const newCategories = productCategories.filter(
-                          (_, i) => i !== idx,
-                        );
-                        setProductCategories(newCategories);
-                      }}
-                      aria-label={`Remove ${cat}`}
+            {/* Category chips */}
+            {Array.isArray(productCategories) &&
+              productCategories.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {productCategories.map((cat, idx) => (
+                    <span
+                      key={idx}
+                      className="relative flex items-center rounded-full bg-moonstone px-2 py-1 text-[10px] font-light text-white"
                     >
-                      <XIcon size={10} />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
+                      {cat}
+                      <button
+                        type="button"
+                        className="ml-1 focus:outline-none"
+                        onClick={() => {
+                          const newCategories = productCategories.filter(
+                            (_, i) => i !== idx,
+                          );
+                          setProductCategories(newCategories);
+                        }}
+                        aria-label={`Remove ${cat}`}
+                      >
+                        <XIcon size={10} />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
             {errors.productCategories && (
               <span className="text-xs text-red-500">
                 {errors.productCategories}
@@ -323,6 +392,88 @@ const UnitsAndDimensionsForm = () => {
           </div>
         </div>
       </div>
+
+      {/* Category Selection Modal */}
+      {showCategoryModal && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4">
+          <div className="w-full max-w-lg rounded-lg bg-white p-4 shadow-lg">
+            <div className="mb-3 flex items-center justify-between">
+              <h4 className="text-sm font-medium">Select Product & Services</h4>
+              <button
+                type="button"
+                onClick={() => setShowCategoryModal(false)}
+                className="rounded p-1 hover:bg-gray-100"
+                aria-label="Close"
+              >
+                <XIcon size={16} />
+              </button>
+            </div>
+            <input
+              type="text"
+              placeholder="Search..."
+              value={categoryQuery}
+              onChange={(e) => setCategoryQuery(e.target.value)}
+              className="mb-3 w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-moonstone focus:outline-none"
+            />
+            <div className="max-h-64 overflow-auto rounded border border-gray-200">
+              <div className="grid grid-cols-1 gap-1 p-2 md:grid-cols-2">
+                {(allowedCategories || [])
+                  .filter((c) =>
+                    (c.label || "")
+                      .toLowerCase()
+                      .includes(categoryQuery.toLowerCase()),
+                  )
+                  .map((c) => {
+                    const checked = modalSelection.includes(c.label);
+                    return (
+                      <label
+                        key={c.value}
+                        className={cn(
+                          "flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-sm",
+                          checked ? "bg-moonstone/10" : "",
+                        )}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => {
+                            setModalSelection((prev) => {
+                              const s = new Set(prev || []);
+                              if (s.has(c.label)) s.delete(c.label);
+                              else s.add(c.label);
+                              return Array.from(s);
+                            });
+                          }}
+                          className="accent-moonstone"
+                        />
+                        <span>{c.label}</span>
+                      </label>
+                    );
+                  })}
+              </div>
+            </div>
+            <div className="mt-3 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowCategoryModal(false)}
+                className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setProductCategories(modalSelection);
+                  setShowCategoryModal(false);
+                }}
+                className="rounded bg-moonstone px-3 py-1.5 text-sm text-white hover:bg-moonstone/90"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {errors.submit && (
         <span className="text-center text-xs text-red-500">

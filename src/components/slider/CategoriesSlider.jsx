@@ -9,8 +9,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { getCategories } from "@/lib/api/categories";
-import { getProductsClient } from "@/lib/api/product/getAllProductsClient";
+import { productAndServicesCategories } from "@/lib/categories";
 import { slugify } from "@/utils/slugify";
 import Autoplay from "embla-carousel-autoplay";
 import { useRouter } from "next/navigation";
@@ -25,78 +24,26 @@ const CategoriesSlider = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setLoading(true);
-        const response = await getCategories();
-
-        if (response.success) {
-          setCategories(response.data || []);
-        } else {
-          console.error("Error fetching categories:", response.message);
-          setCategories([]);
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-        setCategories([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
+    // Use local services/categories; no network fetch
+    setCategories(
+      (productAndServicesCategories || []).map((c) => ({
+        id: c.value,
+        name: c.label,
+        icon: c.icon,
+        bg: c.bg,
+      })),
+    );
+    setLoading(false);
   }, []);
 
   const handleCategoryClick = async (categoryName) => {
     try {
       setIsNavigating(true);
-      console.log(
-        "🔍 [CategoriesSlider] Fetching products for category:",
-        categoryName,
-      );
-
-      // Use the proper API client function instead of direct fetch
-      const response = await getProductsClient();
-      console.log("🔍 [CategoriesSlider] API response:", response);
-
-      if (response.success && response.data) {
-        const allProducts = response.data;
-
-        // Products are fetched and stored in sessionStorage for category filtering
-
-        // Filter products by category
-        const filteredProducts = allProducts.filter((product) => {
-          const productCategories =
-            product.categories || product.productCategories || [];
-          return productCategories.some(
-            (cat) =>
-              cat.toLowerCase().includes(categoryName.toLowerCase()) ||
-              categoryName.toLowerCase().includes(cat.toLowerCase()),
-          );
-        });
-
-        console.log(
-          "🔍 [CategoriesSlider] Filtered products:",
-          filteredProducts.length,
-        );
-
-        // Store filtered products in sessionStorage
-        sessionStorage.setItem(
-          "categoryProducts",
-          JSON.stringify(filteredProducts),
-        );
-        sessionStorage.setItem("categoryName", categoryName);
-
-        // Navigate to category page
-        router.push(`/buyer/category/${encodeURIComponent(categoryName)}`);
-      } else {
-        console.error("Failed to fetch products");
-        // Fallback to simple search
-        router.push(`/buyer/search?q=${encodeURIComponent(categoryName)}`);
-      }
+      // No API call; simply navigate with the category as a query param to filter on the category page
+      sessionStorage.setItem("categoryName", categoryName);
+      router.push(`/buyer/search?q=${encodeURIComponent(categoryName)}`);
     } catch (error) {
-      console.error("Error fetching products for category:", error);
-      // Fallback to simple search
+      console.error("Error navigating to category:", error);
       router.push(`/buyer/search?q=${encodeURIComponent(categoryName)}`);
     } finally {
       setIsNavigating(false);
@@ -160,35 +107,35 @@ const CategoriesSlider = () => {
       className="w-full max-w-7xl overflow-hidden px-5"
     >
       <CarouselContent>
-        {categories.map((category, index) => (
-          <CarouselItem
-            key={category.id || index}
-            className="flex basis-1/2 cursor-pointer flex-col items-center gap-5 border-2 border-white py-5 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
-            onClick={() => handleCategoryClick(category.name || category.title)}
-          >
-            <div className="flex size-[119px] items-center justify-center rounded-full bg-gray-100">
-              {category.image ? (
-                <Image
-                  src={category.image}
-                  alt={category.name || category.title}
-                  width={80}
-                  height={80}
-                  className="rounded-full object-cover"
-                  style={{ width: "auto", height: "auto" }}
-                />
-              ) : (
-                <div className="flex size-[80px] items-center justify-center rounded-full bg-moonstone/20">
-                  <span className="text-2xl text-moonstone">
-                    {category.name?.charAt(0)?.toUpperCase() || "?"}
-                  </span>
-                </div>
-              )}
-            </div>
-            <span className="text-center text-lg text-delftBlue md:text-[21px]">
-              {category.name || category.title}
-            </span>
-          </CarouselItem>
-        ))}
+        {categories.map((category, index) => {
+          const Icon = category.icon;
+          return (
+            <CarouselItem
+              key={category.id || index}
+              className="flex basis-1/2 cursor-pointer flex-col items-center gap-5 border-2 border-white py-5 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
+              onClick={() =>
+                handleCategoryClick(category.name || category.title)
+              }
+            >
+              <div
+                className={`flex size-[119px] items-center justify-center rounded-full ${category.bg || "bg-gray-100"}`}
+              >
+                {Icon ? (
+                  <Icon className="h-10 w-10 text-delftBlue" />
+                ) : (
+                  <div className="flex size-[80px] items-center justify-center rounded-full bg-moonstone/20">
+                    <span className="text-2xl text-moonstone">
+                      {category.name?.charAt(0)?.toUpperCase() || "?"}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <span className="text-center text-lg text-delftBlue md:text-[21px]">
+                {category.name || category.title}
+              </span>
+            </CarouselItem>
+          );
+        })}
       </CarouselContent>
       <CustomPrevButton onClick={() => api.scrollPrev()} />
       <CustomNextButton onClick={() => api.scrollNext()} />

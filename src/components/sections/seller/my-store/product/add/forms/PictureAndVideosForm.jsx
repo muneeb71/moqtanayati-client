@@ -10,7 +10,7 @@ import { useProductStore } from "@/providers/product-store-provider";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { updateProductBasics } from "@/lib/api/product/update";
+import { updateProductBasics } from "@/lib/api/product/updateClient";
 
 const PictureAndVideosForm = ({ editProduct }) => {
   const {
@@ -116,16 +116,54 @@ const PictureAndVideosForm = ({ editProduct }) => {
     if (editProduct && editProduct.id) {
       try {
         setIsLoading(true);
+        // const imagesDebug = Array.isArray(images)
+        //   ? images.map((it, i) => ({
+        //       index: i,
+        //       type: it ? Object.prototype.toString.call(it) : null,
+        //       isFile: typeof File !== "undefined" && it instanceof File,
+        //       name: it && it.name ? it.name : undefined,
+        //       size: it && it.size ? it.size : undefined,
+        //     }))
+        //   : images;
+        // const videoDebug = video
+        //   ? {
+        //       type: Object.prototype.toString.call(video),
+        //       isFile: typeof File !== "undefined" && video instanceof File,
+        //       name: video.name,
+        //       size: video.size,
+        //     }
+        //   : null;
+        // console.log(
+        //   "[PictureAndVideosForm][EDIT] About to update basics with:",
+        //   {
+        //     productId: editProduct.id,
+        //     imagesCount: Array.isArray(images) ? images.length : 0,
+        //     images: imagesDebug,
+        //     video: videoDebug,
+        //     serverImageUrlsCount: serverImageUrls.length,
+        //     serverImageUrls,
+        //     name: productTitle,
+        //     description: productDescription,
+        //     status: editProduct.status || "DRAFT",
+        //   },
+        // );
         const resp = await updateProductBasics(editProduct.id, {
           images, // new uploads only
           video,
           name: productTitle,
           description: productDescription,
           status: editProduct.status || "DRAFT",
-          existingImageUrls: serverImageUrls,
         });
+        console.log(
+          "[PictureAndVideosForm][EDIT] updateProductBasics response:",
+          resp,
+        );
         // ignore errors for now, continue flow
       } catch (_) {
+        console.error(
+          "[PictureAndVideosForm][EDIT] updateProductBasics error:",
+          _,
+        );
       } finally {
         setIsLoading(false);
       }
@@ -260,6 +298,10 @@ const PictureAndVideosForm = ({ editProduct }) => {
     }
 
     const filesToAdd = files.slice(0, remainingSlots);
+    console.log(
+      "[PictureAndVideosForm] Image files selected:",
+      filesToAdd.map((f) => ({ name: f.name, size: f.size, type: f.type })),
+    );
     if (files.length > remainingSlots) {
       setErrors({
         images: `Only ${remainingSlots} more image${remainingSlots > 1 ? "s" : ""} allowed.`,
@@ -270,6 +312,10 @@ const PictureAndVideosForm = ({ editProduct }) => {
     const newPreviewUrls = filesToAdd.map((file) => URL.createObjectURL(file));
     setPreviewUrls((prev) => [...prev, ...newPreviewUrls]);
     setImages([...(images || []), ...filesToAdd].slice(0, MAX_IMAGES));
+    console.log("[PictureAndVideosForm] Images state after add:", {
+      total: (images || []).length + filesToAdd.length,
+      adding: filesToAdd.length,
+    });
 
     // reset input selection
     event.target.value = "";
@@ -289,6 +335,11 @@ const PictureAndVideosForm = ({ editProduct }) => {
     const videoUrl = URL.createObjectURL(file);
     setVideoPreview(videoUrl);
     setVideo(file);
+    console.log("[PictureAndVideosForm] Video selected:", {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    });
 
     // reset input selection
     event.target.value = "";

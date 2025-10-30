@@ -15,12 +15,15 @@ const DraftsSection = () => {
       if (store?.id) {
         try {
           const draftProducts = await getDraftProducts(store.id);
-          setDrafts(draftProducts);
+          setDrafts(Array.isArray(draftProducts) ? draftProducts : []);
         } catch (error) {
           console.log("Error fetching drafts:", error);
         } finally {
           setIsLoading(false);
         }
+      } else {
+        setIsLoading(false);
+        setDrafts([]);
       }
     };
 
@@ -53,10 +56,7 @@ const DraftsSection = () => {
       <h1 className="text-3xl font-medium text-[#3D3D5D]">Drafts</h1>
       <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {drafts.map((draft) => (
-          <DraftCard
-            key={draft.id}
-            draft={draft}
-          />
+          <DraftCard key={draft.id} draft={draft} />
         ))}
       </div>
     </div>

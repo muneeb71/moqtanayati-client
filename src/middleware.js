@@ -15,6 +15,7 @@ export function middleware(request) {
   const isAuthPath = pathname.startsWith("/auth");
   const isBuyerPath = pathname.startsWith("/buyer");
   const isSellerPath = pathname.startsWith("/seller");
+  const roleUpper = (role || "").toUpperCase();
   const isLoginOrSignupPage =
     pathname.includes("/login") ||
     pathname.includes("/sign-up") ||
@@ -76,7 +77,9 @@ export function middleware(request) {
 
   // Protect admin routes strictly: only ADMIN role allowed, otherwise clear and go to start
   if (isAdminPath && !isAdminLogin) {
-    const isAuthenticatedAdmin = Boolean(token && userId && role === "ADMIN");
+    const isAuthenticatedAdmin = Boolean(
+      token && userId && roleUpper === "ADMIN",
+    );
     if (!isAuthenticatedAdmin) {
       return clearAndRedirectToStart();
     }
@@ -94,30 +97,40 @@ export function middleware(request) {
     }
     // Only one privileged case: allow BUYER cookies to access /buyer
     if (isBuyerPath) {
-      if (role !== "BUYER") {
-        return clearAndRedirectToStart();
+      if (roleUpper !== "BUYER") {
+        return NextResponse.redirect(
+          new URL(roleUpper === "SELLER" ? "/seller" : "/admin", request.url),
+        );
       }
     } else if (isSellerPath) {
       // Allow only SELLER role on /seller
-      if (role !== "SELLER") {
-        return clearAndRedirectToStart();
+      if (roleUpper !== "SELLER") {
+        return NextResponse.redirect(
+          new URL(roleUpper === "BUYER" ? "/buyer" : "/admin", request.url),
+        );
       }
     } else if (isAdminPath && !isAdminLogin) {
       // already handled above; keep for clarity
-      if (role !== "ADMIN") return clearAndRedirectToStart();
+      if (roleUpper !== "ADMIN") return clearAndRedirectToStart();
     } else {
       // If logged in as BUYER and not on /buyer, guide to buyer home
-      if (role === "BUYER" && !pathname.startsWith("/buyer")) {
+      if (roleUpper === "BUYER" && !pathname.startsWith("/buyer")) {
         return NextResponse.redirect(new URL("/buyer", request.url));
       }
-      // For any other role/path combination, default to start
+      // For any other role/path combination, snap to role root (do not clear cookies)
       if (
         !(
-          (role === "BUYER" && isBuyerPath) ||
-          (role === "SELLER" && isSellerPath)
+          (roleUpper === "BUYER" && isBuyerPath) ||
+          (roleUpper === "SELLER" && isSellerPath)
         )
       ) {
-        return clearAndRedirectToStart();
+        const roleRoot =
+          roleUpper === "SELLER"
+            ? "/seller"
+            : roleUpper === "ADMIN"
+              ? "/admin"
+              : "/buyer";
+        return NextResponse.redirect(new URL(roleRoot, request.url));
       }
     }
   }

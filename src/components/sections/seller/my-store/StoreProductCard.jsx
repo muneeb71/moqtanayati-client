@@ -96,13 +96,16 @@ const StoreProductCard = ({ item, onNavigateStart }) => {
                 : item.pricingFormat || "INCOMPLETE"}
             </div>
           </div>
-          {item.price !== 0 ? (
-            <h1 className="text-3xl font-medium">${item.price?.toFixed(2)}</h1>
-          ) : (
-            <h1 className="text-3xl">
-              ${item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}
-            </h1>
-          )}
+          {item.status !== "DRAFT" &&
+            (item.price !== 0 ? (
+              <h1 className="text-3xl font-medium">
+                ${item.price?.toFixed(2)}
+              </h1>
+            ) : (
+              <h1 className="text-3xl">
+                ${item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}
+              </h1>
+            ))}
         </div>
       </Link>
       <div className="flex h-full flex-col items-center justify-between py-1">
