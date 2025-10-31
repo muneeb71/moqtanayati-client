@@ -7,6 +7,7 @@ import { updateAdminProfile } from "@/lib/api/admin/settings/updateAdminProfile"
 import toast from "react-hot-toast";
 import formatDateTime from "@/utils/dateFormatter";
 import ShimmeringCard from "@/components/shimmer/shimmerCard";
+import useTranslation from "@/hooks/useTranslation";
 
 const iconMap = {
   name: "/static/user.svg",
@@ -18,6 +19,7 @@ const iconMap = {
 };
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [originalProfile, setOriginalProfile] = useState(null);
@@ -427,7 +429,8 @@ export default function ProfilePage() {
           </div>
           <h2 className="mt-4 text-xl font-semibold">{profile.name || "-"}</h2>
           <p className="text-sm text-gray-500">
-            {formatDateTime.formatJoinDate(profile.createdAt)}
+            {t("admin.settings.joined")}{" "}
+            {formatDateTime.formatMonthYear(profile.createdAt)}
           </p>
         </div>
 
@@ -479,7 +482,7 @@ export default function ProfilePage() {
           {/* Password Fields */}
           <div className="mt-6">
             <h3 className="mb-4 text-lg font-semibold text-gray-700">
-              Change Password
+              {t("admin.settings.change_password")}
             </h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between rounded-md bg-[#F2F0FE] p-3">
@@ -704,7 +707,7 @@ export default function ProfilePage() {
           className="text-md rounded-full bg-moonstone px-32 py-4 text-lg font-medium text-white hover:bg-moonstone/80"
           disabled={updating}
         >
-          {updating ? "Saving..." : "Save"}
+          {updating ? t("admin.settings.saving") : t("admin.settings.save")}
         </button>
       </div>
       <div className="h-20"></div>

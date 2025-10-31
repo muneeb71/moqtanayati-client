@@ -7,6 +7,7 @@ import {
 import { threeDotsIcon } from "@/assets/icons/common-icons";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import useTranslation from "@/hooks/useTranslation";
 import ChatUsersSheet from "./ChatUsersSheet";
 import { useState, useEffect, useRef } from "react";
 import { useProfileStore } from "@/providers/profile-store-provider";
@@ -24,6 +25,7 @@ const ChatWindow = ({
   userBId,
   setMessages,
 }) => {
+  const { t } = useTranslation();
   const [sending, setSending] = useState(false);
   const [sendingMessageId, setSendingMessageId] = useState(null);
   const [socketConnected, setSocketConnected] = useState(false);
@@ -36,6 +38,7 @@ const ChatWindow = ({
   const currentUserAvatar = useProfileStore((s) => s.avatar);
   const messagesContainerRef = useRef(null);
   const typingTimeoutRef = useRef(null);
+  const lastAttemptedMessageRef = useRef("");
 
   // Determine the other user (the one being chatted with)
   let otherUser = null;
@@ -287,7 +290,73 @@ const ChatWindow = ({
 
         // Listen for chat errors
         const offChatError = socketManager.on("chat_error", (error) => {
-          console.error("Chat error:", error);
+          let details = "Unknown error";
+          try {
+            if (error) {
+              if (typeof error === "string") {
+                details = error;
+              } else if (error?.message) {
+                details = error.message;
+              } else {
+                const seen = new WeakSet();
+                details = JSON.stringify(error, (key, value) => {
+                  if (typeof value === "object" && value !== null) {
+                    if (seen.has(value)) return "[circular]";
+                    seen.add(value);
+                  }
+                  if (typeof value === "bigint") return value.toString();
+                  return value;
+                });
+              }
+            }
+          } catch (_) {
+            try {
+              details = String(error);
+            } catch {
+              details = "[unserializable error]";
+            }
+          }
+          console.error("Chat error:", details);
+          // Fallback: if server says chat does not exist, attempt to create then resend last message
+          if (
+            typeof details === "string" &&
+            details.toLowerCase().includes("does not exist") &&
+            selectedUser &&
+            !selectedUser.isTemporary &&
+            socketManager.socket
+          ) {
+            try {
+              const userBIdGuess = selectedUser?.userB?.id || userBId || null;
+              if (currentUserId && userBIdGuess) {
+                const handleCreatedAndResend = (newChat) => {
+                  try {
+                    const realId = newChat?.id;
+                    if (realId) {
+                      setSelectedUser({ ...(selectedUser || {}), id: realId });
+                      const msg = lastAttemptedMessageRef.current;
+                      if (msg && socketManager.socket?.connected) {
+                        socketManager.socket.emit("send_message", {
+                          senderId: currentUserId,
+                          conversationId: realId,
+                          content: msg,
+                        });
+                      }
+                    }
+                  } finally {
+                    socketManager.socket?.off(
+                      "chat_created",
+                      handleCreatedAndResend,
+                    );
+                  }
+                };
+                socketManager.socket.on("chat_created", handleCreatedAndResend);
+                socketManager.socket.emit("create_chat", {
+                  userAId: currentUserId,
+                  userBId: userBIdGuess,
+                });
+              }
+            } catch (_) {}
+          }
           setSending(false);
           setSendingMessageId(null);
         });
@@ -436,6 +505,7 @@ const ChatWindow = ({
       );
       setSending(true);
       const messageToSend = newMessage;
+      lastAttemptedMessageRef.current = messageToSend;
       setNewMessage("");
 
       // Store the message to send after chat creation
@@ -523,6 +593,7 @@ const ChatWindow = ({
     console.log("🔍 [ChatWindow] Setting sending to true");
     setSending(true);
     const messageToSend = newMessage;
+    lastAttemptedMessageRef.current = messageToSend;
     const tempId = `temp_${Date.now()}`;
     setSendingMessageId(tempId);
     setNewMessage("");
@@ -653,11 +724,13 @@ const ChatWindow = ({
           <div className="flex flex-col">
             <h1 className="text-sm font-medium text-[#282828] md:text-[17px] md:leading-[24px]">
               {otherUser?.name ||
-                (selectedUser?.isTemporary ? "Connecting..." : "User")}
+                (selectedUser?.isTemporary
+                  ? t("chat.connecting")
+                  : t("chat.user"))}
             </h1>
             <div className="flex items-center gap-1">
               <span className="text-xs text-[#7F7F7F] md:text-[14.4px] md:leading-[19.2px]">
-                Available Now
+                {t("chat.available_now")}
               </span>
               <div className="size-[10px] rounded-full bg-[#7DDE86]"></div>
             </div>
@@ -679,9 +752,13 @@ const ChatWindow = ({
           })}
 
           {loading && (!messages || messages.length === 0) ? (
-            <div className="py-8 text-center text-gray-400">Loading...</div>
+            <div className="py-8 text-center text-gray-400">
+              {t("common.loading")}
+            </div>
           ) : !messages || messages.length === 0 ? (
-            <div className="py-8 text-center text-gray-400">No messages</div>
+            <div className="py-8 text-center text-gray-400">
+              {t("chat.no_messages")}
+            </div>
           ) : (
             (console.log(
               "🔍 [ChatWindow] Message read flags:",

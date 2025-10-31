@@ -10,8 +10,10 @@ import { useSearchParams } from "next/navigation";
 import OrderDetailsSkeleton from "@/components/loaders/OrderDetailsSkeleton";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import useTranslation from "@/hooks/useTranslation";
 
 const OrderDetailsPage = () => {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -48,10 +50,10 @@ const OrderDetailsPage = () => {
               className="flex items-center gap-2 text-sm text-darkBlue hover:underline"
             >
               <ArrowLeft className="size-4" />
-              <span>Back</span>
+              <span>{t("header.back")}</span>
             </Link>
           </div>
-          Order Details
+          {t("orders.order_details")}
         </div>
       </PageHeading>
       <div className="flex w-full max-w-4xl flex-col items-center justify-center gap-20">

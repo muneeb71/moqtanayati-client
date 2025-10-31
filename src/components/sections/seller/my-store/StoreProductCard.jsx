@@ -3,8 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { updateProductStock } from "@/lib/api/product/updateStock";
+import useTranslation from "@/hooks/useTranslation";
 
 const StoreProductCard = ({ item, onNavigateStart }) => {
+  const { t } = useTranslation();
   const [stock, setStock] = useState(item?.stock || 0);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -92,8 +94,8 @@ const StoreProductCard = ({ item, onNavigateStart }) => {
             </h1>
             <div className="w-fit rounded-full bg-moonstone px-2 py-1 text-xs text-white">
               {item.status === "DRAFT"
-                ? "Draft"
-                : item.pricingFormat || "INCOMPLETE"}
+                ? t("seller.store.draft")
+                : item.pricingFormat || t("seller.store.incomplete")}
             </div>
           </div>
           {item.status !== "DRAFT" &&

@@ -2,21 +2,26 @@
 
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
+import useTranslation from "@/hooks/useTranslation";
 
 const HelpCenterBar = () => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const router = useRouter();
 
   const helpCenterCategories = [
-    { title: "FAQs", href: "faqs" },
-    { title: "User Guides", href: "user-guides" },
+    { title: t("seller.help_center.tabs.faqs"), href: "faqs" },
+    { title: t("seller.help_center.tabs.user_guides"), href: "user-guides" },
   ];
 
   const helpCenterSubCategories = [
-    { title: "All", href: "all" },
-    { title: "Buying", href: "buying" },
-    { title: "Selling", href: "selling" },
-    { title: "Account", href: "account-management" },
+    { title: t("seller.help_center.subtabs.all"), href: "all" },
+    { title: t("seller.help_center.subtabs.buying"), href: "buying" },
+    { title: t("seller.help_center.subtabs.selling"), href: "selling" },
+    {
+      title: t("seller.help_center.subtabs.account"),
+      href: "account-management",
+    },
   ];
 
   return (

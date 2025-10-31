@@ -7,8 +7,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import { useInventoryStore } from "@/providers/inventory-store-provider";
+import useTranslation from "@/hooks/useTranslation";
 
 const StoreProductsSection = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const [isNavigating, setIsNavigating] = useState(false);
@@ -55,9 +57,13 @@ const StoreProductsSection = () => {
       )}
 
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-medium">Products</h1>
+        <h1 className="text-3xl font-medium">{t("seller.store.products")}</h1>
         <RoundedButton
-          title={isNavigating ? "Opening..." : "Add Product"}
+          title={
+            isNavigating
+              ? t("seller.store.opening")
+              : t("seller.store.add_product")
+          }
           className={`max-h-[50px] flex-row-reverse gap-2 py-3 text-sm ${
             isNavigating ? "opacity-60" : ""
           }`}
@@ -76,7 +82,7 @@ const StoreProductsSection = () => {
 
       {isLoadingProducts ? (
         <span className="rounded-2xl bg-moonstone/20 py-20 text-center text-2xl text-black/80">
-          Loading products...
+          {t("seller.store.loading_products")}
         </span>
       ) : productsError ? (
         <span className="rounded-2xl bg-red-100 py-20 text-center text-2xl text-red-600">
@@ -94,7 +100,7 @@ const StoreProductsSection = () => {
         </div>
       ) : (
         <span className="rounded-2xl bg-moonstone/20 py-20 text-center text-2xl text-black/80">
-          No Products in store
+          {t("seller.store.no_products")}
         </span>
       )}
     </div>

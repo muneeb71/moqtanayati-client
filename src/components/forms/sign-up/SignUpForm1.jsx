@@ -15,8 +15,10 @@ import { useRegisterStore } from "@/providers/register-provider";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import useTranslation from "@/hooks/useTranslation";
 
 const SignUpForm1 = ({ role: propRole }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -54,7 +56,7 @@ const SignUpForm1 = ({ role: propRole }) => {
     if (emailLoading) return;
     console.log("email : ", email);
     if (!name || !email) {
-      toast.error("Please fill in your name and email.");
+      toast.error(t("signup.fill_name_email"));
       return;
     }
 
@@ -66,7 +68,7 @@ const SignUpForm1 = ({ role: propRole }) => {
       console.log("res data email verify : ", res.data?.otp);
 
       if (res.success) {
-        toast.success("OTP sent to your email.");
+        toast.success(t("signup.otp_sent_email"));
 
         // Pass the OTP in the URL if it's available in the response
         const otpParam = res.data?.otp ? `&otp=${res.data.otp}` : "";
@@ -82,10 +84,10 @@ const SignUpForm1 = ({ role: propRole }) => {
         const base = `/${role}/sign-up/email-otp?${qs.toString()}`;
         router.push(`${base}${otpParam}`);
       } else {
-        toast.error(res.message || "Failed to send OTP.");
+        toast.error(res.message || t("signup.failed_send_otp"));
       }
     } catch (e) {
-      toast.error("Failed to send OTP.");
+      toast.error(t("signup.failed_send_otp"));
     } finally {
       setEmailLoading(false);
     }
@@ -94,11 +96,11 @@ const SignUpForm1 = ({ role: propRole }) => {
   const handleVerifyPhone = async () => {
     if (phoneLoading) return;
     if (!name || !email || !phone) {
-      toast.error("Please fill in all fields (name, email, and phone).");
+      toast.error(t("signup.fill_all_fields"));
       return;
     }
     if (!emailVerified) {
-      toast.error("Please verify your email first.");
+      toast.error(t("signup.verify_email_first"));
       return;
     }
     try {
@@ -107,7 +109,7 @@ const SignUpForm1 = ({ role: propRole }) => {
       const res = await sendPhoneOtp({ phone });
 
       if (res.success) {
-        toast.success("OTP sent to your phone.");
+        toast.success(t("signup.otp_sent_phone"));
         // Pass the OTP in the URL if it's available in the response
         const otpParam = res.data?.otp ? `&otp=${res.data.otp}` : "";
 
@@ -117,10 +119,10 @@ const SignUpForm1 = ({ role: propRole }) => {
           )}${otpParam}`,
         );
       } else {
-        toast.error(res.message || "Failed to send OTP.");
+        toast.error(res.message || t("signup.failed_send_otp"));
       }
     } catch (e) {
-      toast.error("Failed to send OTP.");
+      toast.error(t("signup.failed_send_otp"));
     } finally {
       setPhoneLoading(false);
     }
@@ -129,11 +131,11 @@ const SignUpForm1 = ({ role: propRole }) => {
   return (
     <>
       <div className="flex w-full flex-col gap-2 px-2 py-5 md:gap-5 md:py-10">
-        <h1 className="text-lg md:text-2xl">Tell us about yourself</h1>
+        <h1 className="text-lg md:text-2xl">{t("signup.tell_us")}</h1>
         <div className="flex w-full flex-col gap-1">
-          <Label text="Full Name" />
+          <Label text={t("signup.full_name")} />
           <InputField
-            placeholder="Enter your full name"
+            placeholder={t("signup.full_name_placeholder")}
             icon={profileUserIcon}
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -143,9 +145,9 @@ const SignUpForm1 = ({ role: propRole }) => {
           />
         </div>
         <div className="flex w-full flex-col gap-1">
-          <Label text="Email" />
+          <Label text={t("login.email_label")} />
           <InputField
-            placeholder="Enter your email"
+            placeholder={t("login.email_placeholder")}
             icon={profileEmailIcon}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -154,9 +156,9 @@ const SignUpForm1 = ({ role: propRole }) => {
           />
         </div>
         <div className="flex w-full flex-col gap-1">
-          <Label text="Phone" />
+          <Label text={t("signup.phone")} />
           <InputField
-            placeholder="Enter your phone number"
+            placeholder={t("signup.phone_placeholder")}
             icon={profilePhoneIcon}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
@@ -171,7 +173,7 @@ const SignUpForm1 = ({ role: propRole }) => {
             <RoundedButton
               type="button"
               onClick={handleVerifyEmail}
-              title="Verify Email"
+              title={t("signup.verify_email")}
               showIcon
               disabled={emailLoading}
               loading={emailLoading || undefined}
@@ -181,7 +183,9 @@ const SignUpForm1 = ({ role: propRole }) => {
         ) : !phoneVerified ? (
           <RoundedButton
             onClick={handleVerifyPhone}
-            title={phoneLoading ? "Verifying..." : "Verify Phone"}
+            title={
+              phoneLoading ? t("signup.verifying") : t("signup.verify_phone")
+            }
             showIcon
             disabled={phoneLoading}
             className="min-w-72"
@@ -202,7 +206,7 @@ const SignUpForm1 = ({ role: propRole }) => {
                   setContinueLoading(false);
                 }
               }}
-              title="Continue to ID Proof"
+              title={t("signup.continue_id_proof")}
               showIcon
               disabled={continueLoading}
               loading={continueLoading || undefined}
@@ -211,8 +215,10 @@ const SignUpForm1 = ({ role: propRole }) => {
           </div>
         )}
         <div className="flex items-center gap-1">
-          Already have an account?{" "}
-          <CustomLink href={"/" + role + "/login"}>Sign in</CustomLink>
+          {t("signup.already_account")}{" "}
+          <CustomLink href={"/" + role + "/login"}>
+            {t("signup.sign_in")}
+          </CustomLink>
         </div>
       </div>
     </>

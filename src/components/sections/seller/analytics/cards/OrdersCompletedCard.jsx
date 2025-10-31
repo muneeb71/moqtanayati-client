@@ -1,6 +1,9 @@
+"use client";
 import { arrowUpRightIcon } from "@/assets/icons/seller-icons";
+import useTranslation from "@/hooks/useTranslation";
 
 const OrdersCompletedCard = ({ completedOrders }) => {
+  const { t } = useTranslation();
   return (
     <div
       className="flex w-full flex-col gap-5 rounded-[30px] px-6 py-7 text-[#1595B5]"
@@ -8,7 +11,9 @@ const OrdersCompletedCard = ({ completedOrders }) => {
         background: "linear-gradient(180deg, #CAEFF9 0%, #E0F2F8 100%)",
       }}
     >
-      <h1 className="text-2xl font-semibold">Orders Completed</h1>
+      <h1 className="text-2xl font-semibold">
+        {t("analytics.orders_completed")}
+      </h1>
       <div className="flex w-full justify-between">
         <span className="text-5xl font-semibold">{completedOrders ?? 0}</span>
         <div className="flex flex-col items-end">

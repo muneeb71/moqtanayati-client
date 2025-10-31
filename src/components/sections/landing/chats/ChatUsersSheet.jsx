@@ -10,8 +10,10 @@ import {
 } from "@/components/ui/sheet";
 import { MenuIcon, User } from "lucide-react";
 import Image from "next/image";
+import useTranslation from "@/hooks/useTranslation";
 
 const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {
+  const { t } = useTranslation();
   return (
     <Sheet>
       <SheetTrigger>
@@ -19,7 +21,9 @@ const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {
       </SheetTrigger>
       <SheetContent className="px-3 py-6">
         <SheetHeader>
-          <SheetTitle className="text-delftBlue">Conversations</SheetTitle>
+          <SheetTitle className="text-delftBlue">
+            {t("chat.conversations")}
+          </SheetTitle>
         </SheetHeader>
         <div className="flex w-full flex-col gap-6 py-6">
           <div className="flex h-[61px] items-center gap-3 rounded-[8px] bg-white px-4">
@@ -29,7 +33,7 @@ const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {
               name="searchChat"
               id="searchChat"
               className="w-full text-sm outline-none placeholder:text-[#858699]"
-              placeholder="Search..."
+              placeholder={t("chat.search_placeholder")}
             />
           </div>
           <div className="flex w-full flex-col">
@@ -56,7 +60,7 @@ const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {
                             user.name ||
                             user.userB?.name ||
                             user.userA?.name ||
-                            "User"
+                            t("chat.user")
                           }
                           className="h-full w-full object-cover"
                         />
@@ -69,7 +73,7 @@ const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {
                         {user.name ||
                           user.userB?.name ||
                           user.userA?.name ||
-                          "User"}
+                          t("chat.user")}
                       </h1>
                       <p className="max-w-[190px] truncate text-xs leading-[17.5px] text-[#595C75]">
                         {(() => {
@@ -78,7 +82,9 @@ const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {
                           return lastMessage ? (
                             <>
                               {lastMessage.senderId === user.userAId && (
-                                <span className="font-medium">You: </span>
+                                <span className="font-medium">
+                                  {t("chat.you")}:{" "}
+                                </span>
                               )}
                               <span
                                 className={
@@ -92,7 +98,7 @@ const ChatUsersSheet = ({ users, setSelectedUser, selectedUser }) => {
                             </>
                           ) : (
                             <span className="italic text-gray-400">
-                              No messages
+                              {t("chat.no_messages")}
                             </span>
                           );
                         })()}

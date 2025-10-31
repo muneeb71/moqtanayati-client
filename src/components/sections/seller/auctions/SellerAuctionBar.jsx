@@ -4,8 +4,10 @@ import { cn } from "@/lib/utils";
 import { slugify } from "@/utils/slugify";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuctionStore } from "@/providers/auction-store-provider";
+import useTranslation from "@/hooks/useTranslation";
 
 const SellerAuctionBar = () => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const router = useRouter();
   const auctionProducts = useAuctionStore((s) => s.auctionProducts) || [];
@@ -48,15 +50,19 @@ const SellerAuctionBar = () => {
 
   const auctionCategories = [
     {
-      title: `Live${counts.live ? ` (${counts.live})` : ""}`,
+      title: `${t("seller.auctions.live")}${counts.live ? ` (${counts.live})` : ""}`,
       href: "/live",
     },
     {
-      title: `Upcoming${counts.upcoming ? ` (${counts.upcoming})` : ""}`,
+      title: `${t("seller.auctions.upcoming")}${
+        counts.upcoming ? ` (${counts.upcoming})` : ""
+      }`,
       href: "/upcoming",
     },
     {
-      title: `History${counts.history ? ` (${counts.history})` : ""}`,
+      title: `${t("seller.auctions.history")}${
+        counts.history ? ` (${counts.history})` : ""
+      }`,
       href: "/history",
     },
   ];

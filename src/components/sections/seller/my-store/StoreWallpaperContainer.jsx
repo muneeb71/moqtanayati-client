@@ -5,8 +5,10 @@ import { PenLineIcon, ImageOff } from "lucide-react";
 import Image from "next/image";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import { updateSellerStore } from "@/lib/api/seller-store/editStoreBackroundImage";
+import useTranslation from "@/hooks/useTranslation";
 
 const StoreWallpaperContainer = () => {
+  const { t } = useTranslation();
   const store = useProfileStore((state) => state.store);
 
   const setStore = useProfileStore((state) => state.setStore);
@@ -78,7 +80,7 @@ const StoreWallpaperContainer = () => {
 
       {uploading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white">
-          Uploading...
+          {t("seller.store.uploading")}
         </div>
       )}
 
@@ -91,7 +93,9 @@ const StoreWallpaperContainer = () => {
           <div className="grid size-8 place-items-center rounded-full border-2 border-white bg-darkBlue text-white">
             <PenLineIcon className="size-4" />
           </div>
-          <span className="hidden pr-4 font-medium sm:inline">Edit</span>
+          <span className="hidden pr-4 font-medium sm:inline">
+            {t("seller.store.edit")}
+          </span>
         </button>
 
         <input

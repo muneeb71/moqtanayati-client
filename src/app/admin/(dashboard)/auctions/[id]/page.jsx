@@ -8,10 +8,12 @@ import AuctionsDescriptionCard from "@/components/sections/admin/auctions/Auctio
 import ProductDetailsSlider from "@/components/slider/ProductDetailsSlider";
 import { getAdminAuctionById } from "@/lib/api/admin/auctions/getAdminAuctionById";
 import AdminAuctionSkeleton from "@/components/shimmer/adminAuctionSkeletion";
+import useTranslation from "@/hooks/useTranslation";
 
 const AdminAuctionPage = ({ params }) => {
   const { id: productId } = use(params);
   const [auctionDetail, setAuctionDetail] = useState(null);
+  const { t } = useTranslation();
 
   const fetchAuction = async () => {
     try {
@@ -33,7 +35,7 @@ const AdminAuctionPage = ({ params }) => {
   return (
     <div className="flex w-full flex-col items-center gap-10 pb-20">
       <button className="self-end rounded-lg bg-white px-3 py-2 font-medium text-faluRed hover:bg-faluRed/10">
-        Cancel Auction
+        {t("admin.auctions.cancel_button")}
       </button>
       <div className="grid w-full max-w-7xl gap-10 md:grid-cols-2">
         <ProductDetailsSlider auctionDetail={auctionDetail} />

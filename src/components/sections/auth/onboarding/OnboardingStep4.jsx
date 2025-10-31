@@ -3,6 +3,7 @@
 import Image from "next/image";
 import RoundedButton from "@/components/buttons/RoundedButton";
 import { useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const Feature = ({ title, desc }) => (
   <div className="rounded-xl border border-gray-200 p-4">
@@ -12,49 +13,47 @@ const Feature = ({ title, desc }) => (
 );
 
 const OnboardingStep4 = ({ onNext, onBack }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   return (
     <div className="relative flex w-full flex-col items-center gap-6 p-6 md:p-12">
       {/* Back button provided by layout */}
       <div className="mx-auto max-w-xl">
         <h2 className="mb-2 text-3xl font-semibold text-eerieBlack">
-          Boost Your Sales with Smart Marketing!
+          {t("onboarding.step4.title")}
         </h2>
-        <p className="text-darkBlue/60">
-          Unlock tools to grow faster, reach more people and stand out in the
-          market
-        </p>
+        <p className="text-darkBlue/60">{t("onboarding.step4.subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <Feature
-          title="Rank Listings"
-          desc="We help your listings rank with built-in SEO boosts"
+          title={t("onboarding.step4.features.rank")}
+          desc={t("onboarding.step4.features.rank_desc")}
         />
         <Feature
-          title="Drop Custom Discounts"
-          desc="Create limited-time offers to increase clicks and buys"
+          title={t("onboarding.step4.features.discounts")}
+          desc={t("onboarding.step4.features.discounts_desc")}
         />
         <Feature
-          title="Run Affiliate Programs"
-          desc="Let creators promote your store and earn commission"
+          title={t("onboarding.step4.features.affiliates")}
+          desc={t("onboarding.step4.features.affiliates_desc")}
         />
         <Feature
-          title="Plan Your Campaigns"
-          desc="Boost your products across platforms to get engagement"
+          title={t("onboarding.step4.features.campaigns")}
+          desc={t("onboarding.step4.features.campaigns_desc")}
         />
         <Feature
-          title="Advertise to Right Crowd"
-          desc="Boost across platforms to reach more buyers"
+          title={t("onboarding.step4.features.advertise")}
+          desc={t("onboarding.step4.features.advertise_desc")}
         />
         <Feature
-          title="Highlight Best Deals"
-          desc="Pin exclusive offers and drive urgency"
+          title={t("onboarding.step4.features.highlight")}
+          desc={t("onboarding.step4.features.highlight_desc")}
         />
       </div>
       <div className="mx-auto mt-10">
         <RoundedButton
-          title={loading ? "Loading..." : "Next"}
+          title={loading ? t("common.loading") : t("onboarding.common.next")}
           onClick={() => {
             if (loading) return;
             setLoading(true);

@@ -8,6 +8,7 @@ import { useEffect, useState, use, useRef } from "react";
 import { socketManager } from "@/lib/socket-client";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import toast from "react-hot-toast";
+import useTranslation from "@/hooks/useTranslation";
 
 const statusMap = {
   "active-orders": ["PENDING", "PROCESSING", "SHIPPED"],
@@ -16,6 +17,7 @@ const statusMap = {
 };
 
 export default function OrdersPage({ params }) {
+  const { t } = useTranslation();
   const { category } = use(params);
   const [orders, setOrders] = useState([]);
   const storeOrders = (() => {
@@ -134,13 +136,20 @@ export default function OrdersPage({ params }) {
       <div className="flex items-baseline gap-1.5">
         <span className="text-lg font-medium">{filteredOrders.length}</span>
         <span className="text-sm text-battleShipGray">
-          {unslugify(category)}
+          {(() => {
+            const map = {
+              "active-orders": t("seller.orders.active_orders"),
+              cancelled: t("seller.orders.cancelled"),
+              completed: t("seller.orders.completed"),
+            };
+            return map[category] || unslugify(category);
+          })()}
         </span>
       </div>
       <div className="flex w-full flex-col gap-6">
         {filteredOrders.length === 0 ? (
           <span className="text-center text-battleShipGray">
-            No orders found.
+            {t("seller.orders.no_orders")}
           </span>
         ) : (
           filteredOrders.map((order) => (

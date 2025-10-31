@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { recentBids } from "@/lib/recent-bids";
 //import { recentPurchases } from "@/lib/recent-purchases";
@@ -12,8 +13,10 @@ import { getMyBidsDetail } from "@/lib/api/auctions/getMyBidsDetail";
 import UserSkeleton from "@/components/shimmer/userSkeleton";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api/axios";
+import useTranslation from "@/hooks/useTranslation";
 
 const UserDetails = ({ userId }) => {
+  const { t } = useTranslation();
   const [user, setUser] = useState(null);
   const [purchases, setRecentPurchases] = useState(null);
   const [bids, setRecentBids] = useState(null);
@@ -200,8 +203,8 @@ const UserDetails = ({ userId }) => {
             ) : (
               <>
                 {user.accountStatus === "DISABLED"
-                  ? "Enable User"
-                  : "Disable/Delete"}
+                  ? t("admin.users.details.enable_user")
+                  : t("admin.users.details.disable_delete")}
                 <IoChevronDown className="h-4 w-4" />
               </>
             )}
@@ -214,20 +217,20 @@ const UserDetails = ({ userId }) => {
                 className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
               >
                 {user.accountStatus === "DISABLED"
-                  ? "Enable User"
-                  : "Disable User"}
+                  ? t("admin.users.details.enable_user")
+                  : t("admin.users.details.disable_user")}
               </button>
               <button
                 onClick={deleteUser}
                 className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
               >
-                Delete User
+                {t("admin.users.details.delete_user")}
               </button>
               <button
                 onClick={() => setShowDropdown(false)}
                 className="w-full px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-100"
               >
-                Cancel
+                {t("admin.users.details.cancel")}
               </button>
             </div>
           )}
@@ -254,20 +257,20 @@ const UserDetails = ({ userId }) => {
                 className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
               >
                 {user.accountStatus === "DISABLED"
-                  ? "Enable User"
-                  : "Disable User"}
+                  ? t("admin.users.details.enable_user")
+                  : t("admin.users.details.disable_user")}
               </button>
               <button
                 onClick={deleteUser}
                 className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
               >
-                Delete User
+                {t("admin.users.details.delete_user")}
               </button>
               <button
                 onClick={() => setShowDropdown(false)}
                 className="w-full px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-100"
               >
-                Cancel
+                {t("admin.users.details.cancel")}
               </button>
             </div>
           )}
@@ -278,7 +281,9 @@ const UserDetails = ({ userId }) => {
           <div className="grid grid-cols-2 gap-3 lg:gap-5 xl:grid-cols-4">
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
               <p className="text-[14px] text-lightGray/60">
-                Bids {user?.role === "SELLER" ? "" : "Placed"}
+                {user?.role === "SELLER"
+                  ? t("admin.users.details.metrics.bids_seller")
+                  : t("admin.users.details.metrics.bids_buyer")}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
                 {user?.role === "SELLER"
@@ -288,7 +293,9 @@ const UserDetails = ({ userId }) => {
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
               <p className="text-[14px] text-lightGray/60">
-                {user?.role === "SELLER" ? "Sold Items" : "Purchases"}
+                {user?.role === "SELLER"
+                  ? t("admin.users.details.metrics.sold_items")
+                  : t("admin.users.details.metrics.purchases")}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
                 {totalPurchases}
@@ -296,14 +303,18 @@ const UserDetails = ({ userId }) => {
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
               <p className="text-[14px] text-lightGray/60">
-                {user?.role === "SELLER" ? "Earned" : "Spent"}
+                {user?.role === "SELLER"
+                  ? t("admin.users.details.metrics.earned")
+                  : t("admin.users.details.metrics.spent")}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
                 ${totalSpent}
               </p>
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
-              <p className="text-[14px] text-lightGray/60">Last Active</p>
+              <p className="text-[14px] text-lightGray/60">
+                {t("admin.users.details.metrics.last_active")}
+              </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
                 Today 9:45 am
               </p>
@@ -311,7 +322,9 @@ const UserDetails = ({ userId }) => {
           </div>
           <div className="flex h-full flex-col gap-4">
             <p className="text-[18px] font-semibold text-eerieBlack">
-              Recent {user?.role === "SELLER" ? "Listings" : "Bids"}
+              {user?.role === "SELLER"
+                ? t("admin.users.details.recent_listings")
+                : t("admin.users.details.recent_bids")}
             </p>
 
             <div className="no-scrollbar flex h-full max-h-[335px] max-w-[93vw] overflow-auto rounded-lg">
@@ -319,20 +332,22 @@ const UserDetails = ({ userId }) => {
                 <thead className="sticky top-0 text-nowrap bg-white">
                   <tr className="border-b border-gray-200 text-left">
                     <th className="text-customeBlue py-5 pl-8 font-semibold">
-                      Product
+                      {t("admin.users.details.product")}
                     </th>
                     <th className="text-customeBlue py-5 pl-8 font-semibold">
-                      {user?.role === "SELLER" ? "Highest Bid" : "Current Bid"}
+                      {user?.role === "SELLER"
+                        ? t("admin.users.details.highest_bid")
+                        : t("admin.users.details.current_bid")}
                     </th>
 
                     {user?.role === "SELLER" && (
                       <th className="text-customeBlue py-5 pl-8 font-semibold">
-                        No of Bidders
+                        {t("admin.users.details.num_bidders")}
                       </th>
                     )}
 
                     <th className="text-customeBlue py-5 pl-8 font-semibold">
-                      Status
+                      {t("admin.users.details.status")}
                     </th>
                   </tr>
                 </thead>
@@ -406,7 +421,7 @@ const UserDetails = ({ userId }) => {
 
                             <td className="py-3 pl-8 align-top">
                               <span className="rounded-lg bg-moonstone/10 px-5 py-1 text-[14px] font-semibold text-moonstone">
-                                Active
+                                {t("admin.users.details.active")}
                               </span>
                             </td>
                           </tr>
@@ -484,23 +499,25 @@ const UserDetails = ({ userId }) => {
           </div>
           <div className="flex h-full flex-col gap-4 pb-10">
             <p className="text-[18px] font-semibold text-eerieBlack">
-              Recent {user?.role === "SELLER" ? "Sales" : "Purchases"}
+              {user?.role === "SELLER"
+                ? t("admin.users.details.recent_sales")
+                : t("admin.users.details.recent_purchases")}
             </p>
             <div className="no-scrollbar flex h-full max-h-[335px] max-w-[93vw] overflow-auto rounded-lg">
               <table className="max-h-full w-full">
                 <thead className="sticky top-0 bg-white">
                   <tr className="border-b border-gray-200 text-left">
                     <th className="text-customeBlue py-5 pl-8 font-semibold">
-                      Product
+                      {t("admin.users.details.product")}
                     </th>
                     <th className="text-customeBlue py-5 pl-8 font-semibold">
-                      Price
+                      {t("admin.users.details.price")}
                     </th>
                     <th className="text-customeBlue py-5 pl-8 font-semibold">
-                      Status
+                      {t("admin.users.details.status")}
                     </th>
                     <th className="text-customeBlue py-5 pl-8 font-semibold">
-                      Date
+                      {t("admin.users.details.date")}
                     </th>
                   </tr>
                 </thead>
@@ -585,27 +602,37 @@ const UserDetails = ({ userId }) => {
         </div>
         <div className="flex h-fit flex-col gap-5 rounded-xl bg-white px-5 py-4">
           <div className="border-b border-gray-200 py-3 text-xl font-medium text-eerieBlack">
-            Personal Information
+            {t("admin.users.details.personal_info")}
           </div>
           <div className="flex flex-col gap-6">
             <div className="flex flex-col">
-              <p className="text-sm text-battleShipGray">Full Name</p>
+              <p className="text-sm text-battleShipGray">
+                {t("admin.users.details.full_name")}
+              </p>
               <p className="font-medium text-davyGray">{user.name}</p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm text-battleShipGray">Email</p>
+              <p className="text-sm text-battleShipGray">
+                {t("admin.users.details.email")}
+              </p>
               <p className="font-medium text-davyGray">{user.email}</p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm text-battleShipGray">Phone No.</p>
+              <p className="text-sm text-battleShipGray">
+                {t("admin.users.details.phone")}
+              </p>
               <p className="font-medium text-davyGray">{user.phone}</p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm text-battleShipGray">Address</p>
+              <p className="text-sm text-battleShipGray">
+                {t("admin.users.details.address")}
+              </p>
               <p className="font-medium text-davyGray">{user.address}</p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm text-battleShipGray">Registration Date</p>
+              <p className="text-sm text-battleShipGray">
+                {t("admin.users.details.registration_date")}
+              </p>
               <p className="font-medium text-davyGray">
                 {formatDateTime.formatDate(user.registrationDate)}
               </p>

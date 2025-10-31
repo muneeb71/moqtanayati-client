@@ -1,3 +1,5 @@
+"use client";
+import useTranslation from "@/hooks/useTranslation";
 const TablePagination = ({
   currentPage,
   totalPages,
@@ -5,13 +7,20 @@ const TablePagination = ({
   totalItems,
   onPageChange,
 }) => {
-  const start = 1 + (currentPage - 1) * rowsPerPage;
-  const end = Math.min(currentPage * rowsPerPage, totalItems);
+  const { t } = useTranslation();
+  const safePage = Math.max(1, Number(currentPage) || 1);
+  const safeRows = Number(rowsPerPage) || 0;
+  const safeTotal = Number(totalItems) || 0;
+  const start = safeTotal === 0 ? 0 : 1 + (safePage - 1) * safeRows;
+  const end = Math.min(safePage * safeRows, safeTotal);
 
   return (
     <div className="flex items-center justify-between bg-white py-5 pl-8">
       <p className="text-[14px] text-customGray">
-        Showing {start} - {end} from {totalItems}
+        {t("admin.pagination.showing")
+          .replace("{start}", String(start))
+          .replace("{end}", String(end))
+          .replace("{total}", String(totalItems))}
       </p>
 
       <div className="mr-10 flex items-center gap-2">
@@ -19,6 +28,7 @@ const TablePagination = ({
           className="flex h-8 w-8 items-center justify-center rounded-lg bg-lightBlue/20 text-moonstone hover:bg-moonstone/40 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
+          aria-label={t("admin.pagination.prev")}
         >
           ◀
         </button>
@@ -59,6 +69,7 @@ const TablePagination = ({
           className="flex h-8 w-8 items-center justify-center rounded-lg bg-lightBlue/20 text-moonstone hover:bg-moonstone/40 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(currentPage + 1)}
+          aria-label={t("admin.pagination.next")}
         >
           ▶
         </button>

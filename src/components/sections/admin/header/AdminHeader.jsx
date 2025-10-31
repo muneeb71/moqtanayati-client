@@ -5,8 +5,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { bellIcon } from "@/assets/icons/header-icons";
 import { useAdminProfile } from "@/hooks/useAdminProfile";
+import LanguageSwitcher from "@/components/language/LanguageSwitcher";
+import useTranslation from "@/hooks/useTranslation";
 
 const AdminHeader = () => {
+  const { dir } = useTranslation();
   const router = useRouter();
   const { profile, loading, error, refetch } = useAdminProfile();
   const [navLoading, setNavLoading] = useState(false);
@@ -62,8 +65,12 @@ const AdminHeader = () => {
   };
 
   return (
-    <div className="flex h-full max-h-[76px] w-full items-center justify-end rounded-l-[18px] rounded-r-[39px] bg-white px-8">
+    <div
+      className="flex h-full max-h-[76px] w-full items-center justify-end rounded-l-[18px] rounded-r-[39px] bg-white px-8"
+      dir={dir}
+    >
       <div className="align-center flex justify-end gap-4">
+        <LanguageSwitcher />
         <div
           className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-slate-100"
           onClick={handleBellClick}

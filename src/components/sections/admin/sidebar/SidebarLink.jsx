@@ -4,8 +4,10 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const SidebarLink = ({ link, onLoadingChange }) => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -96,7 +98,7 @@ const SidebarLink = ({ link, onLoadingChange }) => {
           <span className="inline-flex h-6 w-6 items-center justify-center [&_*]:fill-current [&_*]:stroke-current">
             {link.icon}
           </span>
-          {link.title}
+          {link.i18nKey ? t(link.i18nKey) : link.title}
         </button>
         {open && (
           <div className="ml-8 mt-1 flex flex-col gap-1">
@@ -116,8 +118,10 @@ const SidebarLink = ({ link, onLoadingChange }) => {
                 {subLoadingHref === sub.href ? (
                   <div className="flex items-center gap-2">
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    Loading...
+                    {t("common.loading")}
                   </div>
+                ) : sub.i18nKey ? (
+                  t(sub.i18nKey)
                 ) : (
                   sub.title
                 )}
@@ -148,8 +152,10 @@ const SidebarLink = ({ link, onLoadingChange }) => {
       {loading ? (
         <div className="flex items-center gap-2">
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-          Loading...
+          {t("common.loading")}
         </div>
+      ) : link.i18nKey ? (
+        t(link.i18nKey)
       ) : (
         link.title
       )}

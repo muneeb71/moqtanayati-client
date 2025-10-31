@@ -19,8 +19,10 @@ import { getToken } from "firebase/messaging";
 import { notificationHandler } from "@/lib/notification-handler";
 import { useNotificationStoreContext } from "@/providers/notification-store-provider";
 import { socketManager } from "@/lib/socket-client";
+import useTranslation from "@/hooks/useTranslation";
 
 const LoginForm = ({ role }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
@@ -278,20 +280,20 @@ const LoginForm = ({ role }) => {
       {/* Optionally, capture device token. In production, populate via FCM or native bridge */}
       <input type="hidden" value={deviceToken} onChange={() => {}} readOnly />
       <div className="flex w-full flex-col">
-        <Label htmlFor="email" text="Email" />
+        <Label htmlFor="email" text={t("login.email_label")} />
         <InputField
           icon={envelopeIcon}
           type="email"
-          placeholder="Enter your email"
+          placeholder={t("login.email_placeholder")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
       <div className="flex w-full flex-col">
-        <Label htmlFor="password" text="Password" />
+        <Label htmlFor="password" text={t("login.password_label")} />
         <InputField
           icon={lockIcon}
-          placeholder="Enter your password"
+          placeholder={t("login.password_placeholder")}
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -302,13 +304,13 @@ const LoginForm = ({ role }) => {
               checked={keepLoggedIn}
               setChecked={setKeepLoggedIn}
             />
-            <span className="text-sm">Keep me logged in</span>
+            <span className="text-sm">{t("login.keep_me_logged_in")}</span>
           </div>
           <CustomLink
             className="text-sm"
             href={`/${role}/login/forget-password`}
           >
-            Forgot password ?
+            {t("login.forgot_password")}
           </CustomLink>
         </div>
       </div>
@@ -318,10 +320,10 @@ const LoginForm = ({ role }) => {
           className="w-fit px-10"
           disabled={isPending}
           loading={isPending || undefined}
-          title={isPending ? "Logging in..." : "Log into your account"}
+          title={isPending ? t("login.logging_in") : t("login.login_cta")}
         />
         <div className="flex items-center gap-1 text-sm font-medium text-battleShipGray">
-          New to {appName}?
+          {t("login.new_to")} {appName}?
           <button
             type="button"
             onClick={handleCreateAccount}
@@ -330,11 +332,11 @@ const LoginForm = ({ role }) => {
           >
             {createLoading ? (
               <span className="inline-flex items-center gap-2">
-                <span>Loading...</span>
+                <span>{t("common.loading")}</span>
                 <span className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
               </span>
             ) : (
-              "Create Account"
+              t("login.create_account")
             )}
           </button>
         </div>

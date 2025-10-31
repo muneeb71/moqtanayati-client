@@ -7,8 +7,10 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeft, X, Search } from "lucide-react";
 import PageHeading from "@/components/headings/PageHeading";
+import useTranslation from "@/hooks/useTranslation";
 
 const SearchClient = () => {
+  const { t, dir } = useTranslation();
   const searchParams = useSearchParams();
   const router = useRouter();
   const key = searchParams?.get("q") || "";
@@ -100,7 +102,7 @@ const SearchClient = () => {
             // Show initialList if no search key
             setItems(initialList);
             setAllProducts(initialList);
-            if (!category) setSearchTitle("All Products");
+            if (!category) setSearchTitle(t("search.title_all"));
             console.log(
               "🔍 [SearchClient] Showing all products:",
               initialList.length,
@@ -174,7 +176,7 @@ const SearchClient = () => {
             className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium text-darkBlue backdrop-blur"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back
+            {t("header.back")}
           </button>
           <span>{categoryNameFromSession || category || "All Products"}</span>
           <span className="w-10" />
@@ -182,7 +184,10 @@ const SearchClient = () => {
       </PageHeading>
       <div className="flex w-full max-w-7xl flex-col items-center gap-10 py-20">
         {/* Custom Search Input that respects category context */}
-        <div className="relative flex h-[60px] w-[88%] items-center justify-center gap-3 rounded-[12px] bg-[#F8F7F8] px-3 md:h-[75px] md:w-full md:max-w-[502px] md:px-5">
+        <div
+          className="relative flex h-[60px] w-[88%] items-center justify-center gap-3 rounded-[12px] bg-[#F8F7F8] px-3 md:h-[75px] md:w-full md:max-w-[502px] md:px-5"
+          dir={dir}
+        >
           <Search className="h-5 w-5 text-[#858699]" />
           <input
             type="text"
@@ -195,8 +200,11 @@ const SearchClient = () => {
             className="w-full bg-transparent text-sm outline-none placeholder:text-[#858699] focus:outline-none md:text-[21px]"
             placeholder={
               category
-                ? `Search within ${category}...`
-                : "Search for anything you need…"
+                ? t("search.placeholder_category").replace(
+                    "{category}",
+                    category,
+                  )
+                : t("search.placeholder_general")
             }
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -228,10 +236,10 @@ const SearchClient = () => {
         ) : (
           <div className="flex w-full items-center justify-center py-20">
             <div className="w-full rounded-2xl bg-moonstone/10 py-16 text-center text-davyGray">
-              <p className="text-xl font-medium">No products found</p>
-              <p className="mt-1 text-sm">
-                Try another keyword or clear the search.
+              <p className="text-xl font-medium">
+                {t("search.no_results_title")}
               </p>
+              <p className="mt-1 text-sm">{t("search.no_results_sub")}</p>
             </div>
           </div>
         )}

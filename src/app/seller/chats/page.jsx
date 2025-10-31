@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import useTranslation from "@/hooks/useTranslation";
 import { useRouter, useSearchParams } from "next/navigation";
 import ChatSidebar from "@/components/sections/landing/chats/ChatSidebar";
 import ChatWindow from "@/components/sections/landing/chats/ChatWindow";
@@ -14,6 +15,7 @@ import ChatSidebarSkeleton from "@/components/loaders/chats/ChatSidebarSkeleton"
 import ChatWindowSkeleton from "@/components/loaders/chats/ChatWindowSkeleton";
 
 const ChatPage = () => {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const userIdFromParams = searchParams.get("id");
   const currentUserId = useProfileStore((s) => s.id);
@@ -234,7 +236,7 @@ const ChatPage = () => {
         )
       ) : (
         <div className="flex min-h-[300px] w-full items-center justify-center text-lg text-gray-400">
-          No chat selected
+          {t("chat.no_chat_selected")}
         </div>
       )}
       {/* Mobile user sheet */}

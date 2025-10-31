@@ -11,26 +11,28 @@ import TablePagination from "@/components/pagination/TablePagination";
 import { useRef } from "react";
 import { BiSearch } from "react-icons/bi";
 import Filter from "@/components/dropdown/filter";
-
-const tableHeaders = [
-  "Product",
-  "Buyer",
-  "Payment",
-  "Delivery Status",
-  "Order Date",
-  "Review",
-];
+import useTranslation from "@/hooks/useTranslation";
 
 const OrdersTable = () => {
+  const { t } = useTranslation();
+  const tableHeaders = [
+    t("admin.orders.headers.product"),
+    t("admin.orders.headers.buyer"),
+    t("admin.orders.headers.payment"),
+    t("admin.orders.headers.delivery_status"),
+    t("admin.orders.headers.order_date"),
+    t("admin.orders.headers.review"),
+  ];
+
   const [sortBy, setSortBy] = useState("SELLER");
 
   const orderSortOptions = [
-    { label: "Newest", value: "newest" },
-    { label: "Oldest", value: "oldest" },
-    { label: "Orders Pending", value: "PENDING" },
-    { label: "Orders Processing", value: "PROCESSING" },
-    { label: "Orders Delivered", value: "DELIVERED" },
-    { label: "Orders Cancelled", value: "CANCELLED" },
+    { label: t("admin.orders.sort.newest"), value: "newest" },
+    { label: t("admin.orders.sort.oldest"), value: "oldest" },
+    { label: t("admin.orders.sort.pending"), value: "PENDING" },
+    { label: t("admin.orders.sort.processing"), value: "PROCESSING" },
+    { label: t("admin.orders.sort.delivered"), value: "DELIVERED" },
+    { label: t("admin.orders.sort.cancelled"), value: "CANCELLED" },
   ];
 
   const tableRef = useRef(null);
@@ -99,10 +101,12 @@ const OrdersTable = () => {
       >
         <div className="flex flex-col gap-1">
           <span className="text-2xl font-semibold text-russianViolet">
-            Manage Purchases
+            {t("admin.orders.manage_purchases")}
           </span>
           <div className="flex flex-row items-center gap-5">
-            <p className="text-[18px] font-normal text-davyGray">Recents</p>
+            <p className="text-[18px] font-normal text-davyGray">
+              {t("admin.orders.recents")}
+            </p>
           </div>
         </div>
 
@@ -110,7 +114,7 @@ const OrdersTable = () => {
           <div className="relative w-full max-w-[220px]">
             <input
               type="text"
-              placeholder="Search"
+              placeholder={t("admin.orders.search")}
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -164,7 +168,7 @@ const OrdersTable = () => {
                     colSpan={7}
                     className="py-10 text-center text-sm text-gray-500"
                   >
-                    No orrders found.
+                    {t("admin.orders.no_orders")}
                   </td>
                 </tr>
               ) : (
@@ -291,7 +295,7 @@ const OrdersTable = () => {
                       <div className="flex flex-col gap-1 px-5 py-4 font-medium">
                         <div className="flex items-center gap-1">
                           <span className="text-xs text-battleShipGray">
-                            Total price:
+                            {t("admin.orders.total_price")}
                           </span>
                           <span className="text-sm text-russianViolet">
                             ${data.totalAmount?.toFixed(2)}
@@ -307,7 +311,9 @@ const OrdersTable = () => {
                                 : "bg-faluRed/10 text-faluRed",
                           )}
                         >
-                          {data?.paymentStatus}
+                          {t(
+                            `admin.orders.payment_status.${String(data?.paymentStatus || "").toLowerCase()}`,
+                          )}
                         </div>
                       </div>
                     </td>
@@ -326,7 +332,9 @@ const OrdersTable = () => {
                                   : "bg-black/5 text-black/60",
                         )}
                       >
-                        {data.status}
+                        {t(
+                          `admin.orders.status.${String(data.status || "").toLowerCase()}`,
+                        )}
                       </div>
                     </td>
                     <td>
@@ -354,7 +362,7 @@ const OrdersTable = () => {
                           })
                         }
                       >
-                        Download
+                        {t("admin.orders.download")}
                       </button>
                     </td>
                   </tr>

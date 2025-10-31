@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { NotificationProvider } from "@/providers/notification-provider";
 import { NotificationStoreProvider } from "@/providers/notification-store-provider";
 import { ProductsStoreProvider } from "@/providers/products-store-provider";
+import { LanguageProvider } from "@/context/LanguageProvider";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -20,14 +21,16 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${font.className} antialiased`}>
-        <NotificationProvider>
-          <NotificationStoreProvider>
-            <ProductsStoreProvider>
-              {children}
-              <Toaster />
-            </ProductsStoreProvider>
-          </NotificationStoreProvider>
-        </NotificationProvider>
+        <LanguageProvider>
+          <NotificationProvider>
+            <NotificationStoreProvider>
+              <ProductsStoreProvider>
+                {children}
+                <Toaster />
+              </ProductsStoreProvider>
+            </NotificationStoreProvider>
+          </NotificationProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

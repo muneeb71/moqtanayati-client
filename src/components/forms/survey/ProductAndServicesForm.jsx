@@ -6,8 +6,10 @@ import { useSurveyStore } from "@/providers/survey-store-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const ProductAndServicesForm = ({ role }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [navigating, setNavigating] = useState(false);
 
@@ -30,11 +32,10 @@ const ProductAndServicesForm = ({ role }) => {
         className="mb-6 size-[52px]"
       />
       <h1 className="mb-2 text-start text-2xl text-black">
-        Products and Services
+        {t("survey.pas.title")}
       </h1>
       <p className="mb-7 text-xl text-darkBlue/50">
-        Finally, what is your business activity? Choose the products and
-        services you plan to sell
+        {t("survey.pas.subtitle")}
       </p>
       <div className="mb-10 grid max-w-xs grid-cols-4 gap-6">
         {productAndServicesCategories.map((category, i) => {
@@ -66,7 +67,7 @@ const ProductAndServicesForm = ({ role }) => {
         })}
       </div>
       <RoundedButton
-        title={navigating ? "Loading..." : "Next"}
+        title={navigating ? t("common.loading") : t("signup.next")}
         showIcon={!navigating}
         loading={navigating || undefined}
         onClick={handleNext}

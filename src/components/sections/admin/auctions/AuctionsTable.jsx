@@ -14,30 +14,32 @@ import TablePagination from "@/components/pagination/TablePagination";
 import ActionsDropdownButton from "./ActionsDropdownButton";
 
 import useAuctionStore from "@/stores/useAuctionStore";
+import useTranslation from "@/hooks/useTranslation";
 
-const tableHeaders = [
-  "Product",
-  "Starting Bid",
-  "Current Bid",
-  "Bidders",
-  "Time Remaining",
-  "Status",
-  "Actions",
+const tableHeaderKeys = [
+  "product",
+  "starting_bid",
+  "current_bid",
+  "bidders",
+  "time_remaining",
+  "status",
+  "actions",
 ];
 
-const auctionSortOptions = [
-  { label: "Newest", value: "newest" },
-  { label: "Oldest", value: "oldest" },
-  { label: "Live", value: "live" },
-  { label: "Ended", value: "ended" },
-  { label: "Upcoming", value: "upcoming" },
-  { label: "Highest Starting Bid", value: "highest starting bid" },
-  { label: "Lowest Starting Bid", value: "lowest starting bid" },
-  { label: "Highest Current Bid", value: "highest current bid" },
-  { label: "Lowest Current Bid", value: "lowest current bid" },
+const auctionSortOptionsKeys = [
+  { key: "newest", value: "newest" },
+  { key: "oldest", value: "oldest" },
+  { key: "live", value: "live" },
+  { key: "ended", value: "ended" },
+  { key: "upcoming", value: "upcoming" },
+  { key: "highest_starting_bid", value: "highest starting bid" },
+  { key: "lowest_starting_bid", value: "lowest starting bid" },
+  { key: "highest_current_bid", value: "highest current bid" },
+  { key: "lowest_current_bid", value: "lowest current bid" },
 ];
 
 const AuctionsTable = () => {
+  const { t } = useTranslation();
   const tableRef = useRef(null);
 
   const {
@@ -78,16 +80,18 @@ const AuctionsTable = () => {
       >
         <div className="flex flex-col gap-1">
           <span className="text-2xl font-semibold text-russianViolet">
-            Auctions
+            {t("admin.auctions.title")}
           </span>
-          <p className="text-[18px] font-normal text-davyGray">All Auctions</p>
+          <p className="text-[18px] font-normal text-davyGray">
+            {t("admin.auctions.all")}
+          </p>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="relative w-full max-w-[220px]">
             <input
               type="text"
-              placeholder="Search"
+              placeholder={t("admin.auctions.search")}
               value={auctionSearchTerm}
               onChange={(e) => {
                 setAuctionSearchTerm(e.target.value);
@@ -100,7 +104,10 @@ const AuctionsTable = () => {
           <Filter
             sortBy={auctionSortBy}
             setSortBy={setAuctionSortBy}
-            sortingOptions={auctionSortOptions}
+            sortingOptions={auctionSortOptionsKeys.map((o) => ({
+              label: t(`admin.auctions.sort.${o.key}`),
+              value: o.value,
+            }))}
           />
         </div>
       </div>
@@ -109,11 +116,11 @@ const AuctionsTable = () => {
         <table className="w-full min-w-[1200px] table-auto bg-white">
           <thead className="sticky top-0">
             <tr className="sticky top-0 border-b border-silver/30 bg-white">
-              {tableHeaders.map((header, index) => (
+              {tableHeaderKeys.map((key, index) => (
                 <th key={index}>
                   <div className="flex w-full min-w-[200px] items-center justify-between gap-3 text-nowrap px-5 py-4">
                     <span className="text-sm font-medium text-darkBlue">
-                      {header}
+                      {t(`admin.auctions.headers.${key}`)}
                     </span>
                   </div>
                 </th>
@@ -131,7 +138,7 @@ const AuctionsTable = () => {
                   colSpan={7}
                   className="py-10 text-center text-sm text-gray-500"
                 >
-                  No auctions found.
+                  {t("admin.auctions.no_auctions")}
                 </td>
               </tr>
             ) : (
@@ -276,7 +283,10 @@ const AuctionsTable = () => {
                               const minutes = Math.floor(
                                 (timeDiff / (1000 * 60)) % 60,
                               );
-                              return `${days}d ${hours}h ${minutes}m`;
+                              return t("admin.auctions.time_left")
+                                .replace("{d}", String(days))
+                                .replace("{h}", String(hours))
+                                .replace("{m}", String(minutes));
                             })()
                           : "N/A"}
                       </div>
@@ -292,7 +302,9 @@ const AuctionsTable = () => {
                               : "bg-black/5 text-black/60",
                         )}
                       >
-                        {auction.status}
+                        {t(
+                          `admin.auctions.status.${String(auction.status || "").toLowerCase()}`,
+                        )}
                       </div>
                     </td>
                     <td>

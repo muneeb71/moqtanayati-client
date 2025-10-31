@@ -10,8 +10,10 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import useTranslation from "@/hooks/useTranslation";
 
 const PhoneOtpForm = () => {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const phone = searchParams.get("phone");
   const role = searchParams.get("role") || "buyer";
@@ -43,7 +45,7 @@ const PhoneOtpForm = () => {
 
         if (res.success) {
           // Avoid double toast: this page only toasts on auto-send if no OTP in URL
-          toast.success("OTP sent to your phone.");
+          toast.success(t("phone_otp.sent"));
 
           // Pre-fill the OTP if it's available in the response
           if (res.data?.otp && res.data.otp.length === 6) {
@@ -53,11 +55,11 @@ const PhoneOtpForm = () => {
           }
         } else {
           console.error("Phone OTP send failed:", res);
-          toast.error(res.message || "Failed to send OTP.");
+          toast.error(res.message || t("phone_otp.send_failed"));
         }
       } catch (e) {
         console.error("Phone OTP send error:", e);
-        toast.error("Failed to send OTP.");
+        toast.error(t("phone_otp.send_failed"));
       }
       setSending(false);
     };
@@ -67,14 +69,14 @@ const PhoneOtpForm = () => {
   const handleVerifyOtp = async () => {
     const otpValue = otp.join("");
     if (otpValue.length !== 6) {
-      toast.error("Please enter the 6-digit OTP.");
+      toast.error(t("phone_otp.enter_six_digit"));
       return;
     }
     setVerifying(true);
     try {
       const res = await verifyPhoneOtp({ phone, otp: otpValue });
       if (res.success) {
-        toast.success("Phone verified!");
+        toast.success(t("phone_otp.verified"));
 
         // Return to SignUpForm1 with both flags so the UI shows "Continue to ID Proof"
         const qs = new URLSearchParams({
@@ -90,11 +92,11 @@ const PhoneOtpForm = () => {
         }
         router.push(`/${role}/sign-up?${qs.toString()}`);
       } else {
-        toast.error(res.error || "Invalid OTP.");
+        toast.error(res.error || t("phone_otp.invalid"));
       }
     } catch (e) {
       console.error("Verification error:", e);
-      toast.error("Failed to verify OTP.");
+      toast.error(t("phone_otp.verify_failed"));
     }
     setVerifying(false);
   };
@@ -104,7 +106,7 @@ const PhoneOtpForm = () => {
     try {
       const res = await sendPhoneOtp({ phone });
       if (res.success) {
-        toast.success("OTP resent to your phone.");
+        toast.success(t("phone_otp.resent"));
 
         // Pre-fill the new OTP if it's available in the response
         if (res.data?.otp && res.data.otp.length === 6) {
@@ -113,10 +115,10 @@ const PhoneOtpForm = () => {
           console.log("Pre-filled new OTP from resend:", res.data.otp);
         }
       } else {
-        toast.error(res.error || "Failed to resend OTP.");
+        toast.error(res.error || t("phone_otp.resend_failed"));
       }
     } catch (e) {
-      toast.error("Failed to resend OTP.");
+      toast.error(t("phone_otp.resend_failed"));
     }
     setSending(false);
   };
@@ -125,23 +127,27 @@ const PhoneOtpForm = () => {
     <div className="flex w-full flex-col gap-10 pt-20 md:gap-[66px] md:pt-10 lg:pt-0">
       <div className="flex w-full flex-col gap-16">
         <div className="flex w-full flex-col gap-2">
-          <h1 className="mt-20 text-2xl">Verify Your Phone Number</h1>
+          <h1 className="mt-20 text-2xl">{t("phone_otp.title")}</h1>
           <p className="text-darkBlue/50 md:text-[19px] md:leading-[29px]">
-            We've sent a 6-digit verification code to your phone:{" "}
-            <span className="text-delftBlue">{phone}</span>. Enter the code
-            below to verify your phone and continue.
+            {t("phone_otp.subtitle_prefix")}{" "}
+            <span className="text-delftBlue">{phone}</span>.{" "}
+            {t("phone_otp.subtitle_suffix")}
           </p>
         </div>
         <div className="flex flex-col gap-2 self-center">
           <Label
-            text="Enter 6-digit Code"
+            text={t("phone_otp.enter_code")}
             className="text-[19px] text-eerieBlack"
           />
           <PhoneOtpInput otp={otp} setOtp={setOtp} />
         </div>
         <div className="flex flex-col items-center gap-5 self-center">
           <RoundedButton
-            title={verifying ? "Verifying..." : "Verify & Continue"}
+            title={
+              verifying
+                ? t("phone_otp.verifying")
+                : t("phone_otp.verify_continue")
+            }
             showIcon
             className="w-fit self-center px-16"
             onClick={handleVerifyOtp}
@@ -149,13 +155,13 @@ const PhoneOtpForm = () => {
             loading={verifying || undefined}
           />
           <div className="flex items-center gap-1 text-sm font-medium text-battleShipGray">
-            Didn't receive the code?
+            {t("phone_otp.no_code")}
             <button
               className="text-moonstone underline"
               onClick={handleResend}
               disabled={sending}
             >
-              Resend OTP
+              {t("phone_otp.resend")}
             </button>
           </div>
         </div>

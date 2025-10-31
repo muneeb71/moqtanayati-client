@@ -1,6 +1,7 @@
 "use client";
 
 import { Cell, Pie, PieChart } from "recharts";
+import useTranslation from "@/hooks/useTranslation";
 
 const data = [
   { name: "Positive", value: 52.1, color: "#00FF7F" },
@@ -10,10 +11,13 @@ const data = [
 ];
 
 const RatingReviewsCard = ({ ratings = data }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-5 rounded-[30px] bg-[#F9F9FA] px-8 py-8">
-      <h2 className="text-2xl text-black font-bold">Ratings & Reviews</h2>
-      <div className="flex flex-col md:flex-row h-full items-center gap-6">
+      <h2 className="text-2xl font-bold text-black">
+        {t("analytics.ratings_reviews")}
+      </h2>
+      <div className="flex h-full flex-col items-center gap-6 md:flex-row">
         <div className="min-w-[250px]">
           <PieChart width={250} height={250}>
             <Pie
@@ -43,7 +47,15 @@ const RatingReviewsCard = ({ ratings = data }) => {
                   className="h-3 w-3 rounded-full"
                   style={{ backgroundColor: item.color }}
                 ></span>
-                {item.name}
+                {(() => {
+                  const key = String(item.name || "").toLowerCase();
+                  if (
+                    ["positive", "neutral", "negative", "nil"].includes(key)
+                  ) {
+                    return t(`analytics.ratings.${key}`);
+                  }
+                  return item.name;
+                })()}
               </div>
               {item.value?.toFixed(2)}%
             </li>

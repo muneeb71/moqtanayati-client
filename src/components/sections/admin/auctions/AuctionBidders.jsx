@@ -3,8 +3,10 @@
 import BidderCard from "@/components/cards/BidderCard";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import useTranslation from "@/hooks/useTranslation";
 
 const AuctionBidders = ({ bidders }) => {
+  const { t } = useTranslation();
   const [selectedBidder, setSelectedBidder] = useState(null);
   return (
     <div className="flex w-full flex-col items-center justify-center bg-[#F8F7FB] px-3">
@@ -16,7 +18,7 @@ const AuctionBidders = ({ bidders }) => {
       >
         <div className="flex flex-col gap-8">
           <h1 className="text-[32px] font-medium text-black/80">
-            Bidders{" "}
+            {t("admin.auctions.bidders")}{" "}
             <span className="text-[18px] text-moonstone">
               ({bidders.length})
             </span>

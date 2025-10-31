@@ -1,9 +1,11 @@
+"use client";
 import { searchIconSmall } from "@/assets/icons/common-icons";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { User } from "lucide-react";
 import { socketManager } from "@/lib/socket-client";
 import { useProfileStore } from "@/providers/profile-store-provider";
+import useTranslation from "@/hooks/useTranslation";
 
 const ChatSidebar = ({
   users,
@@ -13,6 +15,7 @@ const ChatSidebar = ({
   selectedUserId,
   setUsers, // Add this prop to update conversations
 }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const currentUserId = useProfileStore((s) => s.id);
   const filteredUsers = users.filter((user) =>
@@ -181,7 +184,7 @@ const ChatSidebar = ({
   return (
     <div className="hidden w-full flex-col rounded-[30px] border border-black/10 bg-[#F9F9F9] px-[20px] py-[30px] md:flex">
       <h1 className="border-b-[1.3px] border-[#F0F1F4] pb-[32px] text-center text-[23px] leading-[31px] text-delftBlue">
-        Conversations
+        {t("chat.conversations")}
       </h1>
       <div className="flex w-full flex-col gap-6 py-6">
         <div className="flex h-[61px] items-center gap-3 rounded-[8px] bg-white px-4">
@@ -191,14 +194,16 @@ const ChatSidebar = ({
             name="searchChat"
             id="searchChat"
             className="w-full text-sm outline-none placeholder:text-[#858699]"
-            placeholder="Search..."
+            placeholder={t("chat.search_placeholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
         <div className="flex w-full flex-col">
           {filteredUsers.length === 0 ? (
-            <div className="py-8 text-center text-gray-400">No chats</div>
+            <div className="py-8 text-center text-gray-400">
+              {t("chat.no_chats")}
+            </div>
           ) : (
             filteredUsers.map((user, index) => {
               const isSelected =
@@ -269,7 +274,7 @@ const ChatSidebar = ({
                         {user.name ||
                           user.userB?.name ||
                           user.userA?.name ||
-                          "User"}
+                          t("chat.user")}
                       </h1>
                       <p className="max-w-[200px] truncate pr-1 text-[13.17px] leading-[17.5px] text-[#595C75]">
                         {lastMessage ? (
@@ -278,7 +283,7 @@ const ChatSidebar = ({
                           </span>
                         ) : (
                           <span className="italic text-gray-400">
-                            No messages yet
+                            {t("chat.no_messages")}
                           </span>
                         )}
                       </p>

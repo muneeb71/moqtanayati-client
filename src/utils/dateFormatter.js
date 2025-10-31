@@ -40,6 +40,20 @@ function formatJoinDate(isoString) {
   return `Joined ${date.toLocaleDateString("en-US", options).replace(" ", ", ")}`;
 }
 
+function formatMonthYear(isoString) {
+  if (!isoString) return "Invalid Date";
+
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return "Invalid Date";
+
+  const options = {
+    month: "short",
+    year: "numeric",
+  };
+
+  return date.toLocaleDateString("en-US", options).replace(" ", ", ");
+}
+
 function getTimeAgo(timestamp) {
   const now = new Date();
   const createdAt = new Date(timestamp);
@@ -54,4 +68,10 @@ function getTimeAgo(timestamp) {
   return weeks === 1 ? "1 week ago" : `${weeks} weeks ago`;
 }
 
-export default { formatDateTime, formatDate, formatJoinDate, getTimeAgo };
+export default {
+  formatDateTime,
+  formatDate,
+  formatJoinDate,
+  formatMonthYear,
+  getTimeAgo,
+};

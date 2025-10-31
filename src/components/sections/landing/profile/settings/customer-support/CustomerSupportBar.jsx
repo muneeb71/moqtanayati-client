@@ -2,8 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
+import useTranslation from "@/hooks/useTranslation";
 
 const CustomerSupportBar = ({ selected = "contact", setSelected, role }) => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -18,7 +20,7 @@ const CustomerSupportBar = ({ selected = "contact", setSelected, role }) => {
             : "border-silver hover:border-moonstone hover:bg-moonstone/10",
         )}
       >
-        Contact Form
+        {t("seller.profile.support.tabs.contact")}
       </button>
       <button
         onClick={() => setSelected("whatsapp")}
@@ -29,7 +31,10 @@ const CustomerSupportBar = ({ selected = "contact", setSelected, role }) => {
             : "border-[#67C15E66] text-davyGray hover:border-[#67C15E] hover:bg-[#67C15E]/5",
         )}
       >
-        {whatsappIcon} <span className="hidden sm:inline">Whatsapp</span>
+        {whatsappIcon}{" "}
+        <span className="hidden sm:inline">
+          {t("seller.profile.support.tabs.whatsapp")}
+        </span>
       </button>
       <button
         onClick={() => setSelected("email")}
@@ -41,7 +46,9 @@ const CustomerSupportBar = ({ selected = "contact", setSelected, role }) => {
         )}
       >
         {emailSupportIcon}{" "}
-        <span className="hidden sm:inline">Email Support</span>
+        <span className="hidden sm:inline">
+          {t("seller.profile.support.tabs.email")}
+        </span>
       </button>
     </div>
   );

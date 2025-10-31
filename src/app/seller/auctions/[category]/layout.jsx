@@ -1,14 +1,16 @@
+"use client";
 import PageHeading from "@/components/headings/PageHeading";
 import SellerAuctionBar from "@/components/sections/seller/auctions/SellerAuctionBar";
-import { getAuctionsBySellerId } from "@/lib/api/auctions/getAllByStoreId";
+import useTranslation from "@/hooks/useTranslation";
 
-const CategoryLayout = async ({ children }) => {
+const CategoryLayout = ({ children }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex w-full flex-col items-center px-3">
       <PageHeading>
         <div className="flex items-baseline gap-1">
           <span className="text-sm md:text-[24px] md:leading-[36px]">
-            My Auctions
+            {t("seller.auctions.my_auctions")}
           </span>
         </div>
       </PageHeading>

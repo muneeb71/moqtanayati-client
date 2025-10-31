@@ -3,19 +3,21 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import useTranslation from "@/hooks/useTranslation";
 
 const RegisterSteps = ({ role }) => {
+  const { t } = useTranslation();
   const steps = [
     {
-      title: "Personal Details",
+      title: t("signup.step_personal_details"),
       href: "/" + role + "/sign-up",
     },
     {
-      title: "ID Proof",
+      title: t("signup.step_id_proof"),
       href: "/" + role + "/sign-up/id-proof",
     },
     {
-      title: "Password",
+      title: t("signup.step_password"),
       href: "/" + role + "/sign-up/password",
     },
   ];
@@ -25,7 +27,7 @@ const RegisterSteps = ({ role }) => {
   return (
     <div className="flex flex-col items-center gap-8">
       <h1 className="text-center text-xl font-medium text-delftBlue">
-        Create Your Account
+        {t("signup.create_account_title")}
       </h1>
       <div className="grid w-full grid-cols-3 gap-5 px-2">
         {steps.map((step, index) => {

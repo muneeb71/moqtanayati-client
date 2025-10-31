@@ -2,8 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import { UploadCloud } from "lucide-react";
+import useTranslation from "@/hooks/useTranslation";
 
 const FileUpload = ({ className, value, onChange }) => {
+  const { t } = useTranslation();
   return (
     <label
       className={cn(
@@ -13,11 +15,13 @@ const FileUpload = ({ className, value, onChange }) => {
       )}
     >
       <UploadCloud className="size-7 text-[#3E3065]" />
-      <p className="text-or Upload images mt-2 text-xs">or Upload images</p>
+      <p className="text-or Upload images mt-2 text-xs">
+        {t("seller.store.or_upload_images")}
+      </p>
       <input
         type="file"
         className="hidden"
-        onChange={e => {
+        onChange={(e) => {
           if (e.target.files && e.target.files[0]) {
             onChange(e.target.files[0]);
           }
