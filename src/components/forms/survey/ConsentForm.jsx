@@ -23,9 +23,11 @@ const ConsentForm = ({ userId, userData }) => {
 
   const router = useRouter();
 
-  const [submitting, setSubmitting] = useState(false);
+  const [agreeLoading, setAgreeLoading] = useState(false);
+  const [discoverLoading, setDiscoverLoading] = useState(false);
 
-  const handleAgreeButton = async () => {
+  const submitSurvey = async (setLoading) => {
+    if (agreeLoading || discoverLoading) return;
     if (!sellerEntity) {
       toast.error("Please select your seller entity first.");
       router.push("/survey/entity");
@@ -43,7 +45,7 @@ const ConsentForm = ({ userId, userData }) => {
       router.push("/seller/login");
       return;
     }
-    setSubmitting(true);
+    setLoading(true);
     setConsent(true);
     try {
       const surveyData = {
@@ -56,10 +58,12 @@ const ConsentForm = ({ userId, userData }) => {
         homeSupplies,
         consent: true,
         iban: userData?.iban || "",
+        cr: userData?.crNumber || "",
+        vat: userData?.vatNumber || "",
       };
       const response = await saveSellerSurvey(surveyData);
       if (response.success) {
-        router.push("/seller");
+        router.push("/seller/onboarding");
       } else {
         toast.error(response.message);
       }
@@ -67,9 +71,12 @@ const ConsentForm = ({ userId, userData }) => {
       console.error("Survey submission error:", error);
       toast.error("Failed to submit survey");
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
   };
+
+  const handleAgreeButton = async () => submitSurvey(setAgreeLoading);
+  const handleDiscoverButton = async () => submitSurvey(setDiscoverLoading);
   return (
     <div className="flex flex-col items-center justify-center bg-white px-4">
       <Image
@@ -90,14 +97,18 @@ const ConsentForm = ({ userId, userData }) => {
       <RoundedButton
         onClick={() => handleAgreeButton()}
         className="w-full"
-        title={submitting ? "Submitting..." : "Agree and Start Now"}
-        showIcon={!submitting}
-        loading={submitting || undefined}
-        disabled={submitting}
+        title={agreeLoading ? "Submitting..." : "Agree and Start Now"}
+        showIcon={!agreeLoading}
+        loading={agreeLoading || undefined}
+        disabled={agreeLoading || discoverLoading}
       />
       <SecondaryButton
-        title="Discover all Features"
+        onClick={() => handleDiscoverButton()}
+        title={discoverLoading ? "Submitting..." : "Discover all Features"}
         className="mt-5 w-full rounded-full"
+        showIcon={!discoverLoading}
+        loading={discoverLoading || undefined}
+        disabled={agreeLoading || discoverLoading}
       />
     </div>
   );

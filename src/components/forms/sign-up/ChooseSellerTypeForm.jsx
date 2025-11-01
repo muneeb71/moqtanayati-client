@@ -45,15 +45,14 @@ const ChooseSellerTypeForm = ({ role }) => {
                 await new Promise((r) => setTimeout(r, 100));
                 router.push("/" + role + "/sign-up");
               } catch (_) {
+                // noop
+              } finally {
                 setLoading(false);
               }
             }}
             disabled={loading}
-            loading={loading.toString()}
+            loading={loading || undefined}
           />
-          {loading && (
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-          )}
         </div>
       </div>
     </div>

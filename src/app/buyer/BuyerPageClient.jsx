@@ -80,46 +80,32 @@ const BuyerPageClient = () => {
   const latestAuction =
     displayAuctions.find((a) => a.status === "UPCOMING") || displayAuctions[0];
 
-  if (loading) {
-    return (
-      <div className="flex w-full flex-col items-center justify-center gap-5 px-3 pb-20">
+  return (
+    <div className="flex w-full flex-col items-center justify-center gap-5 px-3 pb-20">
+      {/* Always show static banner */}
+      <MainBanner />
+      {loading ? (
         <div className="flex h-64 w-full items-center justify-center">
           <div className="text-lg text-gray-500">Loading...</div>
         </div>
-      </div>
-    );
-  }
+      ) : (
+        <>
+          <CategoriesSliderSection />
 
-  return (
-    <div className="flex w-full flex-col items-center justify-center gap-5 px-3 pb-20">
-      <MainBanner />
-      <CategoriesSliderSection />
-
-      <div className="m-20">
-        <div className="flex w-full flex-col gap-8">
-          {/* Live Auction */}
-          {liveAuction && (
-            <div className="flex w-full flex-col">
-              <h2 className="mb-4 text-center text-2xl font-bold text-moonstone">
-                🔥 Live Auction
-              </h2>
-              <AuctionSection auction={liveAuction} />
+          <div className="m-20">
+            <div className="flex w-full flex-col gap-8">
+              {/* Live Auction */}
+              {liveAuction && (
+                <div className="flex w-full flex-col">
+                  <AuctionSection auction={liveAuction} />
+                </div>
+              )}
             </div>
-          )}
-
-          {/* Latest/Upcoming Auction */}
-          {latestAuction && !liveAuction && (
-            <div className="flex w-full flex-col">
-              <h2 className="mb-4 text-center text-2xl font-bold text-moonstone">
-                ⏰ Upcoming Auction
-              </h2>
-              <AuctionSection auction={latestAuction} />
-            </div>
-          )}
-        </div>
-      </div>
-      <RecommendedSection />
-      <PopularSection />
+          </div>
+          <RecommendedSection />
+          <PopularSection />
+        </>
+      )}
     </div>
   );
 };

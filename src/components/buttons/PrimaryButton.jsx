@@ -20,6 +20,8 @@ const PrimaryButton = ({
     </svg>
   ),
   className = "",
+  loading, // prevent forwarding boolean to DOM
+  showIcon = true, // prevent forwarding to DOM; used to toggle icon
   ...props
 }) => {
   return (
@@ -28,10 +30,17 @@ const PrimaryButton = ({
         "flex h-[64px] min-w-fit items-center justify-center gap-3 text-nowrap rounded-lg bg-moonstone px-8 text-lg font-medium text-white transition-all duration-200 ease-in hover:bg-delftBlue disabled:bg-battleShipGray",
         className,
       )}
+      aria-busy={Boolean(loading) || undefined}
       {...props}
     >
-      {icon}
-      {title}
+      {loading ? (
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+      ) : (
+        <>
+          {showIcon ? icon : null}
+          {title}
+        </>
+      )}
     </button>
   );
 };

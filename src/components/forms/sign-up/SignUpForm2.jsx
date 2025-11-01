@@ -12,9 +12,21 @@ import toast from "react-hot-toast";
 
 const SignUpForm2 = ({ role }) => {
   const router = useRouter();
-  const { nationalId, setNationalId } = useRegisterStore((state) => state);
+  const {
+    nationalId,
+    setNationalId,
+    sellerType,
+    iban,
+    setIban,
+    crNumber,
+    setCrNumber,
+    vatNumber,
+    setVatNumber,
+  } = useRegisterStore((state) => state);
 
   const [loading, setLoading] = useState(false);
+
+  const [documents, setDocuments] = useState([]);
 
   const handleNextClick = async () => {
     if (loading) return;
@@ -22,11 +34,27 @@ const SignUpForm2 = ({ role }) => {
       toast.error("Please enter National ID.");
       return;
     }
+    if ((sellerType || "").toUpperCase() === "BUSINESS") {
+      if (!iban?.trim()) {
+        toast.error("Please enter IBAN.");
+        return;
+      }
+      if (!crNumber?.trim()) {
+        toast.error("Please enter CR Number.");
+        return;
+      }
+      if (!vatNumber?.trim()) {
+        toast.error("Please enter VAT Number.");
+        return;
+      }
+    }
     try {
       setLoading(true);
       await new Promise((r) => setTimeout(r, 100));
       router.push(`/${role}/sign-up/password`);
     } catch (_) {
+      // noop
+    } finally {
       setLoading(false);
     }
   };
@@ -47,6 +75,49 @@ const SignUpForm2 = ({ role }) => {
             autoComplete="off"
           />
         </div>
+        {(sellerType || "").toUpperCase() === "BUSINESS" && (
+          <>
+            <div className="flex w-full flex-col gap-1">
+              <Label text="Bank IBAN (Encrypted)" />
+              <InputField
+                placeholder="Enter your IBAN"
+                value={iban}
+                onChange={(e) => setIban(e.target.value)}
+                type="text"
+                autoComplete="off"
+              />
+            </div>
+            <div className="flex w-full flex-col gap-1">
+              <Label text="CR Number" />
+              <InputField
+                placeholder="Enter your CR number"
+                value={crNumber}
+                onChange={(e) => setCrNumber(e.target.value)}
+                type="text"
+                autoComplete="off"
+              />
+            </div>
+            <div className="flex w-full flex-col gap-1">
+              <Label text="VAT Number" />
+              <InputField
+                placeholder="Enter VAT number"
+                value={vatNumber}
+                onChange={(e) => setVatNumber(e.target.value)}
+                type="text"
+                autoComplete="off"
+              />
+            </div>
+            <div className="flex w-full flex-col gap-1">
+              <Label text="Upload Documents" />
+              <input
+                type="file"
+                multiple
+                onChange={(e) => setDocuments(Array.from(e.target.files || []))}
+                className="rounded-md border border-gray-200 px-4 py-3 text-sm"
+              />
+            </div>
+          </>
+        )}
       </div>
       <div className="flex flex-col items-center gap-8 self-center">
         <div className="flex items-center gap-2">
@@ -56,12 +127,9 @@ const SignUpForm2 = ({ role }) => {
             title="Next"
             showIcon
             disabled={loading}
-            loading={loading.toString()}
+            loading={loading || undefined}
             className="min-w-72"
           />
-          {loading && (
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-          )}
         </div>
         <div className="flex items-center gap-1">
           Already have an account?{" "}

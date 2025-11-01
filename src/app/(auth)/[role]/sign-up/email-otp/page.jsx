@@ -15,6 +15,8 @@ const EmailOtpForm = () => {
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
   const role = searchParams.get("role") || "buyer";
+  const name = searchParams.get("name") || "";
+  const phone = searchParams.get("phone") || "";
   const otpFromUrl = searchParams.get("otp");
   const router = useRouter();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -56,9 +58,14 @@ const EmailOtpForm = () => {
       const res = await verifyEmailOtp({ email, otp: otpValue });
       if (res.success) {
         toast.success("Email verified!");
-        router.push(
-          `/${role}/sign-up?emailVerified=true&email=${encodeURIComponent(email)}&role=${role}`,
-        );
+        const qs = new URLSearchParams({
+          emailVerified: "true",
+          email,
+          role,
+        });
+        if (name) qs.set("name", name);
+        if (phone) qs.set("phone", phone);
+        router.push(`/${role}/sign-up?${qs.toString()}`);
       } else {
         toast.error("Invalid OTP.");
       }
@@ -117,7 +124,7 @@ const EmailOtpForm = () => {
             className="w-fit self-center px-16"
             onClick={handleVerifyOtp}
             disabled={verifying || otp.join("").length !== 6}
-            loading={verifying.toString()}
+            loading={verifying || undefined}
           />
           <div className="flex items-center gap-1 text-sm font-medium text-battleShipGray">
             Didn't receive the code?

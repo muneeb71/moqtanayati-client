@@ -46,10 +46,11 @@ const StoreProductsSection = () => {
     <div className="relative flex w-full flex-col gap-5">
       {/* Product navigation overlay */}
       {isNavigatingProduct && (
-        <div className="absolute inset-0 z-10 grid place-items-center rounded-2xl bg-black/5">
-          <span className="rounded-md bg-moonstone px-4 py-2 text-sm text-white">
-            Going to view product detail
-          </span>
+        <div className="pointer-events-none absolute inset-0 z-50 grid place-items-center">
+          <div
+            className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-moonstone"
+            aria-label="Loading"
+          />
         </div>
       )}
 

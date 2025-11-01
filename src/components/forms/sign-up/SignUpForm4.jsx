@@ -18,6 +18,9 @@ const SignUpForm4 = ({ role = "" }) => {
     phone,
     address,
     nationalId,
+    iban,
+    crNumber,
+    vatNumber,
     password,
     latitude,
     longitude,
@@ -64,6 +67,9 @@ const SignUpForm4 = ({ role = "" }) => {
               address: payload.address,
               nationalId: payload.nationalId,
               sellerType: payload.sellerType,
+              iban: (iban || "").trim(),
+              crNumber: (crNumber || "").trim(),
+              vatNumber: (vatNumber || "").trim(),
             }),
           );
           router.push("/survey");
@@ -83,6 +89,7 @@ const SignUpForm4 = ({ role = "" }) => {
           error?.message ||
           "Registration failed",
       );
+    } finally {
       setRegisterLoading(false);
     }
   };
@@ -122,6 +129,7 @@ const SignUpForm4 = ({ role = "" }) => {
         <LocationSelectionDialog
           trigger={
             <PrimaryButton
+              className="w-100"
               title={
                 latitude && longitude && address
                   ? "Enter a different Location"
@@ -140,10 +148,9 @@ const SignUpForm4 = ({ role = "" }) => {
               title={registerLoading ? "Registering..." : "Register Account"}
               onClick={handleRegisterUser}
               disabled={registerLoading}
+              loading={registerLoading || undefined}
+              className="w-full"
             />
-            {registerLoading && (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-            )}
           </div>
         )}
       </div>

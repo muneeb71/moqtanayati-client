@@ -171,7 +171,7 @@ const ProductDetailsSlider = ({ images = [], auctionDetail }) => {
           />
           {auctionDetail?.pricingFormat === "Auctions" &&
             auctionDetail?.status === "UPCOMING" &&
-            auction?.status === "LIVE" && (
+            auctionDetail?.status === "LIVE" && (
               <button
                 className={cn(
                   "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",

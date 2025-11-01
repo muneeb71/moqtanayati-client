@@ -11,7 +11,11 @@ export function middleware(request) {
   console.log("Middleware - pathname:", pathname, "role:", role);
 
   const isAdminLogin = pathname.startsWith("/admin/login");
+  const isAdminPath = pathname.startsWith("/admin");
   const isAuthPath = pathname.startsWith("/auth");
+  const isBuyerPath = pathname.startsWith("/buyer");
+  const isSellerPath = pathname.startsWith("/seller");
+  const roleUpper = (role || "").toUpperCase();
   const isLoginOrSignupPage =
     pathname.includes("/login") ||
     pathname.includes("/sign-up") ||
@@ -48,12 +52,37 @@ export function middleware(request) {
     return res;
   }
 
-  if (!token && !userId && (isAdminLogin || isAuthPath)) {
-    return NextResponse.next();
+  // Helper to clear cookies and redirect to start page
+  const clearAndRedirectToStart = () => {
+    const res = NextResponse.redirect(new URL("/", request.url));
+    try {
+      res.cookies.delete("token");
+      res.cookies.delete("userId");
+      res.cookies.delete("role");
+      res.cookies.delete("survey");
+      res.cookies.delete("storeId");
+    } catch (_) {}
+    return res;
+  };
+
+  // If no cookies and trying to access protected areas
+  if (!token || !userId) {
+    if (isAdminPath) {
+      return NextResponse.redirect(new URL("/admin/login", request.url));
+    }
+    if (isBuyerPath || isSellerPath) {
+      return clearAndRedirectToStart();
+    }
   }
 
-  if (!token && !userId && (isAdminLogin || isAuthPath)) {
-    return NextResponse.next();
+  // Protect admin routes strictly: only ADMIN role allowed, otherwise clear and go to start
+  if (isAdminPath && !isAdminLogin) {
+    const isAuthenticatedAdmin = Boolean(
+      token && userId && roleUpper === "ADMIN",
+    );
+    if (!isAuthenticatedAdmin) {
+      return clearAndRedirectToStart();
+    }
   }
 
   if (userId) {
@@ -66,21 +95,43 @@ export function middleware(request) {
     if (isLoginOrSignup) {
       return NextResponse.next();
     }
-    if (role === "ADMIN" && !pathname.startsWith("/admin")) {
-      return NextResponse.redirect(new URL("/admin", request.url));
-    }
-    if (role === "SELLER") {
-      // if (!survey && !pathname.startsWith("/survey")) {
-      //   return NextResponse.redirect(new URL("/survey", request.url));
-      // }
-      if (!survey && !pathname.startsWith("/seller")) {
-        return NextResponse.redirect(new URL("/seller", request.url));
+    // Only one privileged case: allow BUYER cookies to access /buyer
+    if (isBuyerPath) {
+      if (roleUpper !== "BUYER") {
+        return NextResponse.redirect(
+          new URL(roleUpper === "SELLER" ? "/seller" : "/admin", request.url),
+        );
       }
-    }
-
-    if (role === "BUYER" && !pathname.startsWith("/buyer")) {
-      console.log("Redirecting BUYER from", pathname, "to /buyer");
-      return NextResponse.redirect(new URL("/buyer", request.url));
+    } else if (isSellerPath) {
+      // Allow only SELLER role on /seller
+      if (roleUpper !== "SELLER") {
+        return NextResponse.redirect(
+          new URL(roleUpper === "BUYER" ? "/buyer" : "/admin", request.url),
+        );
+      }
+    } else if (isAdminPath && !isAdminLogin) {
+      // already handled above; keep for clarity
+      if (roleUpper !== "ADMIN") return clearAndRedirectToStart();
+    } else {
+      // If logged in as BUYER and not on /buyer, guide to buyer home
+      if (roleUpper === "BUYER" && !pathname.startsWith("/buyer")) {
+        return NextResponse.redirect(new URL("/buyer", request.url));
+      }
+      // For any other role/path combination, snap to role root (do not clear cookies)
+      if (
+        !(
+          (roleUpper === "BUYER" && isBuyerPath) ||
+          (roleUpper === "SELLER" && isSellerPath)
+        )
+      ) {
+        const roleRoot =
+          roleUpper === "SELLER"
+            ? "/seller"
+            : roleUpper === "ADMIN"
+              ? "/admin"
+              : "/buyer";
+        return NextResponse.redirect(new URL(roleRoot, request.url));
+      }
     }
   }
 
