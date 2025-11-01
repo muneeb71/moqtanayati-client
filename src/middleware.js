@@ -21,7 +21,8 @@ export function middleware(request) {
     pathname.includes("/sign-up") ||
     pathname.includes("/seller-type") ||
     pathname.includes("/email-otp") ||
-    pathname.includes("/phone-otp");
+    pathname.includes("/phone-otp") ||
+    pathname.includes("/location-selection");
 
   // If visiting auth pages, proactively clear auth cookies to avoid auto-redirects
   if (isLoginOrSignupPage || isAdminLogin) {
@@ -40,7 +41,8 @@ export function middleware(request) {
     pathname.includes("/login") ||
     pathname.includes("/sign-up") ||
     pathname.includes("/email-otp") ||
-    pathname.includes("/phone-otp");
+    pathname.includes("/phone-otp") ||
+    pathname.includes("/location-selection");
 
   // If user visits any auth page, clear auth cookies to ensure a clean flow
   if (isAuthRoute) {
@@ -91,7 +93,8 @@ export function middleware(request) {
       pathname.includes("/login") ||
       pathname.includes("/sign-up") ||
       pathname.includes("/email-otp") ||
-      pathname.includes("/phone-otp");
+      pathname.includes("/phone-otp") ||
+      pathname.includes("/location-selection");
     if (isLoginOrSignup) {
       return NextResponse.next();
     }
