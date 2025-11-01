@@ -73,6 +73,7 @@ const SignUpForm2 = ({ role }) => {
             type="text"
             autoFocus
             autoComplete="off"
+            maxLength={10}
           />
         </div>
         {(sellerType || "").toUpperCase() === "BUSINESS" && (
@@ -133,7 +134,7 @@ const SignUpForm2 = ({ role }) => {
         </div>
         <div className="flex items-center gap-1">
           Already have an account?{" "}
-          <CustomLink href={"/auth/" + role + "/login"}>Sign in</CustomLink>
+          <CustomLink href={"/" + role + "/login"}>Sign in</CustomLink>
         </div>
       </div>
     </>

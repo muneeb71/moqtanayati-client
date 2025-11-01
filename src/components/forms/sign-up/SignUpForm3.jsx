@@ -81,7 +81,7 @@ const SignUpForm3 = ({ role }) => {
         </div>
         <div className="flex items-center gap-1">
           Already have an account?{" "}
-          <CustomLink href={"/auth/" + role + "/login"}>Sign in</CustomLink>
+          <CustomLink href={"/" + role + "/login"}>Sign in</CustomLink>
         </div>
       </div>
     </>
