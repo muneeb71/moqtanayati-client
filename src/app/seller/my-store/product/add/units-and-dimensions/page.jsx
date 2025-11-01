@@ -1,10 +1,12 @@
 import { Suspense } from "react";
-import UnitsAndDimensionsForm from "@/components/sections/seller/my-store/product/add/forms/UnitsAndDimensionsForm";
+import UnitsAndDimensionsFormWrapper from "@/components/sections/seller/my-store/product/add/forms/UnitsAndDimensionsFormWrapper";
+
+export const dynamic = 'force-dynamic';
 
 const UnitsAndDimensionsPage = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <UnitsAndDimensionsForm />
+      <UnitsAndDimensionsFormWrapper />
     </Suspense>
   );
 };

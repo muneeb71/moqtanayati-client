@@ -5,7 +5,7 @@ import InputField from "@/components/form-fields/InputField";
 import { cn } from "@/lib/utils";
 import { useProductStore } from "@/providers/product-store-provider";
 import { XIcon } from "lucide-react/dist/cjs/lucide-react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 import { updateProductUnitAndDimensions } from "@/lib/api/product/update";
 import { productAndServicesCategories } from "@/lib/categories";

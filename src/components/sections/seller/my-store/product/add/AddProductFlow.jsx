@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import PictureAndVideosForm from "./forms/PictureAndVideosForm";
-import UnitsAndDimensionsForm from "./forms/UnitsAndDimensionsForm";
+import UnitsAndDimensionsFormContent from "./forms/UnitsAndDimensionsFormContent";
 import PageHeading from "@/components/headings/PageHeading";
 import { ChevronLeft } from "lucide-react";
-import PriceAndShippingForm from "./forms/PriceAndShippingForm";
+import PriceAndShippingFormContent from "./forms/PriceAndShippingFormContent";
 
 const AddProductFlow = () => {
   const tabs = ["Picture & Videos", "Unit & Dimensions", "Pricing & Shipping"];
@@ -37,9 +37,9 @@ const AddProductFlow = () => {
       {tabs[currentTabIndex] === tabs[0] ? (
         <PictureAndVideosForm prevTab={prevTab} nextTab={nextTab} />
       ) : tabs[currentTabIndex] === tabs[1] ? (
-        <UnitsAndDimensionsForm prevTab={prevTab} nextTab={nextTab} />
+        <UnitsAndDimensionsFormContent id={null} />
       ) : (
-        <PriceAndShippingForm />
+        <PriceAndShippingFormContent id={null} />
       )}
     </div>
   );

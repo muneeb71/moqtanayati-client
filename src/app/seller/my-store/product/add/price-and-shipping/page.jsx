@@ -1,10 +1,12 @@
 import { Suspense } from "react";
-import PriceAndShippingForm from "@/components/sections/seller/my-store/product/add/forms/PriceAndShippingForm";
+import PriceAndShippingFormWrapper from "@/components/sections/seller/my-store/product/add/forms/PriceAndShippingFormWrapper";
+
+export const dynamic = 'force-dynamic';
 
 const PriceAndShippingPage = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <PriceAndShippingForm />
+      <PriceAndShippingFormWrapper />
     </Suspense>
   );
 };

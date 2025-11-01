@@ -2,6 +2,8 @@ import AddProductFlow from "@/components/sections/seller/my-store/product/add/Ad
 import PictureAndVideosForm from "@/components/sections/seller/my-store/product/add/forms/PictureAndVideosForm";
 import { getProductById } from "@/lib/api/product/getById";
 
+export const dynamic = 'force-dynamic';
+
 const AddProductPage = async ({ searchParams }) => {
   const id = (await searchParams)?.id;
   let product = null;
