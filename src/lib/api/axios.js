@@ -31,7 +31,7 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
   withCredentials: true,
-  timeout: 10000, // 10 second timeout
+  timeout: 30000, // 30 second timeout
 });
 
 api.interceptors.request.use(
@@ -54,6 +54,25 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle timeout errors
+    if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
+      // Throttle repeated logs to avoid console spam
+      if (!globalThis.__lastTimeoutErrorLogAt)
+        globalThis.__lastTimeoutErrorLogAt = 0;
+      const now = Date.now();
+      if (now - globalThis.__lastTimeoutErrorLogAt > 8000) {
+        globalThis.__lastTimeoutErrorLogAt = now;
+        console.error(
+          "⏱️ API Timeout Error: Request took too long to complete",
+        );
+        console.error("This might indicate network issues or server overload");
+        console.error("Current API URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
+        if (error.config?.url) console.error("Request URL:", error.config.url);
+      }
+      // Add timeout flag to error for better handling
+      error.isTimeout = true;
+    }
+
     if (error.code === "ECONNREFUSED" || error.code === "ERR_NETWORK") {
       // Throttle repeated logs to avoid console spam
       if (!globalThis.__lastNetworkErrorLogAt)

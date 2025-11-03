@@ -3,14 +3,25 @@
     "back": "رجوع",
     "notifications": "الإشعارات",
     "cart": "السلة",
-    "profile": "الملف الشخصي"
+    "profile": "الملف الشخصي",
+    "logout": "تسجيل الخروج",
+    "error_fetch_user": "خطأ في جلب تفاصيل المستخدم.",
+    "error_fetch_cart": "خطأ في جلب السلة."
   },
   "search": {
     "title_all": "كل المنتجات",
     "placeholder_general": "ابحث عما تحتاجه…",
     "placeholder_category": "ابحث داخل {category}…",
     "no_results_title": "لا توجد منتجات",
-    "no_results_sub": "جرّب كلمة أخرى أو امسح البحث."
+    "no_results_sub": "جرّب كلمة أخرى أو امسح البحث.",
+    "error_fetch_products": "فشل جلب المنتجات.",
+    "error_fetch_results": "فشل جلب نتائج البحث.",
+    "error_timeout": "انتهت مهلة الطلب. يرجى التحقق من الاتصال والمحاولة مرة أخرى.",
+    "search_in_category_prefix": "البحث في",
+    "search_results_for_prefix": "نتائج البحث عن",
+    "results": "النتائج",
+    "filters": "التصفية",
+    "error_fetch_filtered": "فشل جلب المنتجات المفلترة."
   },
   "email_otp": {
     "title": "تحقق من بريدك الإلكتروني",
@@ -123,6 +134,7 @@
     "sending": "جارٍ الإرسال...",
     "connecting": "جارٍ الاتصال بالمحادثة...",
     "connection_failed": "فشل الاتصال",
+    "connection_failed_with_error": "فشل الاتصال: {error}",
     "retry": "إعادة المحاولة",
     "type_message": "اكتب رسالة",
     "you": "أنت",
@@ -131,7 +143,8 @@
     "available_now": "متاح الآن",
     "conversations": "المحادثات",
     "search_placeholder": "ابحث...",
-    "no_chats": "لا توجد محادثات"
+    "no_chats": "لا توجد محادثات",
+    "failed_to_connect": "فشل الاتصال بخادم المحادثة"
   },
   "admin": {
     "nav": {
@@ -423,7 +436,9 @@
     ,
     "settings": {
       "change_password": "تغيير كلمة المرور",
-      "joined": "انضم"
+      "joined": "انضم",
+      "saving": "جاري الحفظ...",
+      "save": "حفظ"
     }
   },
   "analytics": {
@@ -630,6 +645,397 @@
     "add_product": "إضافة منتج",
     "edit_product": "تعديل المنتج"
   },
+  "buyer": {
+    "home": {
+      "banner": {
+        "title": "اعثر عليه. زايد عليه. اربحه.",
+        "subtitle": "شجع الشراء المستدام، تواصل مباشرة مع البائعين الموثوقين، واعثر على عناصر فريدة تحكي قصة."
+      },
+      "sections": {
+        "recommended": "موصى به لك",
+        "products": "المنتجات",
+        "popular": "شائع",
+        "no_products_title": "لا توجد منتجات متاحة",
+        "no_products_message": "لم نتمكن من العثور على أي منتجات موصى بها لك في الوقت الحالي.",
+        "condition_rating": "/10 الحالة"
+      }
+    },
+    "my_bids": {
+      "results": "النتائج",
+      "no_bids_found": "لم يتم العثور على مزايدات.",
+      "categories": {
+        "all": "الكل",
+        "active": "نشط",
+        "won": "فاز",
+        "outbid": "تفوق عليه"
+      },
+      "highest_bid": "أعلى مزايدة",
+      "by": "بواسطة",
+      "status": {
+        "HIGHEST": "الأعلى",
+        "WON": "فاز",
+        "OUTBID": "تفوق عليه",
+        "RETRACTED": "ملغي"
+      }
+    },
+    "purchase_history": {
+      "title": "الملف الشخصي > سجل المشتريات",
+      "no_history_found": "لم يتم العثور على سجل مشتريات.",
+      "no_paid_items": "لم يتم العثور على عناصر مدفوعة.",
+      "no_delivered_items": "لم يتم العثور على عناصر مُسلمة.",
+      "no_orders_found": "لم يتم العثور على طلبات",
+      "no_delivered_items_short": "لا توجد عناصر مُسلمة",
+      "no_paid_items_short": "لا توجد عناصر مدفوعة",
+      "categories": {
+        "all": "الكل",
+        "delivered": "تم التسليم",
+        "paid": "مدفوع"
+      },
+      "no_name": "لا يوجد اسم",
+      "feedback": {
+        "view": "عرض",
+        "rate": "تقييم",
+        "review": "المراجعة",
+        "product": "المنتج",
+        "your_review": "مراجعتك",
+        "leave_feedback": "اترك تقييمًا",
+        "total_paid": "المدفوع الإجمالي:",
+        "your_rating": "تقييمك",
+        "rate_experience": "قيم تجربتك",
+        "write_review": "اكتب مراجعة",
+        "placeholder_existing": "تعليق مراجعتك...",
+        "placeholder_new": "شارك أفكارك حول المنتج أو البائع…",
+        "loading_review": "جاري تحميل المراجعة...",
+        "feedback_submitted": "تم إرسال التقييم!",
+        "submitting": "جاري الإرسال...",
+        "submit_feedback": "إرسال التقييم",
+        "close": "إغلاق",
+        "review_added_success": "تمت إضافة المراجعة بنجاح.",
+        "error_adding_review": "خطأ في إضافة المراجعة.",
+        "failed_submit": "فشل إرسال التقييم. يرجى المحاولة مرة أخرى."
+      }
+    },
+    "common": {
+      "hr_ago": "قبل ساعة",
+      "by": "بواسطة"
+    },
+    "order_card": {
+      "view_order": "عرض الطلب"
+    },
+    "item_card": {
+      "no_image": "لا توجد صورة"
+    },
+    "menu_card": {
+      "starting_bid": "الحد الأدنى للعرض",
+      "highest_bid": "أعلى عرض",
+      "upcoming": "قريبًا",
+      "auction_ended": "انتهى المزاد",
+      "bid_again": "قدّم عرضًا مرة أخرى",
+      "bid_now": "قدّم عرضًا الآن"
+    },
+    "watchlist": {
+      "title": "قائمة المراقبة",
+      "results": "النتائج",
+      "no_items": "لم تتم إضافة عناصر إلى قائمة المراقبة!",
+      "removed_success": "تمت إزالته من قائمة المراقبة",
+      "remove_failed": "فشل إزالة العنصر من قائمة المراقبة",
+      "highest_bid": "أعلى مزايدة",
+      "by": "بواسطة",
+      "product_image": "صورة المنتج",
+      "user": "المستخدم"
+    },
+    "auction_preferences": {
+      "title": "الملف الشخصي > تفضيلات المزاد",
+      "category_selection": "اختيار الفئة",
+      "category_placeholder": "اكتب واضغط إدخال أو انقر إضافة",
+      "add": "إضافة",
+      "no_categories": "لا توجد فئات محددة",
+      "price_range": "نطاق السعر",
+      "min_placeholder": "$0",
+      "max_placeholder": "${max}",
+      "auction_alerts": "تنبيهات المزاد",
+      "alerts_note": "مفاتيح لتفعيل الإشعارات لـ:",
+      "alert_ending": "المزاد يوشك على الانتهاء",
+      "alert_new": "إدراجات جديدة في الفئات المفضلة",
+      "save_preferences": "حفظ التفضيلات",
+      "toasts": {
+        "fetch_failed": "فشل جلب التفضيلات",
+        "updated": "تم تحديث التفضيلات!",
+        "update_failed": "فشل التحديث"
+      }
+    },
+    "payment_methods": {
+      "title": "طرق الدفع",
+      "add_card": "إضافة بطاقة",
+      "categories": {
+        "cards": "بطاقة ائتمان/خصم",
+        "paypal": "باي بال"
+      }
+    },
+    "cart": {
+      "breadcrumb": "الرئيسية > السلة",
+      "title": "سلتك",
+      "empty": "لا توجد عناصر في السلة.",
+      "by": "بواسطة",
+      "store": "المتجر",
+      "order_summary": "ملخص الطلب",
+      "subtotal": "المجموع الفرعي",
+      "tax": "الضريبة",
+      "shipping": "الشحن",
+      "free": "مجاني",
+      "grand_total": "الإجمالي",
+      "checkout": "الدفع"
+  },
+    "order_popup": {
+      "order_placed_alt": "تم إتمام الطلب",
+      "close": "إغلاق",
+      "track_order": "تتبع الطلب"
+    },
+    "product_details": {
+      "breadcrumb": "الرئيسية > تفاصيل المنتج",
+      "back_to_home": "العودة إلى الرئيسية",
+      "you_might_also_like": "قد يعجبك أيضًا",
+      "seller": "البائع",
+      "chat_with_seller": "الدردشة مع البائع",
+      "no_reviews_yet": "لا توجد مراجعات بعد",
+      "reviews": "مراجعات",
+      "product_description": "وصف المنتج",
+      "one_hour_ago": "منذ ساعة",
+      "price": "السعر",
+      "proceed_to_checkout": "المتابعة إلى الدفع",
+      "buy_now": "اشتري الآن",
+      "already_in_cart_tooltip": "موجود في السلة بالفعل ({count} عناصر)",
+      "add_to_cart_tooltip": "أضف إلى السلة",
+      "already_in_cart_toast": "العنصر موجود بالفعل في سلتك! سيتم المتابعة للدفع...",
+      "add_to_cart_success": "تمت إضافة العنصر إلى السلة",
+      "add_to_cart_error": "حدث خطأ أثناء إضافة العنصر إلى السلة",
+      "highest_bid": "أعلى عرض",
+      "starting_bid": "الحد الأدنى للعرض",
+      "buy_now_for": "اشترِ الآن بـ",
+      "sold": "مُباع",
+      "upcoming": "قريبًا",
+      "make_offer": "قدّم عرضًا",
+      "auction_sold_error": "هذا المزاد مُباع.",
+      "auction_unavailable_error": "هذا المزاد غير متاح الآن."
+    },
+    "bidders": {
+      "place_your_bid": "قدّم عرضك",
+      "my_bid": "عرضي",
+      "status": "الحالة:",
+      "no_bids_yet_title": "لا توجد عروض بعد!",
+      "no_bids_yet_sub": "كن أول من يقدّم عرضًا على هذا المزاد وابدأ المنافسة!",
+      "enter_your_bid": "أدخل عرضك",
+      "bid": "قدّم عرضًا",
+      "not_your_bid": "هذا ليس عرضك.",
+      "bid_placed_success": "تم تقديم العرض بنجاح!",
+      "bid_place_failed": "فشل تقديم العرض.",
+      "bid_withdraw_success": "تم سحب العرض بنجاح.",
+      "bid_withdraw_failed": "فشل سحب العرض.",
+      "bid_withdraw_error": "حدث خطأ أثناء سحب العرض."
+    },
+    "item_slider": {
+      "no_recommendations": "لا توجد توصيات لك",
+      "no_popular": "لا توجد عناصر شائعة",
+      "no_furniture": "لا توجد عناصر أثاث",
+      "loading_products": "جارٍ تحميل المنتجات...",
+      "price_not_available": "السعر غير متوفر"
+    },
+    "categories_slider": {
+      "no_categories_title": "لا توجد فئات متاحة",
+      "no_categories_sub": "لم نتمكن من العثور على أي فئات منتجات في الوقت الحالي."
+    },
+    "auction_register": {
+      "registration": "التسجيل في المزاد",
+      "qa_section": "قسم الأسئلة والأجوبة",
+      "ship_to": "الشحن إلى",
+      "select_shipping_address": "اختر عنوان الشحن",
+      "payment_method": "طريقة الدفع",
+      "add_payment_method": "إضافة طريقة دفع",
+      "new_address": "+ عنوان جديد",
+      "submit_registration": "إرسال التسجيل"
+    },
+    "checkout": {
+      "title": "الدفع",
+      "tabs": {
+        "items": "العناصر",
+        "select_methods": "اختر طرق الدفع",
+        "cards": "بطاقات الائتمان/الخصم",
+        "new_card": "بطاقة جديدة"
+      },
+      "shipping_options": "خيارات الشحن",
+      "delivery_address": "عنوان التسليم",
+      "change": "تغيير",
+      "home": "المنزل",
+      "no_address": "لا يوجد عنوان",
+      "estimated_delivery": "الوقت المتوقع للتسليم:",
+      "working_days": "10 -15 يوم عمل",
+      "order_summary": "ملخص الطلب",
+      "selected_label": "المحدد:",
+      "methods": {
+        "credit_card": "بطاقة ائتمان/خصم",
+        "paypal": "باي بال",
+        "apple_pay": "آبل باي",
+        "cod": "الدفع عند الاستلام"
+      },
+      "payment_method": "طريقة الدفع",
+      "cod_selected_title": "تم اختيار الدفع عند الاستلام",
+      "cod_selected_desc": "ستدفع طلبك عند وصوله إلى عنوان التسليم الخاص بك. لا يلزم الدفع الآن.",
+      "delivery_address_label": "عنوان التسليم:",
+      "pay_now": "ادفع الآن",
+      "place_order": "تأكيد الطلب",
+      "placing_order": "جارٍ تنفيذ الطلب...",
+      "cod_required_error": "يرجى اختيار الدفع عند الاستلام للمتابعة",
+      "success_order_placed": "تم تنفيذ الطلب بنجاح!",
+      "success_order_no_id": "تم تنفيذ الطلب ولكن لم يتم إرجاع رقم الطلب.",
+      "error_order_failed": "فشل تنفيذ الطلب",
+      "cod_selected_toast": "تم اختيار الدفع عند الاستلام",
+      "method_coming_soon": "سيكون {method} متاحًا قريبًا! في الوقت الحالي، يرجى استخدام الدفع عند الاستلام.",
+      "form": {
+        "card_number": "رقم البطاقة",
+        "enter_card_number": "أدخل رقم البطاقة",
+        "cardholder_name": "اسم حامل البطاقة",
+        "enter_cardholder_name": "أدخل اسم حامل البطاقة",
+        "expiry_date": "تاريخ الانتهاء",
+        "expiry_placeholder": "01/01/2000",
+        "cvv": "CVV",
+        "add_card": "أضف بطاقة"
+      }
+    },
+    "address_dialog": {
+      "title": "تغيير عنوان التوصيل",
+      "new_address": "العنوان الجديد",
+      "placeholder": "أدخل عنوان التوصيل الجديد",
+      "cancel": "إلغاء",
+      "save": "حفظ العنوان",
+      "saving": "جارٍ الحفظ...",
+      "toasts": {
+        "enter_valid": "يرجى إدخال عنوان صالح",
+        "updated": "تم تحديث العنوان بنجاح!",
+        "update_failed": "فشل تحديث العنوان",
+        "update_failed_try_again": "فشل تحديث العنوان. يرجى المحاولة مرة أخرى."
+      }
+    },
+    "track_order": {
+      "title": "تتبع الطلب",
+      "order_summary": "ملخص الطلب",
+      "shipping_address": "عنوان الشحن",
+      "order_status": "حالة الطلب",
+      "received": "تم الاستلام",
+      "processing": "جاري المعالجة",
+      "shipped": "تم الشحن",
+      "delivered": "تم التسليم",
+      "loading": "جاري التحميل...",
+      "not_found": "الطلب غير موجود.",
+      "error_fetch": "فشل في جلب الطلب"
+    },
+    "filters": {
+      "title": "عوامل التصفية",
+      "product_categories": "فئات المنتج",
+      "add_category_placeholder": "أضف فئة لمنتجك",
+      "max_categories": "الحد الأقصى 5 فئات",
+      "location": "الموقع",
+      "enter_location": "أدخل الموقع",
+      "item_condition": "حالة السلعة",
+      "select_condition": "اختر الحالة",
+      "month": "الشهر",
+      "select_month": "اختر الشهر",
+      "year": "السنة",
+      "select_year": "اختر السنة",
+      "apply_filter": "تطبيق التصفية",
+      "months": ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"],
+      "conditions": ["جديد","كالجديد","مستعمل","مجدّد"]
+    },
+    "bid": {
+      "title": "أدخل قيمة المزايدة",
+      "bid_amount": "قيمة المزايدة",
+      "enter_new_amount": "أدخل قيمة جديدة",
+      "confirm": "تأكيد"
+    },
+    "profile": {
+      "title": "الملف الشخصي",
+      "joined_prefix": "انضم",
+      "edit_profile": "تعديل الملف الشخصي",
+      "settings_title": "الإعدادات",
+      "settings": {
+        "change_password": {
+          "button": "تغيير كلمة المرور",
+          "title": "تغيير كلمة المرور",
+          "placeholders": {
+            "current": "أدخل كلمة المرور الحالية",
+            "new": "أدخل كلمة المرور الجديدة",
+            "confirm": "أعد إدخال كلمة المرور الجديدة"
+          },
+          "actions": {
+            "verify_save": "تحقق واحفظ",
+            "resend_otp": "إعادة إرسال رمز التحقق",
+            "saving": "جارٍ الحفظ..."
+          },
+          "validations": {
+            "all_required": "جميع الحقول مطلوبة",
+            "min_length": "يجب أن تكون كلمة المرور الجديدة 6 أحرف على الأقل",
+            "mismatch": "كلمتا المرور الجديدتان غير متطابقتين",
+            "same_as_current": "يجب أن تختلف كلمة المرور الجديدة عن الحالية"
+          },
+          "not_available": "لا يمكن تحديث كلمة المرور حاليًا"
+        },
+        "disable_profile": {
+          "label": "تعطيل الملف الشخصي",
+          "sad_title": "يحزننا رحيلك…",
+          "sad_sub": "سيؤدي تعطيل حسابك إلى حذف ملفك وبياناتك نهائيًا. هل تريد المتابعة؟",
+          "cancel": "إلغاء",
+          "disable": "تعطيل الحساب"
+        },
+        "otp": {
+          "trigger_save": "حفظ",
+          "title": "تحقق من رمز OTP",
+          "heading": "تحقق من تغييراتك",
+          "sub": "تم إرسال رمز تحقق إلى بريدك/هاتفك المسجل. أدخله أدناه لحفظ تحديثات ملفك.",
+          "enter_otp_label": "أدخل رمز التحقق",
+          "verify_save": "تحقق واحفظ",
+          "resend_otp": "إعادة إرسال رمز التحقق"
+        }
+      },
+      "placeholders": {
+        "full_name": "الاسم الكامل",
+        "first_name": "الاسم الأول",
+        "last_name": "اسم العائلة",
+        "email": "البريد الإلكتروني",
+        "phone": "رقم الهاتف",
+        "social_media": "وسائل التواصل الاجتماعي"
+      },
+      "buttons": {
+        "save": "حفظ",
+        "updating": "جارٍ التحديث..."
+      },
+      "toasts": {
+        "profile_updated": "تم تحديث الملف الشخصي بنجاح!",
+        "update_failed": "فشل تحديث الملف الشخصي",
+        "unexpected_error": "حدث خطأ غير متوقع",
+        "first_name_required": "الاسم الأول مطلوب",
+        "email_required": "البريد الإلكتروني مطلوب",
+        "invalid_email": "يرجى إدخال بريد إلكتروني صالح",
+        "phone_required": "رقم الهاتف مطلوب",
+        "invalid_phone": "يرجى إدخال رقم هاتف صالح",
+        "no_changes": "لا توجد تغييرات",
+        "select_valid_image": "يرجى اختيار ملف صورة صالح",
+        "image_too_large": "يجب أن يكون حجم الصورة أقل من 5 ميغابايت"
+      },
+      "support": {
+        "title": "دعم العملاء",
+        "page_title": "الملف الشخصي > الإعدادات > دعم العملاء",
+        "tabs": { "contact": "نموذج التواصل", "whatsapp": "واتساب", "email": "الدعم عبر البريد" },
+        "whatsapp_label": "تواصل معنا عبر واتساب",
+        "open_whatsapp": "افتح واتساب",
+        "email_support": "الدعم عبر البريد",
+        "categories": { "1": "الفئة 1", "2": "الفئة 2", "3": "الفئة 3", "4": "الفئة 4" },
+        "placeholders": { "name": "الاسم", "category": "الفئة", "email": "البريد الإلكتروني", "description": "أدخل وصف المشكلة" },
+        "submit": "إرسال",
+        "submitting": "جارٍ الإرسال...",
+        "success": { "sent": "تم إرسال طلب الدعم بنجاح!" },
+        "errors": { "fill_all": "يرجى ملء جميع الحقول المطلوبة.", "failed": "فشل إرسال طلب الدعم." }
+      }
+    }
+  },
   "seller": {
     "drafts": {
       "title": "المسودات",
@@ -671,7 +1077,34 @@
     "cancelled": "الملغاة",
     "completed": "المكتملة",
     "returned": "المرتجعة",
-    "no_orders": "لا توجد طلبات."
+    "no_orders": "لا توجد طلبات.",
+    "details_card": {
+      "paid": "مدفوع",
+      "no_items": "لا توجد عناصر في هذا الطلب."
+    },
+    "customer_card": {
+      "customer": "العميل",
+      "chat_with_customer": "الدردشة مع العميل",
+      "no_address": "لا يوجد عنوان"
+    },
+    "payment_details": {
+      "title": "التفاصيل",
+      "payment_method": "طريقة الدفع",
+      "transaction_id": "معرّف المعاملة",
+      "transaction_date": "تاريخ المعاملة",
+      "estimated_delivery": "موعد التسليم المتوقع",
+      "shipping_address": "عنوان الشحن"
+    },
+    "status": {
+      "title": "حالة الطلب",
+      "received": "تم الاستلام",
+      "processing": "قيد المعالجة",
+      "shipped": "تم الشحن",
+      "delivered": "تم التسليم",
+      "updating": "جارٍ تحديث حالة الطلب...",
+      "updated": "تم تحديث الحالة: {prev} → {next}",
+      "failed": "فشل تحديث الحالة"
+    }
   },
   "qa": {
     "section_title": "قسم الأسئلة والأجوبة",
@@ -745,6 +1178,7 @@
       "settings": "الإعدادات",
       "support": {
         "title": "دعم العملاء",
+        "page_title": "الملف الشخصي > الإعدادات > دعم العملاء",
         "tabs": { "contact": "نموذج التواصل", "whatsapp": "واتساب", "email": "الدعم عبر البريد" },
         "whatsapp_label": "تواصل معنا عبر واتساب",
         "open_whatsapp": "افتح واتساب",
@@ -836,8 +1270,7 @@
         "s": "س"
       }
     }
-}
- 
+  }
 }
 
 

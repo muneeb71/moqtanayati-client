@@ -14,7 +14,7 @@ import LanguageSwitcher from "@/components/language/LanguageSwitcher";
 import useTranslation from "@/hooks/useTranslation";
 
 const Header = () => {
-  const { dir } = useTranslation();
+  const { t, dir } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState(null);
@@ -37,11 +37,11 @@ const Header = () => {
         setUser(res?.data);
       } else {
         console.error("🔍 [Header] Error fetching user details:", res);
-        toast.error(res?.message || "Error fetching user details.");
+        toast.error(res?.message || t("header.error_fetch_user"));
       }
     } catch (error) {
       console.error("🔍 [Header] Error in getUserData:", error);
-      toast.error("Error fetching user details.");
+      toast.error(t("header.error_fetch_user"));
     }
   };
 

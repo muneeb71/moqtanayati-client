@@ -53,7 +53,7 @@ const OrderDetailsPage = () => {
               <span>{t("header.back")}</span>
             </Link>
           </div>
-          {t("orders.order_details")}
+          {t("seller.orders.order_details")}
         </div>
       </PageHeading>
       <div className="flex w-full max-w-4xl flex-col items-center justify-center gap-20">

@@ -5,8 +5,10 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const NavLinks = () => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const router = useRouter();
   const [loadingIndex, setLoadingIndex] = useState(null);
@@ -45,7 +47,7 @@ const NavLinks = () => {
             {isLoading && (
               <span className="inline-block h-3 w-3 animate-spin rounded-full border border-current border-t-transparent" />
             )}
-            {headerLink.title}
+            {headerLink.i18nKey ? t(headerLink.i18nKey) : headerLink.title}
           </button>
         );
       })}

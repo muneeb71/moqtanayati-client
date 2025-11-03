@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import ItemCard from "../cards/ItemCard";
 import { getProducts } from "@/lib/api/product/getAllProducts";
 import dynamic from "next/dynamic";
+import useTranslation from "@/hooks/useTranslation";
 
 const RecommendedSectionSkeleton = dynamic(
   () => import("@/components/loaders/RecommendedSectionSkeleton"),
@@ -17,6 +18,7 @@ const RecommendedSectionSkeleton = dynamic(
 );
 
 const ItemSlider = ({ items, section, onNavigate }) => {
+  const { t } = useTranslation();
   const [api, setApi] = useState();
   const [mounted, setMounted] = useState(false);
   const [products, setProducts] = useState([]);
@@ -75,10 +77,10 @@ const ItemSlider = ({ items, section, onNavigate }) => {
     return (
       <div className="flex w-full max-w-7xl items-center justify-center py-10 text-battleShipGray">
         {section === "recommendations"
-          ? "No recommendations for you"
+          ? t("buyer.item_slider.no_recommendations")
           : section === "popular"
-            ? "No popular items available"
-            : "No furniture items available"}
+            ? t("buyer.item_slider.no_popular")
+            : t("buyer.item_slider.no_furniture")}
       </div>
     );
   }
@@ -121,7 +123,7 @@ const ItemSlider = ({ items, section, onNavigate }) => {
                   item.buyItNow ||
                   item.minimumOffer ||
                   item.autoAccept ||
-                  "Price not available"
+                  t("buyer.item_slider.price_not_available")
                 }
                 createdAt={item.createdAt}
                 image={

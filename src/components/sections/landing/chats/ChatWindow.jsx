@@ -439,7 +439,7 @@ const ChatWindow = ({
       } catch (error) {
         console.error("🔍 [ChatWindow] Socket connection failed:", error);
         setSocketConnected(false);
-        setConnectionError("Failed to connect to chat server");
+        setConnectionError(t("chat.failed_to_connect"));
       }
     };
 
@@ -463,7 +463,7 @@ const ChatWindow = ({
       setConnectionError(null);
     } catch (error) {
       console.error("🔍 [ChatWindow] Retry failed:", error);
-      setConnectionError("Failed to connect to chat server");
+      setConnectionError(t("chat.failed_to_connect"));
     }
   };
 
@@ -674,7 +674,7 @@ const ChatWindow = ({
   if (!selectedUser) {
     return (
       <div className="flex min-h-[300px] w-full items-center justify-center text-lg text-gray-400">
-        No chat selected
+        {t("chat.no_chat_selected")}
       </div>
     );
   }
@@ -852,12 +852,12 @@ const ChatWindow = ({
                       </div>
                       <span className="hidden text-xs md:inline">
                         {isMine
-                          ? msg.sender?.name || "You"
+                          ? msg.sender?.name || t("chat.you")
                           : msg.sender?.name ||
                             selectedUser.name ||
                             selectedUser.userB?.name ||
                             selectedUser.userA?.name ||
-                            "User"}
+                            t("chat.user")}
                       </span>
                       <span className="px-2 text-[8px] text-battleShipGray">
                         {msg.createdAt
@@ -916,7 +916,9 @@ const ChatWindow = ({
             <div className="flex justify-end">
               <div className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent" />
-                <span className="text-sm text-gray-500">Sending...</span>
+                <span className="text-sm text-gray-500">
+                  {t("chat.sending")}
+                </span>
               </div>
             </div>
           )}
@@ -926,15 +928,18 @@ const ChatWindow = ({
                 <div className="bg-yellow-400 h-4 w-4 rounded-full" />
                 <span className="text-yellow-700 text-sm">
                   {connectionError
-                    ? `Connection failed: ${connectionError}`
-                    : "Connecting to chat..."}
+                    ? t("chat.connection_failed_with_error").replace(
+                        "{error}",
+                        connectionError,
+                      )
+                    : t("chat.connecting")}
                 </span>
                 {connectionError && (
                   <button
                     onClick={retryConnection}
                     className="bg-yellow-500 hover:bg-yellow-600 ml-2 rounded px-2 py-1 text-xs text-white"
                   >
-                    Retry
+                    {t("chat.retry")}
                   </button>
                 )}
               </div>
@@ -957,7 +962,7 @@ const ChatWindow = ({
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type a message"
+          placeholder={t("chat.type_message")}
           className="h-[50px] flex-1 rounded-[8px] border border-transparent bg-[#F8F7FB] px-4 text-sm outline-none placeholder:text-[#858699] focus:border-moonstone"
           disabled={sending || !selectedUser}
           onKeyDown={(e) => {
@@ -997,7 +1002,7 @@ const ChatWindow = ({
         />
         {otherTyping.isTyping && (
           <span className="ml-2 text-xs text-battleShipGray">
-            {otherTyping.userName || "User"} is typing...
+            {otherTyping.userName || t("chat.user")} {t("chat.is_typing")}
           </span>
         )}
         <button

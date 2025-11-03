@@ -1,8 +1,12 @@
+"use client";
+
 import PageHeading from "@/components/headings/PageHeading";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import useTranslation from "@/hooks/useTranslation";
 
 const ProductDetailsLayout = ({ children }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex w-full flex-col items-center justify-center">
       <div className="flex w-full max-w-7xl flex-col items-center px-3">
@@ -15,10 +19,10 @@ const ProductDetailsLayout = ({ children }) => {
               className="flex items-center gap-2 rounded-lg py-2 text-sm font-medium text-gray-700 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Home
+              {t("buyer.product_details.back_to_home")}
             </Link>
           </div>
-          Home {" > "} Product Details
+          {t("buyer.product_details.breadcrumb")}
         </PageHeading>
       </div>
       {children}

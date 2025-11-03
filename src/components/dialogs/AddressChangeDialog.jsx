@@ -12,6 +12,7 @@ import Label from "@/components/form-fields/Label";
 import RoundedButton from "@/components/buttons/RoundedButton";
 import { updateUserProfile } from "@/lib/api/profile/updateProfile";
 import toast from "react-hot-toast";
+import useTranslation from "@/hooks/useTranslation";
 
 const AddressChangeDialog = ({
   open,
@@ -20,12 +21,13 @@ const AddressChangeDialog = ({
   currentAddress,
   userId,
 }) => {
+  const { t } = useTranslation();
   const [newAddress, setNewAddress] = useState(currentAddress || "");
   const [loading, setLoading] = useState(false);
 
   const handleSaveAddress = async () => {
     if (!newAddress.trim()) {
-      toast.error("Please enter a valid address");
+      toast.error(t("buyer.address_dialog.toasts.enter_valid"));
       return;
     }
 
@@ -42,15 +44,17 @@ const AddressChangeDialog = ({
       });
 
       if (response.success) {
-        toast.success("Address updated successfully!");
+        toast.success(t("buyer.address_dialog.toasts.updated"));
         onAddressUpdate(newAddress.trim());
         onOpenChange(false);
       } else {
-        toast.error(response.message || "Failed to update address");
+        toast.error(
+          response.message || t("buyer.address_dialog.toasts.update_failed"),
+        );
       }
     } catch (error) {
       console.error("Address update error:", error);
-      toast.error("Failed to update address. Please try again.");
+      toast.error(t("buyer.address_dialog.toasts.update_failed_try_again"));
     } finally {
       setLoading(false);
     }
@@ -66,15 +70,15 @@ const AddressChangeDialog = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-delftBlue">
-            Change Delivery Address
+            {t("buyer.address_dialog.title")}
           </DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-4 py-4">
           <div className="flex flex-col gap-2">
-            <Label text="New Address" />
+            <Label text={t("buyer.address_dialog.new_address")} />
             <textarea
-              placeholder="Enter your new delivery address"
+              placeholder={t("buyer.address_dialog.placeholder")}
               value={newAddress}
               onChange={(e) => setNewAddress(e.target.value)}
               className="min-h-[100px] w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-moonstone focus:outline-none focus:ring-1 focus:ring-moonstone"
@@ -85,12 +89,16 @@ const AddressChangeDialog = ({
           <div className="flex gap-3 pt-2">
             <RoundedButton
               onClick={handleCancel}
-              title="Cancel"
+              title={t("buyer.address_dialog.cancel")}
               className="flex-1 bg-gray-200 text-gray-700 hover:bg-gray-300"
             />
             <RoundedButton
               onClick={handleSaveAddress}
-              title={loading ? "Saving..." : "Save Address"}
+              title={
+                loading
+                  ? t("buyer.address_dialog.saving")
+                  : t("buyer.address_dialog.save")
+              }
               className="flex-1"
               disabled={loading}
             />

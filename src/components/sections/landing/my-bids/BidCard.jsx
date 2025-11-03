@@ -4,8 +4,10 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const BidCard = ({ item }) => {
+  const { t } = useTranslation();
   const [favourite, setFavourite] = useState(item.isFavourite);
   const highestBid = Math.max(...item.auction.bids.map((bid) => bid.amount));
   const myBidIsHighest = item.amount === highestBid;
@@ -64,7 +66,7 @@ const BidCard = ({ item }) => {
             </span>
             <div className="flex items-center gap-2">
               <span className="text-[11.9px] font-medium leading-[18px] text-black/30">
-                by
+                {t("buyer.my_bids.by")}
               </span>
               <div className="flex items-center gap-1">
                 <div className="size-[19.1px] min-h-[19.1px] min-w-[19.1px] overflow-hidden rounded-full">
@@ -96,7 +98,7 @@ const BidCard = ({ item }) => {
         <div className="flex items-center justify-between gap-5 px-1.5">
           <div className="flex flex-col">
             <span className="text-[11.9px] leading-[18px] text-black/40">
-              Highest Bid
+              {t("buyer.my_bids.highest_bid")}
             </span>
             <span className="font-medium sm:text-lg">${highestBid}</span>
           </div>
@@ -107,7 +109,7 @@ const BidCard = ({ item }) => {
               "transition-all duration-150 ease-in",
             )}
           >
-            {item?.status}
+            {t(`buyer.my_bids.status.${item?.status}`) || item?.status}
           </div>
         </div>
       </div>

@@ -6,8 +6,10 @@ import { useState, useEffect } from "react";
 import WatchlistCardSkeleton from "@/components/loaders/WatchlistCardSkeleton";
 import { removeFromWatchlist } from "@/lib/api/watchlist/removeWatchlist";
 import toast from "react-hot-toast";
+import useTranslation from "@/hooks/useTranslation";
 
 const WatchListPage = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState(null);
   const [loading, setLoading] = useState(true);
   console.log(items);
@@ -46,17 +48,17 @@ const WatchListPage = () => {
 
     const res = await removeFromWatchlist(id);
     if (res?.success === true) {
-      toast.success("Removed from Watchlist");
+      toast.success(t("buyer.watchlist.removed_success"));
     } else {
       // If removal failed, restore the original items
       setItems(currentItems);
-      toast.error("Failed to remove from watchlist");
+      toast.error(t("buyer.watchlist.remove_failed"));
     }
   };
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-5">
-      <PageHeading>Watchlist</PageHeading>
+      <PageHeading>{t("buyer.watchlist.title")}</PageHeading>
       {loading ? (
         <div className="grid min-h-[30rem] w-full max-w-7xl gap-5 md:grid-cols-2 lg:grid-cols-3">
           <WatchlistCardSkeleton />

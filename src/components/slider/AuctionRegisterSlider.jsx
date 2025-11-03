@@ -3,8 +3,10 @@ import { useState } from "react";
 import Image from "next/image";
 import ShippingAddressPopup from "@/components/popup/ShippingAddressPopup";
 import { comments } from "@/utils/comments";
+import useTranslation from "@/hooks/useTranslation";
 
 export default function AuctionRegisterSlider({ onClose }) {
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [showShippingPopup, setShowShippingPopup] = useState(false);
@@ -35,7 +37,9 @@ export default function AuctionRegisterSlider({ onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-end bg-black bg-opacity-40">
       <div className="absolute bottom-0 right-0 flex h-[90vh] w-full max-w-[500px] flex-col overflow-hidden rounded-tl-3xl bg-white shadow-lg md:w-[500px]">
-        <div className={`flex items-center justify-between p-4 ${step !== 2 && "border-b" }`}>
+        <div
+          className={`flex items-center justify-between p-4 ${step !== 2 && "border-b"}`}
+        >
           <button onClick={onClose} className="text-gray-600">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -53,8 +57,8 @@ export default function AuctionRegisterSlider({ onClose }) {
             </svg>
           </button>
           <h2 className="flex-grow text-center text-xl font-semibold">
-            {step === 1 && "Auction Registration"}
-            {step === 3 && "Q&A Section"}
+            {step === 1 && t("buyer.auction_register.registration")}
+            {step === 3 && t("buyer.auction_register.qa_section")}
           </h2>
           {step !== 2 && <div className="w-6"></div>}
         </div>
@@ -81,7 +85,7 @@ export default function AuctionRegisterSlider({ onClose }) {
                         clipRule="evenodd"
                       />
                     </svg>
-                    Ship To
+                    {t("buyer.auction_register.ship_to")}
                   </p>
                   {selectedAddress !== null ? (
                     <p className="text-gray-600">
@@ -89,7 +93,9 @@ export default function AuctionRegisterSlider({ onClose }) {
                       {addresses[selectedAddress].address}
                     </p>
                   ) : (
-                    <p className="text-gray-500 w-full text-center">Select Shipping Address</p>
+                    <p className="w-full text-center text-gray-500">
+                      {t("buyer.auction_register.select_shipping_address")}
+                    </p>
                   )}
                 </div>
                 <span className="text-teal-500">+</span>
@@ -110,9 +116,11 @@ export default function AuctionRegisterSlider({ onClose }) {
                         clipRule="evenodd"
                       />
                     </svg>
-                    Payment Method
+                    {t("buyer.auction_register.payment_method")}
                   </p>
-                  <p className="text-gray-500">Add Payment Method</p>
+                  <p className="text-gray-500">
+                    {t("buyer.auction_register.add_payment_method")}
+                  </p>
                 </div>
                 <span className="text-teal-500">+</span>
               </div>
@@ -120,112 +128,126 @@ export default function AuctionRegisterSlider({ onClose }) {
           )}
 
           {step === 2 && (
-            <div className="flex flex-col h-full">
-                <div className="flex-grow overflow-y-auto">
-                    <div className="flex items-center gap-4 mb-4 px-4 border-b pb-3">
-                        <button 
-                            onClick={() => setStep(1)} 
-                            className="text-gray-600"
-                        >
-                            <svg 
-                                xmlns="http://www.w3.org/2000/svg" 
-                                className="h-6 w-6" 
-                                fill="none" 
-                                viewBox="0 0 24 24" 
-                                stroke="currentColor"
-                            >
-                                <path 
-                                    strokeLinecap="round" 
-                                    strokeLinejoin="round" 
-                                    strokeWidth={2} 
-                                    d="M15 19l-7-7 7-7" 
-                                />
-                            </svg>
-                        </button>
-                        <h2 className="text-xl font-semibold flex-grow">Select Shipping Address</h2>
-                    </div>
-
-                    <div className="space-y-4 px-4">
-                        {addresses.map((addr, index) => (
-                            <div
-                                key={index}
-                                onClick={() => {
-                                    setSelectedAddress(index);
-                                    setStep(1);
-                                }}
-                                className={`cursor-pointer rounded-lg border p-4 ${
-                                    selectedAddress === index
-                                    ? "border-teal-500 bg-teal-50" 
-                                    : "border-gray-200 bg-white"
-                                }`}
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <p className="font-medium">{addr.type}</p>
-                                            <svg 
-                                                xmlns="http://www.w3.org/2000/svg" 
-                                                className="h-4 w-4 text-teal-500" 
-                                                viewBox="0 0 20 20" 
-                                                fill="currentColor"
-                                            >
-                                                <path 
-                                                    fillRule="evenodd" 
-                                                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" 
-                                                    clipRule="evenodd" 
-                                                />
-                                            </svg>
-                                        </div>
-                                        <p className="text-sm text-gray-600">{addr.address}</p>
-                                    </div>
-                                    {selectedAddress === index && (
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-6 w-6 text-teal-500"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M5 13l4 4L19 7"
-                                            />
-                                        </svg>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="border-t flex justify-center w-full p-4">
-                    <button
-                        onClick={() => setShowShippingPopup(true)}
-                        className="px-20 py-3 rounded-full bg-moonstone text-white"
+            <div className="flex h-full flex-col">
+              <div className="flex-grow overflow-y-auto">
+                <div className="mb-4 flex items-center gap-4 border-b px-4 pb-3">
+                  <button onClick={() => setStep(1)} className="text-gray-600">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                        + New Address
-                    </button>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </button>
+                  <h2 className="flex-grow text-xl font-semibold">
+                    {t("buyer.auction_register.select_shipping_address")}
+                  </h2>
                 </div>
+
+                <div className="space-y-4 px-4">
+                  {addresses.map((addr, index) => (
+                    <div
+                      key={index}
+                      onClick={() => {
+                        setSelectedAddress(index);
+                        setStep(1);
+                      }}
+                      className={`cursor-pointer rounded-lg border p-4 ${
+                        selectedAddress === index
+                          ? "border-teal-500 bg-teal-50"
+                          : "border-gray-200 bg-white"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{addr.type}</p>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4 text-teal-500"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            {addr.address}
+                          </p>
+                        </div>
+                        {selectedAddress === index && (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-6 w-6 text-teal-500"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex w-full justify-center border-t p-4">
+                <button
+                  onClick={() => setShowShippingPopup(true)}
+                  className="rounded-full bg-moonstone px-20 py-3 text-white"
+                >
+                  {t("buyer.auction_register.new_address")}
+                </button>
+              </div>
             </div>
           )}
 
           {step === 3 && (
             <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between p-4 border-b">
+              <div className="flex items-center justify-between border-b p-4">
                 <div className="flex items-center space-x-2">
-                  <span className="text-xs text-davyGray font-medium">22 Comments</span>
+                  <span className="text-xs font-medium text-davyGray">
+                    22 Comments
+                  </span>
                 </div>
                 <div className="relative">
-                  <select className="text-eerieBlack font-medium text-xs appearance-none border-none focus:outline-none outline-none bg-white rounded-full px-3 py-1 pr-6">
+                  <select className="appearance-none rounded-full bg-white px-3 py-1 pr-6 text-xs font-medium text-eerieBlack outline-none focus:outline-none">
                     <option>Newest</option>
                     <option>Oldest</option>
                     <option>Most Relevant</option>
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -246,21 +268,25 @@ export default function AuctionRegisterSlider({ onClose }) {
                         />
                       </div>
                       <div className="flex-grow">
-                        <p className="font-medium text-sm sm:text-base">{comment.name}</p>
-                        <p className="text-xs sm:text-sm text-gray-600">
+                        <p className="text-sm font-medium sm:text-base">
+                          {comment.name}
+                        </p>
+                        <p className="text-xs text-gray-600 sm:text-sm">
                           {comment.question}
                         </p>
-                        <p className="text-xs text-gray-400 mt-1">4 hours ago</p>
+                        <p className="mt-1 text-xs text-gray-400">
+                          4 hours ago
+                        </p>
                       </div>
                     </div>
 
                     {/* Replies */}
                     {comment.replies.map((reply, replyIndex) => (
-                      <div key={replyIndex} className="pl-10 relative">
+                      <div key={replyIndex} className="relative pl-10">
                         {/* Vertical dotted line */}
-                        <div className="absolute left-4 top-0 bottom-0 w-0.5 border-l-2 border-dashed border-gray-300"></div>
-                        
-                        <div className="flex items-start space-x-3 ml-4">
+                        <div className="absolute bottom-0 left-4 top-0 w-0.5 border-l-2 border-dashed border-gray-300"></div>
+
+                        <div className="ml-4 flex items-start space-x-3">
                           <div className="h-8 w-8 min-w-[2rem] overflow-hidden rounded-full">
                             <Image
                               src={reply.image || "/default-avatar.png"}
@@ -271,14 +297,18 @@ export default function AuctionRegisterSlider({ onClose }) {
                             />
                           </div>
                           <div className="flex-grow">
-                            <p className="font-medium text-sm">
-                              {reply.name} 
-                              <span className="text-gray-500 text-xs ml-1">{reply.role}</span>
+                            <p className="text-sm font-medium">
+                              {reply.name}
+                              <span className="ml-1 text-xs text-gray-500">
+                                {reply.role}
+                              </span>
                             </p>
-                            <p className="text-xs sm:text-sm text-gray-600">
+                            <p className="text-xs text-gray-600 sm:text-sm">
                               {reply.response}
                             </p>
-                            <p className="text-xs text-gray-400 mt-1">2 min ago</p>
+                            <p className="mt-1 text-xs text-gray-400">
+                              2 min ago
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -291,11 +321,16 @@ export default function AuctionRegisterSlider({ onClose }) {
               <div className="border-t bg-white p-4 sm:p-6">
                 <div className="relative">
                   <input
-                    className="w-full rounded-full bg-gray-300 border p-2 pl-4 pr-10 text-xs sm:text-sm"
+                    className="w-full rounded-full border bg-gray-300 p-2 pl-4 pr-10 text-xs sm:text-sm"
                     placeholder="Type your message..."
                   />
                   <button className="absolute right-2 top-1/2 -translate-y-1/2 transform text-teal-500">
-                    <Image src="/static/arrow.svg" alt="Send button" width={20} height={20} />
+                    <Image
+                      src="/static/arrow.svg"
+                      alt="Send button"
+                      width={20}
+                      height={20}
+                    />
                   </button>
                 </div>
               </div>
@@ -304,9 +339,9 @@ export default function AuctionRegisterSlider({ onClose }) {
         </div>
 
         {step === 1 && (
-          <div className="border-t p-4 flex justify-center">
+          <div className="flex justify-center border-t p-4">
             <button
-              className="px-20 py-3 rounded-full bg-gray-400 text-white"
+              className="rounded-full bg-gray-400 px-20 py-3 text-white"
               onClick={() => {
                 // Only proceed if an address is selected
                 if (selectedAddress !== null) {
@@ -315,7 +350,7 @@ export default function AuctionRegisterSlider({ onClose }) {
               }}
               disabled={selectedAddress === null}
             >
-              Submit Registration
+              {t("buyer.auction_register.submit_registration")}
             </button>
           </div>
         )}

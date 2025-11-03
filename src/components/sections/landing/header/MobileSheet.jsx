@@ -20,8 +20,10 @@ import { headerDropdownLinks, headerLinks } from "@/lib/links";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import useTranslation from "@/hooks/useTranslation";
 
 const MobileSheet = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const [isNavigating, setIsNavigating] = useState(false);
@@ -121,7 +123,9 @@ const MobileSheet = () => {
                       handleNavigate(headerLink.href);
                     }}
                   >
-                    {headerLink.title}
+                    {headerLink.i18nKey
+                      ? t(headerLink.i18nKey)
+                      : headerLink.title}
                   </Link>
                 </SheetClose>
               ))}
@@ -136,12 +140,14 @@ const MobileSheet = () => {
                   handleNavigate(link.href);
                 }}
               >
-                <span className="text-[13.17px]">{link.title}</span>
+                <span className="text-[13.17px]">
+                  {link.i18nKey ? t(link.i18nKey) : link.title}
+                </span>
                 {link.icon}
               </Link>
             ))}
             <button className="mt-5 flex items-center justify-end gap-2 self-end rounded-[12px] border border-moonstone/40 bg-moonstone/10 px-5 py-3 text-[13px]">
-              Logout
+              {t("header.logout")}
               {logoutIcon}
             </button>
           </div>

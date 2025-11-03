@@ -1,3 +1,5 @@
+"use client";
+
 import {
   deliveredOrderIcon,
   processingOrderIcon,
@@ -9,15 +11,34 @@ import toast from "react-hot-toast";
 import { updateOrderStatus } from "@/lib/api/orders/updateOrderStatus";
 import { useRouter } from "next/navigation";
 import { useProfileStore } from "@/providers/profile-store-provider";
+import useTranslation from "@/hooks/useTranslation";
 
-const statusSteps = [
-  { key: "PENDING", label: "Received", icon: recievedOrderIcon },
-  { key: "PROCESSING", label: "Processing", icon: processingOrderIcon },
-  { key: "SHIPPED", label: "Shipped", icon: shippedOrderIcon },
-  { key: "DELIVERED", label: "Delivered", icon: deliveredOrderIcon },
+const statusStepsRaw = (t) => [
+  {
+    key: "PENDING",
+    label: t("seller.orders.status.received"),
+    icon: recievedOrderIcon,
+  },
+  {
+    key: "PROCESSING",
+    label: t("seller.orders.status.processing"),
+    icon: processingOrderIcon,
+  },
+  {
+    key: "SHIPPED",
+    label: t("seller.orders.status.shipped"),
+    icon: shippedOrderIcon,
+  },
+  {
+    key: "DELIVERED",
+    label: t("seller.orders.status.delivered"),
+    icon: deliveredOrderIcon,
+  },
 ];
 
 const OrderStatus = ({ order, onStatusUpdated }) => {
+  const { t } = useTranslation();
+  const statusSteps = statusStepsRaw(t);
   const router = useRouter();
   // Normalize current delivery status for visualization
   const deriveStatus = (o) => {
@@ -101,7 +122,7 @@ const OrderStatus = ({ order, onStatusUpdated }) => {
     const prev = localStatus;
     setLocalStatus(nextStatus); // optimistic
     setPending(true);
-    const tId = toast.loading("Updating order status...");
+    const tId = toast.loading(t("seller.orders.status.updating"));
     try {
       console.log("[OrderStatus] calling updateOrderStatus", {
         orderId: order?.id,
@@ -110,7 +131,10 @@ const OrderStatus = ({ order, onStatusUpdated }) => {
       const res = await updateOrderStatus(order?.id, nextStatus);
       console.log("[OrderStatus] updateOrderStatus response", res);
       if (res.success) {
-        toast.success(`Status updated: ${prev} → ${nextStatus}`, { id: tId });
+        toast.success(
+          t("seller.orders.status.updated", { prev, next: nextStatus }),
+          { id: tId },
+        );
         setPending(false);
         onStatusUpdated?.(nextStatus);
 
@@ -162,12 +186,14 @@ const OrderStatus = ({ order, onStatusUpdated }) => {
       } else {
         setLocalStatus(prev); // revert
         setPending(false);
-        toast.error(res.message || "Failed to update status", { id: tId });
+        toast.error(res.message || t("seller.orders.status.failed"), {
+          id: tId,
+        });
       }
     } catch (e) {
       setLocalStatus(prev);
       setPending(false);
-      toast.error(e?.message || "Failed to update status", { id: tId });
+      toast.error(e?.message || t("seller.orders.status.failed"), { id: tId });
     }
   };
   return (
@@ -176,7 +202,7 @@ const OrderStatus = ({ order, onStatusUpdated }) => {
       key={`order-status-${order?.id}-${order?.deliveryStatus}-${order?.status}`}
     >
       <span className="text-3xl font-medium text-[#1A1A1ACC]">
-        Order Status
+        {t("seller.orders.status.title")}
       </span>
       <div className="flex h-full w-full items-center justify-between">
         {statusSteps.map((step, idx) => (

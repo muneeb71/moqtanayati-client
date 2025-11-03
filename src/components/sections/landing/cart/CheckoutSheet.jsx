@@ -26,6 +26,7 @@ import { createOrder } from "@/lib/api/orders/createOrder";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import AddressChangeDialog from "@/components/dialogs/AddressChangeDialog";
+import useTranslation from "@/hooks/useTranslation";
 
 const CheckoutSheet = ({
   itemCount = 0,
@@ -37,15 +38,18 @@ const CheckoutSheet = ({
   setOrderId,
   onRefreshCart,
 }) => {
+  const { t } = useTranslation();
   const tabs = [
-    "Items",
-    "Select Payment Methods",
-    "Credit/Debit Cards",
-    "New Card",
+    t("buyer.checkout.tabs.items"),
+    t("buyer.checkout.tabs.select_methods"),
+    t("buyer.checkout.tabs.cards"),
+    t("buyer.checkout.tabs.new_card"),
   ];
   const shippingOptions = ["Option 1", "Option 2", "Option 3"];
   const cards = ["Card 1", "Card 2", "Card 3"];
-  const [selectedTab, setSelectedTab] = useState("Items");
+  const [selectedTab, setSelectedTab] = useState(
+    t("buyer.checkout.tabs.items"),
+  );
   const [selectedCard, setSelectedCard] = useState(cards[0]);
   const [selectedShippingOption, setSelectedShippingOption] = useState(
     shippingOptions[0],
@@ -60,8 +64,18 @@ const CheckoutSheet = ({
       setCurrentAddress(user.address);
     }
   }, [user?.address]);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState("Cash on Delivery");
+  // Extra safety: if no address provided, try reading from localStorage profile
+  useEffect(() => {
+    if (!currentAddress) {
+      try {
+        const profile = JSON.parse(localStorage.getItem("profile") || "null");
+        if (profile?.address) setCurrentAddress(profile.address);
+      } catch {}
+    }
+  }, [currentAddress]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
+    t("buyer.checkout.methods.cod"),
+  );
   const [showPaymentComingSoon, setShowPaymentComingSoon] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const router = useRouter();
@@ -89,24 +103,21 @@ const CheckoutSheet = ({
   };
 
   const handlePaymentMethodClick = (method) => {
-    if (method === "Cash on Delivery") {
+    if (method === t("buyer.checkout.methods.cod")) {
       setSelectedPaymentMethod(method);
       setShowPaymentComingSoon(false);
-      toast.success("Cash on Delivery selected");
+      toast.success(t("buyer.checkout.cod_selected_toast"));
       // Navigate to the next step (Credit/Debit Cards tab)
       setSelectedTab(tabs[2]);
     } else {
       setShowPaymentComingSoon(true);
-      toast(
-        `${method} will be available soon! For now, please use Cash on Delivery.`,
-        {
-          icon: "ℹ️",
-          style: {
-            background: "#3B82F6",
-            color: "#fff",
-          },
+      toast(t("buyer.checkout.method_coming_soon", { method }), {
+        icon: "ℹ️",
+        style: {
+          background: "#3B82F6",
+          color: "#fff",
         },
-      );
+      });
       // Auto-hide the message after 3 seconds
       setTimeout(() => {
         setShowPaymentComingSoon(false);
@@ -141,7 +152,7 @@ const CheckoutSheet = ({
       if (res?.success && res?.data?.id) {
         setOrderId(res?.data?.id);
         setShowOrderPlaced(true);
-        toast.success("Order placed successfully!");
+        toast.success(t("buyer.checkout.success_order_placed"));
         setSelectedTab(tabs[0]);
         orderPlaced(true);
         // Refresh cart data after successful order
@@ -151,10 +162,10 @@ const CheckoutSheet = ({
         // Only close the sheet after successful API response
         onOpenChange(false);
       } else {
-        toast.error("Order placed but no order ID returned.");
+        toast.error(t("buyer.checkout.success_order_no_id"));
       }
     } catch (err) {
-      toast.error(err?.message || "Order placement failed");
+      toast.error(err?.message || t("buyer.checkout.error_order_failed"));
       console.log("Order placement failed", err);
     } finally {
       setIsPlacingOrder(false);
@@ -166,7 +177,7 @@ const CheckoutSheet = ({
       <SheetContent className="min-w-screen w-full rounded-l-3xl p-0 sm:min-w-[480px]">
         <SheetHeader>
           <SheetTitle className="w-full border-b border-[#F0F1F4] py-7 text-center text-2xl font-medium text-darkBlue">
-            Checkout
+            {t("buyer.checkout.title")}
           </SheetTitle>
         </SheetHeader>
         <SheetClose asChild disabled={isPlacingOrder}>
@@ -234,9 +245,9 @@ const CheckoutSheet = ({
                 </div>
               ))}
             </div>
-            <div className="flex w-full flex-col gap-2 px-10">
+            {/* <div className="flex w-full flex-col gap-2 px-10">
               <h1 className="text-lg font-medium text-delftBlue">
-                Shipping Options
+                {t("buyer.checkout.shipping_options")}
               </h1>
               <div className="flex w-full items-center gap-1">
                 {shippingOptions.map((option, index) => (
@@ -256,48 +267,58 @@ const CheckoutSheet = ({
                 ))}
               </div>
               <div className="mt-2 h-[1px] w-full bg-[#F0F1F4]"></div>
-            </div>
+            </div> */}
             <div className="flex flex-col gap-2 px-10 py-5">
               <div className="flex items-center justify-between">
                 <h1 className="text-lg font-medium text-delftBlue">
-                  Delivery Address
+                  {t("buyer.checkout.delivery_address")}
                 </h1>
                 <button
                   onClick={() => setShowAddressDialog(true)}
                   className="text-xs text-moonstone hover:underline"
                 >
-                  Change
+                  {t("buyer.checkout.change")}
                 </button>
               </div>
               <div className="flex flex-col gap-1 rounded-2xl border border-black/10 px-5 py-5">
-                <h1 className="text-sm font-medium">Home</h1>
+                <h1 className="text-sm font-medium">
+                  {t("buyer.checkout.home")}
+                </h1>
                 <div className="max-w-[90%] text-xs text-battleShipGray">
-                  {currentAddress || user?.address || "No address provided"}
+                  {currentAddress ||
+                    user?.address ||
+                    t("buyer.checkout.no_address")}
                 </div>
               </div>
               <p className="py-2 text-xs text-battleShipGray">
-                Estimated Delivery Time:{" "}
-                <span className="text-delftBlue">10 -15 Working Days</span>
+                {t("buyer.checkout.estimated_delivery")}{" "}
+                <span className="text-delftBlue">
+                  {t("buyer.checkout.working_days")}
+                </span>
               </p>
               <div className="flex w-full flex-col gap-1 text-[#4D4D4DE5]">
-                <h1 className="font-medium text-delftBlue">Order Summary</h1>
+                <h1 className="font-medium text-delftBlue">
+                  {t("buyer.checkout.order_summary")}
+                </h1>
                 <div className="flex w-full items-center justify-between">
-                  <span className="text-sm">Subtotal</span>
+                  <span className="text-sm">{t("buyer.cart.subtotal")}</span>
                   <span className="text-sm">${subtotal}</span>
                 </div>
                 <div className="flex w-full items-center justify-between">
-                  <span className="text-sm">Tax</span>
+                  <span className="text-sm">{t("buyer.cart.tax")}</span>
                   <span className="text-sm">${tax}</span>
                 </div>
                 <div className="flex w-full items-center justify-between">
-                  <span className="text-sm">Delivery</span>
-                  <span className="text-sm">Free</span>
+                  <span className="text-sm">{t("buyer.cart.shipping")}</span>
+                  <span className="text-sm">{t("buyer.cart.free")}</span>
                 </div>
               </div>
             </div>
             <div className="flex items-center justify-between justify-self-end border-t border-[#F0F1F4] px-10 py-5">
               <div className="flex flex-col">
-                <h2 className="text-xl text-battleShipGray">Grand Total</h2>
+                <h2 className="text-xl text-battleShipGray">
+                  {t("buyer.cart.grand_total")}
+                </h2>
                 <span className="text-3xl font-medium text-black/80">
                   ${(subtotal + tax).toFixed(2)}
                 </span>
@@ -306,7 +327,7 @@ const CheckoutSheet = ({
                 onClick={handlePayNow}
                 className="rounded-lg bg-moonstone/80 px-10 py-3 text-white hover:bg-moonstone"
               >
-                Pay Now
+                {t("buyer.checkout.pay_now")}
               </button>
             </div>
           </div>
@@ -325,63 +346,80 @@ const CheckoutSheet = ({
               {selectedPaymentMethod && (
                 <div className="mb-4 rounded-lg border border-moonstone/20 bg-moonstone/10 px-4 py-3">
                   <p className="text-sm font-medium text-moonstone">
-                    Selected: {selectedPaymentMethod}
+                    {t("buyer.checkout.selected_label")} {selectedPaymentMethod}
                   </p>
                 </div>
               )}
               <button
-                onClick={() => handlePaymentMethodClick("Credit/Debit Card")}
+                onClick={() =>
+                  handlePaymentMethodClick(
+                    t("buyer.checkout.methods.credit_card"),
+                  )
+                }
                 className={cn(
                   "flex items-center justify-between rounded-xl border border-delftBlue/10 bg-[#F8F7FB] px-4 py-5 text-start text-darkBlue",
                   "transition-all duration-200 ease-in hover:border-moonstone",
-                  selectedPaymentMethod === "Credit/Debit Card" &&
+                  selectedPaymentMethod ===
+                    t("buyer.checkout.methods.credit_card") &&
                     "border-moonstone bg-moonstone/10",
                 )}
               >
                 <div className="flex items-center gap-2">
-                  Credit/Debit Card {visaIcon}
+                  {t("buyer.checkout.methods.credit_card")} {visaIcon}
                   {masterCardIcon}
                 </div>
                 <ChevronRight />
               </button>
               <button
-                onClick={() => handlePaymentMethodClick("PayPal")}
+                onClick={() =>
+                  handlePaymentMethodClick(t("buyer.checkout.methods.paypal"))
+                }
                 className={cn(
                   "flex items-center justify-between rounded-xl border border-delftBlue/10 bg-[#F8F7FB] px-4 py-5 text-start text-darkBlue",
                   "transition-all duration-200 ease-in hover:border-moonstone",
-                  selectedPaymentMethod === "PayPal" &&
+                  selectedPaymentMethod ===
+                    t("buyer.checkout.methods.paypal") &&
                     "border-moonstone bg-moonstone/10",
                 )}
               >
                 <div className="flex items-center gap-2">
-                  PayPal {payPalIcon}
+                  {t("buyer.checkout.methods.paypal")} {payPalIcon}
                 </div>
                 <ChevronRight />
               </button>
               <button
-                onClick={() => handlePaymentMethodClick("Apple Pay")}
+                onClick={() =>
+                  handlePaymentMethodClick(
+                    t("buyer.checkout.methods.apple_pay"),
+                  )
+                }
                 className={cn(
                   "flex items-center justify-between rounded-xl border border-delftBlue/10 bg-[#F8F7FB] px-4 py-5 text-start text-darkBlue",
                   "transition-all duration-200 ease-in hover:border-moonstone",
-                  selectedPaymentMethod === "Apple Pay" &&
+                  selectedPaymentMethod ===
+                    t("buyer.checkout.methods.apple_pay") &&
                     "border-moonstone bg-moonstone/10",
                 )}
               >
                 <div className="flex items-center gap-2">
-                  Apple Pay {applePayIcon}
+                  {t("buyer.checkout.methods.apple_pay")} {applePayIcon}
                 </div>
                 <ChevronRight />
               </button>
               <button
-                onClick={() => handlePaymentMethodClick("Cash on Delivery")}
+                onClick={() =>
+                  handlePaymentMethodClick(t("buyer.checkout.methods.cod"))
+                }
                 className={cn(
                   "flex items-center justify-between rounded-xl border border-delftBlue/10 bg-[#F8F7FB] px-4 py-5 text-start text-darkBlue",
                   "transition-all duration-200 ease-in hover:border-moonstone",
-                  selectedPaymentMethod === "Cash on Delivery" &&
+                  selectedPaymentMethod === t("buyer.checkout.methods.cod") &&
                     "border-moonstone bg-moonstone/10",
                 )}
               >
-                <div className="flex items-center gap-2">Cash on Delivery</div>
+                <div className="flex items-center gap-2">
+                  {t("buyer.checkout.methods.cod")}
+                </div>
                 <ChevronRight />
               </button>
             </div>
@@ -394,11 +432,11 @@ const CheckoutSheet = ({
                   <ChevronLeft />
                 </button>
                 <h1 className="text-lg font-medium text-delftBlue">
-                  {selectedPaymentMethod === "Cash on Delivery"
-                    ? "Payment Method"
+                  {selectedPaymentMethod === t("buyer.checkout.methods.cod")
+                    ? t("buyer.checkout.payment_method")
                     : selectedTab}
                 </h1>
-                {selectedPaymentMethod !== "Cash on Delivery" && (
+                {selectedPaymentMethod !== t("buyer.checkout.methods.cod") && (
                   <button
                     onClick={() => setSelectedTab(tabs[3])}
                     className="flex items-center gap-0.5 text-xs text-moonstone"
@@ -408,7 +446,7 @@ const CheckoutSheet = ({
                 )}
               </div>
 
-              {selectedPaymentMethod === "Cash on Delivery" ? (
+              {selectedPaymentMethod === t("buyer.checkout.methods.cod") ? (
                 <div className="py- flex flex-col items-center justify-center px-10">
                   <div className="flex flex-col items-center gap-2 text-center">
                     <div className="rounded-full bg-green-100 p-6">
@@ -427,18 +465,19 @@ const CheckoutSheet = ({
                       </svg>
                     </div>
                     <h2 className="text-2xl font-semibold text-delftBlue">
-                      Cash on Delivery Selected
+                      {t("buyer.checkout.cod_selected_title")}
                     </h2>
                     <p className="max-w-md text-gray-600">
-                      You will pay for your order when it arrives at your
-                      delivery address. No payment is required now.
+                      {t("buyer.checkout.cod_selected_desc")}
                     </p>
                     <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3">
                       <p className="text-sm text-blue-800">
-                        <strong>Delivery Address:</strong>{" "}
+                        <strong>
+                          {t("buyer.checkout.delivery_address_label")}
+                        </strong>{" "}
                         {currentAddress ||
                           user?.address ||
-                          "No address provided"}
+                          t("buyer.checkout.no_address")}
                       </p>
                     </div>
                   </div>
@@ -470,31 +509,37 @@ const CheckoutSheet = ({
             </div>
             <div className="flex flex-col">
               <div className="flex w-full flex-col gap-1 border-t border-[#F0F1F4] px-10 py-5 text-[#4D4D4DE5]">
-                <h1 className="font-medium text-delftBlue">Order Summary</h1>
+                <h1 className="font-medium text-delftBlue">
+                  {t("buyer.checkout.order_summary")}
+                </h1>
                 <div className="flex w-full items-center justify-between">
-                  <span className="text-sm">Subtotal</span>
+                  <span className="text-sm">{t("buyer.cart.subtotal")}</span>
                   <span className="text-sm">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex w-full items-center justify-between">
-                  <span className="text-sm">Tax</span>
+                  <span className="text-sm">{t("buyer.cart.tax")}</span>
                   <span className="text-sm">${tax.toFixed(2)}</span>
                 </div>
                 <div className="flex w-full items-center justify-between">
-                  <span className="text-sm">Delivery</span>
-                  <span className="text-sm">Free</span>
+                  <span className="text-sm">{t("buyer.cart.shipping")}</span>
+                  <span className="text-sm">{t("buyer.cart.free")}</span>
                 </div>
               </div>
               <div className="flex items-center justify-between justify-self-end border-t border-[#F0F1F4] px-10 py-5">
                 <div className="flex flex-col">
-                  <h2 className="text-xl text-battleShipGray">Grand Total</h2>
+                  <h2 className="text-xl text-battleShipGray">
+                    {t("buyer.cart.grand_total")}
+                  </h2>
                   <span className="text-3xl font-medium text-black/80">
                     ${(subtotal + tax).toFixed(2)}
                   </span>
                 </div>
                 <button
                   onClick={() => {
-                    if (selectedPaymentMethod !== "Cash on Delivery") {
-                      toast.error("Please select Cash on Delivery to proceed");
+                    if (
+                      selectedPaymentMethod !== t("buyer.checkout.methods.cod")
+                    ) {
+                      toast.error(t("buyer.checkout.cod_required_error"));
                       return;
                     }
                     placeOrder();
@@ -502,7 +547,9 @@ const CheckoutSheet = ({
                   disabled={isPlacingOrder}
                   className="rounded-lg bg-moonstone/80 px-10 py-3 text-white hover:bg-moonstone disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {isPlacingOrder ? "Placing Order..." : "Place Order"}
+                  {isPlacingOrder
+                    ? t("buyer.checkout.placing_order")
+                    : t("buyer.checkout.place_order")}
                 </button>
               </div>
             </div>
@@ -521,28 +568,34 @@ const CheckoutSheet = ({
               </div>
               <div className="flex w-full flex-col gap-3 px-10 py-5">
                 <div className="flex w-full flex-col gap-1">
-                  <Label text="Card Number" />
-                  <InputField placeholder="Enter card number" />
+                  <Label text={t("buyer.checkout.form.card_number")} />
+                  <InputField
+                    placeholder={t("buyer.checkout.form.enter_card_number")}
+                  />
                 </div>
                 <div className="flex w-full flex-col gap-1">
-                  <Label text="Cardholder Name" />
-                  <InputField placeholder="Enter cardholder name" />
+                  <Label text={t("buyer.checkout.form.cardholder_name")} />
+                  <InputField
+                    placeholder={t("buyer.checkout.form.enter_cardholder_name")}
+                  />
                 </div>
                 <div className="flex w-full items-center gap-2">
                   <div className="flex w-full flex-col gap-1">
-                    <Label text="Expiry Date" />
-                    <InputField placeholder="01/01/2000" />
+                    <Label text={t("buyer.checkout.form.expiry_date")} />
+                    <InputField
+                      placeholder={t("buyer.checkout.form.expiry_placeholder")}
+                    />
                   </div>
                   <div className="flex w-full flex-col gap-1">
-                    <Label text="CVV" />
-                    <InputField placeholder="CVV" />
+                    <Label text={t("buyer.checkout.form.cvv")} />
+                    <InputField placeholder={t("buyer.checkout.form.cvv")} />
                   </div>
                 </div>
               </div>
             </div>
             <RoundedButton
               onClick={() => setSelectedTab(tabs[2])}
-              title="Add Card"
+              title={t("buyer.checkout.form.add_card")}
               className="w-72 self-center"
             />
           </div>

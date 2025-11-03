@@ -17,8 +17,10 @@ import { useProfileStore } from "@/providers/profile-store-provider";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { PenLine, User as UserIcon } from "lucide-react";
+import useTranslation from "@/hooks/useTranslation";
 
 const EditProfileCard = () => {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { id, avatar: storeAvatar } = useProfileStore((state) => state);
@@ -93,11 +95,11 @@ const EditProfileCard = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      toast.error("Please select a valid image file");
+      toast.error(t("buyer.profile.toasts.select_valid_image"));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size should be less than 5MB");
+      toast.error(t("buyer.profile.toasts.image_too_large"));
       return;
     }
     setImageFile(file);
@@ -123,29 +125,29 @@ const EditProfileCard = () => {
   // Validate form fields
   const validateForm = () => {
     if (!firstName.trim()) {
-      toast.error("First name is required");
+      toast.error(t("buyer.profile.toasts.first_name_required"));
       return false;
     }
 
     if (!email.trim()) {
-      toast.error("Email is required");
+      toast.error(t("buyer.profile.toasts.email_required"));
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast.error("Please enter a valid email address");
+      toast.error(t("buyer.profile.toasts.invalid_email"));
       return false;
     }
 
     if (!phone.trim()) {
-      toast.error("Phone number is required");
+      toast.error(t("buyer.profile.toasts.phone_required"));
       return false;
     }
 
     const phoneRegex = /^\+?\d{7,15}$/;
     if (!phoneRegex.test(phone.replace(/\s/g, ""))) {
-      toast.error("Please enter a valid phone number");
+      toast.error(t("buyer.profile.toasts.invalid_phone"));
       return false;
     }
 
@@ -158,7 +160,7 @@ const EditProfileCard = () => {
     }
 
     if (!hasChanges()) {
-      toast.error("No changes detected");
+      toast.error(t("buyer.profile.toasts.no_changes"));
       return;
     }
 
@@ -187,7 +189,7 @@ const EditProfileCard = () => {
       });
 
       if (response.success) {
-        toast.success("Profile updated successfully!");
+        toast.success(t("buyer.profile.toasts.profile_updated"));
         // Update original values to reflect the new state
         setOriginalValues({
           firstName: firstName.trim(),
@@ -200,11 +202,13 @@ const EditProfileCard = () => {
         // Redirect back to profile page
         router.push("/buyer/profile");
       } else {
-        toast.error(response.message || "Failed to update profile");
+        toast.error(
+          response.message || t("buyer.profile.toasts.update_failed"),
+        );
       }
     } catch (error) {
       console.log("Error updating profile:", error);
-      toast.error(error.message || "An unexpected error occurred");
+      toast.error(error.message || t("buyer.profile.toasts.unexpected_error"));
     } finally {
       setIsLoading(false);
     }
@@ -329,10 +333,10 @@ const EditProfileCard = () => {
         {isLoading ? (
           <div className="flex items-center gap-2">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-            Updating...
+            {t("buyer.profile.buttons.updating")}
           </div>
         ) : (
-          "Save"
+          t("buyer.profile.buttons.save")
         )}
       </button>
     </div>
