@@ -4,8 +4,10 @@ import GoBackButton from "@/components/buttons/GoBackButton";
 import { SurveyStoreProvider } from "@/providers/survey-store-provider";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const SurveyLayout = ({ children }) => {
+  const { t } = useTranslation();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 

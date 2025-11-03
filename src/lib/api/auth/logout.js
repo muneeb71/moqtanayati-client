@@ -25,8 +25,10 @@
 import { useRouter } from "next/navigation";
 import { deleteCookie } from "cookies-next";
 import { useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 export default function LogoutButton({ logoutIcon, onLoadingChange }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -70,7 +72,9 @@ export default function LogoutButton({ logoutIcon, onLoadingChange }) {
         logoutIcon
       )}
       <p className="text-red-500">
-        {isLoggingOut ? "Logging out..." : "Logout"}
+        {isLoggingOut
+          ? t("admin.logout.logging_out")
+          : t("admin.logout.logout")}
       </p>
     </div>
   );

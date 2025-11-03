@@ -2,17 +2,47 @@
 
 import { useProfileStore } from "@/providers/profile-store-provider";
 import { useMemo } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const SalesGraph = () => {
+  const { t } = useTranslation();
   const sellerOrders = useProfileStore((state) => state.sellerOrders);
   const weekDays = [
-    { label: "Mon", value: 70, letter: "M" },
-    { label: "Tue", value: 40, letter: "T" },
-    { label: "Wed", value: 85, letter: "W" },
-    { label: "Thu", value: 35, letter: "T" },
-    { label: "Fri", value: 45, letter: "F" },
-    { label: "Sat", value: 55, letter: "S" },
-    { label: "Sun", value: 30, letter: "S" },
+    {
+      label: t("seller.banner.days.mon"),
+      value: 70,
+      letter: t("seller.banner.days.m"),
+    },
+    {
+      label: t("seller.banner.days.tue"),
+      value: 40,
+      letter: t("seller.banner.days.t"),
+    },
+    {
+      label: t("seller.banner.days.wed"),
+      value: 85,
+      letter: t("seller.banner.days.w"),
+    },
+    {
+      label: t("seller.banner.days.thu"),
+      value: 35,
+      letter: t("seller.banner.days.t"),
+    },
+    {
+      label: t("seller.banner.days.fri"),
+      value: 45,
+      letter: t("seller.banner.days.f"),
+    },
+    {
+      label: t("seller.banner.days.sat"),
+      value: 55,
+      letter: t("seller.banner.days.s"),
+    },
+    {
+      label: t("seller.banner.days.sun"),
+      value: 30,
+      letter: t("seller.banner.days.s"),
+    },
   ];
 
   const days = useMemo(() => {
@@ -43,13 +73,15 @@ const SalesGraph = () => {
 
   return (
     <div className="flex h-full w-full flex-col gap-1 rounded-[30px] bg-[#F9F9F9] p-6 md:gap-3">
-      <h1 className="text-lg font-medium text-davyGray md:text-2xl">Sales</h1>
+      <h1 className="text-lg font-medium text-davyGray md:text-2xl">
+        {t("seller.banner.sales")}
+      </h1>
       <div className="flex items-baseline gap-1 md:gap-3">
         <span className="text-2xl font-medium text-eerieBlack md:text-5xl">
           ${totalSales}
         </span>
         <span className="text-sm font-medium text-moonstone md:text-xl">
-          This Week
+          {t("seller.banner.this_week")}
         </span>
       </div>
       <div className="flex h-full w-full max-w-[70vw] justify-between gap-1 overflow-auto pt-5">

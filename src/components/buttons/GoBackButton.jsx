@@ -3,8 +3,10 @@
 import { cn } from "@/lib/utils";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
+import useTranslation from "@/hooks/useTranslation";
 
 const GoBackButton = ({ className = "", onClick }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   return (
     <button
@@ -12,7 +14,7 @@ const GoBackButton = ({ className = "", onClick }) => {
       onClick={onClick || (() => router.back())}
     >
       <ChevronLeft className="size-5 md:size-8" />
-      <span className="hidden md:inline">Back</span>
+      <span className="hidden md:inline">{t("header.back")}</span>
     </button>
   );
 };

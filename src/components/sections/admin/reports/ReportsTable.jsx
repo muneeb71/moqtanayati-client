@@ -1,3 +1,5 @@
+"use client";
+import useTranslation from "@/hooks/useTranslation";
 import CustomCheckBox from "@/components/form-fields/CustomCheckBox";
 import Image from "next/image";
 import { BiSolidTrash } from "react-icons/bi";
@@ -18,6 +20,7 @@ const ReportTable = ({
   role,
   loading,
 }) => {
+  const { t } = useTranslation();
   const [viewLoading, setViewLoading] = useState(null);
 
   const isAllSelected =
@@ -64,17 +67,25 @@ const ReportTable = ({
               }
             />
           </th>
-          <th className="text-customeBlue py-5 font-semibold">Name</th>
-          <th className="text-customeBlue py-5 pl-8 font-semibold">
-            Registration Date
+          <th className="text-customeBlue py-5 font-semibold">
+            {t("admin.reports.table.name")}
           </th>
           <th className="text-customeBlue py-5 pl-8 font-semibold">
-            {role === "BUYER" ? "Orders Placed" : "Orders Dispatched"}
+            {t("admin.reports.table.registration_date")}
           </th>
           <th className="text-customeBlue py-5 pl-8 font-semibold">
-            {role === "BUYER" ? "Total Spent" : "Payments Earned"}
+            {role === "BUYER"
+              ? t("admin.reports.table.orders_placed")
+              : t("admin.reports.table.orders_dispatched")}
           </th>
-          <th className="text-customeBlue py-5 pl-8 font-semibold">Action</th>
+          <th className="text-customeBlue py-5 pl-8 font-semibold">
+            {role === "BUYER"
+              ? t("admin.reports.table.total_spent")
+              : t("admin.reports.table.payments_earned")}
+          </th>
+          <th className="text-customeBlue py-5 pl-8 font-semibold">
+            {t("admin.reports.table.action")}
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -172,7 +183,7 @@ const ReportTable = ({
         ) : (
           <tr>
             <td colSpan={6} className="py-10 text-center text-sm text-gray-500">
-              No data found.
+              {t("admin.reports.table.no_data")}
             </td>
           </tr>
         )}

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { handleFavoriteClient } from "@/lib/api/product/handleFavoriteClient";
 import toast from "react-hot-toast";
+import useTranslation from "@/hooks/useTranslation";
 
 const ItemCard = ({
   id = 1,
@@ -21,12 +22,13 @@ const ItemCard = ({
   onNavigate,
 }) => {
   const router = useRouter();
+  const { t } = useTranslation();
   const [favourite, setFavourite] = useState(isFavourite);
   const [loading, setLoading] = useState(false);
 
   const getHourAgo = () => {
     const now = new Date();
-    return now.getHours() - 1 + "hr ago";
+    return now.getHours() - 1 + " " + t("buyer.common.hr_ago");
   };
 
   const handleCardClick = () => {
@@ -136,7 +138,7 @@ const ItemCard = ({
                   strokeWidth="2"
                 />
               </svg>
-              <span className="text-sm">No Image</span>
+              <span className="text-sm">{t("buyer.item_card.no_image")}</span>
             </div>
           </div>
         )}

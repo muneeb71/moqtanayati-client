@@ -17,8 +17,10 @@ import { leaveReview } from "@/lib/api/profile/leaveReview";
 import { getReviewByOrderId } from "@/lib/api/profile/getReviewByOrderId";
 import { updateReview } from "@/lib/api/profile/updateReview";
 import toast from "react-hot-toast";
+import useTranslation from "@/hooks/useTranslation";
 
 const LeaveFeedbackDialog = ({ item }) => {
+  const { t } = useTranslation();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
@@ -125,13 +127,15 @@ const LeaveFeedbackDialog = ({ item }) => {
         });
         setInitialRating(rating);
         setInitialComment(comment);
-        toast.success("Review added successfully.");
+        toast.success(
+          t("buyer.purchase_history.feedback.review_added_success"),
+        );
       }
       setSuccess(true);
       setHasExistingReview(true);
     } catch (err) {
-      toast.error("Error adding review.");
-      setError("Failed to submit feedback. Please try again.");
+      toast.error(t("buyer.purchase_history.feedback.error_adding_review"));
+      setError(t("buyer.purchase_history.feedback.failed_submit"));
     } finally {
       setLoading(false);
       setOpen(false);
@@ -142,16 +146,23 @@ const LeaveFeedbackDialog = ({ item }) => {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <button className="flex items-baseline text-xs font-medium text-russianViolet sm:gap-1 sm:text-sm">
-          {hasExistingReview ? "View" : "Rate"}{" "}
+          {hasExistingReview
+            ? t("buyer.purchase_history.feedback.view")
+            : t("buyer.purchase_history.feedback.rate")}{" "}
           <span className="hidden sm:flex">
-            {hasExistingReview ? "Review" : "Product"} {chevronRightIcon}
+            {hasExistingReview
+              ? t("buyer.purchase_history.feedback.review")
+              : t("buyer.purchase_history.feedback.product")}{" "}
+            {chevronRightIcon}
           </span>
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-[350px] rounded-[24px] sm:max-w-[471px] sm:rounded-[24px]">
         <DialogHeader>
           <DialogTitle className="border-b-[1.2px] border-[#F0F1F4] pb-4 text-center text-[21.6px] font-medium">
-            {hasExistingReview ? "Your Review" : "Leave Feedback"}
+            {hasExistingReview
+              ? t("buyer.purchase_history.feedback.your_review")
+              : t("buyer.purchase_history.feedback.leave_feedback")}
           </DialogTitle>
         </DialogHeader>
         <form
@@ -173,14 +184,18 @@ const LeaveFeedbackDialog = ({ item }) => {
                 {item?.product?.name}
               </span>
               <p className="flex gap-1 font-medium">
-                <span className="text-moonstone">Total Paid:</span>
+                <span className="text-moonstone">
+                  {t("buyer.purchase_history.feedback.total_paid")}
+                </span>
                 <span>${item?.totalAmount}</span>
               </p>
             </div>
           </div>
           <div className="flex w-full flex-col gap-5">
             <h1 className="font-medium text-darkBlue">
-              {hasExistingReview ? "Your Rating" : "Rate Your Experience"}
+              {hasExistingReview
+                ? t("buyer.purchase_history.feedback.your_rating")
+                : t("buyer.purchase_history.feedback.rate_experience")}
             </h1>
             <div className="flex items-center gap-2 text-[#F3B95A]">
               {[...Array(totalRating)].map((_, index) => (
@@ -206,8 +221,8 @@ const LeaveFeedbackDialog = ({ item }) => {
             <TextareaField
               placeholder={
                 hasExistingReview
-                  ? "Your review comment..."
-                  : "Share your thoughts about the product or seller…"
+                  ? t("buyer.purchase_history.feedback.placeholder_existing")
+                  : t("buyer.purchase_history.feedback.placeholder_new")
               }
               className="h-44"
               value={comment}
@@ -216,16 +231,24 @@ const LeaveFeedbackDialog = ({ item }) => {
             />
           </div>
           {fetchingReview && (
-            <div className="text-sm text-gray-500">Loading review...</div>
+            <div className="text-sm text-gray-500">
+              {t("buyer.purchase_history.feedback.loading_review")}
+            </div>
           )}
           {error && <div className="text-sm text-red-500">{error}</div>}
           {success && (
-            <div className="text-sm text-green-600">Feedback submitted!</div>
+            <div className="text-sm text-green-600">
+              {t("buyer.purchase_history.feedback.feedback_submitted")}
+            </div>
           )}
           {!hasExistingReview ? (
             <RoundedButton
               type="submit"
-              title={loading ? "Submitting..." : "Submit Feedback"}
+              title={
+                loading
+                  ? t("buyer.purchase_history.feedback.submitting")
+                  : t("buyer.purchase_history.feedback.submit_feedback")
+              }
               disabled={
                 loading ||
                 rating === 0 ||
@@ -234,7 +257,10 @@ const LeaveFeedbackDialog = ({ item }) => {
               }
             />
           ) : (
-            <RoundedButton title="Close" onClick={() => setOpen(false)} />
+            <RoundedButton
+              title={t("buyer.purchase_history.feedback.close")}
+              onClick={() => setOpen(false)}
+            />
           )}
         </form>
       </DialogContent>

@@ -15,8 +15,10 @@ import Autoplay from "embla-carousel-autoplay";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import useTranslation from "@/hooks/useTranslation";
 
 const CategoriesSlider = () => {
+  const { t } = useTranslation();
   const [api, setApi] = useState();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -81,10 +83,10 @@ const CategoriesSlider = () => {
           <div className="text-center">
             <div className="mb-4 text-6xl">📂</div>
             <h3 className="mb-2 text-lg font-semibold text-gray-700">
-              No Categories Available
+              {t("buyer.categories_slider.no_categories_title")}
             </h3>
             <p className="text-gray-500">
-              We couldn't find any product categories at the moment.
+              {t("buyer.categories_slider.no_categories_sub")}
             </p>
           </div>
         </div>
@@ -145,7 +147,9 @@ const CategoriesSlider = () => {
         <div className="fixed inset-0 z-[9999] grid place-items-center bg-black/30">
           <div className="flex flex-col items-center gap-4 rounded-lg bg-white p-6">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-moonstone border-t-transparent" />
-            <span className="text-sm text-gray-600">Loading products...</span>
+            <span className="text-sm text-gray-600">
+              {t("buyer.item_slider.loading_products")}
+            </span>
           </div>
         </div>
       )}

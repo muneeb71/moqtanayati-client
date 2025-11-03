@@ -4,6 +4,7 @@ import { EllipsisVertical } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import useAuctionStore from "@/stores/useAuctionStore";
 import toast from "react-hot-toast";
+import useTranslation from "@/hooks/useTranslation";
 
 const ActionsDropdownButton = ({ auctionId, status }) => {
   const [actionsDropdown, setActionsDropdown] = useState(false);
@@ -11,6 +12,7 @@ const ActionsDropdownButton = ({ auctionId, status }) => {
   const buttonRef = useRef(null);
 
   const { cancelAuction } = useAuctionStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -30,15 +32,15 @@ const ActionsDropdownButton = ({ auctionId, status }) => {
 
   const handleCancelAuction = async () => {
     if (status === "ENDED") {
-      toast("It's already ENDED", { icon: "⚠️" });
+      toast(t("admin.auctions.already_ended"), { icon: "⚠️" });
       setActionsDropdown(false);
       return;
     }
     try {
       await cancelAuction(auctionId);
-      toast.success("Auction cancelled");
+      toast.success(t("admin.auctions.cancelled"));
     } catch (e) {
-      toast.error("Failed to cancel auction");
+      toast.error(t("admin.auctions.cancel_failed"));
     } finally {
       setActionsDropdown(false);
     }
@@ -59,7 +61,9 @@ const ActionsDropdownButton = ({ auctionId, status }) => {
           ref={dropdownRef}
           className="absolute top-12 min-w-full text-nowrap rounded-[10px_0px_10px_10px] bg-white px-3 py-2 text-sm font-medium text-faluRed shadow-[0px_0px_25px_2px_#0000001A]"
         >
-          <button onClick={handleCancelAuction}>Cancel Auction</button>
+          <button onClick={handleCancelAuction}>
+            {t("admin.auctions.cancel_action")}
+          </button>
         </div>
       )}
     </div>

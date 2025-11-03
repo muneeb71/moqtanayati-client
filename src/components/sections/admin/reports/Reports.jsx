@@ -10,32 +10,41 @@ import TablePagination from "@/components/pagination/TablePagination";
 import { useRef } from "react";
 import { BiSearch } from "react-icons/bi";
 import Filter from "@/components/dropdown/filter";
+import useTranslation from "@/hooks/useTranslation";
 
 const Reports = ({ role }) => {
+  const { t } = useTranslation();
   const [sortBy, setSortBy] = useState("SELLER");
 
   const reportSortOptions = [
-    { label: "Newest", value: "newest" },
-    { label: "Oldest", value: "oldest" },
+    { label: t("admin.reports.sort.newest"), value: "newest" },
+    { label: t("admin.reports.sort.oldest"), value: "oldest" },
     {
       label:
         role === "BUYER"
-          ? "Highest Orders Placed"
-          : "Highest Orders Dispatched",
+          ? t("admin.reports.sort.highest_orders_placed")
+          : t("admin.reports.sort.highest_orders_dispatched"),
       value: "highest orders dispatched",
     },
     {
       label:
-        role === "BUYER" ? "Lowest Orders Placed" : "Lowest Orders Dispatched",
+        role === "BUYER"
+          ? t("admin.reports.sort.lowest_orders_placed")
+          : t("admin.reports.sort.lowest_orders_dispatched"),
       value: "lowest orders dispatched",
     },
     {
       label:
-        role === "BUYER" ? "Highest Total Spent" : "Highest Payment Earned",
+        role === "BUYER"
+          ? t("admin.reports.sort.highest_total_spent")
+          : t("admin.reports.sort.highest_payment_earned"),
       value: "highest payment earned",
     },
     {
-      label: role === "BUYER" ? "Lowest Total Spent" : "Lowest Payment Earned",
+      label:
+        role === "BUYER"
+          ? t("admin.reports.sort.lowest_total_spent")
+          : t("admin.reports.sort.lowest_payment_earned"),
       value: "lowest payment earned",
     },
   ];
@@ -111,12 +120,13 @@ const Reports = ({ role }) => {
       >
         <div className="flex flex-col gap-1">
           <span className="text-2xl font-semibold text-russianViolet">
-            Reports
+            {t("admin.reports.title")}
           </span>
           <div className="flex flex-row items-center gap-5">
             <p className="text-[18px] font-normal text-davyGray">
-              {" "}
-              All {role == "BUYER" ? "Buyers" : "Sellers"}
+              {role === "BUYER"
+                ? t("admin.reports.all_buyers")
+                : t("admin.reports.all_sellers")}
             </p>
           </div>
         </div>
@@ -125,7 +135,7 @@ const Reports = ({ role }) => {
           <div className="relative w-full max-w-[220px]">
             <input
               type="text"
-              placeholder="Search"
+              placeholder={t("admin.reports.search")}
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);

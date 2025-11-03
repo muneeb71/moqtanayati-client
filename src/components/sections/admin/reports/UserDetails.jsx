@@ -16,8 +16,10 @@ import {
   thirdPartyIcon,
 } from "@/assets/icons/admin-icons.jsx";
 import UserDetailsShimmer from "@/components/shimmer/userDetailsShimmer";
+import useTranslation from "@/hooks/useTranslation";
 
 const UserDetails = () => {
+  const { t } = useTranslation();
   const params = useParams();
   const id = params?.id;
   const router = useRouter();
@@ -259,8 +261,8 @@ const UserDetails = () => {
             ) : (
               <>
                 {userDetail?.user?.accountStatus === "DISABLED"
-                  ? "Enable User"
-                  : "Disable/Delete"}
+                  ? t("admin.reports.details.enable_user")
+                  : t("admin.reports.details.disable_delete")}
                 <IoChevronDown className="h-4 w-4" />
               </>
             )}
@@ -272,20 +274,20 @@ const UserDetails = () => {
                 className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
               >
                 {userDetail?.user?.accountStatus === "DISABLED"
-                  ? "Enable User"
-                  : "Disable User"}
+                  ? t("admin.reports.details.enable_user")
+                  : t("admin.reports.details.disable_user")}
               </button>
               <button
                 onClick={deleteUser}
                 className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
               >
-                Delete User
+                {t("admin.reports.details.delete_user")}
               </button>
               <button
                 onClick={() => setShowDropdown(false)}
                 className="w-full px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-100"
               >
-                Cancel
+                {t("admin.reports.details.cancel")}
               </button>
             </div>
           )}
@@ -336,7 +338,9 @@ const UserDetails = () => {
           <div className="grid grid-cols-2 gap-3 lg:gap-5 xl:grid-cols-4">
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
               <p className="text-[14px] text-lightGray/60">
-                {role == "BUYER" ? "Total Spent" : "Total Sales"}
+                {role == "BUYER"
+                  ? t("admin.reports.details.total_spent")
+                  : t("admin.reports.details.total_sales")}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
                 ${role == "BUYER" ? totalSpent : totalSales}
@@ -344,7 +348,9 @@ const UserDetails = () => {
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
               <p className="text-[14px] text-lightGray/60">
-                {role == "BUYER" ? "Orders Placed" : "Completed Orders"}
+                {role == "BUYER"
+                  ? t("admin.reports.details.orders_placed")
+                  : t("admin.reports.details.completed_orders")}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
                 {role == "BUYER" ? ordersPlaced : completedOrders}
@@ -352,7 +358,9 @@ const UserDetails = () => {
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
               <p className="text-[14px] text-lightGray/60">
-                {role == "BUYER" ? "To Receive" : "Pending Orders"}
+                {role == "BUYER"
+                  ? t("admin.reports.details.to_receive")
+                  : t("admin.reports.details.pending_orders")}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
                 {role == "BUYER" ? toReceive : pendingOrders}
@@ -360,7 +368,9 @@ const UserDetails = () => {
             </div>
             <div className="flex flex-col rounded-xl bg-white px-4 pb-4 pt-4 xl:pb-8">
               <p className="text-[14px] text-lightGray/60">
-                {role == "BUYER" ? "Favorite Category" : "Collections"}
+                {role == "BUYER"
+                  ? t("admin.reports.details.favorite_category")
+                  : t("admin.reports.details.collections")}
               </p>
               <p className="text-[18px] font-semibold text-lightGray xl:text-[25px]">
                 {role == "BUYER" ? favouriteCategory : "$0"}
@@ -372,8 +382,8 @@ const UserDetails = () => {
           <div className="flex h-full flex-col gap-4 pb-2">
             <p className="text-[18px] font-semibold text-eerieBlack">
               {role == "BUYER"
-                ? "Most Interested Product"
-                : "Best Selling Products"}
+                ? t("admin.reports.details.most_interested_product")
+                : t("admin.reports.details.best_selling_products")}
             </p>
             <div className="relative">
               {role == "SELLER" ? (
@@ -596,35 +606,45 @@ const UserDetails = () => {
 
         <div className="flex h-fit flex-col gap-5 rounded-xl bg-white px-5 py-10">
           <div className="border-b border-gray-200 py-3 text-xl font-medium text-eerieBlack">
-            Personal Information
+            {t("admin.reports.details.personal_info")}
           </div>
           <div className="flex flex-col gap-6">
             <div className="flex flex-col">
-              <p className="text-sm text-battleShipGray">Full Name</p>
+              <p className="text-sm text-battleShipGray">
+                {t("admin.reports.details.full_name")}
+              </p>
               <p className="font-medium text-davyGray">
                 {userDetail?.user.name}
               </p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm text-battleShipGray">Email</p>
+              <p className="text-sm text-battleShipGray">
+                {t("admin.reports.details.email")}
+              </p>
               <p className="font-medium text-davyGray">
                 {userDetail?.user.email}
               </p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm text-battleShipGray">Phone No.</p>
+              <p className="text-sm text-battleShipGray">
+                {t("admin.reports.details.phone")}
+              </p>
               <p className="font-medium text-davyGray">
                 {userDetail?.user.phone}
               </p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm text-battleShipGray">Address</p>
+              <p className="text-sm text-battleShipGray">
+                {t("admin.reports.details.address")}
+              </p>
               <p className="font-medium text-davyGray">
                 {userDetail?.user.address}
               </p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm text-battleShipGray">Registration Date</p>
+              <p className="text-sm text-battleShipGray">
+                {t("admin.reports.details.registration_date")}
+              </p>
               <p className="font-medium text-davyGray">
                 {formatDateTime.formatDate(userDetail?.user.createdAt)}
               </p>

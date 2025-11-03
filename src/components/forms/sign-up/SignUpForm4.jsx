@@ -9,8 +9,10 @@ import { useRegisterStore } from "@/providers/register-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const SignUpForm4 = ({ role = "" }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const {
     name,
@@ -108,19 +110,19 @@ const SignUpForm4 = ({ role = "" }) => {
       <div className="flex flex-col gap-3">
         <h1 className="text-2xl font-medium">
           {role === "buyer"
-            ? "Where do you want to explore and shop?"
-            : "Where are you selling from?"}
+            ? t("signup.where_buyer")
+            : t("signup.where_seller")}
         </h1>
         <span className="text-black/50">
           {role === "buyer"
-            ? "To provide you with the best experience, let us know your preferred location for buying."
-            : "To provide you with the best experience, let us know your location for better customers."}
+            ? t("signup.where_buyer_sub")
+            : t("signup.where_seller_sub")}
         </span>
       </div>
       <div className="flex flex-col gap-2">
         {latitude && longitude && address && (
           <div className="flex flex-col gap-2">
-            <h1 className="text-">Current Selected Location:</h1>
+            <h1 className="text-">{t("signup.current_location")}</h1>
             <div className="flex flex-col rounded-md bg-secondaryCyan/20 p-3">
               <span className="text-sm text-black/50">{address}</span>
             </div>
@@ -132,10 +134,10 @@ const SignUpForm4 = ({ role = "" }) => {
               className="w-100"
               title={
                 latitude && longitude && address
-                  ? "Enter a different Location"
+                  ? t("signup.enter_different_location")
                   : role === "buyer"
-                    ? "Near Me"
-                    : "Exact Location"
+                    ? t("signup.near_me")
+                    : t("signup.exact_location")
               }
               icon={locationIcon}
             />
@@ -145,7 +147,11 @@ const SignUpForm4 = ({ role = "" }) => {
           <div className="flex items-center gap-2">
             <SecondaryButton
               type="button"
-              title={registerLoading ? "Registering..." : "Register Account"}
+              title={
+                registerLoading
+                  ? t("signup.registering")
+                  : t("signup.register_account")
+              }
               onClick={handleRegisterUser}
               disabled={registerLoading}
               loading={registerLoading || undefined}

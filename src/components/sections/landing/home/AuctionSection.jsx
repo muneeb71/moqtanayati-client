@@ -1,8 +1,10 @@
 import PlaceBidButton from "@/components/buttons/PlaceBidButton";
 import AuctionSlider from "@/components/slider/AuctionSlider";
 import AuctionTimer from "@/components/timers/AuctionTimer";
+import useTranslation from "@/hooks/useTranslation";
 
 const AuctionSection = ({ auction }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex w-full flex-col items-center justify-center">
       <div className="grid w-full max-w-6xl gap-5 py-5 md:grid-cols-2">
@@ -10,7 +12,7 @@ const AuctionSection = ({ auction }) => {
           <div className="flex flex-col items-center gap-3 md:items-start">
             <h1 className="max-w-[300px] truncate text-nowrap text-lg font-medium text-[#484848] sm:text-[28px] sm:leading-[48px] md:max-w-[350px] lg:max-w-[429px] lg:text-[32px]">
               {auction?.product?.name}, {auction?.product?.conditionRating || 0}
-              /10 condition
+              {t("buyer.home.sections.condition_rating")}
             </h1>
             <span className="max-w-[315px] text-[11px] leading-[18px] text-[#8A8A8A]">
               {auction?.product?.description}

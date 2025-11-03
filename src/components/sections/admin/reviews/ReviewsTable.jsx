@@ -1,4 +1,5 @@
 "use client";
+import useTranslation from "@/hooks/useTranslation";
 import { starIcon } from "@/assets/icons/common-icons";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -13,16 +14,17 @@ import { BiSearch } from "react-icons/bi";
 import Filter from "@/components/dropdown/filter";
 
 const ReviewsTable = () => {
+  const { t } = useTranslation();
   const [sortBy, setSortBy] = useState("newest");
   const [selectedCategory, setSelectedCategory] = useState(
     "buyer-reviews-sellers",
   );
 
   const reviewSortOptions = [
-    { label: "Newest", value: "newest" },
-    { label: "Oldest", value: "oldest" },
-    { label: "Highest Rated", value: "highest" },
-    { label: "Lowest Rated", value: "lowest" },
+    { label: t("admin.reviews.sort.newest"), value: "newest" },
+    { label: t("admin.reviews.sort.oldest"), value: "oldest" },
+    { label: t("admin.reviews.sort.highest"), value: "highest" },
+    { label: t("admin.reviews.sort.lowest"), value: "lowest" },
   ];
 
   const reviewCategories = [
@@ -48,9 +50,18 @@ const ReviewsTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
-  const actions = [{ title: "Approve" }, { title: "Reject" }];
+  const actions = [
+    { key: "APPROVE", label: t("admin.reviews.actions.approve") },
+    { key: "REJECT", label: t("admin.reviews.actions.reject") },
+  ];
 
-  const tableHeaders = ["Buyer", "Seller", "Rating", "Review", "Actions"];
+  const tableHeaders = [
+    t("admin.reviews.headers.buyer"),
+    t("admin.reviews.headers.seller"),
+    t("admin.reviews.headers.rating"),
+    t("admin.reviews.headers.review"),
+    t("admin.reviews.headers.actions"),
+  ];
 
   const fetchReviewData = async (page = 1) => {
     try {
@@ -90,7 +101,9 @@ const ReviewsTable = () => {
       );
 
       toast.success(
-        `Review ${action === "APPROVE" ? "approved" : "rejected"} successfully`,
+        action === "APPROVE"
+          ? t("admin.reviews.toast.approved")
+          : t("admin.reviews.toast.rejected"),
       );
     } catch {
       setReview([]);
@@ -131,7 +144,7 @@ const ReviewsTable = () => {
       >
         <div className="flex flex-col gap-1">
           <span className="text-2xl font-semibold text-russianViolet">
-            Reviews
+            {t("admin.reviews.title")}
           </span>
 
           {/* <div className="flex flex-col justify-between gap-5 sm:items-center md:flex-row">
@@ -162,7 +175,7 @@ const ReviewsTable = () => {
           <div className="relative w-full max-w-[220px]">
             <input
               type="text"
-              placeholder="Search"
+              placeholder={t("admin.reviews.search")}
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -202,15 +215,15 @@ const ReviewsTable = () => {
                         {header}
                       </span>
                       {selectedCategory === "buyer-reviews-sellers" &&
-                        header === "Buyer" && (
+                        header === t("admin.reviews.headers.buyer") && (
                           <span className="text-[10px] font-normal text-davyGray">
-                            Reviewed
+                            {t("admin.reviews.reviewed")}
                           </span>
                         )}
                       {selectedCategory === "seller-reviews-buyers" &&
-                        header === "Seller" && (
+                        header === t("admin.reviews.headers.seller") && (
                           <span className="text-[10px] font-normal text-davyGray">
-                            Reviewed
+                            {t("admin.reviews.reviewed")}
                           </span>
                         )}
                     </div>
@@ -229,7 +242,7 @@ const ReviewsTable = () => {
                     colSpan={7}
                     className="py-10 text-center text-sm text-gray-500"
                   >
-                    No reviews found.
+                    {t("admin.reviews.empty")}
                   </td>
                 </tr>
               ) : (
@@ -303,20 +316,17 @@ const ReviewsTable = () => {
                             <button
                               key={index}
                               onClick={() =>
-                                handleStatusChange(
-                                  data.id,
-                                  action.title.toUpperCase(),
-                                )
+                                handleStatusChange(data.id, action.key)
                               }
                               className={cn(
                                 "rounded-lg border px-2 py-2 text-xs sm:px-4",
-                                action.title === "Approve"
+                                action.key === "APPROVE"
                                   ? "bg-customGreen text-white hover:bg-customGreen/70"
                                   : "bg-faluRed/10 text-faluRed hover:bg-faluRed/30",
                                 "w-fit transition-all duration-100 ease-linear",
                               )}
                             >
-                              {action.title}
+                              {action.label}
                             </button>
                           ))
                         )}

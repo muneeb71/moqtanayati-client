@@ -10,8 +10,10 @@ import {
   getLoadingMessage,
 } from "@/utils/qaErrorHandler";
 import api from "@/lib/api/axios";
+import useTranslation from "@/hooks/useTranslation";
 
 const AskQuestion = ({ productId, onQuestionAdded }) => {
+  const { t } = useTranslation();
   const [question, setQuestion] = useState("");
   const [sending, setSending] = useState(false);
 
@@ -19,7 +21,7 @@ const AskQuestion = ({ productId, onQuestionAdded }) => {
     e.preventDefault();
 
     if (!question.trim()) {
-      toast.error("Please enter a question");
+      toast.error(t("seller.qa.errors.enter_question"));
       return;
     }
 
@@ -28,7 +30,7 @@ const AskQuestion = ({ productId, onQuestionAdded }) => {
       const userId = getCookie("userId");
 
       if (!userId) {
-        toast.error("Please log in to ask a question");
+        toast.error(t("seller.qa.errors.login_to_ask"));
         setSending(false);
         return;
       }
@@ -50,7 +52,7 @@ const AskQuestion = ({ productId, onQuestionAdded }) => {
       const data = response.data;
 
       if (data.success) {
-        toast.success(getSuccessMessage("questionSubmitted"));
+        toast.success(t("seller.qa.success.submitted"));
         setQuestion("");
         onQuestionAdded?.();
       } else {
@@ -74,7 +76,7 @@ const AskQuestion = ({ productId, onQuestionAdded }) => {
           type="text"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Ask a question about this product..."
+          placeholder={t("seller.qa.ask_placeholder")}
           className="h-[50px] w-full rounded-[10px] border border-gray-200 bg-[#F8F7FB] px-4 focus:border-moonstone focus:outline-none"
           disabled={sending}
           required

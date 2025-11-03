@@ -2,8 +2,10 @@ import { sellerChatIcon, starIcon } from "@/assets/icons/common-icons";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useChatStore } from "@/providers/chat-store-provider";
+import useTranslation from "@/hooks/useTranslation";
 
 const SellerReviewCard = ({ seller }) => {
+  const { t } = useTranslation();
   const calculateAverageRating = () => {
     if (
       !seller?.reviews ||
@@ -111,7 +113,9 @@ const SellerReviewCard = ({ seller }) => {
             )}
           </div>
           <div className="flex flex-col">
-            <span className="text-[14.4px] text-black/50">Seller</span>
+            <span className="text-[14.4px] text-black/50">
+              {t("buyer.product_details.seller")}
+            </span>
             <span className="text-[17px] font-medium leading-[25px] text-black/70">
               {seller?.name}
             </span>
@@ -122,7 +126,9 @@ const SellerReviewCard = ({ seller }) => {
             {renderStars(average)}
           </div>
           <p className="text-sm text-davyGray">
-            {average > 0 ? `${average} (${count} reviews)` : "No reviews yet"}
+            {average > 0
+              ? `${average} (${count} ${t("buyer.product_details.reviews")})`
+              : t("buyer.product_details.no_reviews_yet")}
           </p>
         </div>
       </div>
@@ -131,7 +137,10 @@ const SellerReviewCard = ({ seller }) => {
           onClick={handleChatWithSeller}
           className="flex items-center gap-1 rounded-[5.6px] border border-moonstone/10 bg-moonstone/10 px-2 py-1 text-moonstone hover:border-moonstone hover:bg-moonstone/20"
         >
-          {sellerChatIcon} <span className="text-sm">Chat with seller</span>
+          {sellerChatIcon}{" "}
+          <span className="text-sm">
+            {t("buyer.product_details.chat_with_seller")}
+          </span>
         </button>
         {/* <button className="flex items-center gap-1 rounded-[5.6px] border border-moonstone/10 bg-moonstone/10 px-3 py-1 text-moonstone hover:border-moonstone hover:bg-moonstone/20">
           <span className="text-sm">View Profile</span>

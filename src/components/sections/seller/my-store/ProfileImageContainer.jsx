@@ -5,8 +5,10 @@ import { PenLineIcon, ImageOff } from "lucide-react";
 import Image from "next/image";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import { updateSellerStore } from "@/lib/api/seller-store/editStoreImage";
+import useTranslation from "@/hooks/useTranslation";
 
 const ProfileImageContainer = () => {
+  const { t } = useTranslation();
   const store = useProfileStore((state) => state.store);
   const setStore = useProfileStore((state) => state.setStore);
 
@@ -79,7 +81,7 @@ const ProfileImageContainer = () => {
 
           {uploading && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white">
-              Uploading...
+              {t("seller.store.uploading")}
             </div>
           )}
         </div>
@@ -107,7 +109,7 @@ const ProfileImageContainer = () => {
         </span>
         {store.createdAt && (
           <span className="text-black/40 md:text-xl">
-            Created{" "}
+            {t("seller.store.created")}{" "}
             {new Date(store.createdAt).toLocaleDateString(undefined, {
               day: "numeric",
               month: "short",

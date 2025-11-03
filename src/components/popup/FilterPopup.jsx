@@ -1,6 +1,8 @@
 import { useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const FiltersPopup = ({ onClose, onApplyFilter }) => {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [categoryInput, setCategoryInput] = useState("");
   const [location, setLocation] = useState("");
@@ -8,7 +10,7 @@ const FiltersPopup = ({ onClose, onApplyFilter }) => {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const years = [2024, 2023, 2022, 2021];
-  const months = [
+  const months = t("buyer.filters.months") || [
     "January",
     "February",
     "March",
@@ -22,7 +24,12 @@ const FiltersPopup = ({ onClose, onApplyFilter }) => {
     "November",
     "December",
   ];
-  const conditions = ["New", "Like New", "Used", "Refurbished"];
+  const conditions = t("buyer.filters.conditions") || [
+    "New",
+    "Like New",
+    "Used",
+    "Refurbished",
+  ];
 
   const addCategory = (e) => {
     // Prevent form submission
@@ -49,13 +56,13 @@ const FiltersPopup = ({ onClose, onApplyFilter }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="relative w-[400px] rounded-2xl bg-white p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
           <div className="w-6"></div>
 
           <h2 className="text-center text-2xl font-medium text-black">
-            Filters
+            {t("buyer.filters.title")}
           </h2>
 
           <button onClick={onClose} className="text-gray-600 hover:text-black">
@@ -82,12 +89,12 @@ const FiltersPopup = ({ onClose, onApplyFilter }) => {
 
         <div className="mb-4">
           <label className="mb-2 block text-lg font-medium text-[#0C0D34]">
-            Product Categories
+            {t("buyer.filters.product_categories")}
           </label>
           <form onSubmit={addCategory} className="relative">
             <input
               type="text"
-              placeholder="Add category of your product"
+              placeholder={t("buyer.filters.add_category_placeholder")}
               value={categoryInput}
               onChange={(e) => setCategoryInput(e.target.value)}
               className="w-full rounded-lg border border-gray-300 p-2 pr-10 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone"
@@ -138,23 +145,27 @@ const FiltersPopup = ({ onClose, onApplyFilter }) => {
 
         <div className="mb-4">
           <label className="mb-2 block text-lg font-medium text-[#0C0D34]">
-            Location
+            {t("buyer.filters.location")}
           </label>
           <input
             type="text"
-            placeholder="Enter Location"
+            placeholder={t("buyer.filters.enter_location")}
             className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone"
             value={location}
-            onChange={e => setLocation(e.target.value)}
+            onChange={(e) => setLocation(e.target.value)}
           />
         </div>
 
         <div className="mb-4">
           <label className="mb-2 block text-lg font-medium text-[#0C0D34]">
-            Item Condition
+            {t("buyer.filters.item_condition")}
           </label>
-          <select className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone" value={condition} onChange={e => setCondition(e.target.value)}>
-            <option value="">Select Condition</option>
+          <select
+            className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone"
+            value={condition}
+            onChange={(e) => setCondition(e.target.value)}
+          >
+            <option value="">{t("buyer.filters.select_condition")}</option>
             {conditions.map((condition, index) => (
               <option key={index} value={condition}>
                 {condition}
@@ -165,10 +176,14 @@ const FiltersPopup = ({ onClose, onApplyFilter }) => {
 
         <div className="mb-4">
           <label className="mb-2 block text-lg font-medium text-[#0C0D34]">
-            Month
+            {t("buyer.filters.month")}
           </label>
-          <select className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone" value={month} onChange={e => setMonth(e.target.value)}>
-            <option value="">Select Month</option>
+          <select
+            className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone"
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+          >
+            <option value="">{t("buyer.filters.select_month")}</option>
             {months.map((month, index) => (
               <option key={index} value={month}>
                 {month}
@@ -179,10 +194,14 @@ const FiltersPopup = ({ onClose, onApplyFilter }) => {
 
         <div className="mb-4">
           <label className="mb-2 block text-lg font-medium text-[#0C0D34]">
-            Year
+            {t("buyer.filters.year")}
           </label>
-          <select className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone" value={year} onChange={e => setYear(e.target.value)}>
-            <option value="">Select Year</option>
+          <select
+            className="w-full rounded-lg border border-gray-300 p-2 focus:border-moonstone focus:outline-none focus:ring-2 focus:ring-moonstone"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+          >
+            <option value="">{t("buyer.filters.select_year")}</option>
             {years.map((year, index) => (
               <option key={index} value={year}>
                 {year}
@@ -193,7 +212,7 @@ const FiltersPopup = ({ onClose, onApplyFilter }) => {
 
         <button
           className="w-full rounded-lg bg-[#25A5B4] py-2 text-white hover:bg-[#1F8A9A]"
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault();
             const filterObj = {
               categories,
@@ -205,7 +224,7 @@ const FiltersPopup = ({ onClose, onApplyFilter }) => {
             if (onApplyFilter) onApplyFilter(filterObj);
           }}
         >
-          Apply Filter
+          {t("buyer.filters.apply_filter")}
         </button>
       </div>
     </div>

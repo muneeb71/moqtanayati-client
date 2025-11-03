@@ -9,11 +9,13 @@ import ProductDetailsCard from "@/components/sections/landing/product-details/Pr
 import SellerReviewCard from "@/components/sections/landing/product-details/SellerReviewCard";
 import ProductDetailsSlider from "@/components/slider/ProductDetailsSlider";
 import ProductDetailsSkeleton from "@/components/loaders/ProductDetailsSkeleton";
+import useTranslation from "@/hooks/useTranslation";
 
 import getBidById from "@/lib/api/auctions/getBid";
 import { getProductById } from "@/lib/api/product/getById";
 
 const ProductDetailsPage = () => {
+  const { t } = useTranslation();
   const { id: productId } = useParams();
   console.log(
     "🔍 [ProductDetails] Component mounted, productId from useParams:",
@@ -164,7 +166,9 @@ const ProductDetailsPage = () => {
           <BiddersSection data={bids} item={item} fetchData={fetchData} />
         ))}
       <div className="flex w-full px-3 pb-16 pt-20">
-        <RecommendedSection title="You might also like" />
+        <RecommendedSection
+          title={t("buyer.product_details.you_might_also_like")}
+        />
       </div>
     </>
   );

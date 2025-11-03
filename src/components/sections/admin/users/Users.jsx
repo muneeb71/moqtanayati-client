@@ -7,8 +7,10 @@ import TablePagination from "@/components/pagination/TablePagination";
 import { BiSearch } from "react-icons/bi";
 import Filter from "@/components/dropdown/filter";
 import useUserStore from "@/stores/useUserStore";
+import useTranslation from "@/hooks/useTranslation";
 
 const Users = () => {
+  const { t } = useTranslation();
   const {
     users,
     usersLoading,
@@ -33,10 +35,10 @@ const Users = () => {
   const tableRef = useRef(null);
 
   const userSortOptions = [
-    { label: "Newest", value: "newest" },
-    { label: "Oldest", value: "oldest" },
-    { label: "Seller", value: "SELLER" },
-    { label: "Buyer", value: "BUYER" },
+    { label: t("admin.users.sort.newest"), value: "newest" },
+    { label: t("admin.users.sort.oldest"), value: "oldest" },
+    { label: t("admin.users.sort.seller"), value: "SELLER" },
+    { label: t("admin.users.sort.buyer"), value: "BUYER" },
   ];
 
   const onViewClick = (id) => {
@@ -62,14 +64,19 @@ const Users = () => {
       >
         <div className="flex flex-col gap-1">
           <span className="text-2xl font-semibold text-russianViolet">
-            Users
+            {t("admin.users.title")}
           </span>
           <div className="flex flex-row items-center gap-5">
-            <p className="text-[18px] font-normal text-davyGray">All Users</p>
+            <p className="text-[18px] font-normal text-davyGray">
+              {t("admin.users.all_users")}
+            </p>
             {selectedRows.length > 0 && (
               <p className="text-[13px] font-normal text-davyGray">
                 ({selectedRows.length}{" "}
-                {selectedRows.length === 1 ? "row" : "rows"} selected)
+                {selectedRows.length === 1
+                  ? t("admin.users.rows_selected_singular")
+                  : t("admin.users.rows_selected_plural")}{" "}
+                )
               </p>
             )}
           </div>
@@ -79,7 +86,7 @@ const Users = () => {
           <div className="relative w-full max-w-[220px]">
             <input
               type="text"
-              placeholder="Search by name or email"
+              placeholder={t("admin.users.search_placeholder")}
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);

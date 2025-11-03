@@ -11,6 +11,7 @@ import bidOnAuction from "@/lib/api/auctions/bid";
 import toast from "react-hot-toast";
 import withdrawBidOfUser from "@/lib/api/auctions/withdrawBid";
 import { getAuctionById } from "@/lib/api/auctions/getById";
+import useTranslation from "@/hooks/useTranslation";
 
 function getCookie(name) {
   if (typeof document === "undefined") return null;
@@ -22,6 +23,7 @@ function getCookie(name) {
 const userId = getCookie("userId");
 
 const BiddersSection = ({ data, fetchData, item }) => {
+  const { t } = useTranslation();
   const [selectedBidder, setSelectedBidder] = useState(null);
   const [bidAmount, setBidAmount] = useState(0);
   const [auctionBids, setAuctionBids] = useState([]);
@@ -86,7 +88,7 @@ const BiddersSection = ({ data, fetchData, item }) => {
 
   const handlePlaceBid = async (bypass) => {
     if (!bypass && userId !== selectedBidder?.bidder?.id)
-      return toast.error("This is not your bid.");
+      return toast.error(t("buyer.bidders.not_your_bid"));
     try {
       setRequestLoading(true);
       const res = await bidOnAuction({
@@ -95,16 +97,16 @@ const BiddersSection = ({ data, fetchData, item }) => {
       });
       if (res.success) {
         setRequestLoading(false);
-        toast.success(res.message || "Bid placed successfully!");
+        toast.success(res.message || t("buyer.bidders.bid_placed_success"));
         fetchData();
       } else {
         setRequestLoading(false);
-        toast.error(res.message || "Failed to place bid.");
+        toast.error(res.message || t("buyer.bidders.bid_place_failed"));
       }
     } catch (err) {
       setRequestLoading(false);
       toast.error(
-        err?.response?.data?.message || err.message || "Failed to place bid.",
+        err?.response?.data?.message || err.message || t("buyer.bidders.bid_place_failed"),
       );
       console.log("Failed to place bid:", err);
     }
@@ -118,17 +120,17 @@ const BiddersSection = ({ data, fetchData, item }) => {
 
   const withdrawBid = async () => {
     if (userId !== selectedBidder?.bidder?.id)
-      return toast.error("This is not your bid.");
+      return toast.error(t("buyer.bidders.not_your_bid"));
     try {
       const res = await withdrawBidOfUser(selectedBidder?.auctionId);
       if (res?.success) {
-        toast.success(res?.data?.message || "Bid withdrawn successfully.");
+        toast.success(res?.data?.message || t("buyer.bidders.bid_withdraw_success"));
         fetchData();
       } else {
-        toast.error(res?.message || "Failed to withdraw bid.");
+        toast.error(res?.message || t("buyer.bidders.bid_withdraw_failed"));
       }
     } catch (error) {
-      toast.error(error?.message || "An error occurred while withdrawing bid.");
+      toast.error(error?.message || t("buyer.bidders.bid_withdraw_error"));
     }
   };
 
@@ -165,17 +167,17 @@ const BiddersSection = ({ data, fetchData, item }) => {
         <div className="flex w-full items-center justify-center py-10">
           <div className="flex w-full max-w-[421px] flex-col items-center justify-center gap-4 rounded-[20px] bg-white p-5">
             <h1 className="text-[17px] font-medium leading-[23px] text-darkBlue">
-              Place Your Bid
+              {t("buyer.bidders.place_your_bid")}
             </h1>
             <div className="flex w-full justify-between rounded-[11px] bg-[#FBFBFB] px-3 py-2.5">
               <div className="flex flex-col">
-                <span className="text-lg text-battleShipGray">My Bid</span>
+                <span className="text-lg text-battleShipGray">{t("buyer.bidders.my_bid")}</span>
                 <span className="text-[22px] font-medium text-eerieBlack">
                   ${bidAmount}
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-[13px] font-medium">Status:</span>
+                <span className="text-[13px] font-medium">{t("buyer.bidders.status")}</span>
                 <div
                   className={`rounded-[9px] px-3.5 py-1 text-[15px] ${selectedBidder?.status === "HIGHEST" ? "bg-moonstone/10 text-moonstone" : "bg-faluRed/10 text-faluRed"}`}
                 >
@@ -211,7 +213,7 @@ const BiddersSection = ({ data, fetchData, item }) => {
       >
         <div className="flex flex-col gap-8">
           <h1 className="text-[32px] font-medium text-black/80">
-            Bidders{" "}
+            {"Bidders"}{" "}
             <span className="text-[18px] text-moonstone">
               ({bidsToDisplay?.length || 0})
             </span>
@@ -235,11 +237,10 @@ const BiddersSection = ({ data, fetchData, item }) => {
                 <div className="mx-auto max-w-md">
                   <div className="mb-4 text-6xl">🏆</div>
                   <h3 className="mb-2 text-xl font-semibold text-gray-700">
-                    No Bids Yet!
+                    {t("buyer.bidders.no_bids_yet_title")}
                   </h3>
                   <p className="text-gray-500">
-                    Be the first to place a bid on this auction and start the
-                    bidding war!
+                    {t("buyer.bidders.no_bids_yet_sub")}
                   </p>
                 </div>
               </div>
@@ -251,14 +252,14 @@ const BiddersSection = ({ data, fetchData, item }) => {
         <div className="flex w-full items-center justify-center py-10">
           <div className="flex w-full max-w-[421px] flex-col items-center justify-center gap-4 rounded-[20px] bg-white px-5 pb-10 pt-5">
             <h1 className="text-[17px] font-medium leading-[23px] text-darkBlue">
-              Place Your Bid
+              {t("buyer.bidders.place_your_bid")}
             </h1>
             <div className="flex w-full items-center gap-2">
               <input
                 type="number"
                 name="yourBid"
                 id="yourBid"
-                placeholder="Enter your bid"
+                placeholder={t("buyer.bidders.enter_your_bid")}
                 value={bidAmount}
                 onChange={(e) => setBidAmount(e.target.value)}
                 className="h-[55px] w-full rounded-[6.7px] bg-[#F8F7FB] px-4 focus:outline-moonstone"
@@ -268,7 +269,7 @@ const BiddersSection = ({ data, fetchData, item }) => {
                 className="flex h-[55px] items-center justify-center rounded-[6.7px] bg-moonstone px-8 text-[17px] font-medium text-white transition-all duration-200 ease-in hover:bg-delftBlue"
                 onClick={() => handlePlaceBid(true)}
               >
-                Bid
+                {t("buyer.bidders.bid")}
               </button>
             </div>
             <AutoBidDialog

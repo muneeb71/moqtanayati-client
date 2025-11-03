@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getUserOrders } from "@/lib/api/orders/getUserOrders";
 import HistoryCardSkeleton from "@/components/loaders/HistoryCardSkeleton";
+import useTranslation from "@/hooks/useTranslation";
 
 const PurchaseHistoryPage = () => {
+  const { t } = useTranslation();
   const { category } = useParams();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,22 +34,26 @@ const PurchaseHistoryPage = () => {
     filteredOrders = orders.filter((item) => item.status === "SHIPPED");
   }
 
-  let emptyText = "No orders found";
-  if (normalizedCategory === "delivered") emptyText = "No delivered items";
-  else if (normalizedCategory === "paid") emptyText = "No Paid items";
+  let emptyText = t("buyer.purchase_history.no_orders_found");
+  if (normalizedCategory === "delivered")
+    emptyText = t("buyer.purchase_history.no_delivered_items_short");
+  else if (normalizedCategory === "paid")
+    emptyText = t("buyer.purchase_history.no_paid_items_short");
 
   return (
     <div className="no-scrollbar flex max-h-[40rem] flex-col gap-3 overflow-y-auto py-5">
       {loading ? (
-         <>
-         <HistoryCardSkeleton />
-         <HistoryCardSkeleton />
-         <HistoryCardSkeleton />
-       </>
+        <>
+          <HistoryCardSkeleton />
+          <HistoryCardSkeleton />
+          <HistoryCardSkeleton />
+        </>
       ) : filteredOrders.length === 0 ? (
         <div>{emptyText}</div>
       ) : (
-        filteredOrders.map((item, index) => <HistoryCard item={item} key={item.id || index} />)
+        filteredOrders.map((item, index) => (
+          <HistoryCard item={item} key={item.id || index} />
+        ))
       )}
     </div>
   );

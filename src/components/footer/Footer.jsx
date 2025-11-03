@@ -1,3 +1,4 @@
+"use client";
 import { appName } from "@/lib/app-name";
 import {
   legalAndPoliciesLinks,
@@ -7,8 +8,10 @@ import {
 } from "@/lib/links";
 import Link from "next/link";
 import FooterLink from "../link/FooterLink";
+import useTranslation from "@/hooks/useTranslation";
 
 const Footer = () => {
+  const { t } = useTranslation();
   return (
     <footer className="flex w-full flex-col items-center justify-center px-2 py-2 md:py-5">
       <div className="flex w-full max-w-[86rem] flex-col items-center justify-center rounded-[20px] bg-russianViolet py-20 text-[#F9FAFB] md:rounded-[32px]">
@@ -27,13 +30,16 @@ const Footer = () => {
               ))}
             </div>
           </div>
-          <FooterCard title="User Features" links={userFeatureLinks} />
           <FooterCard
-            title="Legal And Policies"
+            title={t("footer.user_features")}
+            links={userFeatureLinks}
+          />
+          <FooterCard
+            title={t("footer.legal_policies")}
             links={legalAndPoliciesLinks}
           />
           <FooterCard
-            title="Platform Information"
+            title={t("footer.platform_info")}
             links={platformInformationLinks}
           />
         </div>
@@ -42,19 +48,21 @@ const Footer = () => {
   );
 };
 
-const FooterCard = ({ title = "", links = [{ title: "", href: "" }] }) => {
+const FooterCard = ({
+  title = "",
+  links = [{ title: "", href: "", i18nKey: undefined }],
+}) => {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="mb-1 md:text-lg font-semibold uppercase">
-        {title}
-      </h1>
+      <h1 className="mb-1 font-semibold uppercase md:text-lg">{title}</h1>
       {links.map((link, index) => (
         <FooterLink
           href={link.href}
           key={index}
           className="text-sm md:text-base"
         >
-          {link.title}
+          {link.i18nKey ? t(link.i18nKey) : link.title}
         </FooterLink>
       ))}
     </div>

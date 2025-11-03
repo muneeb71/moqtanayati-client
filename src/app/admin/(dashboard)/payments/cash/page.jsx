@@ -1,4 +1,7 @@
+"use client";
+import useTranslation from "@/hooks/useTranslation";
 export default function CashPayments() {
+  const { t } = useTranslation();
   return (
     <div className="flex h-full w-full items-center justify-center">
       <div className="text-center">
@@ -18,15 +21,18 @@ export default function CashPayments() {
               />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Cash Payments</h1>
-          <p className="mt-2 text-lg text-gray-600">Coming Soon</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {t("admin.payments.cash.title")}
+          </h1>
+          <p className="mt-2 text-lg text-gray-600">
+            {t("admin.payments.common.coming_soon")}
+          </p>
         </div>
         <div className="rounded-lg bg-gray-50 p-6">
           <p className="text-gray-700">
-            We're working hard to bring you a comprehensive cash payment
-            management system.
+            {t("admin.payments.cash.body_line1")}
             <br />
-            This feature will be available soon!
+            {t("admin.payments.common.soon_note")}
           </p>
         </div>
       </div>

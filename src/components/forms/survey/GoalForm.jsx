@@ -5,15 +5,17 @@ import { useSurveyStore } from "@/providers/survey-store-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 import OptionButton from "./OptionButton";
 
 const GoalForm = () => {
+  const { t } = useTranslation();
   const options = [
-    { label: "Discover", value: "DISCOVER" },
-    { label: "Increase Profit", value: "PROFIT" },
-    { label: "Start New Business", value: "NEWBUSINESS" },
-    { label: "Explore", value: "EXPLORE" },
+    { label: t("survey.goal.options.discover"), value: "DISCOVER" },
+    { label: t("survey.goal.options.profit"), value: "PROFIT" },
+    { label: t("survey.goal.options.new_business"), value: "NEWBUSINESS" },
+    { label: t("survey.goal.options.explore"), value: "EXPLORE" },
   ];
 
   const router = useRouter();
@@ -36,11 +38,10 @@ const GoalForm = () => {
         className="mb-6 size-[52px]"
       />
       <h1 className="mb-2 text-start text-2xl text-black">
-        What Brings You Here?
+        {t("survey.goal.title")}
       </h1>
       <p className="mb-7 text-xl text-darkBlue/50">
-        We would love to know your main goal. How do you plan on using this
-        platform?
+        {t("survey.goal.subtitle")}
       </p>
       <div className="mb-10 flex w-full flex-col gap-3">
         {options.map((option) => (
@@ -54,7 +55,7 @@ const GoalForm = () => {
         ))}
       </div>
       <RoundedButton
-        title={navigating ? "Loading..." : "Next"}
+        title={navigating ? t("common.loading") : t("signup.next")}
         showIcon={!navigating}
         loading={navigating || undefined}
         onClick={handleNext}

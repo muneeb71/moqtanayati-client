@@ -1,16 +1,18 @@
+"use client";
+import useTranslation from "@/hooks/useTranslation";
 const monthNames = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
+  "jan",
+  "feb",
+  "mar",
+  "apr",
+  "may",
+  "jun",
+  "jul",
+  "aug",
+  "sep",
+  "oct",
+  "nov",
+  "dec",
 ];
 
 const COLORS = [
@@ -23,6 +25,7 @@ const COLORS = [
 ];
 
 const LastHalfYearCard = ({ salesByMonth, sales }) => {
+  const { t } = useTranslation();
   const rawSource = sales ?? salesByMonth ?? [];
   const source = Array.isArray(rawSource) ? rawSource : [];
 
@@ -32,11 +35,16 @@ const LastHalfYearCard = ({ salesByMonth, sales }) => {
   // Extract last 6 months data from full year
   const last6Months = Array.from({ length: 6 }, (_, i) => {
     const monthOffset = (currentMonthIndex - 5 + i + 12) % 12;
-    const monthName = monthNames[monthOffset];
-    const matchingData = source.find((item) => item.name === monthName);
+    const monthKey = monthNames[monthOffset];
+    const matchingData = source.find(
+      (item) =>
+        String(item.name).toLowerCase() ===
+          t(`months.${monthKey}`).toLowerCase() ||
+        String(item.name).toLowerCase() === monthKey,
+    );
 
     return {
-      month: monthName,
+      month: t(`months.${monthKey}`),
       value: matchingData?.profit ?? 0,
       color: COLORS[i],
     };
@@ -47,7 +55,7 @@ const LastHalfYearCard = ({ salesByMonth, sales }) => {
   return (
     <div className="flex flex-col gap-8 rounded-[30px] bg-[#F9F9FA] p-5 md:p-8">
       <h1 className="text-2xl font-semibold text-black">
-        Profit - Last 6 months
+        {t("analytics.profit_last_6_months")}
       </h1>
       <div className="grid h-full grid-cols-[40px_1fr] gap-2">
         <div className="flex flex-col items-end justify-between gap-10 pb-8 text-davyGray/80 md:text-xl">

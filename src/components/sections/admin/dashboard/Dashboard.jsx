@@ -7,8 +7,10 @@ import TotalOrdersCard from "../../seller/analytics/cards/TotalOrdersCard";
 import { getDashboardStats } from "@/lib/api/admin/dashboard/getDashboardStats";
 import { getDashboardOrderChart } from "@/lib/api/admin/dashboard/getDashboardOrderChart";
 import { getDashboardProfitChart } from "@/lib/api/admin/dashboard/getDashboardProfitChart";
+import useTranslation from "@/hooks/useTranslation";
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState({
     monthlyProfit: 0,
     bidsPlaced: 0,
@@ -54,22 +56,22 @@ const Dashboard = () => {
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
         <StatsCard
           className="flex flex-col bg-lightOrange pb-16 pl-3 pt-4 xl:pl-5"
-          text="Profit"
+          text={t("admin.dashboard.profit")}
           count={`$${stats.monthlyProfit}`}
         />
         <StatsCard
           className="flex flex-col bg-lightPurple pb-16 pl-3 pt-4 xl:pl-5"
-          text="Bids Placed"
+          text={t("admin.dashboard.bids_placed")}
           count={stats.bidsPlaced}
         />
         <StatsCard
           className="flex flex-col bg-lightYellow pb-16 pl-3 pt-4 xl:pl-5"
-          text="Bids Successful"
+          text={t("admin.dashboard.bids_successful")}
           count={stats.bidsSuccessful}
         />
         <StatsCard
           className="flex flex-col bg-lightGreen pb-16 pl-3 pt-4 xl:pl-5"
-          text="Completed Orders"
+          text={t("admin.dashboard.completed_orders")}
           count={stats.completedOrders}
         />
       </div>

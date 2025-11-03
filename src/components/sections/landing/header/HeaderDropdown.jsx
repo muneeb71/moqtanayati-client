@@ -12,11 +12,11 @@ import { headerDropdownLinks } from "@/lib/links";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import useTranslation from "@/hooks/useTranslation";
 
 const HeaderDropdown = () => {
+  const { t } = useTranslation();
   const router = useRouter();
-
- 
 
   return (
     <DropdownMenu>
@@ -35,7 +35,9 @@ const HeaderDropdown = () => {
               onClick={() => router.push(link.href)}
             >
               <div className="flex w-full items-center justify-end gap-3">
-                <span className="text-[13.17px]">{link.title}</span>
+                <span className="text-[13.17px]">
+                  {link.i18nKey ? t(link.i18nKey) : link.title}
+                </span>
                 {link.icon}
               </div>
             </DropdownMenuItem>

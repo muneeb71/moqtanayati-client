@@ -1,16 +1,19 @@
+"use client";
 import { sellerChatIcon } from "@/assets/icons/common-icons";
 import Image from "next/image";
 import Link from "next/link";
+import useTranslation from "@/hooks/useTranslation";
 
 const CustomerDetailsCard = ({ order }) => {
+  const { t } = useTranslation();
   if (!order) return null;
   const user = order.user || {};
   const avatar =
     typeof user.avatar === "string" && user.avatar.trim() !== ""
       ? user.avatar
       : "";
-  const name = user.name || "Customer";
-  const address = user.address || "No address provided";
+  const name = user.name || t("seller.orders.customer_card.customer");
+  const address = user.address || t("seller.orders.customer_card.no_address");
   const userId = order?.user?.id;
 
   return (
@@ -42,7 +45,9 @@ const CustomerDetailsCard = ({ order }) => {
           className="flex items-center gap-1 rounded-lg bg-moonstone/10 px-3 py-1"
         >
           {sellerChatIcon}{" "}
-          <span className="text-xs text-moonstone">Chat with Customer</span>
+          <span className="text-xs text-moonstone">
+            {t("seller.orders.customer_card.chat_with_customer")}
+          </span>
         </Link>
         {/* <button className="flex items-center gap-1 rounded-lg bg-moonstone/10 px-4 py-1">
           <span className="text-xs text-moonstone">View Profile</span>

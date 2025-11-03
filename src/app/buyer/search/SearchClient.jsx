@@ -3,12 +3,14 @@
 import SearchInput from "@/components/form-fields/SearchInput";
 import ResultItems from "@/components/sections/landing/categories/ResultItems";
 import { getProductsClient } from "@/lib/api/product/getAllProductsClient";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeft, X, Search } from "lucide-react";
 import PageHeading from "@/components/headings/PageHeading";
+import useTranslation from "@/hooks/useTranslation";
 
 const SearchClient = () => {
+  const { t, dir } = useTranslation();
   const searchParams = useSearchParams();
   const router = useRouter();
   const key = searchParams?.get("q") || "";
@@ -20,6 +22,15 @@ const SearchClient = () => {
   const [searchTitle, setSearchTitle] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryNameFromSession, setCategoryNameFromSession] = useState("");
+
+  // Memoize translation strings to prevent unnecessary re-renders
+  const titleAll = useMemo(() => t("search.title_all"), [t]);
+  const errorFetchProducts = useMemo(
+    () => t("search.error_fetch_products"),
+    [t],
+  );
+  const errorFetchResults = useMemo(() => t("search.error_fetch_results"), [t]);
+  const errorTimeout = useMemo(() => t("search.error_timeout"), [t]);
 
   // Keep header title in sync with selected category even if products aren't loaded from session
   useEffect(() => {
@@ -38,6 +49,13 @@ const SearchClient = () => {
       setError(null);
 
       try {
+        // Get category name from sessionStorage directly to avoid state dependency issues
+        const categoryNameFromStorage = category
+          ? typeof window !== "undefined"
+            ? sessionStorage.getItem("categoryName") || category
+            : category
+          : null;
+
         // Check if we have category products in sessionStorage
         if (category) {
           const categoryProducts = sessionStorage.getItem("categoryProducts");
@@ -53,6 +71,7 @@ const SearchClient = () => {
               "🔍 [SearchClient] Using category products from sessionStorage:",
               parsedProducts.length,
             );
+            setLoading(false);
             return;
           }
         }
@@ -74,7 +93,7 @@ const SearchClient = () => {
                 (c) => String(c).toLowerCase() === category.toLowerCase(),
               ),
             );
-            setSearchTitle(categoryNameFromSession || category);
+            setSearchTitle(categoryNameFromStorage || category);
           }
 
           // If there's a search key, filter the results
@@ -100,24 +119,35 @@ const SearchClient = () => {
             // Show initialList if no search key
             setItems(initialList);
             setAllProducts(initialList);
-            if (!category) setSearchTitle("All Products");
+            if (!category) setSearchTitle(titleAll);
             console.log(
               "🔍 [SearchClient] Showing all products:",
               initialList.length,
             );
           }
         } else {
-          setError("Failed to fetch products.");
+          setError(errorFetchProducts);
         }
       } catch (err) {
         console.error("Search error:", err);
-        setError("Failed to fetch search results.");
+        // Check for timeout errors
+        if (
+          err.isTimeout ||
+          err.code === "ECONNABORTED" ||
+          err.message?.includes("timeout")
+        ) {
+          setError(errorTimeout);
+        } else {
+          setError(errorFetchResults);
+        }
       } finally {
         setLoading(false);
       }
     };
 
     handleSearch();
+    // Only depend on key and category - translation strings are memoized
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, category]);
 
   // Search within current context (currently visible baseline in allProducts)
@@ -125,7 +155,7 @@ const SearchClient = () => {
     if (!searchQuery.trim()) {
       setItems(allProducts);
       setSearchTitle(
-        category ? category : allProducts.length ? "All Products" : "",
+        category ? category : allProducts.length ? t("search.title_all") : "",
       );
       return;
     }
@@ -142,10 +172,11 @@ const SearchClient = () => {
     );
 
     setItems(searchResults);
+    // Keep dynamic content (category and searchQuery) as-is, only translate the structure
     setSearchTitle(
       category
-        ? `Search in ${category}: "${searchQuery}"`
-        : `Search Results for "${searchQuery}"`,
+        ? `${t("search.search_in_category_prefix")} ${category}: "${searchQuery}"`
+        : `${t("search.search_results_for_prefix")} "${searchQuery}"`,
     );
   };
 
@@ -155,11 +186,11 @@ const SearchClient = () => {
     if (category) {
       // If we're in a category context, show all products from that category
       setItems(allProducts);
-      setSearchTitle(category);
+      setSearchTitle(category); // category is dynamic, keep as-is
     } else {
       // If we're in general search, show all products
       setItems(allProducts);
-      setSearchTitle("All Products");
+      setSearchTitle(t("search.title_all")); // static text, use translation
       // Navigate to search page without query to clear the search
       router.push("/buyer/search");
     }
@@ -174,15 +205,20 @@ const SearchClient = () => {
             className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium text-darkBlue backdrop-blur"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back
+            {t("header.back")}
           </button>
-          <span>{categoryNameFromSession || category || "All Products"}</span>
+          <span>
+            {categoryNameFromSession || category || t("search.title_all")}
+          </span>
           <span className="w-10" />
         </div>
       </PageHeading>
       <div className="flex w-full max-w-7xl flex-col items-center gap-10 py-20">
         {/* Custom Search Input that respects category context */}
-        <div className="relative flex h-[60px] w-[88%] items-center justify-center gap-3 rounded-[12px] bg-[#F8F7F8] px-3 md:h-[75px] md:w-full md:max-w-[502px] md:px-5">
+        <div
+          className="relative flex h-[60px] w-[88%] items-center justify-center gap-3 rounded-[12px] bg-[#F8F7F8] px-3 md:h-[75px] md:w-full md:max-w-[502px] md:px-5"
+          dir={dir}
+        >
           <Search className="h-5 w-5 text-[#858699]" />
           <input
             type="text"
@@ -195,8 +231,11 @@ const SearchClient = () => {
             className="w-full bg-transparent text-sm outline-none placeholder:text-[#858699] focus:outline-none md:text-[21px]"
             placeholder={
               category
-                ? `Search within ${category}...`
-                : "Search for anything you need…"
+                ? t("search.placeholder_category").replace(
+                    "{category}",
+                    category,
+                  )
+                : t("search.placeholder_general")
             }
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -228,10 +267,10 @@ const SearchClient = () => {
         ) : (
           <div className="flex w-full items-center justify-center py-20">
             <div className="w-full rounded-2xl bg-moonstone/10 py-16 text-center text-davyGray">
-              <p className="text-xl font-medium">No products found</p>
-              <p className="mt-1 text-sm">
-                Try another keyword or clear the search.
+              <p className="text-xl font-medium">
+                {t("search.no_results_title")}
               </p>
+              <p className="mt-1 text-sm">{t("search.no_results_sub")}</p>
             </div>
           </div>
         )}

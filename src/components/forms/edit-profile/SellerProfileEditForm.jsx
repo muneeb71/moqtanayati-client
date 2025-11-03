@@ -18,8 +18,10 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { updateUserProfile } from "@/lib/api/profile/updateProfile";
 import { useProfileStore } from "@/providers/profile-store-provider";
+import useTranslation from "@/hooks/useTranslation";
 
 const SellerProfileEditForm = () => {
+  const { t } = useTranslation();
   const {
     id,
     name,
@@ -78,7 +80,7 @@ const SellerProfileEditForm = () => {
       !nationalId.trim() ||
       !address.trim()
     ) {
-      toast.error("All fields are required.");
+      toast.error(t("seller.profile.errors.all_required"));
       return;
     }
 
@@ -87,15 +89,15 @@ const SellerProfileEditForm = () => {
     const nationalIdRegex = /^[0-9]{6,20}$/;
 
     if (!emailRegex.test(email)) {
-      toast.error("Please enter a valid email address.");
+      toast.error(t("seller.profile.errors.invalid_email"));
       return;
     }
     if (!phoneRegex.test(phone)) {
-      toast.error("Please enter a valid phone number.");
+      toast.error(t("seller.profile.errors.invalid_phone"));
       return;
     }
     if (!nationalIdRegex.test(nationalId)) {
-      toast.error("Please enter a valid national ID.");
+      toast.error(t("seller.profile.errors.invalid_national_id"));
       return;
     }
 
@@ -145,14 +147,14 @@ const SellerProfileEditForm = () => {
           );
         }
 
-        toast.success("Profile updated successfully");
+        toast.success(t("seller.profile.success.updated"));
         router.push("/seller/profile");
       } else {
-        toast.error(response.error || "Failed to update profile");
+        toast.error(response.error || t("seller.profile.errors.failed_update"));
       }
     } catch (err) {
       console.error(err);
-      toast.error("Something went wrong");
+      toast.error(t("seller.profile.errors.something_wrong"));
     } finally {
       setSaving(false);
     }
@@ -168,16 +170,16 @@ const SellerProfileEditForm = () => {
             className="flex items-center gap-2 py-1.5 text-sm text-black transition-colors hover:text-black"
           >
             <ArrowLeft className="size-4" />
-            Back
+            {t("header.back")}
           </button>
-          Profile {">"} Edit Profile
+          {t("seller.profile.profile")} {">"} {t("seller.profile.edit_profile")}
         </PageHeading>
         <span className="invisible">placeholder</span>
       </div>
       <div className="flex w-full max-w-md flex-col items-center rounded-2xl border border-black/10 p-5 pt-10">
         {saving && (
           <div className="mb-3 w-full rounded-md bg-black/5 p-2 text-center text-sm text-battleShipGray">
-            Saving...
+            {t("seller.profile.saving")}
           </div>
         )}
         <div className="relative flex w-fit items-center justify-center">
@@ -207,7 +209,7 @@ const SellerProfileEditForm = () => {
             type="button"
             className="absolute bottom-1 right-2 z-10 grid size-7 place-items-center rounded-full border border-white bg-russianViolet"
             onClick={handlePenClick}
-            aria-label="Change profile picture"
+            aria-label={t("seller.profile.change_picture")}
           >
             <PenLine className="size-4 text-white" />
           </button>
@@ -222,7 +224,7 @@ const SellerProfileEditForm = () => {
 
         <span className="mt-2 text-2xl font-medium">{name}</span>
         <span className="font-medium text-battleShipGray">
-          Joined{" "}
+          {t("seller.profile.joined")}{" "}
           {joinedDate
             ? new Date(joinedDate).toLocaleDateString("en-US", {
                 month: "short",
@@ -260,7 +262,7 @@ const SellerProfileEditForm = () => {
         </div>
       </div>
       <RoundedButton
-        title={saving ? "Saving..." : "Save"}
+        title={saving ? t("seller.profile.saving") : t("seller.profile.save")}
         className={`w-72 ${saving ? "opacity-60" : ""}`}
         onClick={saving ? undefined : handleUpdateProfile}
       />

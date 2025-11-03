@@ -8,8 +8,10 @@ import CategoriesSliderSection from "@/components/sections/landing/home/Categori
 import RecommendedSection from "@/components/sections/landing/home/RecommendedSection";
 import PopularSection from "@/components/sections/landing/home/FurnitureSection";
 import AuctionSection from "@/components/sections/landing/home/AuctionSection";
+import useTranslation from "@/hooks/useTranslation";
 
 const BuyerPageClient = () => {
+  const { t } = useTranslation();
   const [auctions, setAuctions] = useState([]);
   const [loading, setLoading] = useState(true);
   const { userBids, getBidAuctionIds } = useMyBids();
@@ -86,7 +88,7 @@ const BuyerPageClient = () => {
       <MainBanner />
       {loading ? (
         <div className="flex h-64 w-full items-center justify-center">
-          <div className="text-lg text-gray-500">Loading...</div>
+          <div className="text-lg text-gray-500">{t("common.loading")}</div>
         </div>
       ) : (
         <>

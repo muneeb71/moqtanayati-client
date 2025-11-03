@@ -7,41 +7,58 @@ import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { updateProductStock } from "@/lib/api/product/updateStock";
 import toast from "react-hot-toast";
+import useTranslation from "@/hooks/useTranslation";
 
-const formatTimeAgo = (dateString) => {
+const formatTimeAgo = (dateString, t) => {
   const date = new Date(dateString);
   const now = new Date();
   const diffInSeconds = Math.floor((now - date) / 1000);
 
   if (diffInSeconds < 60) {
-    return "just now";
+    return t("seller.store.time.just_now");
   }
 
   const diffInMinutes = Math.floor(diffInSeconds / 60);
   if (diffInMinutes < 60) {
-    return `${diffInMinutes}min ago`;
+    return t("seller.store.time.min_ago").replace(
+      "{count}",
+      String(diffInMinutes),
+    );
   }
 
   const diffInHours = Math.floor(diffInMinutes / 60);
   if (diffInHours < 24) {
-    return `${diffInHours}hr ago`;
+    return t("seller.store.time.hr_ago").replace(
+      "{count}",
+      String(diffInHours),
+    );
   }
 
   const diffInDays = Math.floor(diffInHours / 24);
   if (diffInDays < 30) {
-    return `${diffInDays}day${diffInDays === 1 ? "" : "s"} ago`;
+    return t("seller.store.time.day_ago").replace(
+      "{count}",
+      String(diffInDays),
+    );
   }
 
   const diffInMonths = Math.floor(diffInDays / 30);
   if (diffInMonths < 12) {
-    return `${diffInMonths}month${diffInMonths === 1 ? "" : "s"} ago`;
+    return t("seller.store.time.month_ago").replace(
+      "{count}",
+      String(diffInMonths),
+    );
   }
 
   const diffInYears = Math.floor(diffInMonths / 12);
-  return `${diffInYears}year${diffInYears === 1 ? "" : "s"} ago`;
+  return t("seller.store.time.year_ago").replace(
+    "{count}",
+    String(diffInYears),
+  );
 };
 
 const StoreProductDetailsCard = ({ item }) => {
+  const { t } = useTranslation();
   const [stock, setStock] = useState(item?.stock || 0);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -55,7 +72,7 @@ const StoreProductDetailsCard = ({ item }) => {
       const response = await updateProductStock(item.id, newStock);
       if (response) {
         setStock(newStock);
-        toast.success("Stock updated.");
+        toast.success(t("seller.store.stock_updated"));
       }
     } catch (error) {
       console.log("Error updating stock:", error);
@@ -103,14 +120,14 @@ const StoreProductDetailsCard = ({ item }) => {
               </div>
               <div className="flex flex-col justify-end gap-2.5">
                 <span className="text-right text-[14.4px] leading-[21px] text-battleShipGray">
-                  {formatTimeAgo(item?.createdAt)}
+                  {formatTimeAgo(item?.createdAt, t)}
                 </span>
                 <SellerQaSectionSheet />
               </div>
             </div>
             <div className="flex w-full items-end justify-between gap-5">
               {item?.pricingFormat === "Fixed Price" ? (
-                "Fixed Price"
+                t("seller.store.fixed_price")
               ) : (
                 <ProductDetailsAuctionTimer item={item} />
               )}
@@ -121,13 +138,17 @@ const StoreProductDetailsCard = ({ item }) => {
             </div>
           </div>
           <div className="flex w-full flex-col gap-2">
-            <h1 className="font-medium text-black/70">Product Description</h1>
+            <h1 className="font-medium text-black/70">
+              {t("seller.store.product_description")}
+            </h1>
             <p className="text-[14.4px] leading-[21px] text-black/40">
               {item?.description}
             </p>
           </div>
           <div className="flex w-fit flex-col gap-2">
-            <span className="text-2xl font-medium text-black/70">Stock</span>
+            <span className="text-2xl font-medium text-black/70">
+              {t("seller.store.stock")}
+            </span>
             <div className="flex items-center justify-between gap-2 py-1">
               <button
                 onClick={() => handleStockUpdate(stock + 1)}

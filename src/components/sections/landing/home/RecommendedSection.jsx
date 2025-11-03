@@ -7,11 +7,14 @@ import { getUserOrdersClient } from "@/lib/api/orders/getUserOrdersClient";
 import { getProductsClient } from "@/lib/api/product/getAllProductsClient";
 import { getWatchlist } from "@/lib/api/watchlist/getWatchlist";
 import { useState, useEffect } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
-const RecommendedSection = ({ title = "Recommended For You" }) => {
+const RecommendedSection = ({ title }) => {
+  const { t } = useTranslation();
+  const defaultTitle = title || t("buyer.home.sections.recommended");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sectionTitle, setSectionTitle] = useState(title);
+  const [sectionTitle, setSectionTitle] = useState(defaultTitle);
   const [isNavigating, setIsNavigating] = useState(false);
 
   useEffect(() => {
@@ -111,11 +114,11 @@ const RecommendedSection = ({ title = "Recommended For You" }) => {
               similarProducts.length,
             );
             setProducts(productsWithFavorites);
-            setSectionTitle("Recommended For You");
+            setSectionTitle(t("buyer.home.sections.recommended"));
           } else {
             // No products found, show empty state
             setProducts([]);
-            setSectionTitle("Recommended For You");
+            setSectionTitle(t("buyer.home.sections.recommended"));
           }
         } else {
           // If buyer has no orders, show all products
@@ -161,11 +164,11 @@ const RecommendedSection = ({ title = "Recommended For You" }) => {
               productsResponse.data.length,
             );
             setProducts(productsWithFavorites);
-            setSectionTitle("Products");
+            setSectionTitle(t("buyer.home.sections.products"));
           } else {
             // No products found, show empty state
             setProducts([]);
-            setSectionTitle("Products");
+            setSectionTitle(t("buyer.home.sections.products"));
           }
         }
       } catch (error) {
@@ -175,7 +178,7 @@ const RecommendedSection = ({ title = "Recommended For You" }) => {
         );
         // Show empty state on error instead of dummy items
         setProducts([]);
-        setSectionTitle("Recommended For You");
+        setSectionTitle(t("buyer.home.sections.recommended"));
       } finally {
         setLoading(false);
       }
@@ -209,10 +212,10 @@ const RecommendedSection = ({ title = "Recommended For You" }) => {
           <div className="text-center">
             <div className="mb-4 text-6xl">🔍</div>
             <h3 className="mb-2 text-lg font-semibold text-gray-700">
-              No Products Available
+              {t("buyer.home.sections.no_products_title")}
             </h3>
             <p className="text-gray-500">
-              We couldn't find any recommended products for you at the moment.
+              {t("buyer.home.sections.no_products_message")}
             </p>
           </div>
         </div>

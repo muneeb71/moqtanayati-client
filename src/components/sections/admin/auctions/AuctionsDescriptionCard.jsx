@@ -1,8 +1,10 @@
 import ProductDetailsAuctionTimer from "@/components/timers/ProductDetailsAuctionTimer";
 import QaSectionSheet from "../../landing/product-details/dialogs/qa-sheet/QaSectionSheet";
 import Image from "next/image";
+import useTranslation from "@/hooks/useTranslation";
 
 const AuctionsDescriptionCard = ({ item }) => {
+  const { t } = useTranslation();
   const getHighestBidInfo = (auction) => {
     if (!auction.bids || auction.bids.length === 0) return null;
 
@@ -38,7 +40,7 @@ const AuctionsDescriptionCard = ({ item }) => {
               </div>
               <div className="flex flex-col justify-end gap-2.5">
                 <span className="text-right text-[14.4px] leading-[21px] text-battleShipGray">
-                  1hr ago
+                  {t("admin.auctions.one_hour_ago")}
                 </span>
                 <QaSectionSheet />
               </div>
@@ -51,7 +53,9 @@ const AuctionsDescriptionCard = ({ item }) => {
             />
           </div>
           <div className="flex w-full flex-col gap-2">
-            <h1 className="font-medium text-black/70">Product Description</h1>
+            <h1 className="font-medium text-black/70">
+              {t("admin.auctions.product_description")}
+            </h1>
             <p className="text-[14.4px] leading-[21px] text-black/40">
               {item?.product.description}
             </p>
@@ -64,13 +68,15 @@ const AuctionsDescriptionCard = ({ item }) => {
             <div className="flex w-full items-center justify-between">
               <div className="flex min-w-64 flex-col rounded-lg bg-[#F8F7FB] py-4 pl-3 pr-5">
                 <h2 className="text-[14.4px] leading-[21.6px] text-black/40">
-                  Highest Bid
+                  {t("admin.auctions.highest_bid")}
                 </h2>
                 <div className="flex items-center gap-2">
                   <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
                     ${highestBidInfo.amount}
                   </h1>
-                  <span className="text-[10px] text-battleShipGray">by</span>
+                  <span className="text-[10px] text-battleShipGray">
+                    {t("admin.auctions.by")}
+                  </span>
                   <div className="flex items-center gap-1">
                     <Image
                       src={highestBidInfo.image}
@@ -90,7 +96,9 @@ const AuctionsDescriptionCard = ({ item }) => {
             </div>
           </div>
         ) : (
-          <div className="mt-4 text-sm text-gray-400">No bids yet</div>
+          <div className="mt-4 text-sm text-gray-400">
+            {t("admin.auctions.no_bids_yet")}
+          </div>
         )}
       </div>
     </div>

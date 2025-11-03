@@ -3,9 +3,9 @@ import DisableProductDialog from "@/components/sections/seller/my-store/product/
 import StoreProductDetailsCard from "@/components/sections/seller/my-store/product/details/StoreProductDetailsCard";
 import ProductDetailsSlider from "@/components/slider/ProductDetailsSlider";
 import { getProductById } from "@/lib/api/product/getById";
-import { PenLineIcon, ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { PenLineIcon } from "lucide-react";
 import EditProductButton from "@/components/sections/seller/my-store/product/details/EditProductButton";
+import ProductDetailsHeading from "@/components/sections/seller/my-store/product/details/ProductDetailsHeading";
 
 const ProductDetailsPage = async ({ params }) => {
   const productId = (await params).id;
@@ -17,17 +17,7 @@ const ProductDetailsPage = async ({ params }) => {
   return (
     <div className="flex w-full flex-col items-center justify-center gap-6 px-3">
       <PageHeading>
-        <div className="flex w-full items-center justify-between">
-          <Link
-            href="/seller/my-store"
-            className="flex items-center gap-2 text-sm text-darkBlue hover:underline"
-          >
-            <ArrowLeft className="size-4" />
-            <span>Back</span>
-          </Link>
-          <span>Product Details</span>
-          <span className="w-10" />
-        </div>
+        <ProductDetailsHeading />
       </PageHeading>
       <div className="flex w-full max-w-7xl flex-col items-center justify-center">
         <div className="flex w-full justify-end">

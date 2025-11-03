@@ -3,8 +3,10 @@
 import { useProfileStore } from "@/providers/profile-store-provider";
 import { useEffect, useState } from "react";
 import { getSellerOrdersClient } from "@/lib/api/orders/getSellerOrderClient";
+import useTranslation from "@/hooks/useTranslation";
 
 const OrdersCard = () => {
+  const { t } = useTranslation();
   const orders = useProfileStore((state) => state.orders);
   const sellerOrders = useProfileStore((state) => state.sellerOrders);
   const setOrders = useProfileStore((state) => state.setOrders);
@@ -48,7 +50,7 @@ const OrdersCard = () => {
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden rounded-[30px] bg-white px-5 py-4">
       <h1 className="z-10 text-xl font-medium text-davyGray lg:text-2xl">
-        Orders
+        {t("seller.banner.orders")}
       </h1>
       <div className="z-10 w-full pb-12 pt-7 text-center text-6xl font-medium text-moonstone">
         {count}

@@ -3,14 +3,16 @@
 import { dummyFaqs } from "@/lib/dummy-faqs";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const UserGuidesSection = ({ category, subCategory }) => {
+  const { t } = useTranslation();
   const [selectedFaq, setSelectedFaq] = useState(dummyFaqs[0]);
   return (
     <div className="grid w-full max-w-7xl gap-10 py-5 md:grid-cols-[364px_1fr]">
       <div className="flex w-full flex-col gap-5">
         <h1 className="text-4xl font-semibold tracking-[-1.29px] text-russianViolet">
-          User Guide
+          {t("seller.help_center.user_guides_title")}
         </h1>
         <div className="flex w-full flex-col gap-2">
           {dummyFaqs.map((faq, index) => (
