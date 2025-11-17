@@ -3,8 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PenLineIcon } from "lucide-react";
+import useTranslation from "@/hooks/useTranslation";
 
 const EditProductButton = ({ productId }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
 
@@ -54,7 +56,7 @@ const EditProductButton = ({ productId }) => {
         )}
       </div>
       <span className="text-lg font-medium text-darkBlue">
-        {isNavigating ? "Opening..." : "Edit Product"}
+        {isNavigating ? t("seller.store.opening") : t("seller.store.edit")}
       </span>
     </button>
   );

@@ -4,8 +4,10 @@ import NotificationCardSkeleton from "@/components/loaders/NotificationCardSkele
 import { useEffect, useState } from "react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useSearchParams } from "next/navigation";
+import useTranslation from "@/hooks/useTranslation";
 
 const NotificationSection = ({ category = "" }) => {
+  const { t } = useTranslation();
   const {
     getNotificationsByCategory,
     loading,
@@ -72,10 +74,10 @@ const NotificationSection = ({ category = "" }) => {
           <div className="text-center">
             <div className="mb-4 text-6xl">🔔</div>
             <h3 className="mb-2 text-lg font-semibold text-gray-700">
-              No Notifications
+              {t("seller.notifications.empty_title")}
             </h3>
             <p className="text-gray-500">
-              You don't have any notifications at the moment.
+              {t("seller.notifications.empty_sub")}
             </p>
           </div>
         </div>

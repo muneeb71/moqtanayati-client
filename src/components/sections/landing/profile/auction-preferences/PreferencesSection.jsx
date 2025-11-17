@@ -15,10 +15,12 @@ import { getAuctionPreferences } from "@/lib/api/profile/getPreferences";
 import toast from "react-hot-toast";
 import { updateAuctionPreference } from "@/lib/api/profile/updatePreference";
 import PreferencesSectionSkeleton from "@/components/loaders/PreferencesSectionSkeleton";
+import useTranslation from "@/hooks/useTranslation";
 
 const BAR_MAX = 20000;
 
 const PreferencesSection = () => {
+  const { t } = useTranslation();
   const [categoryInput, setCategoryInput] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedPriceRange, setSelectedPriceRange] = useState([
@@ -53,7 +55,7 @@ const PreferencesSection = () => {
           setAlertNew(false);
         }
       } catch (err) {
-        toast.error("Failed to fetch preferences");
+        toast.error(t("buyer.auction_preferences.toasts.fetch_failed"));
       } finally {
         setLoading(false);
       }
@@ -108,12 +110,12 @@ const PreferencesSection = () => {
       setSaveLoading(true);
       const res = await updateAuctionPreference(data);
       if (res.success) {
-        toast.success("Preferences updated!");
+        toast.success(t("buyer.auction_preferences.toasts.updated"));
       } else {
-        toast.error(res.message || "Update failed");
+        toast.error(res.message || t("buyer.auction_preferences.toasts.update_failed"));
       }
     } catch (err) {
-      toast.error("Update failed");
+      toast.error(t("buyer.auction_preferences.toasts.update_failed"));
     } finally {
       setSaveLoading(false);
     }
@@ -127,12 +129,12 @@ const PreferencesSection = () => {
     <div className="flex w-full max-w-[470px] flex-col gap-6 p-5">
       <div className="flex w-full flex-col gap-2">
         <h1 className="text-lg font-medium leading-[28px] text-darkBlue">
-          Category Selection
+          {t("buyer.auction_preferences.category_selection")}
         </h1>
         <div className="mb-2 flex gap-2">
           <input
             className="flex-1 border-b border-moonstone bg-transparent px-2 py-1 outline-none"
-            placeholder="Type and press Enter or click Add"
+            placeholder={t("buyer.auction_preferences.category_placeholder")}
             value={categoryInput}
             onChange={handleCategoryInput}
             onKeyDown={handleCategoryKeyDown}
@@ -160,7 +162,7 @@ const PreferencesSection = () => {
               )
             }
           >
-            Add
+            {t("buyer.auction_preferences.add")}
           </button>
         </div>
         <div className="no-scrollbar flex max-w-full items-center gap-5 overflow-auto">
@@ -178,14 +180,14 @@ const PreferencesSection = () => {
             ))
           ) : (
             <p className="text-sm text-battleShipGray">
-              No categories selected
+              {t("buyer.auction_preferences.no_categories")}
             </p>
           )}
         </div>
       </div>
       <div className="flex w-full flex-col gap-2">
         <h1 className="text-lg font-medium leading-[28px] text-darkBlue">
-          Price Range
+          {t("buyer.auction_preferences.price_range")}
         </h1>
         <div className="flex w-full flex-col items-center">
           <div className="mb-1 flex w-full justify-between"></div>
@@ -203,7 +205,7 @@ const PreferencesSection = () => {
             type="number"
             value={selectedPriceRange[0]}
             onChange={(e) => handleInputChange(0, e.target.value)}
-            placeholder="$0"
+            placeholder={t("buyer.auction_preferences.min_placeholder")}
           />
           <span>-</span>
           <InputField
@@ -211,34 +213,34 @@ const PreferencesSection = () => {
             type="number"
             value={selectedPriceRange[1]}
             onChange={(e) => handleInputChange(1, e.target.value)}
-            placeholder={`$${BAR_MAX.toLocaleString()}`}
+            placeholder={t("buyer.auction_preferences.max_placeholder").replace("${max}", BAR_MAX.toLocaleString())}
           />
         </div>
       </div>
       <div className="flex w-full flex-col">
         <h1 className="text-lg font-medium leading-[28px] text-darkBlue">
-          Auction Alerts
+          {t("buyer.auction_preferences.auction_alerts")}
         </h1>
         <span className="text-xs text-battleShipGray">
-          Toggles to enable notifications for:
+          {t("buyer.auction_preferences.alerts_note")}
         </span>
         <div className="flex w-full flex-col gap-2 py-5">
           <div className="flex items-center justify-between">
             <span className="font-medium text-davyGray">
-              Auction ending soon
+              {t("buyer.auction_preferences.alert_ending")}
             </span>
             <Switch checked={alertEnding} onCheckedChange={setAlertEnding} />
           </div>
           <div className="flex items-center justify-between">
             <span className="font-medium text-davyGray">
-              New listings in preferred categories
+              {t("buyer.auction_preferences.alert_new")}
             </span>
             <Switch checked={alertNew} onCheckedChange={setAlertNew} />
           </div>
         </div>
       </div>
       <RoundedButton
-        title="Save Preferences"
+        title={t("buyer.auction_preferences.save_preferences")}
         className="my-10 w-fit self-center"
         onClick={handleSavePreferences}
         loading={saveLoading || undefined}

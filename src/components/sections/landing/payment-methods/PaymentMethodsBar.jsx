@@ -7,10 +7,12 @@ import {
 } from "@/assets/icons/payment-icons";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
+import useTranslation from "@/hooks/useTranslation";
 
 const PaymentMethodsBar = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const paymentMethodCategories = ["cards", "paypal"];
 
@@ -29,7 +31,9 @@ const PaymentMethodsBar = () => {
               : "border-silver hover:border-moonstone hover:bg-moonstone/10",
           )}
         >
-          {bidCategory == "cards" ? "Credit/Debit Card" : "PayPal"}
+          {bidCategory == "cards"
+            ? t("buyer.payment_methods.categories.cards")
+            : t("buyer.payment_methods.categories.paypal")}
           {bidCategory == "cards" ? (
             <>
               {visaIcon}

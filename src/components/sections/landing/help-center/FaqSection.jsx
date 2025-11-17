@@ -3,14 +3,16 @@
 import { dummyFaqs } from "@/lib/dummy-faqs";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const FaqSection = ({ category, subCategory }) => {
+  const { t } = useTranslation();
   const [selectedFaq, setSelectedFaq] = useState(dummyFaqs[0]);
   return (
     <div className="grid w-full max-w-7xl gap-10 py-5 md:grid-cols-[364px_1fr]">
       <div className="flex w-full flex-col gap-5">
         <h1 className="text-4xl font-semibold tracking-[-1.29px] text-russianViolet">
-          FAQs.
+          {t("seller.help_center.faqs_title")}
         </h1>
         <div className="flex w-full flex-col gap-2">
           {dummyFaqs.map((faq, index) => (
@@ -31,7 +33,7 @@ const FaqSection = ({ category, subCategory }) => {
       </div>
       <div className="flex w-full flex-col gap-5">
         <h1 className="text-4xl font-semibold tracking-[-1.29px] text-moonstone">
-          Ans.
+          {t("seller.help_center.answer_title")}
         </h1>
         <div className="max-w-sm rounded-lg bg-moonstone p-6 pb-12 text-white">
           {selectedFaq.answer}

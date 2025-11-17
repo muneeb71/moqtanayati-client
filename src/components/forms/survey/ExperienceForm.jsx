@@ -5,13 +5,15 @@ import { useSurveyStore } from "@/providers/survey-store-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 import OptionButton from "./OptionButton";
 
 const ExperienceForm = ({ role }) => {
+  const { t } = useTranslation();
   const options = [
-    { label: "Yes, I have experience", value: true },
-    { label: "No, I am doing it for the first time", value: false },
+    { label: t("survey.experience.yes"), value: true },
+    { label: t("survey.experience.no"), value: false },
   ];
 
   const router = useRouter();
@@ -36,11 +38,10 @@ const ExperienceForm = ({ role }) => {
         className="mb-6 size-[52px]"
       />
       <h1 className="mb-2 text-start text-2xl text-black">
-        Tried Selling Before?
+        {t("survey.experience.title")}
       </h1>
       <p className="mb-7 text-xl text-darkBlue/50">
-        Let us know if you have had any experience in selling, no matter how big
-        or small
+        {t("survey.experience.subtitle")}
       </p>
       <div className="mb-10 flex w-full flex-col gap-3">
         {options.map((option) => (
@@ -54,7 +55,7 @@ const ExperienceForm = ({ role }) => {
         ))}
       </div>
       <RoundedButton
-        title={navigating ? "Loading..." : "Next"}
+        title={navigating ? t("common.loading") : t("signup.next")}
         showIcon={!navigating}
         loading={navigating || undefined}
         onClick={handleNext}

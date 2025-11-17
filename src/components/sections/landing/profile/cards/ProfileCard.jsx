@@ -13,8 +13,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { TiSocialAtCircular } from "react-icons/ti";
 import { getUserProfile } from "@/lib/api/profile/getProfile";
+import useTranslation from "@/hooks/useTranslation";
 
 const ProfileCard = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -66,7 +68,9 @@ const ProfileCard = () => {
         {editLoading ? (
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
         ) : (
-          <>{profilePenIcon} Edit Profile</>
+          <>
+            {profilePenIcon} {t("buyer.profile.edit_profile")}
+          </>
         )}
       </Link>
       <div className="flex flex-col items-center">
@@ -112,7 +116,7 @@ const ProfileCard = () => {
           {name}
         </h1>
         <span className="text-[14.4px] font-medium text-battleShipGray">
-          Joined {joined}
+          {t("buyer.profile.joined_prefix")} {joined}
         </span>
       </div>
       <div className="flex w-full flex-col gap-5 px-2 py-10">
@@ -121,7 +125,7 @@ const ProfileCard = () => {
           <InputField
             icon={profileUserIcon}
             value={name}
-            placeholder="Full Name"
+            placeholder={t("buyer.profile.placeholders.full_name")}
             onChange={(e) => setName(e.target.value)}
           />
         </div>
@@ -131,7 +135,7 @@ const ProfileCard = () => {
             icon={profileEmailIcon}
             type="email"
             value={email}
-            placeholder="Email"
+            placeholder={t("buyer.profile.placeholders.email")}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
@@ -140,7 +144,7 @@ const ProfileCard = () => {
           <InputField
             icon={profilePhoneIcon}
             value={phone}
-            placeholder="Phone"
+            placeholder={t("buyer.profile.placeholders.phone")}
             onChange={(e) => setPhone(e.target.value)}
           />
         </div>

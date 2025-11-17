@@ -12,8 +12,10 @@ import { useProfileStore } from "@/providers/profile-store-provider";
 import ChatSidebarSkeleton from "@/components/loaders/chats/ChatSidebarSkeleton";
 import ChatWindowSkeleton from "@/components/loaders/chats/ChatWindowSkeleton";
 import { socketManager } from "@/lib/socket-client";
+import useTranslation from "@/hooks/useTranslation";
 
 const ChatPageContent = () => {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const userId = searchParams.get("id");
   const userName = searchParams.get("name") || "";
@@ -171,7 +173,7 @@ const ChatPageContent = () => {
       name:
         otherUser?.name ||
         lastSender?.name ||
-        (isQueryUser ? userName : "User"),
+        (isQueryUser ? userName : t("chat.user")),
       avatar:
         otherUser?.avatar ||
         lastSender?.avatar ||
@@ -234,7 +236,7 @@ const ChatPageContent = () => {
         )
       ) : (
         <div className="flex min-h-[300px] w-full items-center justify-center text-lg text-gray-400">
-          No chat selected
+          {t("chat.no_chat_selected")}
         </div>
       )}
       {/* Mobile user sheet */}

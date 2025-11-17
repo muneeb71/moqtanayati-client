@@ -1,28 +1,37 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import HistoryCard from "@/components/sections/landing/profile/purchase-history/HistoryCard";
-import { getServerUserOrders } from "@/lib/api/server-axios";
+import { getUserOrders } from "@/lib/api/orders/getUserOrders";
+import useTranslation from "@/hooks/useTranslation";
 
-// Force dynamic rendering to allow cookies usage
-export const dynamic = 'force-dynamic';
+const DeliveredHistoryPage = () => {
+  const { t } = useTranslation();
+  const [filteredHistory, setFilteredHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-const DeliveredHistoryPage = async () => {
-  // Initialize with empty arrays
-  let userHistory = [];
-  let filteredHistory = [];
+  useEffect(() => {
+    const fetchHistory = async () => {
+      setLoading(true);
+      try {
+        const res = await getUserOrders();
 
-  try {
-    const res = await getServerUserOrders();
+        // Ensure we have a valid array
+        const userHistory = Array.isArray(res?.data) ? res.data : [];
 
-    // Ensure we have a valid array
-    userHistory = Array.isArray(res?.data) ? res.data : [];
-
-    // Filter for delivered items
-    filteredHistory = userHistory.filter(
-      (item) => item?.status === "DELIVERED",
-    );
-  } catch (error) {
-    userHistory = [];
-    filteredHistory = [];
-  }
+        // Filter for delivered items
+        const filtered = userHistory.filter(
+          (item) => item?.status === "DELIVERED",
+        );
+        setFilteredHistory(filtered);
+      } catch (error) {
+        setFilteredHistory([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHistory();
+  }, []);
 
   // Ensure filteredHistory is always an array
   const safeFilteredHistory = Array.isArray(filteredHistory)
@@ -33,7 +42,7 @@ const DeliveredHistoryPage = async () => {
     <div className="no-scrollbar flex max-h-[40rem] flex-col gap-3 overflow-y-auto py-5">
       {safeFilteredHistory.length === 0 ? (
         <div className="py-10 text-center text-gray-400">
-          No delivered items found.
+          {t("buyer.purchase_history.no_delivered_items")}
         </div>
       ) : (
         safeFilteredHistory.map((item, index) => (

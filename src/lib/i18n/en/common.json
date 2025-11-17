@@ -1,0 +1,1304 @@
+{
+  "header": {
+    "back": "Back",
+    "notifications": "Notifications",
+    "cart": "Cart",
+    "profile": "Profile",
+    "logout": "Logout",
+    "error_fetch_user": "Error fetching user details.",
+    "error_fetch_cart": "Error fetching cart."
+  },
+  "search": {
+    "title_all": "All Products",
+    "placeholder_general": "Search for anything you need…",
+    "placeholder_category": "Search within {category}…",
+    "no_results_title": "No products found",
+    "no_results_sub": "Try another keyword or clear the search.",
+    "error_fetch_products": "Failed to fetch products.",
+    "error_fetch_results": "Failed to fetch search results.",
+    "error_timeout": "Request timed out. Please check your connection and try again.",
+    "search_in_category_prefix": "Search in",
+    "search_results_for_prefix": "Search Results for",
+    "results": "Results",
+    "filters": "Filters",
+    "error_fetch_filtered": "Failed to fetch filtered products."
+  },
+  "email_otp": {
+    "title": "Verify Your Email",
+    "subtitle_prefix": "We've sent a 6-digit verification code to",
+    "subtitle_suffix": "Enter the code below to verify your email and continue.",
+    "enter_code": "Enter 6-digit Code",
+    "verifying": "Verifying...",
+    "verify_continue": "Verify & Continue",
+    "no_code": "Didn't receive the code?",
+    "resend": "Resend OTP"
+  },
+  "phone_otp": {
+    "title": "Verify Your Phone Number",
+    "subtitle_prefix": "We've sent a 6-digit verification code to your phone:",
+    "subtitle_suffix": "Enter the code below to verify your phone and continue.",
+    "enter_code": "Enter 6-digit Code",
+    "verifying": "Verifying...",
+    "verify_continue": "Verify & Continue",
+    "no_code": "Didn't receive the code?",
+    "resend": "Resend OTP",
+    "sent": "OTP sent to your phone.",
+    "send_failed": "Failed to send OTP.",
+    "enter_six_digit": "Please enter the 6-digit OTP.",
+    "verified": "Phone verified!",
+    "invalid": "Invalid OTP.",
+    "verify_failed": "Failed to verify OTP.",
+    "resent": "OTP resent to your phone.",
+    "resend_failed": "Failed to resend OTP."
+  },
+  "onboarding": {
+    "connect_socials": "Connect with Socials",
+    "common": {
+      "next": "Next"
+    },
+    "step1": {
+      "title": "Easy Selling, No Stress",
+      "subtitle": "Create your listings, set pricing and go live - no complex setup, just streamlined selling."
+    },
+    "step2": {
+      "title": "Tools that work for you",
+      "subtitle": "Track orders, manage inventory, chat with buyers and gain insights - all from your dashboard."
+    },
+    "step3": {
+      "title": "Bidding Made Better",
+      "subtitle": "Start auctions, accept bids in real-time and let the market decide the value of your listings."
+    },
+    "step4": {
+      "title": "Boost Your Sales with Smart Marketing!",
+      "subtitle": "Unlock tools to grow faster, reach more people and stand out in the market",
+      "features": {
+        "rank": "Rank Listings",
+        "rank_desc": "We help your listings rank with built-in SEO boosts",
+        "discounts": "Drop Custom Discounts",
+        "discounts_desc": "Create limited-time offers to increase clicks and buys",
+        "affiliates": "Run Affiliate Programs",
+        "affiliates_desc": "Let creators promote your store and earn commission",
+        "campaigns": "Plan Your Campaigns",
+        "campaigns_desc": "Boost your products across platforms to get engagement",
+        "advertise": "Advertise to Right Crowd",
+        "advertise_desc": "Boost across platforms to reach more buyers",
+        "highlight": "Highlight Best Deals",
+        "highlight_desc": "Pin exclusive offers and drive urgency"
+      }
+    }
+  },
+  "footer": {
+    "user_features": "User Features",
+    "legal_policies": "Legal And Policies",
+    "platform_info": "Platform Information",
+    "links": {
+      "explore_auctions": "Explore Auctions",
+      "start_selling": "Start Selling",
+      "saved_items": "Saved Items",
+      "purchase_history": "Purchase History",
+      "terms": "Terms & Conditions",
+      "privacy": "Privacy Policy",
+      "cookie": "Cookie Policy",
+      "about": "About",
+      "how_it_works": "How It Works",
+      "faqs": "FAQs",
+      "contact": "Contact Us"
+    }
+  },
+  "nav": {
+    "buyer": {
+      "home": "Home",
+      "chats": "Chats",
+      "auctions": "Auctions"
+    },
+    "seller": {
+      "home": "Home",
+      "chats": "Chats",
+      "auctions": "Auctions",
+      "analytics": "Analytics",
+      "orders": "Orders",
+      "my_store": "My Store"
+    },
+    "dropdown": {
+      "my_bids": "My Bids",
+      "purchase_history": "Purchase History",
+      "watchlist": "Watchlist",
+      "auction_preferences": "Auction Preferences",
+      "payment_methods": "Payment Methods",
+      "customer_support": "Customer Support",
+      "help_center": "Help Center"
+    }
+  },
+  "chat": {
+    "no_chat_selected": "No chat selected",
+    "no_messages": "No messages",
+    "sending": "Sending...",
+    "connecting": "Connecting to chat...",
+    "connection_failed": "Connection failed",
+    "connection_failed_with_error": "Connection failed: {error}",
+    "retry": "Retry",
+    "type_message": "Type a message",
+    "you": "You",
+    "user": "User",
+    "is_typing": "is typing...",
+    "available_now": "Available Now",
+    "conversations": "Conversations",
+    "search_placeholder": "Search...",
+    "no_chats": "No chats",
+    "failed_to_connect": "Failed to connect to chat server"
+  },
+  "admin": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "orders": "Orders",
+      "auctions": "Auctions",
+      "payments": "Payments",
+      "payments_cash": "Cash",
+      "payments_third_party": "Third Party",
+      "reports": "Reports",
+      "reports_buyer": "Buyer Reports",
+      "reports_seller": "Seller Reports",
+      "reviews": "Reviews",
+      "settings": "Settings"
+    },
+    "login": {
+      "welcome_admin": "Welcome Admin",
+      "subtitle": "Log in to explore exciting auctions and unique finds.",
+      "email": "Email",
+      "email_placeholder": "Enter your email",
+      "password": "Password",
+      "password_placeholder": "Enter your password",
+      "keep_me_logged_in": "Keep me logged in",
+      "forget_password": "Forget Password?",
+      "logging_in": "Logging in...",
+      "login_cta": "Log into your account",
+      "email_required": "Email is required.",
+      "password_required": "Password is required.",
+      "success": "Login successful",
+      "failed": "Login failed"
+    },
+    "logout": {
+      "logout": "Logout",
+      "logging_out": "Logging out..."
+    },
+    "dashboard": {
+      "profit": "Profit",
+      "bids_placed": "Bids Placed",
+      "bids_successful": "Bids Successful",
+      "completed_orders": "Completed Orders"
+    },
+    "users": {
+      "title": "Users",
+      "all_users": "All Users",
+      "rows_selected_singular": "row selected",
+      "rows_selected_plural": "rows selected",
+      "search_placeholder": "Search by name or email",
+      "sort": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "seller": "Seller",
+        "buyer": "Buyer"
+      },
+      "table": {
+        "name": "Name",
+        "role": "Role",
+        "account_status": "Account Status",
+        "verification_status": "Verification Status",
+        "registration_date": "Registration Date",
+        "action": "Action",
+        "no_users": "No users found.",
+        "saving": "Saving...",
+        "save": "Save",
+        "cancel": "Cancel"
+      },
+      "details": {
+        "enable_user": "Enable User",
+        "disable_user": "Disable User",
+        "disable_delete": "Disable/Delete",
+        "delete_user": "Delete User",
+        "cancel": "Cancel",
+        "metrics": {
+          "bids_seller": "Bids",
+          "bids_buyer": "Bids Placed",
+          "sold_items": "Sold Items",
+          "purchases": "Purchases",
+          "earned": "Earned",
+          "spent": "Spent",
+          "last_active": "Last Active"
+        },
+        "recent_listings": "Recent Listings",
+        "recent_bids": "Recent Bids",
+        "recent_sales": "Recent Sales",
+        "recent_purchases": "Recent Purchases",
+        "product": "Product",
+        "highest_bid": "Highest Bid",
+        "current_bid": "Current Bid",
+        "num_bidders": "No of Bidders",
+        "status": "Status",
+        "active": "Active",
+        "price": "Price",
+        "date": "Date",
+        "personal_info": "Personal Information",
+        "full_name": "Full Name",
+        "email": "Email",
+        "phone": "Phone No.",
+        "address": "Address",
+        "registration_date": "Registration Date"
+      }
+    },
+    "orders": {
+      "manage_purchases": "Manage Purchases",
+      "recents": "Recents",
+      "search": "Search",
+      "no_orders": "No orders found.",
+      "total_price": "Total price:",
+      "download": "Download",
+      "sort": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "pending": "Orders Pending",
+        "processing": "Orders Processing",
+        "delivered": "Orders Delivered",
+        "cancelled": "Orders Cancelled"
+      },
+      "headers": {
+        "product": "Product",
+        "buyer": "Buyer",
+        "payment": "Payment",
+        "delivery_status": "Delivery Status",
+        "order_date": "Order Date",
+        "review": "Review"
+      },
+      "payment_status": {
+        "paid": "PAID",
+        "pending": "PENDING",
+        "failed": "FAILED"
+      },
+      "status": {
+        "delivered": "DELIVERED",
+        "shipped": "SHIPPED",
+        "cancelled": "CANCELLED",
+        "processing": "PROCESSING",
+        "pending": "PENDING"
+      }
+    },
+    "pagination": {
+      "showing": "Showing {start} - {end} from {total}",
+      "prev": "Previous page",
+      "next": "Next page"
+    },
+    "auctions": {
+      "title": "Auctions",
+      "all": "All Auctions",
+      "search": "Search",
+      "no_auctions": "No auctions found.",
+      "headers": {
+        "product": "Product",
+        "starting_bid": "Starting Bid",
+        "current_bid": "Current Bid",
+        "bidders": "Bidders",
+        "time_remaining": "Time Remaining",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "sort": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "live": "Live",
+        "ended": "Ended",
+        "upcoming": "Upcoming",
+        "highest_starting_bid": "Highest Starting Bid",
+        "lowest_starting_bid": "Lowest Starting Bid",
+        "highest_current_bid": "Highest Current Bid",
+        "lowest_current_bid": "Lowest Current Bid"
+      },
+      "time_left": "{d}d {h}h {m}m",
+      "status": {
+        "live": "LIVE",
+        "ended": "ENDED",
+        "upcoming": "UPCOMING"
+      },
+      "cancel_button": "Cancel Auction",
+      "cancel_action": "Cancel Auction",
+      "already_ended": "It's already ENDED",
+      "cancelled": "Auction cancelled",
+      "cancel_failed": "Failed to cancel auction",
+      "one_hour_ago": "1hr ago",
+      "product_description": "Product Description",
+      "highest_bid": "Highest Bid",
+      "by": "by",
+      "no_bids_yet": "No bids yet",
+      "bidders": "Bidders",
+      "watchlist": {
+        "added": "Item added to Watchlist.",
+        "removed": "Removed from Watchlist",
+        "add_failed": "Failed to add item to Watchlist.",
+        "add_error": "An error occurred while adding to Watchlist."
+      }
+    },
+    "payments": {
+      "common": {
+        "coming_soon": "Coming Soon",
+        "soon_note": "This feature will be available soon!"
+      },
+      "cash": {
+        "title": "Cash Payments",
+        "body_line1": "We're working hard to bring you a comprehensive cash payment management system."
+      },
+      "third_party": {
+        "title": "Third Party Payments",
+        "body_line1": "We're developing an advanced third-party payment integration system."
+      }
+    },
+    "reports": {
+      "title": "Reports",
+      "all_buyers": "All Buyers",
+      "all_sellers": "All Sellers",
+      "search": "Search",
+      "sort": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "highest_orders_placed": "Highest Orders Placed",
+        "lowest_orders_placed": "Lowest Orders Placed",
+        "highest_orders_dispatched": "Highest Orders Dispatched",
+        "lowest_orders_dispatched": "Lowest Orders Dispatched",
+        "highest_total_spent": "Highest Total Spent",
+        "lowest_total_spent": "Lowest Total Spent",
+        "highest_payment_earned": "Highest Payment Earned",
+        "lowest_payment_earned": "Lowest Payment Earned"
+      },
+      "table": {
+        "name": "Name",
+        "registration_date": "Registration Date",
+        "orders_placed": "Orders Placed",
+        "orders_dispatched": "Orders Dispatched",
+        "total_spent": "Total Spent",
+        "payments_earned": "Payments Earned",
+        "action": "Action",
+        "no_data": "No data found."
+      },
+      "details": {
+        "enable_user": "Enable User",
+        "disable_delete": "Disable/Delete",
+        "disable_user": "Disable User",
+        "delete_user": "Delete User",
+        "cancel": "Cancel",
+        "total_spent": "Total Spent",
+        "total_sales": "Total Sales",
+        "orders_placed": "Orders Placed",
+        "completed_orders": "Completed Orders",
+        "to_receive": "To Receive",
+        "pending_orders": "Pending Orders",
+        "favorite_category": "Favorite Category",
+        "collections": "Collections",
+        "most_interested_product": "Most Interested Product",
+        "best_selling_products": "Best Selling Products",
+        "personal_info": "Personal Information",
+        "full_name": "Full Name",
+        "email": "Email",
+        "phone": "Phone No.",
+        "address": "Address",
+        "registration_date": "Registration Date"
+      }
+    },
+    "reviews": {
+      "title": "Reviews",
+      "search": "Search",
+      "headers": {
+        "buyer": "Buyer",
+        "seller": "Seller",
+        "rating": "Rating",
+        "review": "Review",
+        "actions": "Actions"
+      },
+      "reviewed": "Reviewed",
+      "empty": "No reviews found.",
+      "sort": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "highest": "Highest Rated",
+        "lowest": "Lowest Rated"
+      },
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject"
+      },
+      "toast": {
+        "approved": "Review approved successfully",
+        "rejected": "Review rejected successfully"
+      },
+      "categories": {
+        "buyer_reviews_sellers": "Buyer Reviews Sellers",
+        "seller_reviews_buyers": "Seller Reviews Buyers"
+      }
+    },
+    "settings": {
+      "change_password": "Change Password",
+      "joined": "Joined",
+      "saving": "Saving...",
+      "save": "Save"
+    }
+  },
+  "analytics": {
+    "page_title": "Analytics",
+    "sales": "Sales",
+    "ratings_reviews": "Ratings & Reviews",
+    "total_orders": "Total Orders",
+    "operating_status": "Operating Status",
+    "this_year": "This year",
+    "last_year": "Last year",
+    "active_orders": "Active Orders",
+    "orders_completed": "Orders Completed",
+    "profit_last_6_months": "Profit - Last 6 months",
+    "error_failed_load": "Failed to load analytics",
+    "ratings": {
+      "positive": "Positive",
+      "neutral": "Neutral",
+      "negative": "Negative",
+      "nil": "Nil"
+    }
+  },
+  "months": {
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "May",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dec": "Dec"
+  },
+  "auth": {
+    "role_question": "Are you here to buy or sell?",
+    "role_subtitle": "Choose your role to get the most tailored experience.",
+    "role_buyer": "Buyer",
+    "role_seller": "Seller",
+    "continue": "Continue",
+    "continue_as": "Continue as"
+  },
+  "login": {
+    "welcome_back": "Welcome back",
+    "subtitle": "Log in to explore exciting auctions and unique finds.",
+    "email_label": "Email",
+    "email_placeholder": "Enter your email",
+    "password_label": "Password",
+    "password_placeholder": "Enter your password",
+    "keep_me_logged_in": "Keep me logged in",
+    "forgot_password": "Forgot password?",
+    "logging_in": "Logging in...",
+    "login_cta": "Log into your account",
+    "new_to": "New to",
+    "create_account": "Create Account"
+  },
+  "survey": {
+    "welcome": "Welcome",
+    "intro": "We would love to learn more about you and your business through short questions designed to personalize your experience.",
+    "eta": "Estimated Time: 1 Minute",
+    "starting": "Starting...",
+    "lets_start": "Let’s Start",
+    "common": {
+      "get_started": "Get Started",
+      "starting": "Starting...",
+      "submitting": "Submitting..."
+    },
+    "entity": {
+      "title": "Choose Your Seller Entity",
+      "subtitle": "It will help you start your e-commerce business in a systematic and documented way",
+      "types": {
+        "INDIVIDUAL": {
+          "title": "Individual Seller",
+          "desc": "Perfect for displaying singular items. No inventory management or auction access required."
+        },
+        "ESTABLISHED": {
+          "title": "Established Company",
+          "desc": "For businesses with stock items. Includes online store, inventory management, and auction access."
+        },
+        "CHARITABLE": {
+          "title": "Charitable Association",
+          "desc": "Ideal for family businesses. Includes buying and selling to fund meaningful causes and community impact"
+        }
+      }
+    },
+    "consent": {
+      "title": "We Need Your Consent",
+      "fee_note": "A 0.5% fee will be added to each product listed under Business and Family Seller accounts.",
+      "agree": "Agree and Start Now",
+      "discover": "Discover all Features"
+    },
+    "errors": {
+      "select_entity": "Please select your seller entity first.",
+      "select_goal": "Please select your goal first.",
+      "user_missing": "User data is missing. Please restart the registration process.",
+      "submit_failed": "Failed to submit survey"
+    },
+    "experience": {
+      "title": "Tried Selling Before?",
+      "subtitle": "Let us know if you have had any experience in selling, no matter how big or small",
+      "yes": "Yes, I have experience",
+      "no": "No, I am doing it for the first time"
+    },
+    "goal": {
+      "title": "What Brings You Here?",
+      "subtitle": "We would love to know your main goal. How do you plan on using this platform?",
+      "options": {
+        "discover": "Discover",
+        "profit": "Increase Profit",
+        "new_business": "Start New Business",
+        "explore": "Explore"
+      }
+    },
+    "home_supplies": {
+      "title": "Home Supplies",
+      "subtitle": "You can choose multiple categories"
+    },
+    "pas": {
+      "title": "Products and Services",
+      "subtitle": "Finally, what is your business activity? Choose the products and services you plan to sell"
+    },
+    "start_selling": {
+      "title": "Start Selling",
+      "subtitle": "Do you have a product ready to sell?",
+      "yes": "Yes, I have products",
+      "no": "No, I am still working on it"
+    }
+  },
+  "signup": {
+    "fill_name_email": "Please fill in your name and email.",
+    "otp_sent_email": "OTP sent to your email.",
+    "failed_send_otp": "Failed to send OTP.",
+    "fill_all_fields": "Please fill in all fields (name, email, and phone).",
+    "verify_email_first": "Please verify your email first.",
+    "otp_sent_phone": "OTP sent to your phone.",
+    "tell_us": "Tell us about yourself",
+    "full_name": "Full Name",
+    "full_name_placeholder": "Enter your full name",
+    "phone": "Phone",
+    "phone_placeholder": "Enter your phone number",
+    "verify_email": "Verify Email",
+    "verify_phone": "Verify Phone",
+    "verifying": "Verifying...",
+    "continue_id_proof": "Continue to ID Proof",
+    "already_account": "Already have an account?",
+    "sign_in": "Sign in",
+    "create_account_title": "Create Your Account",
+    "step_personal_details": "Personal Details",
+    "step_id_proof": "ID Proof",
+    "step_password": "Password",
+    "verification_details": "Verification details",
+    "national_id": "National ID",
+    "enter_id_placeholder": "Enter your ID",
+    "bank_iban_encrypted": "Bank IBAN (Encrypted)",
+    "enter_iban_placeholder": "Enter your IBAN",
+    "cr_number": "CR Number",
+    "enter_cr_placeholder": "Enter your CR number",
+    "vat_number": "VAT Number",
+    "enter_vat_placeholder": "Enter VAT number",
+    "upload_documents": "Upload Documents",
+    "choose_files": "Choose Files",
+    "no_file_chosen": "No file chosen",
+    "files_selected": "{count} files selected",
+    "next": "Next",
+    "enter_national_id": "Please enter National ID.",
+    "enter_iban": "Please enter IBAN.",
+    "enter_cr": "Please enter CR Number.",
+    "enter_vat": "Please enter VAT Number.",
+    "secure_account": "Secure Your Account",
+    "confirm_password": "Confirm Password",
+    "reenter_password_placeholder": "Re-enter your Password",
+    "enter_password": "Please enter password",
+    "reenter_password": "Please re-enter password",
+    "passwords_not_match": "Passwords don't match",
+    "create_my_account": "Create my account",
+    "where_buyer": "Where do you want to explore and shop?",
+    "where_seller": "Where are you selling from?",
+    "where_buyer_sub": "To provide you with the best experience, let us know your preferred location for buying.",
+    "where_seller_sub": "To provide you with the best experience, let us know your location for better customers.",
+    "current_location": "Current Selected Location:",
+    "enter_different_location": "Enter a different Location",
+    "near_me": "Near Me",
+    "exact_location": "Exact Location",
+    "registering": "Registering...",
+    "register_account": "Register Account",
+    "choose_seller_type": "Choose Your Seller Type",
+    "get_started": "Get Started",
+    "seller_type": {
+      "INDIVIDUAL": {
+        "title": "Individual Owner",
+        "desc": "Perfect for displaying singular items. No inventory management or auction access required."
+      },
+      "BUSINESS": {
+        "title": "Business Owner",
+        "desc": "For businesses with stock items. Includes online store, inventory management, and auction access."
+      },
+      "FAMILY": {
+        "title": "Productive Family Owner",
+        "desc": "Ideal for family businesses selling homemade items and food products."
+      }
+    }
+  },
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "arabic": "Arabic",
+    "categories_title": "Categories",
+    "loading": "Loading...",
+    "back_to_home": "Back to Home",
+    "my_store": "My Store",
+    "add_product": "Add Product",
+    "edit_product": "Edit Product"
+  },
+  "buyer": {
+    "home": {
+      "banner": {
+        "title": "Find It. Bid It. Win It.",
+        "subtitle": "Promote sustainable buying, connect directly with trusted sellers, and find unique items that tell a story."
+      },
+      "sections": {
+        "recommended": "Recommended For You",
+        "products": "Products",
+        "popular": "Popular",
+        "no_products_title": "No Products Available",
+        "no_products_message": "We couldn't find any recommended products for you at the moment.",
+        "condition_rating": "/10 condition"
+      }
+    },
+    "my_bids": {
+      "results": "Results",
+      "no_bids_found": "No bids found.",
+      "categories": {
+        "all": "All",
+        "active": "Active",
+        "won": "Won",
+        "outbid": "Outbid"
+      },
+      "highest_bid": "Highest Bid",
+      "by": "by",
+      "status": {
+        "HIGHEST": "Highest",
+        "WON": "Won",
+        "OUTBID": "Outbid",
+        "RETRACTED": "Retracted"
+      }
+    },
+    "purchase_history": {
+      "title": "Profile > Purchase History",
+      "no_history_found": "No purchase history found.",
+      "no_paid_items": "No paid items found.",
+      "no_delivered_items": "No delivered items found.",
+      "no_orders_found": "No orders found",
+      "no_delivered_items_short": "No delivered items",
+      "no_paid_items_short": "No Paid items",
+      "categories": {
+        "all": "All",
+        "delivered": "Delivered",
+        "paid": "Paid"
+      },
+      "no_name": "No Name",
+      "feedback": {
+        "view": "View",
+        "rate": "Rate",
+        "review": "Review",
+        "product": "Product",
+        "your_review": "Your Review",
+        "leave_feedback": "Leave Feedback",
+        "total_paid": "Total Paid:",
+        "your_rating": "Your Rating",
+        "rate_experience": "Rate Your Experience",
+        "write_review": "Write a Review",
+        "placeholder_existing": "Your review comment...",
+        "placeholder_new": "Share your thoughts about the product or seller…",
+        "loading_review": "Loading review...",
+        "feedback_submitted": "Feedback submitted!",
+        "submitting": "Submitting...",
+        "submit_feedback": "Submit Feedback",
+        "close": "Close",
+        "review_added_success": "Review added successfully.",
+        "error_adding_review": "Error adding review.",
+        "failed_submit": "Failed to submit feedback. Please try again."
+      }
+    },
+    "common": {
+      "hr_ago": "hr ago",
+      "by": "By"
+    },
+    "order_card": {
+      "view_order": "View Order"
+    },
+    "item_card": {
+      "no_image": "No Image"
+    },
+    "menu_card": {
+      "starting_bid": "Starting Bid",
+      "highest_bid": "Highest Bid",
+      "upcoming": "Upcoming",
+      "auction_ended": "Auction Ended",
+      "bid_again": "Bid Again",
+      "bid_now": "Bid Now"
+    },
+    "watchlist": {
+      "title": "Watchlist",
+      "results": "Results",
+      "no_items": "No Items Added to Watchlist!",
+      "removed_success": "Removed from Watchlist",
+      "remove_failed": "Failed to remove from watchlist",
+      "highest_bid": "Highest Bid",
+      "by": "by",
+      "product_image": "Product image",
+      "user": "user"
+    },
+    "auction_preferences": {
+      "title": "Profile > Auction Preferences",
+      "category_selection": "Category Selection",
+      "category_placeholder": "Type and press Enter or click Add",
+      "add": "Add",
+      "no_categories": "No categories selected",
+      "price_range": "Price Range",
+      "min_placeholder": "$0",
+      "max_placeholder": "${max}",
+      "auction_alerts": "Auction Alerts",
+      "alerts_note": "Toggles to enable notifications for:",
+      "alert_ending": "Auction ending soon",
+      "alert_new": "New listings in preferred categories",
+      "save_preferences": "Save Preferences",
+      "toasts": {
+        "fetch_failed": "Failed to fetch preferences",
+        "updated": "Preferences updated!",
+        "update_failed": "Update failed"
+      }
+    },
+    "payment_methods": {
+      "title": "Payment Methods",
+      "add_card": "Add Card",
+      "categories": {
+        "cards": "Credit/Debit Card",
+        "paypal": "PayPal"
+      }
+    },
+    "cart": {
+      "breadcrumb": "Home > Cart",
+      "title": "Your Cart",
+      "empty": "No items in cart.",
+      "by": "by",
+      "store": "Store",
+      "order_summary": "Order Summary",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "shipping": "Shipping",
+      "free": "Free",
+      "grand_total": "Grand Total",
+      "checkout": "Checkout"
+  },
+    "order_popup": {
+      "order_placed_alt": "Order Placed",
+      "close": "Close",
+      "track_order": "Track Order"
+    },
+    "product_details": {
+      "breadcrumb": "Home > Product Details",
+      "back_to_home": "Back to Home",
+      "you_might_also_like": "You might also like",
+      "seller": "Seller",
+      "chat_with_seller": "Chat with seller",
+      "no_reviews_yet": "No reviews yet",
+      "reviews": "reviews",
+      "product_description": "Product Description",
+      "one_hour_ago": "1hr ago",
+      "price": "Price",
+      "proceed_to_checkout": "Proceed to Checkout",
+      "buy_now": "Buy Now",
+      "already_in_cart_tooltip": "Already in cart ({count} items)",
+      "add_to_cart_tooltip": "Add to cart",
+      "already_in_cart_toast": "Item is already in your cart! Proceeding to checkout...",
+      "add_to_cart_success": "Item Added to Cart",
+      "add_to_cart_error": "Error Adding Item to Cart",
+      "highest_bid": "Highest Bid",
+      "starting_bid": "Starting Bid",
+      "buy_now_for": "Buy Now for",
+      "sold": "SOLD",
+      "upcoming": "UPCOMING",
+      "make_offer": "Make Offer",
+      "auction_sold_error": "This auction is sold.",
+      "auction_unavailable_error": "This auction is not available right now."
+    },
+    "bidders": {
+      "place_your_bid": "Place Your Bid",
+      "my_bid": "My Bid",
+      "status": "Status:",
+      "no_bids_yet_title": "No Bids Yet!",
+      "no_bids_yet_sub": "Be the first to place a bid on this auction and start the bidding war!",
+      "enter_your_bid": "Enter your bid",
+      "bid": "Bid",
+      "not_your_bid": "This is not your bid.",
+      "bid_placed_success": "Bid placed successfully!",
+      "bid_place_failed": "Failed to place bid.",
+      "bid_withdraw_success": "Bid withdrawn successfully.",
+      "bid_withdraw_failed": "Failed to withdraw bid.",
+      "bid_withdraw_error": "An error occurred while withdrawing bid."
+    },
+    "item_slider": {
+      "no_recommendations": "No recommendations for you",
+      "no_popular": "No popular items available",
+      "no_furniture": "No furniture items available",
+      "loading_products": "Loading products...",
+      "price_not_available": "Price not available"
+    },
+    "categories_slider": {
+      "no_categories_title": "No Categories Available",
+      "no_categories_sub": "We couldn't find any product categories at the moment."
+    },
+    "auction_register": {
+      "registration": "Auction Registration",
+      "qa_section": "Q&A Section",
+      "ship_to": "Ship To",
+      "select_shipping_address": "Select Shipping Address",
+      "payment_method": "Payment Method",
+      "add_payment_method": "Add Payment Method",
+      "new_address": "+ New Address",
+      "submit_registration": "Submit Registration"
+    },
+    "checkout": {
+      "title": "Checkout",
+      "tabs": {
+        "items": "Items",
+        "select_methods": "Select Payment Methods",
+        "cards": "Credit/Debit Cards",
+        "new_card": "New Card"
+      },
+      "shipping_options": "Shipping Options",
+      "delivery_address": "Delivery Address",
+      "change": "Change",
+      "home": "Home",
+      "no_address": "No address provided",
+      "estimated_delivery": "Estimated Delivery Time:",
+      "working_days": "10 -15 Working Days",
+      "order_summary": "Order Summary",
+      "selected_label": "Selected:",
+      "methods": {
+        "credit_card": "Credit/Debit Card",
+        "paypal": "PayPal",
+        "apple_pay": "Apple Pay",
+        "cod": "Cash on Delivery"
+      },
+      "payment_method": "Payment Method",
+      "cod_selected_title": "Cash on Delivery Selected",
+      "cod_selected_desc": "You will pay for your order when it arrives at your delivery address. No payment is required now.",
+      "delivery_address_label": "Delivery Address:",
+      "pay_now": "Pay Now",
+      "place_order": "Place Order",
+      "placing_order": "Placing Order...",
+      "cod_required_error": "Please select Cash on Delivery to proceed",
+      "success_order_placed": "Order placed successfully!",
+      "success_order_no_id": "Order placed but no order ID returned.",
+      "error_order_failed": "Order placement failed",
+      "cod_selected_toast": "Cash on Delivery selected",
+      "method_coming_soon": "{method} will be available soon! For now, please use Cash on Delivery.",
+      "form": {
+        "card_number": "Card Number",
+        "enter_card_number": "Enter card number",
+        "cardholder_name": "Cardholder Name",
+        "enter_cardholder_name": "Enter cardholder name",
+        "expiry_date": "Expiry Date",
+        "expiry_placeholder": "01/01/2000",
+        "cvv": "CVV",
+        "add_card": "Add Card"
+      }
+    },
+    "address_dialog": {
+      "title": "Change Delivery Address",
+      "new_address": "New Address",
+      "placeholder": "Enter your new delivery address",
+      "cancel": "Cancel",
+      "save": "Save Address",
+      "saving": "Saving...",
+      "toasts": {
+        "enter_valid": "Please enter a valid address",
+        "updated": "Address updated successfully!",
+        "update_failed": "Failed to update address",
+        "update_failed_try_again": "Failed to update address. Please try again."
+      }
+    },
+    "track_order": {
+      "title": "Track Order",
+      "order_summary": "Order Summary",
+      "shipping_address": "Shipping Address",
+      "order_status": "Order Status",
+      "received": "Received",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "loading": "Loading...",
+      "not_found": "Order not found.",
+      "error_fetch": "Failed to fetch order"
+    },
+    "filters": {
+      "title": "Filters",
+      "product_categories": "Product Categories",
+      "add_category_placeholder": "Add category of your product",
+      "max_categories": "Maximum of 5 categories allowed",
+      "location": "Location",
+      "enter_location": "Enter Location",
+      "item_condition": "Item Condition",
+      "select_condition": "Select Condition",
+      "month": "Month",
+      "select_month": "Select Month",
+      "year": "Year",
+      "select_year": "Select Year",
+      "apply_filter": "Apply Filter",
+      "months": ["January","February","March","April","May","June","July","August","September","October","November","December"],
+      "conditions": ["New","Like New","Used","Refurbished"]
+    },
+    "bid": {
+      "title": "Bid An Amount",
+      "bid_amount": "Bid Amount",
+      "enter_new_amount": "Enter New Amount",
+      "confirm": "Confirm"
+    },
+    "profile": {
+      "title": "Profile",
+      "joined_prefix": "Joined",
+      "edit_profile": "Edit Profile",
+      "settings_title": "Settings",
+      "settings": {
+        "change_password": {
+          "button": "Change Password",
+          "title": "Change Password",
+          "placeholders": {
+            "current": "Enter current password",
+            "new": "Enter new password",
+            "confirm": "Re-enter new password"
+          },
+          "actions": {
+            "verify_save": "Verify & Save",
+            "resend_otp": "Resend OTP",
+            "saving": "Saving..."
+          },
+          "validations": {
+            "all_required": "All fields are required",
+            "min_length": "New password must be at least 6 characters",
+            "mismatch": "New passwords do not match",
+            "same_as_current": "New password must be different from current password"
+          },
+          "not_available": "Can't update password for now"
+        },
+        "disable_profile": {
+          "label": "Disable Profile",
+          "sad_title": "It’s sad to see you go…",
+          "sad_sub": "Disabling your account will delete your profile and data permanently. Proceed?",
+          "cancel": "Cancel",
+          "disable": "Disable Account"
+        },
+        "otp": {
+          "trigger_save": "Save",
+          "title": "Verify OTP",
+          "heading": "Verify Your Changes",
+          "sub": "An OTP has been sent to your registered email/phone. Enter it below to save your profile updates.",
+          "enter_otp_label": "Enter OTP",
+          "verify_save": "Verify & Save",
+          "resend_otp": "Resend OTP"
+        }
+      },
+      "placeholders": {
+        "full_name": "Full Name",
+        "first_name": "First Name",
+        "last_name": "Last Name",
+        "email": "Email",
+        "phone": "Phone",
+        "social_media": "Social Media"
+      },
+      "buttons": {
+        "save": "Save",
+        "updating": "Updating..."
+      },
+      "toasts": {
+        "profile_updated": "Profile updated successfully!",
+        "update_failed": "Failed to update profile",
+        "unexpected_error": "An unexpected error occurred",
+        "first_name_required": "First name is required",
+        "email_required": "Email is required",
+        "invalid_email": "Please enter a valid email address",
+        "phone_required": "Phone number is required",
+        "invalid_phone": "Please enter a valid phone number",
+        "no_changes": "No changes detected",
+        "select_valid_image": "Please select a valid image file",
+        "image_too_large": "Image size should be less than 5MB"
+      },
+      "support": {
+        "title": "Customer Support",
+        "page_title": "Profile > Settings > Customer Support",
+        "tabs": {
+          "contact": "Contact Form",
+          "whatsapp": "Whatsapp",
+          "email": "Email Support"
+        },
+        "whatsapp_label": "Contact us on WhatsApp",
+        "open_whatsapp": "Open WhatsApp",
+        "email_support": "Email Support",
+        "categories": {
+          "1": "Category 1",
+          "2": "Category 2",
+          "3": "Category 3",
+          "4": "Category 4"
+        },
+        "placeholders": {
+          "name": "Name",
+          "category": "Category",
+          "email": "Email",
+          "description": "Enter Issue Description"
+        },
+        "submit": "Submit",
+        "submitting": "Submitting...",
+        "success": {
+          "sent": "Support request sent successfully!"
+        },
+        "errors": {
+          "fill_all": "Please fill all required fields.",
+          "failed": "Failed to send support request."
+        }
+      }
+    }
+  },
+  "seller": {
+    "drafts": {
+      "title": "Drafts",
+      "empty": "No draft products found"
+    },
+    "auctions": {
+      "my_auctions": "My Auctions",
+      "product_details": "Product Details",
+      "live": "Live",
+      "upcoming": "Upcoming",
+      "history": "History",
+      "results": "Results",
+      "filters": "Filters",
+      "search_by_name": "Search by product name",
+      "query": "Query",
+      "category": "Category",
+      "condition": "Condition",
+      "date": "Date",
+      "location": "Location",
+      "all_categories": "All Categories",
+      "any_condition": "Any Condition",
+      "new": "New",
+      "old": "Old",
+      "month": "Month",
+      "any_month": "Any Month",
+      "year": "Year",
+      "any_year": "Any Year",
+      "cancel": "Cancel",
+      "apply_filters": "Apply Filters",
+      "no_live": "There is no live auction product right now",
+      "no_upcoming": "There is no upcoming auction product right now",
+      "no_history": "There is no auction history yet",
+      "no_products": "No auction products to display"
+    },
+    "orders": {
+      "orders": "Orders",
+      "order_details": "Order Details",
+      "active_orders": "Active Orders",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "returned": "Returned",
+      "no_orders": "No orders found.",
+      "details_card": {
+        "paid": "Paid",
+        "no_items": "No items found in this order."
+      },
+      "customer_card": {
+        "customer": "Customer",
+        "chat_with_customer": "Chat with Customer",
+        "no_address": "No address provided"
+      },
+      "payment_details": {
+        "title": "Details",
+        "payment_method": "Payment Method",
+        "transaction_id": "Transaction ID",
+        "transaction_date": "Transaction Date",
+        "estimated_delivery": "Estimated Delivery",
+        "shipping_address": "Shipping Address"
+      },
+      "status": {
+        "title": "Order Status",
+        "received": "Received",
+        "processing": "Processing",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "updating": "Updating order status...",
+        "updated": "Status updated: {prev} → {next}",
+        "failed": "Failed to update status"
+      }
+    },
+    "qa": {
+      "section_title": "Q&A Section",
+      "questions": "Questions",
+      "sort": {
+        "newest": "Newest",
+        "oldest": "Oldest"
+      },
+      "load_more": "Load More",
+      "no_questions_title": "No Questions Yet",
+      "no_questions_sub": "Be the first to ask a question about this product!",
+      "anonymous": "Anonymous",
+      "seller": "Seller",
+      "seller_label": "Seller",
+      "you": "You",
+      "just_now": "Just now",
+      "h_ago": "{count}h ago",
+      "d_ago": "{count}d ago",
+      "ask_placeholder": "Ask a question about this product...",
+      "type_answer_placeholder": "Type your answer here...",
+      "submitting": "Submitting...",
+      "submit_answer": "Submit Answer",
+      "success": {
+        "submitted": "Question submitted successfully"
+      },
+      "errors": {
+        "enter_question": "Please enter a question",
+        "login_to_ask": "Please log in to ask a question",
+        "failed_fetch": "Failed to fetch questions",
+        "enter_answer": "Please enter an answer",
+        "login_to_answer": "Please log in to answer questions",
+        "failed_submit": "Failed to submit answer"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "tabs": {
+        "all": "All",
+        "bids": "Bids",
+        "messages": "Messages",
+        "purchases": "Purchases"
+      },
+      "empty_title": "No Notifications",
+      "empty_sub": "You don't have any notifications at the moment."
+    },
+    "help_center": {
+      "title": "Help Center",
+      "tabs": {
+        "faqs": "FAQs",
+        "user_guides": "User Guides"
+      },
+      "subtabs": {
+        "all": "All",
+        "buying": "Buying",
+        "selling": "Selling",
+        "account": "Account"
+      },
+      "faqs_title": "FAQs.",
+      "answer_title": "Ans.",
+      "user_guides_title": "User Guide",
+      "sidebar_title": "Help Center"
+    },
+    "profile": {
+      "joined": "Joined",
+      "chat": "Chat",
+      "reviews": "Reviews",
+      "orders_received": "Orders Received",
+      "auctions": "Auctions",
+      "products": "Products",
+      "profile": "Profile",
+      "edit_profile": "Edit Profile",
+      "saving": "Saving...",
+      "save": "Save",
+      "change_picture": "Change profile picture",
+      "errors": {
+        "all_required": "All fields are required.",
+        "invalid_email": "Please enter a valid email address.",
+        "invalid_phone": "Please enter a valid phone number.",
+        "invalid_national_id": "Please enter a valid national ID.",
+        "failed_update": "Failed to update profile",
+        "something_wrong": "Something went wrong"
+      },
+      "success": {
+        "updated": "Profile updated successfully"
+      },
+      "settings": "Settings",
+      "support": {
+        "title": "Customer Support",
+        "page_title": "Profile > Settings > Customer Support",
+        "tabs": {
+          "contact": "Contact Form",
+          "whatsapp": "Whatsapp",
+          "email": "Email Support"
+        },
+        "whatsapp_label": "Contact us on WhatsApp",
+        "open_whatsapp": "Open WhatsApp",
+        "email_support": "Email Support",
+        "categories": {
+          "1": "Category 1",
+          "2": "Category 2",
+          "3": "Category 3",
+          "4": "Category 4"
+        },
+        "placeholders": {
+          "name": "Name",
+          "category": "Category",
+          "email": "Email",
+          "description": "Enter Issue Description"
+        },
+        "submit": "Submit",
+        "submitting": "Submitting...",
+        "success": {
+          "sent": "Support request sent successfully!"
+        },
+        "errors": {
+          "fill_all": "Please fill all required fields.",
+          "failed": "Failed to send support request."
+        }
+      }
+    },
+    "store": {
+      "create_store": "Create Store",
+      "upload_logo": "Upload Logo",
+      "add_store_logo": "Add Store Logo",
+      "add_store_logo_sub": "Add your business or store logo",
+      "uploading": "Uploading...",
+      "created": "Created",
+      "edit": "Edit",
+      "products": "Products",
+      "add_product": "Add Product",
+      "opening": "Opening...",
+      "loading_products": "Loading products...",
+      "no_products": "No Products in store",
+      "draft": "Draft",
+      "incomplete": "INCOMPLETE",
+      "disable_profile": "Disable Profile",
+      "placeholders": {
+        "store_name": "Enter store name",
+        "owner_name": "Enter owner name",
+        "business_email": "Business email",
+        "phone": "Enter phone number",
+        "address_location": "Enter location",
+        "description": "Add detailed store description...",
+        "category": "Add category of your store"
+      }
+    },
+    "banner": {
+      "orders": "Orders",
+      "auctions": "Auctions",
+      "inventory": "My Inventory",
+      "items": "items",
+      "manage": "Manage",
+      "sales": "Sales",
+      "this_week": "This Week",
+      "days": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun",
+        "m": "M",
+        "t": "T",
+        "w": "W",
+        "f": "F",
+        "s": "S"
+      }
+    }
+  }
+}

@@ -2,12 +2,19 @@
 
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
+import useTranslation from "@/hooks/useTranslation";
 
 const NotificationBar = () => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const router = useRouter();
 
-  const notificationCategories = ["All", "Bids", "Messages", "Purchases"];
+  const notificationCategories = [
+    { slug: "all", key: "all" },
+    { slug: "bids", key: "bids" },
+    { slug: "messages", key: "messages" },
+    { slug: "purchases", key: "purchases" },
+  ];
 
   // Determine the base path based on current pathname
   const getBasePath = () => {
@@ -23,7 +30,7 @@ const NotificationBar = () => {
   };
 
   const handleCategoryClick = (category) => {
-    const categoryPath = category.toLowerCase();
+    const categoryPath = category.slug;
     const basePath = getBasePath();
     const targetPath = `${basePath}/${categoryPath}`;
 
@@ -44,7 +51,7 @@ const NotificationBar = () => {
   return (
     <div className="flex w-full items-center justify-center gap-2 border-b-[1.5px] border-[#F0F1F4] pb-5 md:gap-[18px]">
       {notificationCategories.map((notificationCategory, index) => {
-        const categoryPath = notificationCategory.toLowerCase();
+        const categoryPath = notificationCategory.slug;
         const basePath = getBasePath();
         const expectedPath = `${basePath}/${categoryPath}`;
         const isActive = pathname === expectedPath;
@@ -60,7 +67,7 @@ const NotificationBar = () => {
                 : "border-silver hover:border-moonstone hover:bg-moonstone/10",
             )}
           >
-            {notificationCategory}
+            {t(`seller.notifications.tabs.${notificationCategory.key}`)}
           </button>
         );
       })}

@@ -6,6 +6,7 @@ import { NotificationProvider } from "@/providers/notification-provider";
 import { NotificationStoreProvider } from "@/providers/notification-store-provider";
 import { ProductsStoreProvider } from "@/providers/products-store-provider";
 import { SurveyStoreProvider } from "@/providers/survey-store-provider";
+import { LanguageProvider } from "@/context/LanguageProvider";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -21,16 +22,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${font.className} antialiased`}>
-        <NotificationProvider>
-          <NotificationStoreProvider>
-            <ProductsStoreProvider>
-              <SurveyStoreProvider>
-                {children}
-                <Toaster />
-              </SurveyStoreProvider>
-            </ProductsStoreProvider>
-          </NotificationStoreProvider>
-        </NotificationProvider>
+        <LanguageProvider>
+          <NotificationProvider>
+            <NotificationStoreProvider>
+              <ProductsStoreProvider>
+                <SurveyStoreProvider>
+                  {children}
+                  <Toaster />
+                </SurveyStoreProvider>
+              </ProductsStoreProvider>
+            </NotificationStoreProvider>
+          </NotificationProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

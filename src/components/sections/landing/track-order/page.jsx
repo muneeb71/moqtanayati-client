@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getOrderById } from "@/lib/api/orders/getOrderById";
 import Image from "next/image";
+import useTranslation from "@/hooks/useTranslation";
 
 const page = () => {
+  const { t } = useTranslation();
   const params = useSearchParams();
   const orderId = params.get("id");
   const [order, setOrder] = useState(null);
@@ -20,7 +22,7 @@ const page = () => {
       setOrder(data?.data || data);
       setLoading(false);
     } catch (err) {
-      setError(err?.message || "Failed to fetch order");
+      setError(err?.message || t("buyer.track_order.error_fetch"));
       setLoading(false);
     }
   };
@@ -31,14 +33,22 @@ const page = () => {
   }, [orderId]);
 
   if (loading)
-    return <div className="w-full py-20 text-center">Loading...</div>;
+    return (
+      <div className="w-full py-20 text-center">
+        {t("buyer.track_order.loading")}
+      </div>
+    );
   if (error)
     return <div className="w-full py-20 text-center text-red-500">{error}</div>;
   if (!order)
-    return <div className="w-full py-20 text-center">Order not found.</div>;
+    return (
+      <div className="w-full py-20 text-center">
+        {t("buyer.track_order.not_found")}
+      </div>
+    );
 
   const cart = order.OrderItem || [];
-  const address = order?.user?.address || "No address provided";
+  const address = order?.user?.address || t("buyer.checkout.no_address");
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
@@ -66,13 +76,13 @@ const page = () => {
           : "/static/delivery.svg",
     };
     return images[step] || "receive.svg";
-  };  
+  };
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-10 px-3 pb-20">
       {/* <FiltersPopup /> */}
       <PageHeading>
-        <span className="text-">Track Order</span>
+        <span className="text-">{t("buyer.track_order.title")}</span>
       </PageHeading>
       <div className="grid w-full max-w-7xl gap-10 md:grid-cols-2">
         <div className="flex w-full flex-col gap-10">
@@ -116,7 +126,12 @@ const page = () => {
                     </div>
                   </div>
                   <span className="text-3xl font-medium text-black/80">
-                    ${item.price !== 0 ? item.price.toFixed(2) : item.buyItNow ? item.buyItNow.toFixed(2) : "0.00"}
+                    $
+                    {item.price !== 0
+                      ? item.price.toFixed(2)
+                      : item.buyItNow
+                        ? item.buyItNow.toFixed(2)
+                        : "0.00"}
                   </span>
                 </div>
               </div>
@@ -132,31 +147,43 @@ const page = () => {
           <div className="flex w-full flex-col justify-between rounded-3xl border border-black/10 bg-[#CCCCCC1F] px-5 py-8">
             <div className="mb-20 flex w-full flex-col gap-3">
               <h1 className="text-3xl font-medium text-delftBlue">
-                Order Summary
+                {t("buyer.track_order.order_summary")}
               </h1>
               <div className="flex w-full items-center justify-between">
-                <span className="text-xl text-[#4D4D4DE5]">Subtotal</span>
+                <span className="text-xl text-[#4D4D4DE5]">
+                  {t("buyer.cart.subtotal")}
+                </span>
                 <span className="text-xl text-[#4D4D4DE5]">${subtotal}</span>
               </div>
               <div className="flex w-full items-center justify-between">
-                <span className="text-xl text-[#4D4D4DE5]">Tax</span>
+                <span className="text-xl text-[#4D4D4DE5]">
+                  {t("buyer.cart.tax")}
+                </span>
                 <span className="text-xl text-[#4D4D4DE5]">$40</span>
               </div>
               <div className="flex w-full items-center justify-between">
-                <span className="text-xl text-[#4D4D4DE5]">Shipping</span>
-                <span className="text-xl text-[#4D4D4DE5]">Free</span>
+                <span className="text-xl text-[#4D4D4DE5]">
+                  {t("buyer.cart.shipping")}
+                </span>
+                <span className="text-xl text-[#4D4D4DE5]">
+                  {t("buyer.cart.free")}
+                </span>
               </div>
             </div>
             <div className="flex justify-between">
               <div className="flex flex-col gap-1">
-                <span className="text-xl text-black/40">Grand Total</span>
-                <h1 className="text-4xl font-medium">${(subtotal+40).toFixed(2)}</h1>
+                <span className="text-xl text-black/40">
+                  {t("buyer.cart.grand_total")}
+                </span>
+                <h1 className="text-4xl font-medium">
+                  ${(subtotal + 40).toFixed(2)}
+                </h1>
               </div>
             </div>
           </div>
           <div className="mt-5 flex w-full flex-col justify-between rounded-3xl border border-black/10 bg-[#CCCCCC1F] p-5">
             <h1 className="mb-2.5 text-3xl font-medium text-delftBlue">
-              Shipping Address
+              {t("buyer.track_order.shipping_address")}
             </h1>
             <div className="flex w-full items-center justify-between">
               <span className="text-xl text-[#4D4D4DE5]">{address}</span>
@@ -167,7 +194,7 @@ const page = () => {
       <div className="mx-20 h-[1px] w-11/12 bg-black/10"></div>
       <div>
         <h1 className="mb-8 text-center text-4xl font-medium text-davyGray">
-          Order Status
+          {t("buyer.track_order.order_status")}
         </h1>
         <div className="flex flex-col items-center justify-center gap-6 md:flex-row md:gap-4">
           <div className="flex flex-col items-center justify-center space-y-2">
@@ -178,7 +205,9 @@ const page = () => {
               height={32}
               className="h-16 w-16 md:h-32 md:w-32"
             />
-            <p className="text-xs font-medium md:text-3xl">Received</p>
+            <p className="text-xs font-medium md:text-3xl">
+              {t("buyer.track_order.received")}
+            </p>
           </div>
           <div
             className={`h-5 w-1 rounded-full md:h-1 md:w-[70px] ${getProgressBarColor(1)}`}
@@ -191,7 +220,9 @@ const page = () => {
               height={32}
               className="h-16 w-16 md:h-32 md:w-32"
             />
-            <p className="text-xs font-medium md:text-3xl">Processing</p>
+            <p className="text-xs font-medium md:text-3xl">
+              {t("buyer.track_order.processing")}
+            </p>
           </div>
           <div
             className={`h-5 w-1 rounded-full md:h-1 md:w-[70px] ${getProgressBarColor(2)}`}
@@ -204,7 +235,9 @@ const page = () => {
               height={32}
               className="h-16 w-16 md:h-32 md:w-32"
             />
-            <p className="text-xs font-medium md:text-3xl">Shipped</p>
+            <p className="text-xs font-medium md:text-3xl">
+              {t("buyer.track_order.shipped")}
+            </p>
           </div>
           <div
             className={`h-5 w-1 rounded-full md:h-1 md:w-[70px] ${getProgressBarColor(3)}`}
@@ -217,7 +250,9 @@ const page = () => {
               height={32}
               className="h-16 w-16 md:h-32 md:w-32"
             />
-            <p className="text-xs font-medium md:text-3xl">Delivered</p>
+            <p className="text-xs font-medium md:text-3xl">
+              {t("buyer.track_order.delivered")}
+            </p>
           </div>
         </div>
       </div>

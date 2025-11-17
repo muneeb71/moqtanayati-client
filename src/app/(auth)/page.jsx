@@ -5,8 +5,10 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const RoleSelectionLoginPage = () => {
+  const { t } = useTranslation();
   const roles = ["buyer", "seller"];
   const [selectedRole, setSelectedRole] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -15,10 +17,10 @@ const RoleSelectionLoginPage = () => {
     <div className="flex w-full flex-col justify-center gap-10 pb-10 pt-28 md:gap-[66px]">
       <div className="flex w-full flex-col gap-1">
         <h1 className="text-xl font-medium leading-[36px] md:text-2xl">
-          Are you here to buy or sell?
+          {t("auth.role_question")}
         </h1>
         <span className="text-darkBlue/50 md:text-[19px] md:leading-[29px]">
-          Choose your role to get the most tailored experience.
+          {t("auth.role_subtitle")}
         </span>
       </div>
       <div className="grid w-full grid-cols-2 gap-5">
@@ -54,7 +56,7 @@ const RoleSelectionLoginPage = () => {
               alt="Buyer"
             />
             <span className="text-[24px]">
-              {role === "buyer" ? "Buyer" : "Seller"}
+              {role === "buyer" ? t("auth.role_buyer") : t("auth.role_seller")}
             </span>
           </button>
         ))}
@@ -62,10 +64,14 @@ const RoleSelectionLoginPage = () => {
       <RoundedButton
         title={
           isLoading
-            ? "Loading..."
+            ? t("common.loading")
             : selectedRole === ""
-              ? "Continue"
-              : "Continue as " + selectedRole
+              ? t("auth.continue")
+              : t("auth.continue_as") +
+                " " +
+                (selectedRole === "buyer"
+                  ? t("auth.role_buyer")
+                  : t("auth.role_seller"))
         }
         className={`min-w-[294px] self-center ${isLoading ? "opacity-60" : ""}`}
         showIcon={!isLoading}

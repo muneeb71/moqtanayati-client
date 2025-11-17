@@ -10,8 +10,11 @@ import { useRouter, usePathname } from "next/navigation";
 import { getUserProfileClient } from "@/lib/api/profile/getProfileClient";
 import { getCart } from "@/lib/api/cart/getCart";
 import toast from "react-hot-toast";
+import LanguageSwitcher from "@/components/language/LanguageSwitcher";
+import useTranslation from "@/hooks/useTranslation";
 
 const Header = () => {
+  const { t, dir } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState(null);
@@ -34,11 +37,11 @@ const Header = () => {
         setUser(res?.data);
       } else {
         console.error("🔍 [Header] Error fetching user details:", res);
-        toast.error(res?.message || "Error fetching user details.");
+        toast.error(res?.message || t("header.error_fetch_user"));
       }
     } catch (error) {
       console.error("🔍 [Header] Error in getUserData:", error);
-      toast.error("Error fetching user details.");
+      toast.error(t("header.error_fetch_user"));
     }
   };
 
@@ -130,10 +133,13 @@ const Header = () => {
     setProfileLoading(false);
   }, [pathname]);
   return (
-    <header className="flex w-full flex-col items-center justify-center">
+    <header
+      className="flex w-full flex-col items-center justify-center"
+      dir={dir}
+    >
       <div className="flex w-full max-w-7xl items-center justify-between px-4 py-4 md:px-5">
         <Image
-          src={user?.avatar || "/static/logo.png"}
+          src={"/static/logo.png"}
           width={121}
           height={61}
           alt="LOGO"
@@ -144,6 +150,7 @@ const Header = () => {
         />
         <NavLinks />
         <div className="hidden items-center gap-2 md:flex md:gap-4">
+          <LanguageSwitcher />
           <div className="grid grid-cols-[1fr_1px_1fr] place-items-center gap-5">
             <Link
               href="/buyer/notifications/all"

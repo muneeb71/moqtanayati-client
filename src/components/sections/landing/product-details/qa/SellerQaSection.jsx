@@ -5,8 +5,10 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { getCookie } from "cookies-next";
 import api from "@/lib/api/axios";
+import useTranslation from "@/hooks/useTranslation";
 
 const SellerQaSection = ({ productId }) => {
+  const { t } = useTranslation();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState({});
@@ -36,11 +38,11 @@ const SellerQaSection = ({ productId }) => {
           "🔍 [SellerQaSection] Failed to fetch questions:",
           data.message,
         );
-        toast.error("Failed to fetch questions");
+        toast.error(t("seller.qa.errors.failed_fetch"));
       }
     } catch (error) {
       console.error("🔍 [SellerQaSection] Error fetching questions:", error);
-      toast.error("Failed to fetch questions");
+      toast.error(t("seller.qa.errors.failed_fetch"));
     } finally {
       setLoading(false);
     }
@@ -49,13 +51,13 @@ const SellerQaSection = ({ productId }) => {
   const handleAnswer = async (questionId) => {
     const answer = answers[questionId];
     if (!answer?.trim()) {
-      toast.error("Please enter an answer");
+      toast.error(t("seller.qa.errors.enter_answer"));
       return;
     }
 
     const userId = getCookie("userId");
     if (!userId) {
-      toast.error("Please log in to answer questions");
+      toast.error(t("seller.qa.errors.login_to_answer"));
       return;
     }
 
@@ -79,16 +81,16 @@ const SellerQaSection = ({ productId }) => {
       const data = response.data;
 
       if (data.success) {
-        toast.success("Answer submitted successfully");
+        toast.success(t("seller.qa.success.answer_submitted"));
         // Refresh questions to show the answer
         fetchQuestions();
         setAnswers((prev) => ({ ...prev, [questionId]: "" }));
       } else {
-        toast.error(data.message || "Failed to submit answer");
+        toast.error(data.message || t("seller.qa.errors.failed_submit"));
       }
     } catch (error) {
       console.error("🔍 [SellerQaSection] Error answering question:", error);
-      toast.error("Failed to submit answer");
+      toast.error(t("seller.qa.errors.failed_submit"));
     } finally {
       setAnswering((prev) => ({ ...prev, [questionId]: false }));
     }
@@ -99,9 +101,14 @@ const SellerQaSection = ({ productId }) => {
     const now = new Date();
     const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
 
-    if (diffInHours < 1) return "Just now";
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+    if (diffInHours < 1) return t("seller.qa.just_now");
+    if (diffInHours < 24)
+      return t("seller.qa.h_ago").replace("{count}", String(diffInHours));
+    if (diffInHours < 168)
+      return t("seller.qa.d_ago").replace(
+        "{count}",
+        String(Math.floor(diffInHours / 24)),
+      );
     return date.toLocaleDateString();
   };
 
@@ -122,7 +129,7 @@ const SellerQaSection = ({ productId }) => {
       <div className="flex w-full items-center justify-between px-5 py-5">
         <p className="flex items-center gap-1 text-[14.4px]">
           <span className="font-medium">{questions.length}</span>
-          <span className="text-davyGray">Questions</span>
+          <span className="text-davyGray">{t("seller.qa.questions")}</span>
         </p>
       </div>
 
@@ -192,7 +199,7 @@ const SellerQaSection = ({ productId }) => {
                               [question.id]: e.target.value,
                             }))
                           }
-                          placeholder="Type your answer here..."
+                          placeholder={t("seller.qa.type_answer_placeholder")}
                           className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-moonstone focus:outline-none focus:ring-1 focus:ring-moonstone"
                           rows={2}
                           disabled={answering[question.id]}
@@ -209,10 +216,10 @@ const SellerQaSection = ({ productId }) => {
                             {answering[question.id] ? (
                               <div className="flex items-center gap-2">
                                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                                Submitting...
+                                {t("seller.qa.submitting")}
                               </div>
                             ) : (
-                              "Submit Answer"
+                              t("seller.qa.submit_answer")
                             )}
                           </button>
                         </div>
@@ -261,9 +268,9 @@ const SellerQaSection = ({ productId }) => {
                               <h1 className="text-[14.4px] text-davyGray">
                                 {question.seller?.name ||
                                   question.answeredBy?.name ||
-                                  "You"}{" "}
+                                  t("seller.qa.you")}{" "}
                                 <span className="text-green-600">
-                                  (Answered)
+                                  ({t("seller.qa.answered_label")})
                                 </span>
                               </h1>
                               <h1 className="text-xs text-davyGray">
@@ -286,10 +293,10 @@ const SellerQaSection = ({ productId }) => {
               <div className="text-center">
                 <div className="mb-4 text-6xl">💬</div>
                 <h3 className="mb-2 text-lg font-semibold text-gray-700">
-                  No Questions Yet
+                  {t("seller.qa.no_questions_title")}
                 </h3>
                 <p className="text-gray-500">
-                  No questions have been asked about this product yet.
+                  {t("seller.qa.no_questions_sub")}
                 </p>
               </div>
             </div>

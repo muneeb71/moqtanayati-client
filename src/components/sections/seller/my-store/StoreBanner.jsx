@@ -1,8 +1,11 @@
+"use client";
 import { Switch } from "@/components/ui/switch";
 import ProfileImageContainer from "./ProfileImageContainer";
 import StoreWallpaperContainer from "./StoreWallpaperContainer";
+import useTranslation from "@/hooks/useTranslation";
 
 const StoreBanner = () => {
+  const { t } = useTranslation();
   return (
     <div className="mb-24 flex w-full flex-col items-end justify-end gap-48 sm:gap-5">
       <div className="relative flex w-full items-center justify-center">
@@ -11,7 +14,7 @@ const StoreBanner = () => {
       </div>
       <div className="flex items-center gap-3 rounded-xl border border-black/10 px-3.5 py-4">
         {/* <span className="text-sm font-medium text-battleShipGray">
-          Disable Profile
+          {t("store.disable_profile")}
         </span>
         <Switch /> */}
       </div>

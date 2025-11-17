@@ -7,8 +7,10 @@ import { addWatchlist } from "@/lib/api/watchlist/addWatchlist";
 import toast from "react-hot-toast";
 import { getWatchlistById } from "@/lib/api/watchlist/getWatchlistById";
 import { removeFromWatchlist } from "@/lib/api/watchlist/removeWatchlist";
+import useTranslation from "@/hooks/useTranslation";
 
 const ProductDetailsSlider = ({ images = [], auctionDetail }) => {
+  const { t } = useTranslation();
   const imagesList = Array.isArray(images) ? images.filter(Boolean) : [];
 
   console.log("🔍 [ProductDetailsSlider] Images received:", images);
@@ -118,21 +120,21 @@ const ProductDetailsSlider = ({ images = [], auctionDetail }) => {
         const res = await removeFromWatchlist(auctionId);
         if (res?.data?.success) {
           setFavourite(false);
-          toast.success("Removed from Watchlist");
+          toast.success(t("admin.auctions.watchlist.removed"));
         }
       } else {
         const res = await addWatchlist(auctionDetail?.id);
         if (res?.data?.success) {
           setFavourite(true);
           setAuctionId(res?.data?.data?.auctionId);
-          toast.success("Item Added to Watchlist.");
+          toast.success(t("admin.auctions.watchlist.added"));
         } else {
-          toast.error("Failed to add item to Watchlist.");
+          toast.error(t("admin.auctions.watchlist.add_failed"));
         }
       }
     } catch (error) {
       console.log("Add to watchlist error:", error);
-      toast.error("An error occurred while adding to Watchlist.");
+      toast.error(t("admin.auctions.watchlist.add_error"));
     }
   };
 
@@ -169,19 +171,17 @@ const ProductDetailsSlider = ({ images = [], auctionDetail }) => {
             loading="lazy"
             className="h-full w-full object-cover"
           />
-          {auctionDetail?.pricingFormat === "Auctions" &&
-            auctionDetail?.status === "UPCOMING" &&
-            auctionDetail?.status === "LIVE" && (
-              <button
-                className={cn(
-                  "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
-                  favourite ? "text-[#F16D6F]" : "text-white",
-                )}
-                onClick={addToWatchlist}
-              >
-                {heartIcon}
-              </button>
-            )}
+          {auctionDetail?.pricingFormat === "Auctions" && (
+            <button
+              className={cn(
+                "absolute right-3 top-3 grid size-[43px] place-items-center rounded-[4.6px] bg-black/10",
+                favourite ? "text-[#F16D6F]" : "text-white",
+              )}
+              onClick={addToWatchlist}
+            >
+              {heartIcon}
+            </button>
+          )}
         </div>
       </div>
     </div>

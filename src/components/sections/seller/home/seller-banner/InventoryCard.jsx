@@ -6,8 +6,10 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getProductsByStoreId } from "@/lib/api/product/getByStoreId";
+import useTranslation from "@/hooks/useTranslation";
 
 const InventoryCard = () => {
+  const { t } = useTranslation();
   const store = useProfileStore((state) => state.store);
   const initialCount = Array.isArray(store?.products)
     ? store.products.length
@@ -39,12 +41,12 @@ const InventoryCard = () => {
           {houseIcon}
         </div>
         <h1 className="text-lg font-medium text-davyGray lg:text-2xl">
-          My Inventory
+          {t("seller.banner.inventory")}
         </h1>
       </div>
       <div className="flex items-baseline justify-center py-2 font-medium text-russianViolet">
         <span className="text-5xl">{count}</span>
-        <span className="text-lg">items</span>
+        <span className="text-lg">{t("seller.banner.items")}</span>
       </div>
       <div className="flex w-full justify-end">
         <Link
@@ -52,7 +54,7 @@ const InventoryCard = () => {
           href="/seller/my-store"
         >
           <div className="flex items-center lg:text-lg">
-            Manage
+            {t("seller.banner.manage")}
             <ChevronRight className="text-xl" />
           </div>
           <span className="h-[1px] w-0 bg-[#C88C78] transition-all duration-200 ease-in group-hover:w-[95%]"></span>

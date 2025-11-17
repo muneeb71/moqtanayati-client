@@ -4,6 +4,7 @@ import { filterSvg } from "@/assets/icons/common-icons";
 import AuctionCard from "./AuctionCard";
 import { useAuctionStore } from "@/providers/auction-store-provider";
 import { useMemo, useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 
 const AuctionResults = ({ auctionType }) => {
+  const { t } = useTranslation();
   const auctions = useAuctionStore((state) => state.auctionProducts);
 
   // Search and Filters state
@@ -144,13 +146,25 @@ const AuctionResults = ({ auctionType }) => {
     });
   }, [baseFiltered, query, category, condition, month, year, location]);
 
+  const conditionLabel = (value) => {
+    const v = String(value || "").toLowerCase();
+    if (v === "new") return t("seller.auctions.new");
+    if (v === "old") return t("seller.auctions.old");
+    return value || "";
+  };
+
+  const translateCategory = (value) => {
+    const key = `categories.${value}`;
+    const tr = t(key);
+    return tr === key ? value : tr;
+  };
+
   const emptyMessage = (() => {
     const type = (auctionType || "").toLowerCase();
-    if (type === "live") return "There is no live auction product right now";
-    if (type === "upcoming")
-      return "There is no upcoming auction product right now";
-    if (type === "history") return "There is no auction history yet";
-    return "No auction products to display";
+    if (type === "live") return t("seller.auctions.no_live");
+    if (type === "upcoming") return t("seller.auctions.no_upcoming");
+    if (type === "history") return t("seller.auctions.no_history");
+    return t("seller.auctions.no_products");
   })();
 
   return (
@@ -158,13 +172,15 @@ const AuctionResults = ({ auctionType }) => {
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-[21px] font-medium leading-[31px]">
           {baseFiltered.length}{" "}
-          <span className="font-normal text-battleShipGray">Results</span>
+          <span className="font-normal text-battleShipGray">
+            {t("seller.auctions.results")}
+          </span>
         </h1>
         <div className="flex items-center gap-2">
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by product name"
+            placeholder={t("seller.auctions.search_by_name")}
             className="h-10 w-40 rounded-[12px] bg-[#F8F7FB] px-3 text-sm text-russianViolet placeholder:text-battleShipGray/70 focus:outline-none md:w-64"
           />
           <button
@@ -172,7 +188,7 @@ const AuctionResults = ({ auctionType }) => {
             onClick={openFilters}
           >
             {filterSvg}
-            <span className="">Filters</span>
+            <span className="">{t("seller.auctions.filters")}</span>
           </button>
         </div>
       </div>
@@ -183,7 +199,9 @@ const AuctionResults = ({ auctionType }) => {
             onClick={() => setQuery("")}
             className="flex items-center gap-1 rounded-full bg-moonstone/10 px-2 py-1 text-xs text-darkBlue"
           >
-            <span>Query: {query}</span>
+            <span>
+              {t("seller.auctions.query")}: {query}
+            </span>
             <span className="rounded-full bg-moonstone px-1 py-0.5 text-white">
               ×
             </span>
@@ -194,7 +212,9 @@ const AuctionResults = ({ auctionType }) => {
             onClick={() => setCategory("")}
             className="flex items-center gap-1 rounded-full bg-moonstone/10 px-2 py-1 text-xs text-darkBlue"
           >
-            <span>Category: {category}</span>
+            <span>
+              {t("seller.auctions.category")}: {translateCategory(category)}
+            </span>
             <span className="rounded-full bg-moonstone px-1 py-0.5 text-white">
               ×
             </span>
@@ -205,7 +225,9 @@ const AuctionResults = ({ auctionType }) => {
             onClick={() => setCondition("")}
             className="flex items-center gap-1 rounded-full bg-moonstone/10 px-2 py-1 text-xs text-darkBlue"
           >
-            <span>Condition: {condition}</span>
+            <span>
+              {t("seller.auctions.condition")}: {conditionLabel(condition)}
+            </span>
             <span className="rounded-full bg-moonstone px-1 py-0.5 text-white">
               ×
             </span>
@@ -220,7 +242,8 @@ const AuctionResults = ({ auctionType }) => {
             className="flex items-center gap-1 rounded-full bg-moonstone/10 px-2 py-1 text-xs text-darkBlue"
           >
             <span>
-              Date: {month ? `M${month}` : ""} {year ? `Y${year}` : ""}
+              {t("seller.auctions.date")}: {month ? `M${month}` : ""}{" "}
+              {year ? `Y${year}` : ""}
             </span>
             <span className="rounded-full bg-moonstone px-1 py-0.5 text-white">
               ×
@@ -232,7 +255,9 @@ const AuctionResults = ({ auctionType }) => {
             onClick={() => setLocation("")}
             className="flex items-center gap-1 rounded-full bg-moonstone/10 px-2 py-1 text-xs text-darkBlue"
           >
-            <span>Location: {location}</span>
+            <span>
+              {t("seller.auctions.location")}: {location}
+            </span>
             <span className="rounded-full bg-moonstone px-1 py-0.5 text-white">
               ×
             </span>
@@ -244,17 +269,19 @@ const AuctionResults = ({ auctionType }) => {
       <Dialog open={showFilters} onOpenChange={setShowFilters}>
         <DialogContent className="max-w-[600px] rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Filters</DialogTitle>
+            <DialogTitle>{t("seller.auctions.filters")}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-battleShipGray">Category</label>
+              <label className="text-xs text-battleShipGray">
+                {t("seller.auctions.category")}
+              </label>
               <select
                 value={tmpCategory}
                 onChange={(e) => setTmpCategory(e.target.value)}
                 className="h-9 rounded-md border border-silver px-2 text-sm"
               >
-                <option value="">All Categories</option>
+                <option value="">{t("seller.auctions.all_categories")}</option>
                 {categoryOptions.map((c) => (
                   <option key={c} value={c}>
                     {c}
@@ -263,25 +290,29 @@ const AuctionResults = ({ auctionType }) => {
               </select>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-battleShipGray">Condition</label>
+              <label className="text-xs text-battleShipGray">
+                {t("seller.auctions.condition")}
+              </label>
               <select
                 value={tmpCondition}
                 onChange={(e) => setTmpCondition(e.target.value)}
                 className="h-9 rounded-md border border-silver px-2 text-sm"
               >
-                <option value="">Any Condition</option>
-                <option value="new">New</option>
-                <option value="old">Old</option>
+                <option value="">{t("seller.auctions.any_condition")}</option>
+                <option value="new">{t("seller.auctions.new")}</option>
+                <option value="old">{t("seller.auctions.old")}</option>
               </select>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-battleShipGray">Month</label>
+              <label className="text-xs text-battleShipGray">
+                {t("seller.auctions.month")}
+              </label>
               <select
                 value={tmpMonth}
                 onChange={(e) => setTmpMonth(e.target.value)}
                 className="h-9 rounded-md border border-silver px-2 text-sm"
               >
-                <option value="">Any Month</option>
+                <option value="">{t("seller.auctions.any_month")}</option>
                 {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
                   <option key={m} value={String(m)}>
                     {m}
@@ -290,13 +321,15 @@ const AuctionResults = ({ auctionType }) => {
               </select>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-battleShipGray">Year</label>
+              <label className="text-xs text-battleShipGray">
+                {t("seller.auctions.year")}
+              </label>
               <select
                 value={tmpYear}
                 onChange={(e) => setTmpYear(e.target.value)}
                 className="h-9 rounded-md border border-silver px-2 text-sm"
               >
-                <option value="">Any Year</option>
+                <option value="">{t("seller.auctions.any_year")}</option>
                 {yearOptions.map((y) => (
                   <option key={y} value={y}>
                     {y}
@@ -305,11 +338,13 @@ const AuctionResults = ({ auctionType }) => {
               </select>
             </div>
             <div className="flex flex-col gap-1 md:col-span-2">
-              <label className="text-xs text-battleShipGray">Location</label>
+              <label className="text-xs text-battleShipGray">
+                {t("seller.auctions.location")}
+              </label>
               <input
                 value={tmpLocation}
                 onChange={(e) => setTmpLocation(e.target.value)}
-                placeholder="Location"
+                placeholder={t("seller.auctions.location")}
                 className="h-9 rounded-md border border-silver px-2 text-sm"
               />
             </div>
@@ -317,14 +352,14 @@ const AuctionResults = ({ auctionType }) => {
           <div className="flex items-center justify-end gap-2 pt-4">
             <DialogClose asChild>
               <button className="rounded-md border border-silver px-3 py-1.5 text-sm">
-                Cancel
+                {t("seller.auctions.cancel")}
               </button>
             </DialogClose>
             <button
               onClick={applyFilters}
               className="rounded-md bg-moonstone px-3 py-1.5 text-sm text-white"
             >
-              Apply Filters
+              {t("seller.auctions.apply_filters")}
             </button>
           </div>
         </DialogContent>

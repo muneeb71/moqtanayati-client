@@ -6,8 +6,10 @@ import ItemSlider from "@/components/slider/ItemSlider";
 import { getPopularProducts } from "@/lib/api/product/getPopularProducts";
 import { getWatchlist } from "@/lib/api/watchlist/getWatchlist";
 import { useState, useEffect } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const PopularSection = () => {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -99,7 +101,7 @@ const PopularSection = () => {
       <div className="flex w-full max-w-7xl flex-col">
         <div className="flex w-full max-w-7xl items-center justify-between px-2">
           <h1 className="text-lg font-medium leading-[48px] text-delftBlue md:text-[32px]">
-            Popular
+            {t("buyer.home.sections.popular")}
           </h1>
           {/* <CustomLink className="md:text-[21.8px]">See All</CustomLink> */}
         </div>

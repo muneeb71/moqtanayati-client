@@ -8,8 +8,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import useTranslation from "@/hooks/useTranslation";
 
 const ConsentForm = ({ userId, userData }) => {
+  const { t } = useTranslation();
   const {
     sellerEntity,
     haveProducts,
@@ -29,19 +31,17 @@ const ConsentForm = ({ userId, userData }) => {
   const submitSurvey = async (setLoading) => {
     if (agreeLoading || discoverLoading) return;
     if (!sellerEntity) {
-      toast.error("Please select your seller entity first.");
+      toast.error(t("survey.errors.select_entity"));
       router.push("/survey/entity");
       return;
     }
     if (!goal) {
-      toast.error("Please select your goal first.");
+      toast.error(t("survey.errors.select_goal"));
       router.push("/survey/goal");
       return;
     }
     if (!userId) {
-      toast.error(
-        "User data is missing. Please restart the registration process.",
-      );
+      toast.error(t("survey.errors.user_missing"));
       router.push("/seller/login");
       return;
     }
@@ -65,11 +65,11 @@ const ConsentForm = ({ userId, userData }) => {
       if (response.success) {
         router.push("/seller/onboarding");
       } else {
-        toast.error(response.message);
+        toast.error(response.message || t("survey.errors.submit_failed"));
       }
     } catch (error) {
       console.error("Survey submission error:", error);
-      toast.error("Failed to submit survey");
+      toast.error(t("survey.errors.submit_failed"));
     } finally {
       setLoading(false);
     }
@@ -88,23 +88,30 @@ const ConsentForm = ({ userId, userData }) => {
         strokeWidth={2.5}
       />
       <h1 className="mb-2 text-center text-2xl text-black">
-        We Need Your Consent
+        {t("survey.consent.title")}
       </h1>
       <p className="mb-10 w-full text-center text-lg text-darkBlue/50">
-        A 0.5% fee will be added to each product listed under Business and
-        Family Seller accounts.
+        {t("survey.consent.fee_note")}
       </p>
       <RoundedButton
         onClick={() => handleAgreeButton()}
         className="w-full"
-        title={agreeLoading ? "Submitting..." : "Agree and Start Now"}
+        title={
+          agreeLoading
+            ? t("survey.common.submitting")
+            : t("survey.consent.agree")
+        }
         showIcon={!agreeLoading}
         loading={agreeLoading || undefined}
         disabled={agreeLoading || discoverLoading}
       />
       <SecondaryButton
         onClick={() => handleDiscoverButton()}
-        title={discoverLoading ? "Submitting..." : "Discover all Features"}
+        title={
+          discoverLoading
+            ? t("survey.common.submitting")
+            : t("survey.consent.discover")
+        }
         className="mt-5 w-full rounded-full"
         showIcon={!discoverLoading}
         loading={discoverLoading || undefined}

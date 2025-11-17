@@ -4,8 +4,10 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import useTranslation from "@/hooks/useTranslation";
 
 const WatchlistCard = ({ item, removeFromWatchlist }) => {
+  const { t } = useTranslation();
   const [favourite, setFavourite] = useState(true);
   const router = useRouter();
 
@@ -35,7 +37,7 @@ const WatchlistCard = ({ item, removeFromWatchlist }) => {
             width={200}
             height={200}
             className="h-full w-full object-cover"
-            alt="Product image"
+              alt={t("buyer.watchlist.product_image")}
             unoptimized={true} // Allow external images
             onError={(e) => {
               console.log("🔍 [WatchlistCard] Image load error:", e);
@@ -69,7 +71,9 @@ const WatchlistCard = ({ item, removeFromWatchlist }) => {
               {item?.auction?.product?.name}
             </span>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-black/30">by</span>
+              <span className="text-xs font-medium text-black/30">
+                {t("buyer.watchlist.by")}
+              </span>
               <div className="flex items-center gap-1">
                 <div className="size-[19.1px] min-h-[19.1px] min-w-[19.1px] overflow-hidden rounded-full">
                   {item?.auction?.seller?.avatar ? (
@@ -78,7 +82,7 @@ const WatchlistCard = ({ item, removeFromWatchlist }) => {
                       width={100}
                       height={100}
                       className="h-full w-full object-cover"
-                      alt="user"
+                      alt={t("buyer.watchlist.user")}
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-gray-200">
@@ -125,7 +129,9 @@ const WatchlistCard = ({ item, removeFromWatchlist }) => {
         <div className="h-[1px] w-full bg-black bg-opacity-[0.02]"></div>
         <div className="flex items-center justify-between gap-5 px-1.5">
           <div className="flex flex-col">
-            <span className="text-xs text-black/40">Highest Bid</span>
+            <span className="text-xs text-black/40">
+              {t("buyer.watchlist.highest_bid")}
+            </span>
             <span className="text-lg font-medium">
               ${item?.auction?.product?.minimumOffer}
             </span>

@@ -13,8 +13,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const SellerProfilePage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const [editLoading, setEditLoading] = useState(false);
@@ -76,14 +78,16 @@ const SellerProfilePage = () => {
           <div className="flex flex-col items-center gap-1">
             <span className="text-2xl font-medium text-darkBlue">{name}</span>
             <span className="font-medium text-battleShipGray">
-              Joined {joinedDate}
+              {t("seller.profile.joined")} {joinedDate}
             </span>
           </div>
 
           <div className="flex w-full max-w-52 gap-8 py-3">
             <div className="flex items-center rounded-lg bg-moonstone/10 px-3 py-1">
               {sellerChatIcon}{" "}
-              <span className="text-sm text-moonstone">Chat</span>
+              <span className="text-sm text-moonstone">
+                {t("seller.profile.chat")}
+              </span>
             </div>
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-0.5 text-[#F3B95A]">
@@ -99,7 +103,9 @@ const SellerProfilePage = () => {
               </div>
               <div className="flex items-baseline gap-0">
                 <span className="text-sm">{averageRating}</span>
-                <span className="text-xs">({reviews?.length} Reviews)</span>
+                <span className="text-xs">
+                  ({reviews?.length} {t("seller.profile.reviews")})
+                </span>
               </div>
             </div>
           </div>
@@ -118,19 +124,25 @@ const SellerProfilePage = () => {
 
         <div className="grid h-fit grid-cols-2 gap-3">
           <div className="flex h-fit w-full flex-col gap-2 rounded-2xl bg-[#BEC8F9] px-5 pb-12 pt-4">
-            <span className="text-lg text-delftBlue/60">Orders Recieved</span>
+            <span className="text-lg text-delftBlue/60">
+              {t("seller.profile.orders_received")}
+            </span>
             <span className="text-4xl font-semibold text-delftBlue">
               {orders?.length}
             </span>
           </div>
           <div className="flex h-fit w-full flex-col gap-2 rounded-2xl bg-[#EFDB88] px-5 pb-12 pt-4">
-            <span className="text-lg text-delftBlue/60">Auctions</span>
+            <span className="text-lg text-delftBlue/60">
+              {t("seller.profile.auctions")}
+            </span>
             <span className="text-4xl font-semibold text-delftBlue">
               {auctions?.length}
             </span>
           </div>
           <div className="flex h-fit w-full flex-col gap-2 rounded-2xl bg-[#C9DFDD] px-5 pb-12 pt-4">
-            <span className="text-lg text-delftBlue/60">Products</span>
+            <span className="text-lg text-delftBlue/60">
+              {t("seller.profile.products")}
+            </span>
             <span className="text-4xl font-semibold text-delftBlue">
               {store.products ? store?.products?.length : 0}
             </span>

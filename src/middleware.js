@@ -15,6 +15,7 @@ export function middleware(request) {
   const isAuthPath = pathname.startsWith("/auth");
   const isBuyerPath = pathname.startsWith("/buyer");
   const isSellerPath = pathname.startsWith("/seller");
+  const isSellerOnboarding = pathname.startsWith("/seller/onboarding");
   const roleUpper = (role || "").toUpperCase();
   const isLoginOrSignupPage =
     pathname.includes("/login") ||
@@ -22,7 +23,8 @@ export function middleware(request) {
     pathname.includes("/seller-type") ||
     pathname.includes("/email-otp") ||
     pathname.includes("/phone-otp") ||
-    pathname.includes("/location-selection");
+    pathname.includes("/location-selection") ||
+    isSellerOnboarding;
 
   // If visiting auth pages, proactively clear auth cookies to avoid auto-redirects
   if (isLoginOrSignupPage || isAdminLogin) {
@@ -42,7 +44,8 @@ export function middleware(request) {
     pathname.includes("/sign-up") ||
     pathname.includes("/email-otp") ||
     pathname.includes("/phone-otp") ||
-    pathname.includes("/location-selection");
+    pathname.includes("/location-selection") ||
+    isSellerOnboarding;
 
   // If user visits any auth page, clear auth cookies to ensure a clean flow
   if (isAuthRoute) {
@@ -72,7 +75,7 @@ export function middleware(request) {
     if (isAdminPath) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
-    if (isBuyerPath || isSellerPath) {
+    if ((isBuyerPath || isSellerPath) && !isSellerOnboarding) {
       return clearAndRedirectToStart();
     }
   }
@@ -94,7 +97,8 @@ export function middleware(request) {
       pathname.includes("/sign-up") ||
       pathname.includes("/email-otp") ||
       pathname.includes("/phone-otp") ||
-      pathname.includes("/location-selection");
+      pathname.includes("/location-selection") ||
+      isSellerOnboarding;
     if (isLoginOrSignup) {
       return NextResponse.next();
     }

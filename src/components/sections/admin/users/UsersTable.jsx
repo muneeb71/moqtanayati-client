@@ -1,3 +1,5 @@
+"use client";
+import useTranslation from "@/hooks/useTranslation";
 import CustomCheckBox from "@/components/form-fields/CustomCheckBox";
 import formatDateTime from "@/utils/dateFormatter";
 import Image from "next/image";
@@ -10,6 +12,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 const UsersTable = ({ onViewClick, currentData, loading }) => {
+  const { t } = useTranslation();
   const {
     selectedRows,
     toggleRowSelection,
@@ -48,18 +51,24 @@ const UsersTable = ({ onViewClick, currentData, loading }) => {
               }
             />
           </th>
-          <th className="text-customeBlue py-5 font-semibold">Name</th>
-          <th className="text-customeBlue py-5 pl-8 font-semibold">Role</th>
-          <th className="text-customeBlue py-5 pl-8 font-semibold">
-            Account Status
+          <th className="text-customeBlue py-5 font-semibold">
+            {t("admin.users.table.name")}
           </th>
           <th className="text-customeBlue py-5 pl-8 font-semibold">
-            Verification Status
+            {t("admin.users.table.role")}
           </th>
           <th className="text-customeBlue py-5 pl-8 font-semibold">
-            Registration Date
+            {t("admin.users.table.account_status")}
           </th>
-          <th className="text-customeBlue py-5 pl-8 font-semibold">Action</th>
+          <th className="text-customeBlue py-5 pl-8 font-semibold">
+            {t("admin.users.table.verification_status")}
+          </th>
+          <th className="text-customeBlue py-5 pl-8 font-semibold">
+            {t("admin.users.table.registration_date")}
+          </th>
+          <th className="text-customeBlue py-5 pl-8 font-semibold">
+            {t("admin.users.table.action")}
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -70,7 +79,7 @@ const UsersTable = ({ onViewClick, currentData, loading }) => {
         ) : currentData.length === 0 ? (
           <tr>
             <td colSpan={7} className="py-10 text-center text-sm text-gray-500">
-              No users found.
+              {t("admin.users.table.no_users")}
             </td>
           </tr>
         ) : (
@@ -232,14 +241,16 @@ const UsersTable = ({ onViewClick, currentData, loading }) => {
                         className="text-sm text-green-600 hover:underline disabled:opacity-60"
                         disabled={loadingById[user.id] === "save"}
                       >
-                        {loadingById[user.id] === "save" ? "Saving..." : "Save"}
+                        {loadingById[user.id] === "save"
+                          ? t("admin.users.table.saving")
+                          : t("admin.users.table.save")}
                       </button>
                       <button
                         onClick={() => setEditingUserId(null)}
                         className="text-sm text-red-500 hover:underline disabled:opacity-60"
                         disabled={loadingById[user.id] === "save"}
                       >
-                        Cancel
+                        {t("admin.users.table.cancel")}
                       </button>
                     </>
                   ) : (

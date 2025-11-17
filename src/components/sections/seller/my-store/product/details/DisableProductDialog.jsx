@@ -11,8 +11,10 @@ import {
 import { updateProductStatus } from "@/lib/api/product/updateStatus";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const DisableProductDialog = ({ product }) => {
+  const { t } = useTranslation();
   const [status, setStatus] = useState(product.status);
 
   const handleDisableClick = async () => {
@@ -28,7 +30,9 @@ const DisableProductDialog = ({ product }) => {
   return (
     <div className="flex h-[72px] w-fit items-center justify-between gap-10 rounded-[15px] border border-delftBlue/10 px-4 py-3.5">
       <span className="text-[17px] font-medium text-battleShipGray">
-        {status === "DISABLED" ? "Make it available" : "Disable this Product"}
+        {status === "DISABLED"
+          ? t("seller.store.make_available")
+          : t("seller.store.disable_product")}
       </span>
       <Dialog>
         <DialogTrigger
@@ -53,19 +57,25 @@ const DisableProductDialog = ({ product }) => {
           <div className="flex flex-col items-center gap-10 pb-3">
             <div className="flex flex-col items-center gap-2">
               <span className="max-w-80 pt-6 text-center text-xl text-davyGray">
-                Do you really want to{" "}
-                {status === "ACTIVE" ? "disable" : "enable"} this Product?
+                {t("seller.store.disable_confirm").replace(
+                  "{action}",
+                  status === "ACTIVE"
+                    ? t("seller.store.disable")
+                    : t("seller.store.enable"),
+                )}
               </span>
             </div>
             <div className="grid h-10 w-full grid-cols-2 px-5">
               <DialogClose>
                 <div className="cursor-pointer border-r border-t border-black/10 py-3 text-center font-medium text-[#595C75] transition-all duration-200 ease-in hover:bg-black/10">
-                  Cancel
+                  {t("seller.auctions.cancel")}
                 </div>
               </DialogClose>
               <DialogClose onClick={() => handleDisableClick()}>
                 <div className="border-t border-black/10 py-3 font-medium text-[#F94144] transition-all duration-200 ease-in hover:bg-black/10">
-                  {status === "ACTIVE" ? "Disable" : "Enable"}
+                  {status === "ACTIVE"
+                    ? t("seller.store.disable")
+                    : t("seller.store.enable")}
                 </div>
               </DialogClose>
             </div>

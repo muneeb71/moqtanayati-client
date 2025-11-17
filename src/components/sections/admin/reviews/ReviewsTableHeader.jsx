@@ -2,8 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import useTranslation from "@/hooks/useTranslation";
 
 const ReviewsTableHeader = ({ reviewCategories, reviewCategory }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col justify-between gap-5 sm:items-center md:flex-row">
       <div className="flex items-center gap-2">
@@ -19,7 +21,9 @@ const ReviewsTableHeader = ({ reviewCategories, reviewCategory }) => {
             )}
             href={category.href}
           >
-            {category.title}
+            {category.slug === "buyer-reviews-sellers"
+              ? t("admin.reviews.categories.buyer_reviews_sellers")
+              : t("admin.reviews.categories.seller_reviews_buyers")}
           </Link>
         ))}
       </div>

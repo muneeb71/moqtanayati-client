@@ -12,15 +12,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import useTranslation from "@/hooks/useTranslation";
 
 const ProductQuestionsList = ({ productId }) => {
+  const { t } = useTranslation();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sortOption, setSortOption] = useState("Newest");
+  const [sortOption, setSortOption] = useState("newest");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const sortOptions = ["Newest", "Oldest"];
+  const sortOptions = ["newest", "oldest"];
 
   const fetchQuestions = async (pageNum = 1, reset = false) => {
     if (!productId) return;
@@ -87,7 +89,7 @@ const ProductQuestionsList = ({ productId }) => {
   const sortedQuestions = [...questions].sort((a, b) => {
     const dateA = new Date(a.createdAt);
     const dateB = new Date(b.createdAt);
-    return sortOption === "Newest" ? dateB - dateA : dateA - dateB;
+    return sortOption === "newest" ? dateB - dateA : dateA - dateB;
   });
 
   const loadMore = () => {
@@ -107,9 +109,14 @@ const ProductQuestionsList = ({ productId }) => {
     const now = new Date();
     const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
 
-    if (diffInHours < 1) return "Just now";
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+    if (diffInHours < 1) return t("qa.just_now");
+    if (diffInHours < 24)
+      return t("seller.qa.h_ago").replace("{count}", String(diffInHours));
+    if (diffInHours < 168)
+      return t("seller.qa.d_ago").replace(
+        "{count}",
+        String(Math.floor(diffInHours / 24)),
+      );
     return date.toLocaleDateString();
   };
 
@@ -118,11 +125,12 @@ const ProductQuestionsList = ({ productId }) => {
       <div className="flex w-full items-center justify-between px-5 py-5">
         <p className="flex items-center gap-1 text-[14.4px]">
           <span className="font-medium">{questions.length}</span>
-          <span className="text-davyGray">Questions</span>
+          <span className="text-davyGray">{t("seller.qa.questions")}</span>
         </p>
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-1 text-xs font-medium">
-            {sortOption} <ChevronDown className="size-5" />
+            {t(`seller.qa.sort.${sortOption}`)}{" "}
+            <ChevronDown className="size-5" />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             {sortOptions.map((option, index) => (
@@ -131,7 +139,7 @@ const ProductQuestionsList = ({ productId }) => {
                 className="cursor-pointer text-xs"
                 onClick={() => setSortOption(option)}
               >
-                {option}
+                {t(`seller.qa.sort.${option}`)}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -186,7 +194,7 @@ const ProductQuestionsList = ({ productId }) => {
                         <h1 className="text-[14.4px] text-davyGray">
                           {question.buyer?.name ||
                             question.user?.name ||
-                            "Anonymous"}
+                            t("seller.qa.anonymous")}
                         </h1>
                         <h1 className="text-xs text-davyGray">
                           {formatDate(question.createdAt)}
@@ -238,8 +246,10 @@ const ProductQuestionsList = ({ productId }) => {
                               <h1 className="text-[14.4px] text-davyGray">
                                 {question.seller?.name ||
                                   question.answeredBy?.name ||
-                                  "Seller"}{" "}
-                                <span className="text-moonstone">(Seller)</span>
+                                  t("seller.qa.seller")}{" "}
+                                <span className="text-moonstone">
+                                  ({t("seller.qa.seller_label")})
+                                </span>
                               </h1>
                               <h1 className="text-xs text-davyGray">
                                 {formatDate(question.answeredAt)}
@@ -263,7 +273,7 @@ const ProductQuestionsList = ({ productId }) => {
                     disabled={loading}
                     className="rounded-lg bg-moonstone px-4 py-2 text-white disabled:opacity-50"
                   >
-                    {loading ? "Loading..." : "Load More"}
+                    {loading ? t("seller.common.loading") : t("qa.load_more")}
                   </button>
                 </div>
               )}
@@ -273,10 +283,10 @@ const ProductQuestionsList = ({ productId }) => {
               <div className="text-center">
                 <div className="mb-4 text-6xl">💬</div>
                 <h3 className="mb-2 text-lg font-semibold text-gray-700">
-                  No Questions Yet
+                  {t("seller.qa.no_questions_title")}
                 </h3>
                 <p className="text-gray-500">
-                  Be the first to ask a question about this product!
+                  {t("seller.qa.no_questions_sub")}
                 </p>
               </div>
             </div>

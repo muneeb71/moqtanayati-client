@@ -9,8 +9,10 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import CartSkeleton from "@/components/loaders/CartSkeleton";
+import useTranslation from "@/hooks/useTranslation";
 
 const CartPage = () => {
+  const { t } = useTranslation();
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState();
   const [isOrderPlaced, setOrderPlaced] = useState(false);
@@ -60,13 +62,15 @@ const CartPage = () => {
         ),
       );
       setDisableButton(false);
-      toast.success("Item Updated Successfully.");
+      toast.success(t("common.updated") || "Item Updated Successfully.");
       // Dispatch custom event to update header cart badge
       window.dispatchEvent(new CustomEvent("cartUpdated"));
     } catch (error) {
       setDisableButton(false);
       console.log("Update error:", error);
-      toast.error(error?.data?.message || "Failed to Update.");
+      toast.error(
+        error?.data?.message || t("common.failed") || "Failed to Update.",
+      );
     }
   };
 
@@ -96,12 +100,14 @@ const CartPage = () => {
 
   return (
     <div className="flex w-full max-w-7xl flex-col gap-10 py-10">
-      <h1 className="text-4xl font-semibold text-davyGray">Your Cart</h1>
+      <h1 className="text-4xl font-semibold text-davyGray">
+        {t("buyer.cart.title")}
+      </h1>
       <div className="grid w-full max-w-7xl gap-10 md:grid-cols-2">
         <div className="flex h-80 w-full flex-col gap-10 overflow-y-auto">
           {cart?.length === 0 ? (
             <div className="flex h-full w-full items-center justify-center text-xl text-gray-400">
-              No items in cart.
+              {t("buyer.cart.empty")}
             </div>
           ) : (
             cart?.map((item, index) => (
@@ -126,7 +132,9 @@ const CartPage = () => {
                         {item?.product?.name}
                       </h1>
                       <div className="flex items-center gap-2">
-                        <span className="text-silver">by</span>
+                        <span className="text-silver">
+                          {t("buyer.cart.by")}
+                        </span>
                         <div className="relative size-7 overflow-hidden rounded-full">
                           {user?.avatar ? (
                             <Image
@@ -159,7 +167,7 @@ const CartPage = () => {
                         </div>
 
                         <span className="text-xs text-black/70">
-                          {item.product.store?.name || "Store"}
+                          {item.product.store?.name || t("buyer.cart.store")}
                         </span>
                       </div>
                     </div>
@@ -199,24 +207,34 @@ const CartPage = () => {
         <div className="flex w-full flex-col justify-between rounded-3xl border border-black/10 bg-[#CCCCCC1F] px-5 py-8">
           <div className="flex w-full flex-col gap-3">
             <h1 className="text-3xl font-medium text-delftBlue">
-              Order Summary
+              {t("buyer.cart.order_summary")}
             </h1>
             <div className="flex w-full items-center justify-between">
-              <span className="text-xl text-[#4D4D4DE5]">Subtotal</span>
+              <span className="text-xl text-[#4D4D4DE5]">
+                {t("buyer.cart.subtotal")}
+              </span>
               <span className="text-xl text-[#4D4D4DE5]">${subtotal}</span>
             </div>
             <div className="flex w-full items-center justify-between">
-              <span className="text-xl text-[#4D4D4DE5]">Tax</span>
+              <span className="text-xl text-[#4D4D4DE5]">
+                {t("buyer.cart.tax")}
+              </span>
               <span className="text-xl text-[#4D4D4DE5]">${tax}</span>
             </div>
             <div className="flex w-full items-center justify-between">
-              <span className="text-xl text-[#4D4D4DE5]">Shipping</span>
-              <span className="text-xl text-[#4D4D4DE5]">Free</span>
+              <span className="text-xl text-[#4D4D4DE5]">
+                {t("buyer.cart.shipping")}
+              </span>
+              <span className="text-xl text-[#4D4D4DE5]">
+                {t("buyer.cart.free")}
+              </span>
             </div>
           </div>
           <div className="flex justify-between">
             <div className="flex flex-col gap-1">
-              <span className="text-xl text-black/40">Grand Total</span>
+              <span className="text-xl text-black/40">
+                {t("buyer.cart.grand_total")}
+              </span>
               <h1 className="text-4xl font-medium">
                 ${(subtotal + tax).toFixed(2)}
               </h1>
@@ -227,7 +245,9 @@ const CartPage = () => {
                 onClick={() => setShowCheckoutSheet(true)}
                 disabled={cart.length === 0}
               >
-                <p className="text-xl font-medium text-white">Checkout</p>
+                <p className="text-xl font-medium text-white">
+                  {t("buyer.cart.checkout")}
+                </p>
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/80 text-moonstone">
                   {getItemsCount()}
                 </div>

@@ -5,9 +5,11 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import useTranslation from "@/hooks/useTranslation";
 
 const SellerNavLinks = () => {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const router = useRouter();
   const [loadingLink, setLoadingLink] = useState(null);
 
@@ -52,7 +54,7 @@ const SellerNavLinks = () => {
             {loadingLink === index && (
               <div className="h-3 w-3 animate-spin rounded-full border border-current border-t-transparent" />
             )}
-            {headerLink.title}
+            {headerLink.i18nKey ? t(headerLink.i18nKey) : headerLink.title}
           </button>
         );
       })}

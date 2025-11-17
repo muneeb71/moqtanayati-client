@@ -12,8 +12,11 @@ import { useProfileStore } from "@/providers/profile-store-provider";
 import NotificationBadge from "@/components/NotificationBadge";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import LanguageSwitcher from "@/components/language/LanguageSwitcher";
+import useTranslation from "@/hooks/useTranslation";
 
 const SellerHeader = () => {
+  const { t, dir } = useTranslation();
   const { avatar } = useProfileStore((state) => state);
   const router = useRouter();
   const pathname = usePathname();
@@ -34,7 +37,10 @@ const SellerHeader = () => {
     avatar && typeof avatar === "string" && avatar.trim() !== "";
 
   return (
-    <header className="flex w-full flex-col items-center justify-center">
+    <header
+      className="flex w-full flex-col items-center justify-center"
+      dir={dir}
+    >
       <div className="flex w-full max-w-7xl items-center justify-between px-4 py-4 md:px-5">
         <Link href="/seller">
           <Image
@@ -53,6 +59,7 @@ const SellerHeader = () => {
 
         {/* Desktop View */}
         <div className="hidden items-center gap-2 md:flex md:gap-4">
+          <LanguageSwitcher />
           {/* <Link
             href="/search"
             className="grid size-12 place-items-center rounded-full border border-[#3F175F1A]"
@@ -73,6 +80,7 @@ const SellerHeader = () => {
                 ? "border-primary text-primary"
                 : "border-[#3F175F1A]"
             }`}
+            aria-label={t("header.notifications")}
           >
             {notifLoading ? (
               <Loader2 className="size-5 animate-spin" />
@@ -92,6 +100,7 @@ const SellerHeader = () => {
             className={`flex size-12 items-center justify-center overflow-hidden rounded-full ${
               pathname === "/seller/profile" ? "ring-primary ring-2" : ""
             } bg-gray-200`}
+            aria-label={t("header.profile")}
           >
             {profileLoading ? (
               <Loader2 className="size-5 animate-spin text-gray-500" />
@@ -124,6 +133,7 @@ const SellerHeader = () => {
             className={`flex size-10 items-center justify-center overflow-hidden rounded-full ${
               pathname === "/seller/profile" ? "ring-primary ring-2" : ""
             } bg-gray-200`}
+            aria-label={t("header.profile")}
           >
             {profileLoading ? (
               <Loader2 className="size-4 animate-spin text-gray-500" />

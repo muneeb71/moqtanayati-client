@@ -1,10 +1,14 @@
+"use client";
+
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import useTranslation from "@/hooks/useTranslation";
 
 const OrderCard = ({ item }) => {
+  const { t } = useTranslation();
   const product = item.product || {};
   const orderItem = item.OrderItem?.[0] || {};
   const image = product.images?.[0] || "/static/dummy-items/2.jpeg";
@@ -54,7 +58,7 @@ const OrderCard = ({ item }) => {
             {isNavigating && (
               <span className="inline-block h-3 w-3 animate-spin rounded-full border border-current border-t-transparent" />
             )}
-            View <span className="hidden md:inline">Order</span>
+            {t("buyer.order_card.view_order")}
             <ChevronRight />
           </button>
         </div>

@@ -13,8 +13,11 @@ import toast from "react-hot-toast";
 import CheckoutSheet from "@/components/sections/landing/cart/CheckoutSheet";
 import OrderPlacedPopup from "@/components/popup/OrderPlacedPopup";
 import { getCookie } from "cookies-next";
+import { useProfileStore } from "@/providers/profile-store-provider";
+import useTranslation from "@/hooks/useTranslation";
 
 const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
+  const { t } = useTranslation();
   const [isBidPopupOpen, setIsBidPopupOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [showOrderPlaced, setShowOrderPlaced] = useState(false);
@@ -63,7 +66,7 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
 
   const addItem = async () => {
     if (isInCart) {
-      toast.error("Item is already in your cart!");
+      toast.error(t("buyer.product_details.already_in_cart_toast"));
       return;
     }
 
@@ -75,14 +78,14 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
     });
     if (res?.data?.success) {
       setRequestLoading(false);
-      toast.success("Item Added to Cart");
+      toast.success(t("buyer.product_details.add_to_cart_success"));
       // Update cart status
       checkCartStatus();
       // Dispatch custom event to update header cart badge
       window.dispatchEvent(new CustomEvent("cartUpdated"));
     } else {
       setRequestLoading(false);
-      toast.error("Error Adding Item to Cart");
+      toast.error(t("buyer.product_details.add_to_cart_error"));
     }
   };
 
@@ -100,17 +103,19 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
       const res = await bidOnAuction({ productId: id, amount: bidAmount });
       if (res.success) {
         setIsBidPopupOpen(false);
-        toast.success(res.message || "Bid placed successfully!");
+        toast.success(res.message || t("buyer.bidders.bid_placed_success"));
         fetchData();
         setRequestLoading(false);
       } else {
         setRequestLoading(false);
-        toast.error(res.message || "Failed to place bid.");
+        toast.error(res.message || t("buyer.bidders.bid_place_failed"));
       }
     } catch (err) {
       setRequestLoading(false);
       toast.error(
-        err?.response?.data?.message || err.message || "Failed to place bid.",
+        err?.response?.data?.message ||
+          err.message ||
+          t("buyer.bidders.bid_place_failed"),
       );
       console.log("Failed to place bid:", err);
     }
@@ -173,16 +178,23 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
   console.log("🔍 [ProductDetailsCard] Total bids:", totalBids);
   console.log("🔍 [ProductDetailsCard] Highest bid amount:", highestBidAmount);
 
+  const profileId = useProfileStore((s) => s.id);
+  const profileName = useProfileStore((s) => s.name);
+  const profileAvatar = useProfileStore((s) => s.avatar);
+  const profileAddress = useProfileStore((s) => s.address);
+
   const user = {
-    name: item?.seller?.name || "Seller",
-    avatar: item?.seller?.avatar || "/static/user.jpeg",
-    address: item?.seller?.address || "123 Main St, City",
+    id: profileId || item?.seller?.id,
+    name:
+      profileName || item?.seller?.name || t("buyer.product_details.seller"),
+    avatar: profileAvatar || item?.seller?.avatar || "/static/user.jpeg",
+    address: profileAddress || item?.seller?.address || "",
   };
 
   const handleBuyNow = () => {
     if (isInCart) {
       // If item is already in cart, show message and proceed to checkout
-      toast.success("Item is already in your cart! Proceeding to checkout...");
+      toast.success(t("buyer.product_details.already_in_cart_toast"));
     }
     setIsCheckoutOpen(true);
   };
@@ -238,7 +250,7 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                 </div>
                 <div className="flex flex-col justify-end gap-2.5">
                   <span className="text-right text-[14.4px] leading-[21px] text-battleShipGray">
-                    1hr ago
+                    {t("buyer.product_details.one_hour_ago")}
                   </span>
                   {userRole === "seller" ? (
                     <SellerQaSectionSheet />
@@ -250,7 +262,9 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
               {!isFixedPrice && <ProductDetailsAuctionTimer item={item} />}
             </div>
             <div className="flex w-full flex-col gap-2">
-              <h1 className="font-medium text-black/70">Product Description</h1>
+              <h1 className="font-medium text-black/70">
+                {t("buyer.product_details.product_description")}
+              </h1>
               <p className="text-[14.4px] leading-[21px] text-black/40">
                 {item?.description}
               </p>
@@ -263,7 +277,7 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                   <div className="flex w-1/2 flex-col space-y-3">
                     <div className="flex flex-col">
                       <h2 className="text-[14.4px] leading-[21.6px] text-black/40">
-                        Price
+                        {t("buyer.product_details.price")}
                       </h2>
                       <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
                         $
@@ -291,8 +305,11 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                         }
                         title={
                           isInCart
-                            ? `Already in cart (${cartQuantity} items)`
-                            : "Add to cart"
+                            ? t(
+                                "buyer.product_details.already_in_cart_tooltip",
+                                { count: cartQuantity },
+                              )
+                            : t("buyer.product_details.add_to_cart_tooltip")
                         }
                       >
                         {isInCart ? (
@@ -335,11 +352,13 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                         onClick={handleBuyNow}
                         title={
                           isInCart
-                            ? "Item is already in cart - proceed to checkout"
-                            : "Buy this item now"
+                            ? t("buyer.product_details.proceed_to_checkout")
+                            : t("buyer.product_details.buy_now")
                         }
                       >
-                        {isInCart ? "Proceed to Checkout" : "Buy Now"}
+                        {isInCart
+                          ? t("buyer.product_details.proceed_to_checkout")
+                          : t("buyer.product_details.buy_now")}
                       </button>
                     </div>
                   </div>
@@ -351,7 +370,9 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                   <div className="flex w-1/2 flex-col space-y-3">
                     <div className="flex flex-col">
                       <h2 className="text-[14.4px] leading-[21.6px] text-black/40">
-                        {totalBids > 0 ? "Highest Bid" : "Starting Bid"}
+                        {totalBids > 0
+                          ? t("buyer.product_details.highest_bid")
+                          : t("buyer.product_details.starting_bid")}
                       </h2>
                       <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
                         ${highestBidAmount.toFixed(2)}
@@ -361,7 +382,7 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                       {item?.pricingFormat === "Fixed Price" ? (
                         <>
                           <h2 className="text-[14.4px] leading-[21.6px] text-black/40">
-                            Buy Now for
+                            {t("buyer.product_details.buy_now_for")}
                           </h2>
                           <h1 className="text-[24px] font-medium leading-[36px] text-black/80">
                             ${item?.buyItNow?.toFixed(2)}
@@ -379,7 +400,7 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                           disabled={true}
                         >
                           <img src={"/static/bid.svg"} />
-                          <p>SOLD</p>
+                          <p>{t("buyer.product_details.sold")}</p>
                         </button>
                       ) : item?.status === "UPCOMING" ? (
                         <button
@@ -388,7 +409,7 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                           disabled={true}
                         >
                           <img src={"/static/bid.svg"} />
-                          <p>UPCOMING</p>
+                          <p>{t("buyer.product_details.upcoming")}</p>
                         </button>
                       ) : (
                         <button
@@ -396,12 +417,16 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                           className="flex w-full items-center justify-center gap-3 rounded-lg bg-moonstone py-4 text-white"
                           onClick={() => {
                             if (item?.status === "SOLD") {
-                              toast.error("This auction is sold.");
+                              toast.error(
+                                t("buyer.product_details.auction_sold_error"),
+                              );
                               return;
                             }
                             if (item?.status === "DRAFT") {
                               toast.error(
-                                "This auction is not available right now.",
+                                t(
+                                  "buyer.product_details.auction_unavailable_error",
+                                ),
                               );
                               return;
                             }
@@ -409,7 +434,7 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                           }}
                         >
                           <img src={"/static/bid.svg"} />
-                          <p>Make Offer</p>
+                          <p>{t("buyer.product_details.make_offer")}</p>
                         </button>
                       )
                     ) : null}
@@ -430,8 +455,11 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                           }
                           title={
                             isInCart
-                              ? `Already in cart (${cartQuantity} items)`
-                              : "Add to cart"
+                              ? t(
+                                  "buyer.product_details.already_in_cart_tooltip",
+                                  { count: cartQuantity },
+                                )
+                              : t("buyer.product_details.add_to_cart_tooltip")
                           }
                         >
                           {isInCart ? (
@@ -474,11 +502,13 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                           onClick={handleBuyNow}
                           title={
                             isInCart
-                              ? "Item is already in cart - proceed to checkout"
-                              : "Buy this item now"
+                              ? t("buyer.product_details.proceed_to_checkout")
+                              : t("buyer.product_details.buy_now")
                           }
                         >
-                          {isInCart ? "Proceed to Checkout" : "Buy Now"}
+                          {isInCart
+                            ? t("buyer.product_details.proceed_to_checkout")
+                            : t("buyer.product_details.buy_now")}
                         </button>
                       </div>
                     ) : null}
