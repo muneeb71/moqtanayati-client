@@ -699,6 +699,8 @@
         "paid": "Paid"
       },
       "no_name": "No Name",
+      "track_order": "Track Order",
+      "track_order_error": "Order ID not found. Cannot track order.",
       "feedback": {
         "view": "View",
         "rate": "Rate",
@@ -933,7 +935,8 @@
       "delivered": "Delivered",
       "loading": "Loading...",
       "not_found": "Order not found.",
-      "error_fetch": "Failed to fetch order"
+      "error_fetch": "Failed to fetch order",
+      "no_items": "No items in this order"
     },
     "filters": {
       "title": "Filters",

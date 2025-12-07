@@ -27,6 +27,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import AddressChangeDialog from "@/components/dialogs/AddressChangeDialog";
 import useTranslation from "@/hooks/useTranslation";
+import { calculateTax } from "@/lib/tax";
 
 const CheckoutSheet = ({
   itemCount = 0,
@@ -88,7 +89,7 @@ const CheckoutSheet = ({
     return total + item.quantity * item.price;
   }, 0);
 
-  const tax = 40;
+  const tax = calculateTax(subtotal);
 
   const handleAddressUpdate = (newAddress) => {
     setCurrentAddress(newAddress);

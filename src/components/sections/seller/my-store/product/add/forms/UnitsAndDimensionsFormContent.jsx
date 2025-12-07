@@ -178,13 +178,13 @@ const UnitsAndDimensionsFormContent = ({ id }) => {
     if (!stock || !integerRegex.test(String(stock)))
       newErrors.stock = "Enter valid units (e.g., 2, 879).";
     if (!length || !decimalRegex.test(String(length)))
-      newErrors.length = "Enter a valid length (e.g., 2, 9.8, 879).";
+      newErrors.length = "Length is required.";
     if (!width || !decimalRegex.test(String(width)))
-      newErrors.width = "Enter a valid width (e.g., 2, 9.8, 879).";
+      newErrors.width = "Width is required.";
     if (!height || !decimalRegex.test(String(height)))
-      newErrors.height = "Enter a valid height (e.g., 2, 9.8, 879).";
+      newErrors.height = "Height is required.";
     if (!weight || !decimalRegex.test(String(weight)))
-      newErrors.weight = "Enter a valid weight (e.g., 2, 9.8, 879).";
+      newErrors.weight = "Weight is required.";
     if (!conditionRating || isNaN(parseFloat(conditionRating)))
       newErrors.conditionRating = "Condition rating is required.";
     if (!productCategories || productCategories.length === 0)

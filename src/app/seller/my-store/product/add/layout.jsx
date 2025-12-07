@@ -13,9 +13,13 @@ const AddProductLayout = ({ children }) => {
   return (
     <div className="item-center flex w-full flex-col px-3">
       <PageHeading>
-        <GoBackButton />
-        {t("common.my_store")} {">"}{" "}
-        {isEdit ? t("common.edit_product") : t("common.add_product")}
+        <div className="flex flex-col w-full items-end">
+          <GoBackButton />
+          <div className="text-lg font-medium md:text-3xl">
+            {t("common.my_store")} {">"}{" "}
+            {isEdit ? t("common.edit_product") : t("common.add_product")}
+          </div>
+        </div>
       </PageHeading>
       <div className="flex flex-col items-center">{children}</div>
     </div>

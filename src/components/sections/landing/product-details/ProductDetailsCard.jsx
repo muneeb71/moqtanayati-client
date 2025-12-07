@@ -27,6 +27,7 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
   const [bidAmount, setBidAmount] = useState();
   const [orderId, setOrderId] = useState(null);
   const [requestLoading, setRequestLoading] = useState(false);
+  const [isBuyNowLoading, setIsBuyNowLoading] = useState(false);
   const [isInCart, setIsInCart] = useState(false);
   const [cartQuantity, setCartQuantity] = useState(0);
 
@@ -191,12 +192,39 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
     address: profileAddress || item?.seller?.address || "",
   };
 
-  const handleBuyNow = () => {
-    if (isInCart) {
-      // If item is already in cart, show message and proceed to checkout
+  const handleBuyNow = async (e) => {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+    
+    if (!isInCart) {
+      setIsBuyNowLoading(true);
+      try {
+        const res = await addItemToCart({
+          productId: item?.id,
+          quantity: 1,
+          price: item?.pricingFormat === "Auctions" ? item.buyItNow : item.price,
+        });
+        
+        if (res?.success || res?.data?.success) {
+          toast.success(t("buyer.product_details.add_to_cart_success"));
+          await checkCartStatus();
+          window.dispatchEvent(new CustomEvent("cartUpdated"));
+          setIsBuyNowLoading(false);
+          setIsCheckoutOpen(true);
+        } else {
+          toast.error(res?.error || t("buyer.product_details.add_to_cart_error"));
+          setIsBuyNowLoading(false);
+          return;
+        }
+      } catch (error) {
+        toast.error(error?.response?.data?.message || t("buyer.product_details.add_to_cart_error"));
+        setIsBuyNowLoading(false);
+        return;
+      }
+    } else {
       toast.success(t("buyer.product_details.already_in_cart_toast"));
+      setIsCheckoutOpen(true);
     }
-    setIsCheckoutOpen(true);
   };
 
   if (requestLoading) {
@@ -341,14 +369,16 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                         )}
                       </button>
                       <button
+                        type="button"
                         disabled={
-                          item?.status === "SOLD" || item?.status === "DRAFT"
+                          item?.status === "SOLD" || 
+                          isBuyNowLoading
                         }
-                        className={`flex h-[52.8px] items-center rounded-lg border-[2px] px-8 text-[14.4px] font-medium ${
+                        className={`flex h-[52.8px] items-center justify-center rounded-lg border-[2px] px-8 text-[14.4px] font-medium ${
                           isInCart
                             ? "border-green-500 bg-green-50 text-green-600"
                             : "border-moonstone text-moonstone"
-                        }`}
+                        } ${isBuyNowLoading ? "opacity-50 cursor-not-allowed" : ""} ${item?.status === "SOLD" ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                         onClick={handleBuyNow}
                         title={
                           isInCart
@@ -356,9 +386,32 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                             : t("buyer.product_details.buy_now")
                         }
                       >
-                        {isInCart
-                          ? t("buyer.product_details.proceed_to_checkout")
-                          : t("buyer.product_details.buy_now")}
+                        {isBuyNowLoading ? (
+                          <svg
+                            className="h-5 w-5 animate-spin text-moonstone"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8v8z"
+                            ></path>
+                          </svg>
+                        ) : (
+                          isInCart
+                            ? t("buyer.product_details.proceed_to_checkout")
+                            : t("buyer.product_details.buy_now")
+                        )}
                       </button>
                     </div>
                   </div>
@@ -491,14 +544,16 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                           )}
                         </button>
                         <button
+                          type="button"
                           disabled={
-                            item?.status === "SOLD" || item?.status === "DRAFT"
+                            item?.status === "SOLD" || 
+                            isBuyNowLoading
                           }
-                          className={`flex h-[52.8px] items-center rounded-lg border-[2px] px-8 text-[14.4px] font-medium ${
+                          className={`flex h-[52.8px] items-center justify-center rounded-lg border-[2px] px-8 text-[14.4px] font-medium ${
                             isInCart
                               ? "border-green-500 bg-green-50 text-green-600"
                               : "border-moonstone text-moonstone"
-                          }`}
+                          } ${isBuyNowLoading ? "opacity-50 cursor-not-allowed" : ""} ${item?.status === "SOLD" ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                           onClick={handleBuyNow}
                           title={
                             isInCart
@@ -506,9 +561,32 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
                               : t("buyer.product_details.buy_now")
                           }
                         >
-                          {isInCart
-                            ? t("buyer.product_details.proceed_to_checkout")
-                            : t("buyer.product_details.buy_now")}
+                          {isBuyNowLoading ? (
+                            <svg
+                              className="h-5 w-5 animate-spin text-moonstone"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8z"
+                              ></path>
+                            </svg>
+                          ) : (
+                            isInCart
+                              ? t("buyer.product_details.proceed_to_checkout")
+                              : t("buyer.product_details.buy_now")
+                          )}
                         </button>
                       </div>
                     ) : null}

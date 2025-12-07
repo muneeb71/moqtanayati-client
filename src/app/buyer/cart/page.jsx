@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import CartSkeleton from "@/components/loaders/CartSkeleton";
 import useTranslation from "@/hooks/useTranslation";
+import { calculateTax } from "@/lib/tax";
 
 const CartPage = () => {
   const { t } = useTranslation();
@@ -25,7 +26,7 @@ const CartPage = () => {
     return total + item.quantity * item.price;
   }, 0);
 
-  const tax = 40;
+  const tax = calculateTax(subtotal);
 
   const getCartData = async () => {
     try {

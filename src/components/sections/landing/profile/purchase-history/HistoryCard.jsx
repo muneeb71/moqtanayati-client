@@ -5,9 +5,11 @@ import Image from "next/image";
 import LeaveFeedbackDialog from "./LeaveFeedbackDialog";
 import toast from "react-hot-toast";
 import useTranslation from "@/hooks/useTranslation";
+import { useRouter } from "next/navigation";
 
 const HistoryCard = ({ item }) => {
   const { t } = useTranslation();
+  const router = useRouter();
   const formattedDate = new Date(
     item.createdAt || item.purchaseTime,
   ).toLocaleString("en-US", {
@@ -19,6 +21,15 @@ const HistoryCard = ({ item }) => {
     hour12: true,
     timeZone: "UTC",
   });
+
+  const handleTrackOrder = () => {
+    const orderId = item.id || item.orderId;
+    if (orderId) {
+      router.push(`/buyer/track-order?id=${orderId}`);
+    } else {
+      toast.error(t("buyer.purchase_history.track_order_error") || "Order ID not found");
+    }
+  };
 
   return (
     <div className="grid h-full min-h-fit grid-cols-[120px_1fr] gap-2 overflow-hidden sm:min-h-[138px] sm:place-items-center">
@@ -70,9 +81,12 @@ const HistoryCard = ({ item }) => {
           >
             {item.status}
           </div>
-          {/* <button className="h-fit w-fit rounded-lg border-[1.5px] border-moonstone px-2 text-xs text-moonstone sm:px-6 sm:py-2 sm:text-sm" onClick={()=>toast.error("Invoice pdf not generated yet.")}>
-            Invoice
-          </button> */}
+          <button
+            className="h-fit w-fit rounded-lg border-[1.5px] border-moonstone px-2 text-xs text-moonstone transition-colors hover:bg-moonstone hover:text-white sm:px-6 sm:py-2 sm:text-sm"
+            onClick={handleTrackOrder}
+          >
+            {t("buyer.purchase_history.track_order") || "Track Order"}
+          </button>
           {true && <LeaveFeedbackDialog item={item} />}
         </div>
       </div>
