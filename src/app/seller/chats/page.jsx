@@ -14,6 +14,7 @@ import { socketManager } from "@/lib/socket-client";
 import ChatSidebarSkeleton from "@/components/loaders/chats/ChatSidebarSkeleton";
 import ChatWindowSkeleton from "@/components/loaders/chats/ChatWindowSkeleton";
 
+
 const ChatPageContent = () => {
   const { t } = useTranslation();
   const searchParams = useSearchParams();
