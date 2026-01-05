@@ -1,9 +1,11 @@
 "use client";
 
 import { envelopeIcon, lockIcon } from "@/assets/icons/input-icons";
+import { profilePhoneIcon } from "@/assets/icons/profile-icons";
 import CustomCheckBox from "@/components/form-fields/CustomCheckBox";
 import InputField from "@/components/form-fields/InputField";
 import Label from "@/components/form-fields/Label";
+import OtpInput from "@/components/form-fields/OtpInput";
 import { useEffect, useState, useTransition } from "react";
 import { useProfileStore } from "@/providers/profile-store-provider";
 import RoundedButton from "../buttons/RoundedButton";
@@ -11,6 +13,8 @@ import CustomLink from "../link/CustomLink";
 import { appName } from "@/lib/app-name";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/api/auth/login";
+import { loginUserWithPhone } from "@/lib/api/auth/phone-login";
+import { sendOtp, verifyOtp } from "@/lib/api/auth/otp";
 import toast from "react-hot-toast";
 import { getSellerOrdersClient } from "@/lib/api/orders/getSellerOrderClient";
 import { getUserNotifications } from "@/lib/api/notification";
@@ -23,8 +27,14 @@ import useTranslation from "@/hooks/useTranslation";
 
 const LoginForm = ({ role }) => {
   const { t } = useTranslation();
+  const [loginMethod, setLoginMethod] = useState("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otpSent, setOtpSent] = useState(false);
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const [deviceToken, setDeviceToken] = useState("");
   const router = useRouter();
@@ -36,7 +46,6 @@ const LoginForm = ({ role }) => {
   let setOrders = null;
   let setSellerOrders = null;
   try {
-    // Safe access: auth pages might not be wrapped with ProfileStoreProvider
     setStore = useProfileStore((state) => state.setStore);
     setOrders = useProfileStore((state) => state.setOrders);
     setSellerOrders = useProfileStore((state) => state.setSellerOrders);
@@ -46,7 +55,6 @@ const LoginForm = ({ role }) => {
     setSellerOrders = null;
   }
 
-  // Obtain FCM token once on mount (if supported)
   useEffect(() => {
     (async () => {
       try {
@@ -132,47 +140,152 @@ const LoginForm = ({ role }) => {
     })();
   }, []);
 
+  const handleSendOtp = async () => {
+    if (!phone) {
+      toast.error("Please enter your phone number");
+      return;
+    }
+    setSendingOtp(true);
+    try {
+      const res = await sendOtp({ phone });
+      if (res.success) {
+        toast.success(res.message || "OTP sent successfully");
+        setOtpSent(true);
+        if (res.otp && res.otp.length === 6) {
+          const otpArray = res.otp.split("");
+          setOtp(otpArray);
+        }
+      } else {
+        toast.error(res.message || "Failed to send OTP");
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
+  const handleVerifyOtpAndLogin = async () => {
+    const otpValue = otp.join("");
+    if (otpValue.length !== 6) {
+      toast.error("Please enter the 6-digit OTP");
+      return;
+    }
+
+    setVerifyingOtp(true);
+    startTransition(async () => {
+      try {
+        const verifyRes = await verifyOtp({ phone, otp: otpValue });
+        if (verifyRes.success) {
+          toast.success(verifyRes.message || "OTP verified successfully");
+          
+          let tokenToSend = deviceToken;
+          if (!tokenToSend) {
+            const savedToken =
+              typeof window !== "undefined" && localStorage.getItem("deviceToken");
+            if (savedToken) {
+              tokenToSend = savedToken;
+            }
+          }
+
+          const response = await loginUserWithPhone(phone, role, tokenToSend);
+
+          if (response.success) {
+            try {
+              const user = response.data?.user;
+              const store = user?.store || user?.sellerStore || null;
+              if (store && setStore) {
+                const normalizedStore = {
+                  ...store,
+                  products: Array.isArray(store.products) ? store.products : [],
+                };
+                setStore(normalizedStore);
+              }
+
+              try {
+                const ordersRes = await getSellerOrdersClient();
+                if (ordersRes.success) {
+                  if (setOrders) setOrders(ordersRes.data);
+                  if (setSellerOrders) setSellerOrders(ordersRes.data);
+                }
+              } catch (_) {}
+
+              try {
+                const notificationsRes = await getUserNotifications();
+                if (notificationsRes.success) {
+                  if (setNotifications) {
+                    setNotifications(notificationsRes.data || []);
+                  }
+                }
+              } catch (_) {}
+            } catch (_) {}
+
+            const roleLower = String(response.data.user.role || "").toLowerCase();
+            const rolePath =
+              roleLower === "admin"
+                ? "/admin"
+                : roleLower === "seller"
+                  ? "/seller"
+                  : "/buyer";
+            router.push(rolePath);
+
+            // Establish socket connection
+            (() => {
+              const userId = response.data?.user?.id;
+              if (!userId) return;
+              try {
+                socketManager.setCurrentUser(userId);
+              } catch (_) {}
+              socketManager
+                .connect()
+                .then(() => socketManager.joinUser(userId))
+                .catch(() => {});
+            })();
+          } else {
+            toast.error(response.message || "Login failed");
+          }
+        } else {
+          toast.error(verifyRes.message || "Invalid OTP");
+        }
+      } catch (error) {
+        toast.error(error?.response?.data?.message || "Failed to verify OTP and login");
+      } finally {
+        setVerifyingOtp(false);
+      }
+    });
+  };
+
   const handleLogin = async (e) => {
     if (e) e.preventDefault();
+    
+    if (loginMethod === "phone") {
+      if (!otpSent) {
+        await handleSendOtp();
+        return;
+      }
+      await handleVerifyOtpAndLogin();
+      return;
+    }
+
     startTransition(async () => {
-      // Ensure we have a valid device token before login
       let tokenToSend = deviceToken;
 
       if (!tokenToSend) {
-        console.log("No device token found, attempting to generate one...");
-
-        // Try to get from localStorage first
         const savedToken =
           typeof window !== "undefined" && localStorage.getItem("deviceToken");
         if (savedToken) {
-          console.log("Using saved token from localStorage");
           tokenToSend = savedToken;
           setDeviceToken(savedToken);
         } else {
-          // Wait for token generation to complete
-          console.log("Waiting for token generation...");
           await new Promise((resolve) => setTimeout(resolve, 2000));
-
           const delayedToken =
             typeof window !== "undefined" &&
             localStorage.getItem("deviceToken");
           if (delayedToken) {
-            console.log("Using delayed token from localStorage");
             tokenToSend = delayedToken;
             setDeviceToken(delayedToken);
-          } else {
-            console.log("No device token available, proceeding without it");
           }
         }
-      }
-
-      console.log("Sending deviceToken with login:", tokenToSend);
-      console.log("Device token exists:", !!tokenToSend);
-      console.log("Device token length:", tokenToSend?.length || 0);
-
-      // Validate token format if it exists
-      if (tokenToSend && tokenToSend.length < 100) {
-        console.warn("Device token seems too short, might be invalid");
       }
 
       const response = await loginUser(email, password, role, tokenToSend);
@@ -182,7 +295,6 @@ const LoginForm = ({ role }) => {
           const user = response.data?.user;
           const store = user?.store || user?.sellerStore || null;
           if (store && setStore) {
-            // ensure products array exists
             const normalizedStore = {
               ...store,
               products: Array.isArray(store.products) ? store.products : [],
@@ -190,42 +302,23 @@ const LoginForm = ({ role }) => {
             setStore(normalizedStore);
           }
 
-          // Fetch and hydrate orders immediately after login
           try {
             const ordersRes = await getSellerOrdersClient();
-
             if (ordersRes.success) {
               if (setOrders) setOrders(ordersRes.data);
               if (setSellerOrders) setSellerOrders(ordersRes.data);
             }
           } catch (_) {}
 
-          // Fetch and hydrate notifications immediately after login
           try {
-            console.log("Fetching notifications after login...");
             const notificationsRes = await getUserNotifications();
-
             if (notificationsRes.success) {
-              console.log(
-                "Notifications fetched successfully:",
-                notificationsRes.data?.length || 0,
-                "notifications",
-              );
               if (setNotifications) {
                 setNotifications(notificationsRes.data || []);
-                console.log("Notifications set in store successfully");
               }
-            } else {
-              console.error(
-                "Failed to fetch notifications:",
-                notificationsRes.message,
-              );
             }
-          } catch (error) {
-            console.error("Failed to fetch notifications:", error);
-          }
+          } catch (_) {}
         } catch (_) {}
-        console.log("suc : ", response.data.user.role.toLowerCase());
         const roleLower = String(response.data.user.role || "").toLowerCase();
         const rolePath =
           roleLower === "admin"
@@ -235,25 +328,18 @@ const LoginForm = ({ role }) => {
               : "/buyer";
         router.push(rolePath);
 
-        // Establish socket connection and join user room for realtime updates (non-blocking)
-        (() => {
-          const userId = response.data?.user?.id;
-          if (!userId) return;
-          try {
-            socketManager.setCurrentUser(userId);
-          } catch (_) {}
-          // Fire-and-forget to avoid blocking navigation
-          socketManager
-            .connect()
-            .then(() => socketManager.joinUser(userId))
-            .catch(() => {});
-        })();
+            (() => {
+              const userId = response.data?.user?.id;
+              if (!userId) return;
+              try {
+                socketManager.setCurrentUser(userId);
+              } catch (_) {}
+              socketManager
+                .connect()
+                .then(() => socketManager.joinUser(userId))
+                .catch(() => {});
+            })();
 
-        // if (response.data.user.sellerSuvery) {
-        //   router.push("/" + response.data.user.role.toLowerCase());
-        // } else {
-        //   router.push("/" + response.data.user.role.toLowerCase());
-        // }
       } else {
         toast.error(response.message || "Login failed");
       }
@@ -275,52 +361,155 @@ const LoginForm = ({ role }) => {
     }
   };
 
+  const handleOtpChange = (value, index) => {
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+  };
+
+  const resetOtpFlow = () => {
+    setOtpSent(false);
+    setOtp(["", "", "", "", "", ""]);
+  };
+
   return (
     <form onSubmit={handleLogin} className="flex w-full flex-col gap-5">
-      {/* Optionally, capture device token. In production, populate via FCM or native bridge */}
       <input type="hidden" value={deviceToken} onChange={() => {}} readOnly />
-      <div className="flex w-full flex-col">
-        <Label htmlFor="email" text={t("login.email_label")} />
-        <InputField
-          icon={envelopeIcon}
-          type="email"
-          placeholder={t("login.email_placeholder")}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      <div className="flex items-center gap-4 mb-2">
+        <button
+          type="button"
+          onClick={() => {
+            setLoginMethod("email");
+            resetOtpFlow();
+          }}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            loginMethod === "email"
+              ? "bg-moonstone text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          {t("login.email_label")} / {t("login.password_label")}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setLoginMethod("phone");
+            resetOtpFlow();
+          }}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            loginMethod === "phone"
+              ? "bg-moonstone text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          Phone / OTP
+        </button>
       </div>
-      <div className="flex w-full flex-col">
-        <Label htmlFor="password" text={t("login.password_label")} />
-        <InputField
-          icon={lockIcon}
-          placeholder={t("login.password_placeholder")}
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <div className="flex items-center justify-between py-2">
-          <div className="flex items-center gap-2">
-            <CustomCheckBox
-              checked={keepLoggedIn}
-              setChecked={setKeepLoggedIn}
+
+      {loginMethod === "email" ? (
+        <>
+          <div className="flex w-full flex-col">
+            <Label htmlFor="email" text={t("login.email_label")} />
+            <InputField
+              icon={envelopeIcon}
+              type="email"
+              placeholder={t("login.email_placeholder")}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            <span className="text-sm">{t("login.keep_me_logged_in")}</span>
           </div>
-          <CustomLink
-            className="text-sm"
-            href={`/${role}/login/forget-password`}
-          >
-            {t("login.forgot_password")}
-          </CustomLink>
-        </div>
-      </div>
+          <div className="flex w-full flex-col">
+            <Label htmlFor="password" text={t("login.password_label")} />
+            <InputField
+              icon={lockIcon}
+              placeholder={t("login.password_placeholder")}
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <div className="flex items-center justify-between py-2">
+              <div className="flex items-center gap-2">
+                <CustomCheckBox
+                  checked={keepLoggedIn}
+                  setChecked={setKeepLoggedIn}
+                />
+                <span className="text-sm">{t("login.keep_me_logged_in")}</span>
+              </div>
+              <CustomLink
+                className="text-sm"
+                href={`/${role}/login/forget-password`}
+              >
+                {t("login.forgot_password")}
+              </CustomLink>
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex w-full flex-col">
+            <Label htmlFor="phone" text="Phone Number" />
+            <InputField
+              icon={profilePhoneIcon}
+              type="tel"
+              placeholder="Enter your phone number (e.g., +966501234567)"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              disabled={otpSent}
+            />
+          </div>
+          {otpSent && (
+            <div className="flex w-full flex-col gap-2">
+              <Label text="Enter OTP" />
+              <OtpInput value={otp} onChange={handleOtpChange} />
+              <div className="flex items-center justify-between py-2">
+                <button
+                  type="button"
+                  onClick={resetOtpFlow}
+                  className="text-sm text-moonstone underline"
+                >
+                  Change phone number
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSendOtp}
+                  disabled={sendingOtp}
+                  className="text-sm text-moonstone underline disabled:opacity-50"
+                >
+                  {sendingOtp ? "Sending..." : "Resend OTP"}
+                </button>
+              </div>
+            </div>
+          )}
+          <div className="flex items-center justify-end py-2">
+            <CustomLink
+              className="text-sm"
+              href={`/${role}/login/forget-password`}
+            >
+              {t("login.forgot_password")}
+            </CustomLink>
+          </div>
+        </>
+      )}
+
       <div className="flex flex-col items-center gap-5 self-center pt-16">
         <RoundedButton
           type="submit"
           className="w-fit px-10"
-          disabled={isPending}
-          loading={isPending || undefined}
-          title={isPending ? t("login.logging_in") : t("login.login_cta")}
+          disabled={isPending || sendingOtp || verifyingOtp}
+          loading={isPending || sendingOtp || verifyingOtp || undefined}
+          title={
+            loginMethod === "phone"
+              ? otpSent
+                ? verifyingOtp
+                  ? "Verifying..."
+                  : "Verify & Login"
+                : sendingOtp
+                  ? "Sending OTP..."
+                  : "Send OTP"
+              : isPending
+                ? t("login.logging_in")
+                : t("login.login_cta")
+          }
         />
         <div className="flex items-center gap-1 text-sm font-medium text-battleShipGray">
           {t("login.new_to")} {appName}?

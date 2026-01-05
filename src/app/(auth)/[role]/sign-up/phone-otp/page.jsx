@@ -3,10 +3,7 @@ import RoundedButton from "@/components/buttons/RoundedButton";
 import Label from "@/components/form-fields/Label";
 import PhoneOtpInput from "@/components/form-fields/PhoneOtpInput";
 import CustomLink from "@/components/link/CustomLink";
-import {
-  sendPhoneOtp,
-  verifyPhoneOtp,
-} from "@/lib/api/auth/phone-verification";
+import { sendOtp, verifyOtp } from "@/lib/api/auth/otp";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
@@ -28,43 +25,32 @@ const PhoneOtpForm = () => {
   // Pre-fill OTP if it's provided in the URL
   useEffect(() => {
     if (otpFromUrl && otpFromUrl.length === 6) {
-      const otpArray = otpFromUrl.split("").map((digit) => digit);
+      const otpArray = otpFromUrl.split("");
       setOtp(otpArray);
-      console.log("Pre-filled OTP from URL:", otpFromUrl);
     }
   }, [otpFromUrl]);
 
-  // Send OTP on mount (only if OTP wasn't just sent and provided via URL)
   useEffect(() => {
-    const sendOtp = async () => {
+    const sendOtpToPhone = async () => {
       setSending(true);
       try {
-        console.log("Attempting to send OTP to phone:", phone);
-        const res = await sendPhoneOtp({ phone });
-        console.log("Phone OTP response:", res);
-
+        const res = await sendOtp({ phone });
         if (res.success) {
-          // Avoid double toast: this page only toasts on auto-send if no OTP in URL
-          toast.success(t("phone_otp.sent"));
-
-          // Pre-fill the OTP if it's available in the response
-          if (res.data?.otp && res.data.otp.length === 6) {
-            const otpArray = res.data.otp.split("").map((digit) => digit);
+          toast.success(res.message || t("phone_otp.sent"));
+          if (res.otp && res.otp.length === 6) {
+            const otpArray = res.otp.split("");
             setOtp(otpArray);
-            console.log("Pre-filled OTP from initial send:", res.data.otp);
           }
         } else {
-          console.error("Phone OTP send failed:", res);
           toast.error(res.message || t("phone_otp.send_failed"));
         }
       } catch (e) {
-        console.error("Phone OTP send error:", e);
-        toast.error(t("phone_otp.send_failed"));
+        toast.error(e?.response?.data?.message || t("phone_otp.send_failed"));
       }
       setSending(false);
     };
-    if (phone && !otpFromUrl) sendOtp();
-  }, [phone, otpFromUrl]);
+    if (phone && !otpFromUrl) sendOtpToPhone();
+  }, [phone, otpFromUrl, t]);
 
   const handleVerifyOtp = async () => {
     const otpValue = otp.join("");
@@ -74,11 +60,9 @@ const PhoneOtpForm = () => {
     }
     setVerifying(true);
     try {
-      const res = await verifyPhoneOtp({ phone, otp: otpValue });
+      const res = await verifyOtp({ phone, otp: otpValue });
       if (res.success) {
-        toast.success(t("phone_otp.verified"));
-
-        // Return to SignUpForm1 with both flags so the UI shows "Continue to ID Proof"
+        toast.success(res.message || t("phone_otp.verified"));
         const qs = new URLSearchParams({
           role,
           phoneVerified: "true",
@@ -92,11 +76,10 @@ const PhoneOtpForm = () => {
         }
         router.push(`/${role}/sign-up?${qs.toString()}`);
       } else {
-        toast.error(res.error || t("phone_otp.invalid"));
+        toast.error(res.message || t("phone_otp.invalid"));
       }
     } catch (e) {
-      console.error("Verification error:", e);
-      toast.error(t("phone_otp.verify_failed"));
+      toast.error(e?.response?.data?.message || t("phone_otp.verify_failed"));
     }
     setVerifying(false);
   };
@@ -104,21 +87,18 @@ const PhoneOtpForm = () => {
   const handleResend = async () => {
     setSending(true);
     try {
-      const res = await sendPhoneOtp({ phone });
+      const res = await sendOtp({ phone });
       if (res.success) {
-        toast.success(t("phone_otp.resent"));
-
-        // Pre-fill the new OTP if it's available in the response
-        if (res.data?.otp && res.data.otp.length === 6) {
-          const otpArray = res.data.otp.split("").map((digit) => digit);
+        toast.success(res.message || t("phone_otp.resent"));
+        if (res.otp && res.otp.length === 6) {
+          const otpArray = res.otp.split("");
           setOtp(otpArray);
-          console.log("Pre-filled new OTP from resend:", res.data.otp);
         }
       } else {
-        toast.error(res.error || t("phone_otp.resend_failed"));
+        toast.error(res.message || t("phone_otp.resend_failed"));
       }
     } catch (e) {
-      toast.error(t("phone_otp.resend_failed"));
+      toast.error(e?.response?.data?.message || t("phone_otp.resend_failed"));
     }
     setSending(false);
   };

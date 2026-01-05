@@ -6,13 +6,15 @@ import OtpInput from "@/components/form-fields/OtpInput";
 import CustomLink from "@/components/link/CustomLink";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { verifyForgotOtp } from "@/lib/api/auth/forgotPassword";
+import { verifyForgotOtp, forgotPassword } from "@/lib/api/auth/forgotPassword";
+import toast from "react-hot-toast";
 
 const OtpForm = ({ role }) => {
   const searchParams = useSearchParams();
   const emailOrPhone = searchParams.get("emailOrPhone");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -55,7 +57,7 @@ const OtpForm = ({ role }) => {
             Verification Required
           </h1>
           <p className="text-darkBlue/50 md:text-[19px] md:leading-[29px]">
-            We've sent a password reset link to{" "}
+            We've sent a password reset OTP to{" "}
             <span className="text-delftBlue">{emailOrPhone}</span>
           </p>
         </div>
@@ -77,7 +79,38 @@ const OtpForm = ({ role }) => {
           />
           <div className="flex items-center gap-1 text-sm font-medium text-battleShipGray">
             Didn't receive the code?
-            <CustomLink href="/sign-up">Resend OTP</CustomLink>
+            <button
+              type="button"
+              onClick={async () => {
+                if (resending) return;
+                setResending(true);
+                setError("");
+                try {
+                  const isEmail = emailOrPhone.includes("@");
+                  const res = await forgotPassword(
+                    isEmail ? { email: emailOrPhone } : { phone: emailOrPhone }
+                  );
+                  if (res.success) {
+                    toast.success("OTP resent successfully");
+                    // Pre-fill OTP if available (for email in development)
+                    if (res.otp && res.otp.length === 6) {
+                      const otpArray = res.otp.split("");
+                      setOtp(otpArray);
+                    }
+                  } else {
+                    toast.error(res.message || "Failed to resend OTP");
+                  }
+                } catch (err) {
+                  toast.error("Failed to resend OTP");
+                } finally {
+                  setResending(false);
+                }
+              }}
+              disabled={resending}
+              className="text-moonstone underline disabled:opacity-50"
+            >
+              {resending ? "Sending..." : "Resend OTP"}
+            </button>
           </div>
         </div>
       </div>

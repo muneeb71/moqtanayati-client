@@ -3,13 +3,9 @@
 import { cookies } from "next/headers";
 import api from "../axios";
 
-export async function loginUser(email, password, role, deviceToken) {
+export async function loginUserWithPhone(phone, role, deviceToken) {
   try {
-    const requestBody = {
-      email,
-      password,
-    };
-
+    const requestBody = { phone };
     if (deviceToken) {
       requestBody.deviceToken = deviceToken;
     }
@@ -47,7 +43,6 @@ export async function loginUser(email, password, role, deviceToken) {
     }
 
     const profileData = profileResponse.data.data;
-
     if (profileData.store) {
       await cookieStore.set("storeId", profileData.store.id, { expires });
     }
@@ -57,7 +52,8 @@ export async function loginUser(email, password, role, deviceToken) {
     return {
       success: false,
       message:
-        error?.response?.data?.message || error.message || "Login failed",
+        error?.response?.data?.message || error.message || "Phone login failed",
     };
   }
 }
+

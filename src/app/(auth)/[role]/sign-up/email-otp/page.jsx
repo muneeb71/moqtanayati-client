@@ -3,10 +3,7 @@ import RoundedButton from "@/components/buttons/RoundedButton";
 import Label from "@/components/form-fields/Label";
 import EmailOtpInput from "@/components/form-fields/EmailOtpInput";
 import CustomLink from "@/components/link/CustomLink";
-import {
-  sendEmailOtp,
-  verifyEmailOtp,
-} from "@/lib/api/auth/email-verification";
+import { sendOtp, verifyOtp } from "@/lib/api/auth/otp";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
@@ -39,12 +36,10 @@ const EmailOtpForm = () => {
   //   setSending(false);
   // };
 
-  // Pre-fill OTP if it's provided in the URL
   useEffect(() => {
     if (otpFromUrl && otpFromUrl.length === 6) {
-      const otpArray = otpFromUrl.split("").map((digit) => digit);
+      const otpArray = otpFromUrl.split("");
       setOtp(otpArray);
-      console.log("Pre-filled OTP from URL:", otpFromUrl);
     }
   }, [otpFromUrl]);
 
@@ -56,10 +51,9 @@ const EmailOtpForm = () => {
     }
     setVerifying(true);
     try {
-      console.log("otp : ", email, otpValue);
-      const res = await verifyEmailOtp({ email, otp: otpValue });
+      const res = await verifyOtp({ email, otp: otpValue });
       if (res.success) {
-        toast.success("Email verified!");
+        toast.success(res.message || "Email verified!");
         const qs = new URLSearchParams({
           emailVerified: "true",
           email,
@@ -69,10 +63,10 @@ const EmailOtpForm = () => {
         if (phone) qs.set("phone", phone);
         router.push(`/${role}/sign-up?${qs.toString()}`);
       } else {
-        toast.error("Invalid OTP.");
+        toast.error(res.message || "Invalid OTP.");
       }
     } catch (e) {
-      toast.error("Failed to verify OTP.");
+      toast.error(e?.response?.data?.message || "Failed to verify OTP.");
     }
     setVerifying(false);
   };
@@ -80,23 +74,18 @@ const EmailOtpForm = () => {
   const handleResend = async () => {
     setSending(true);
     try {
-      const res = await sendEmailOtp({ email });
-      console.log("res 0 : ", res);
-
+      const res = await sendOtp({ email });
       if (res.success) {
-        toast.success("OTP resent to your email.");
-
-        // Pre-fill the new OTP if it's available in the response
-        if (res.data?.otp && res.data.otp.length === 6) {
-          const otpArray = res.data.otp.split("").map((digit) => digit);
+        toast.success(res.message || "OTP resent to your email.");
+        if (res.otp && res.otp.length === 6) {
+          const otpArray = res.otp.split("");
           setOtp(otpArray);
-          console.log("Pre-filled new OTP from resend:", res.data.otp);
         }
       } else {
-        toast.error(res.error || "Failed to resend OTP.");
+        toast.error(res.message || "Failed to resend OTP.");
       }
     } catch (e) {
-      toast.error("Failed to resend OTP.");
+      toast.error(e?.response?.data?.message || "Failed to resend OTP.");
     }
     setSending(false);
   };

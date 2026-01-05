@@ -9,8 +9,7 @@ import RoundedButton from "@/components/buttons/RoundedButton";
 import InputField from "@/components/form-fields/InputField";
 import Label from "@/components/form-fields/Label";
 import CustomLink from "@/components/link/CustomLink";
-import { sendEmailOtp } from "@/lib/api/auth/email-verification";
-import { sendPhoneOtp } from "@/lib/api/auth/phone-verification";
+import { sendOtp } from "@/lib/api/auth/otp";
 import { useRegisterStore } from "@/providers/register-provider";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -54,7 +53,6 @@ const SignUpForm1 = ({ role: propRole }) => {
 
   const handleVerifyEmail = async () => {
     if (emailLoading) return;
-    console.log("email : ", email);
     if (!name || !email) {
       toast.error(t("signup.fill_name_email"));
       return;
@@ -62,32 +60,23 @@ const SignUpForm1 = ({ role: propRole }) => {
 
     try {
       setEmailLoading(true);
-      console.log("send otp", email);
-      const res = await sendEmailOtp(email);
-
-      console.log("res data email verify : ", res.data?.otp);
-
+      const res = await sendOtp({ email });
       if (res.success) {
-        toast.success(t("signup.otp_sent_email"));
-
-        // Pass the OTP in the URL if it's available in the response
-        const otpParam = res.data?.otp ? `&otp=${res.data.otp}` : "";
+        toast.success(res.message || t("signup.otp_sent_email"));
+        const otpParam = res.otp ? `&otp=${res.otp}` : "";
         const qs = new URLSearchParams({
           email,
           role,
         });
         if (name) qs.set("name", name);
         if (phone) qs.set("phone", phone);
-        if (otpParam) {
-          // otpParam begins with &otp=...; we will append below
-        }
         const base = `/${role}/sign-up/email-otp?${qs.toString()}`;
         router.push(`${base}${otpParam}`);
       } else {
         toast.error(res.message || t("signup.failed_send_otp"));
       }
     } catch (e) {
-      toast.error(t("signup.failed_send_otp"));
+      toast.error(e?.response?.data?.message || t("signup.failed_send_otp"));
     } finally {
       setEmailLoading(false);
     }
@@ -105,14 +94,10 @@ const SignUpForm1 = ({ role: propRole }) => {
     }
     try {
       setPhoneLoading(true);
-      console.log("send otp to phone", phone);
-      const res = await sendPhoneOtp({ phone });
-
+      const res = await sendOtp({ phone });
       if (res.success) {
-        toast.success(t("signup.otp_sent_phone"));
-        // Pass the OTP in the URL if it's available in the response
-        const otpParam = res.data?.otp ? `&otp=${res.data.otp}` : "";
-
+        toast.success(res.message || t("signup.otp_sent_phone"));
+        const otpParam = res.otp ? `&otp=${res.otp}` : "";
         router.push(
           `/${role}/sign-up/phone-otp?phone=${encodeURIComponent(phone)}&role=${role}&emailVerified=${emailVerified}&email=${encodeURIComponent(
             email,
@@ -122,7 +107,7 @@ const SignUpForm1 = ({ role: propRole }) => {
         toast.error(res.message || t("signup.failed_send_otp"));
       }
     } catch (e) {
-      toast.error(t("signup.failed_send_otp"));
+      toast.error(e?.response?.data?.message || t("signup.failed_send_otp"));
     } finally {
       setPhoneLoading(false);
     }
