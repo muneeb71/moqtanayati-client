@@ -3,10 +3,10 @@
 import { cookies } from "next/headers";
 import api from "../axios";
 
-export async function loginUser(email, password, role, deviceToken) {
+export async function loginUser(identifier, password, role, deviceToken) {
   try {
     const requestBody = {
-      email,
+      identifier,
       password,
     };
 

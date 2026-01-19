@@ -28,7 +28,7 @@ import useTranslation from "@/hooks/useTranslation";
 const LoginForm = ({ role }) => {
   const { t } = useTranslation();
   const [loginMethod, setLoginMethod] = useState("email");
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -288,7 +288,7 @@ const LoginForm = ({ role }) => {
         }
       }
 
-      const response = await loginUser(email, password, role, tokenToSend);
+      const response = await loginUser(identifier, password, role, tokenToSend);
 
       if (response.success) {
         try {
@@ -373,22 +373,22 @@ const LoginForm = ({ role }) => {
   };
 
   return (
-    <form onSubmit={handleLogin} className="flex w-full flex-col gap-5">
+    <form onSubmit={handleLogin} className="flex w-full flex-col gap-5 min-w-0">
       <input type="hidden" value={deviceToken} onChange={() => {}} readOnly />
-      <div className="flex items-center gap-4 mb-2">
+      <div className="flex items-center gap-4 mb-2 w-full min-w-0">
         <button
           type="button"
           onClick={() => {
             setLoginMethod("email");
             resetOtpFlow();
           }}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap flex-shrink ${
             loginMethod === "email"
               ? "bg-moonstone text-white"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
         >
-          {t("login.email_label")} / {t("login.password_label")}
+          Email / Phone / National ID / Password
         </button>
         <button
           type="button"
@@ -396,7 +396,7 @@ const LoginForm = ({ role }) => {
             setLoginMethod("phone");
             resetOtpFlow();
           }}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap flex-shrink ${
             loginMethod === "phone"
               ? "bg-moonstone text-white"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -409,13 +409,13 @@ const LoginForm = ({ role }) => {
       {loginMethod === "email" ? (
         <>
           <div className="flex w-full flex-col">
-            <Label htmlFor="email" text={t("login.email_label")} />
+            <Label htmlFor="identifier" text="Email / Phone / National ID" />
             <InputField
               icon={envelopeIcon}
-              type="email"
-              placeholder={t("login.email_placeholder")}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              placeholder="Enter your Email / Phone / National ID"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
             />
           </div>
           <div className="flex w-full flex-col">

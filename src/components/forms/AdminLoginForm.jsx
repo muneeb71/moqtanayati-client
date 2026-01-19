@@ -20,7 +20,7 @@ const AdminLoginForm = () => {
   const { t } = useTranslation();
   const [loginMethod, setLoginMethod] = useState("email");
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -94,7 +94,7 @@ const AdminLoginForm = () => {
       return;
     }
 
-    if (!email.trim()) {
+    if (!identifier.trim()) {
       toast.error(t("admin.login.email_required"));
       return;
     }
@@ -105,7 +105,7 @@ const AdminLoginForm = () => {
     }
 
     setLoading(true);
-    const res = await loginUser(email, password, "admin");
+    const res = await loginUser(identifier, password, "admin");
     setLoading(false);
     if (res.success) {
       toast.success(t("admin.login.success"));
@@ -127,7 +127,7 @@ const AdminLoginForm = () => {
   };
 
   return (
-    <div className="relative z-30 flex w-full max-w-md flex-col gap-6 rounded-3xl border-[3px] border-moonstone/20 bg-white p-5 text-darkBlue md:gap-10 md:rounded-[40px] md:p-7">
+    <div className="relative z-30 flex w-full max-w-lg flex-col gap-6 rounded-3xl border-[3px] border-moonstone/20 bg-white p-5 text-darkBlue md:gap-10 md:rounded-[40px] md:p-7">
       <div className="flex flex-col gap-2">
         <h1 className="text-xl md:text-3xl">
           {t("admin.login.welcome_admin")}
@@ -137,20 +137,20 @@ const AdminLoginForm = () => {
         </p>
       </div>
       <div className="flex w-full flex-col gap-5">
-        <div className="flex items-center gap-4 mb-2">
+        <div className="flex items-center gap-4 mb-2 w-full min-w-0">
           <button
             type="button"
             onClick={() => {
               setLoginMethod("email");
               resetOtpFlow();
             }}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap flex-shrink ${
               loginMethod === "email"
                 ? "bg-moonstone text-white"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
           >
-            {t("admin.login.email")} / {t("admin.login.password")}
+            Email / Phone / National ID / Password
           </button>
           <button
             type="button"
@@ -158,7 +158,7 @@ const AdminLoginForm = () => {
               setLoginMethod("phone");
               resetOtpFlow();
             }}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`px-6 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap flex-shrink ${
               loginMethod === "phone"
                 ? "bg-moonstone text-white"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -171,13 +171,13 @@ const AdminLoginForm = () => {
         {loginMethod === "email" ? (
           <>
             <div className="flex flex-col gap-1">
-              <Label text={t("admin.login.email")} />
+              <Label text="Email / Phone / National ID" />
               <InputField
-                type="email"
+                type="text"
                 icon={envelopeIcon}
-                placeholder={t("admin.login.email_placeholder")}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email / Phone / National ID"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
               />
             </div>
             <div className="flex flex-col gap-1">

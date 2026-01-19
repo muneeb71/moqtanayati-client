@@ -24,7 +24,7 @@ const AuthLayout = ({ children }) => {
           priority
         />
       </div>
-      <div className="no-scrollbar z-20 flex h-full min-h-screen w-full max-w-[450px] flex-col justify-center overflow-auto px-5 py-10">
+      <div className="no-scrollbar z-20 flex h-full min-h-screen w-full max-w-[500px] flex-col justify-center overflow-auto px-5 py-10">
         <RegisterStoreProvider>{children}</RegisterStoreProvider>
       </div>
 
