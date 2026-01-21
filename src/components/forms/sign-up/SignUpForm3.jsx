@@ -86,7 +86,7 @@ const SignUpForm3 = ({ role }) => {
           <CustomLink href={"/" + role + "/login"}>
             {t("signup.sign_in")}
           </CustomLink>
-        </div>
+        </div> 
       </div>
     </>
   );
