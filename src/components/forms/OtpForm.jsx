@@ -92,11 +92,6 @@ const OtpForm = ({ role }) => {
                   );
                   if (res.success) {
                     toast.success("OTP resent successfully");
-                    // Pre-fill OTP if available (for email in development)
-                    if (res.otp && res.otp.length === 6) {
-                      const otpArray = res.otp.split("");
-                      setOtp(otpArray);
-                    }
                   } else {
                     toast.error(res.message || "Failed to resend OTP");
                   }

@@ -62,7 +62,7 @@ const SignUpForm1 = ({ role: propRole }) => {
       setEmailLoading(true);
       const res = await sendOtp({ email });
       if (res.success) {
-        toast.success(res.message || t("signup.otp_sent_email"));
+        toast.success(t("signup.otp_sent_email"));
         const otpParam = res.otp ? `&otp=${res.otp}` : "";
         const qs = new URLSearchParams({
           email,
@@ -96,7 +96,7 @@ const SignUpForm1 = ({ role: propRole }) => {
       setPhoneLoading(true);
       const res = await sendOtp({ phone });
       if (res.success) {
-        toast.success(res.message || t("signup.otp_sent_phone"));
+        toast.success(t("signup.otp_sent_phone"));
         const otpParam = res.otp ? `&otp=${res.otp}` : "";
         router.push(
           `/${role}/sign-up/phone-otp?phone=${encodeURIComponent(phone)}&role=${role}&emailVerified=${emailVerified}&email=${encodeURIComponent(

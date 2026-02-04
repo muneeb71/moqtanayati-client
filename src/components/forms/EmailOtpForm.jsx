@@ -36,12 +36,8 @@ const EmailOtpContent = ({ role }) => {
         ? await sendOtp({ phone })
         : await sendOtp({ email });
       if (res.success) {
-        toast.success(res.message || "OTP sent successfully");
+        toast.success("OTP sent successfully");
         setOtpSent(true);
-        if (res.otp && res.otp.length === 6) {
-          const otpArray = res.otp.split("");
-          setOtp(otpArray);
-        }
       } else {
         toast.error(res.message || "Failed to send OTP");
       }

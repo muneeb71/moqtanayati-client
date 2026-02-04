@@ -60,12 +60,8 @@ const EmailOtpForm = () => {
         ? await sendOtp({ phone })
         : await sendOtp({ email });
       if (res.success) {
-        toast.success(res.message || "OTP sent successfully");
+        toast.success("OTP sent successfully");
         setOtpSent(true);
-        if (res.otp && res.otp.length === 6) {
-          const otpArray = res.otp.split("");
-          setOtp(otpArray);
-        }
       } else {
         toast.error(res.message || "Failed to send OTP");
       }
@@ -119,7 +115,7 @@ const EmailOtpForm = () => {
         ? await sendOtp({ phone })
         : await sendOtp({ email });
       if (res.success) {
-        toast.success(res.message || (otpMethod === "phone" ? "OTP resent to your phone." : "OTP resent to your email."));
+        toast.success(otpMethod === "phone" ? "OTP resent to your phone." : "OTP resent to your email.");
         if (res.otp && res.otp.length === 6) {
           const otpArray = res.otp.split("");
           setOtp(otpArray);

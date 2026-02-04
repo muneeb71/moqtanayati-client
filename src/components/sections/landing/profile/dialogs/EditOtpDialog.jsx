@@ -45,12 +45,8 @@ const EditOtpDialog = ({ onVerify, email: propEmail, phone: propPhone }) => {
         ? await sendOtp({ phone })
         : await sendOtp({ email: emailFromParams });
       if (res.success) {
-        toast.success(res.message || "OTP sent successfully");
+        toast.success("OTP sent successfully");
         setOtpSent(true);
-        if (res.otp && res.otp.length === 6) {
-          const otpArray = res.otp.split("");
-          setOtp(otpArray);
-        }
       } else {
         toast.error(res.message || "Failed to send OTP");
       }

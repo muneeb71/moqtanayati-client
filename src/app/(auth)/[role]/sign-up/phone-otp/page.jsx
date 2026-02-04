@@ -36,11 +36,7 @@ const PhoneOtpForm = () => {
       try {
         const res = await sendOtp({ phone });
         if (res.success) {
-          toast.success(res.message || t("phone_otp.sent"));
-          if (res.otp && res.otp.length === 6) {
-            const otpArray = res.otp.split("");
-            setOtp(otpArray);
-          }
+          toast.success(t("phone_otp.sent"));
         } else {
           toast.error(res.message || t("phone_otp.send_failed"));
         }
@@ -89,11 +85,7 @@ const PhoneOtpForm = () => {
     try {
       const res = await sendOtp({ phone });
       if (res.success) {
-        toast.success(res.message || t("phone_otp.resent"));
-        if (res.otp && res.otp.length === 6) {
-          const otpArray = res.otp.split("");
-          setOtp(otpArray);
-        }
+        toast.success(t("phone_otp.resent"));
       } else {
         toast.error(res.message || t("phone_otp.resend_failed"));
       }
