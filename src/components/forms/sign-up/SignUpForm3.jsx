@@ -90,6 +90,6 @@ const SignUpForm3 = ({ role }) => {
       </div>
     </>
   );
-};
+}; 
 
 export default SignUpForm3;
