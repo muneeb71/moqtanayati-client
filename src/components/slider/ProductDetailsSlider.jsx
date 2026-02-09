@@ -8,9 +8,13 @@ import toast from "react-hot-toast";
 import { getWatchlistById } from "@/lib/api/watchlist/getWatchlistById";
 import { removeFromWatchlist } from "@/lib/api/watchlist/removeWatchlist";
 import useTranslation from "@/hooks/useTranslation";
+import { getCookie } from "cookies-next";
+import { usePathname, useRouter } from "next/navigation";
 
 const ProductDetailsSlider = ({ images = [], auctionDetail }) => {
   const { t } = useTranslation();
+  const path = usePathname();
+  const router = useRouter();
   const imagesList = Array.isArray(images) ? images.filter(Boolean) : [];
 
   console.log("🔍 [ProductDetailsSlider] Images received:", images);
@@ -115,6 +119,12 @@ const ProductDetailsSlider = ({ images = [], auctionDetail }) => {
   useEffect(handleDrag, []);
 
   const addToWatchlist = async () => {
+    const userId = getCookie("userId");
+    if (!userId) {
+      toast.error(t("buyer.product_details.sign_in_to_watchlist"));
+      router.push(`/buyer/login?returnUrl=${encodeURIComponent(path)}`);
+      return;
+    }
     try {
       if (favourite) {
         const res = await removeFromWatchlist(auctionId);

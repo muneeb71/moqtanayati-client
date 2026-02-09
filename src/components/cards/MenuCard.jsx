@@ -2,11 +2,13 @@
 
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import BidPopup from "../popup/BidPopup";
 import bidOnAuctionApi from "@/lib/api/auctions/bid";
 import toast from "react-hot-toast";
+import { getCookie } from "cookies-next";
+import useTranslation from "@/hooks/useTranslation";
 
 const MenuCard = ({
   title = "",
@@ -22,6 +24,8 @@ const MenuCard = ({
   isAlreadyBidded = false,
 }) => {
   const router = useRouter();
+  const path = usePathname();
+  const { t } = useTranslation();
   const [favourite, setFavourite] = useState(isFavourite);
   const [bidPopup, setBidPopup] = useState(false);
   const [bidAmount, setBidAmount] = useState(price);
@@ -33,6 +37,12 @@ const MenuCard = ({
   };
 
   const bidOnAuction = async () => {
+    const userId = getCookie("userId");
+    if (!userId) {
+      toast.error(t("buyer.bidders.sign_in_to_bid"));
+      router.push(`/buyer/login?returnUrl=${encodeURIComponent(path)}`);
+      return;
+    }
     try {
       // Enforce minimum allowed amount: startingBid > highestBid > price
       const minAllowed =

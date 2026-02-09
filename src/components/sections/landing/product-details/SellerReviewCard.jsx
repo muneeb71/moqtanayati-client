@@ -1,8 +1,10 @@
 import { sellerChatIcon, starIcon } from "@/assets/icons/common-icons";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useChatStore } from "@/providers/chat-store-provider";
 import useTranslation from "@/hooks/useTranslation";
+import { getCookie } from "cookies-next";
+import toast from "react-hot-toast";
 
 const SellerReviewCard = ({ seller }) => {
   const { t } = useTranslation();
@@ -62,10 +64,17 @@ const SellerReviewCard = ({ seller }) => {
   };
 
   const router = useRouter();
+  const path = usePathname();
   const conversations = useChatStore((s) => s.conversations);
   const setSelectedChat = useChatStore((s) => s.setSelectedChat);
 
   const handleChatWithSeller = () => {
+    const userId = getCookie("userId");
+    if (!userId) {
+      toast.error(t("buyer.product_details.sign_in_to_chat"));
+      router.push(`/buyer/login?returnUrl=${encodeURIComponent(path)}`);
+      return;
+    }
     if (seller?.id) {
       const qp = new URLSearchParams({
         id: String(seller.id),

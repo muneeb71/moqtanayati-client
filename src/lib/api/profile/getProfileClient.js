@@ -5,30 +5,15 @@ import api from "../axios";
 
 export async function getUserProfileClient() {
   try {
-    console.log("🔍 [getUserProfileClient] Starting profile fetch...");
-
     const userId = getCookie("userId");
     const role = getCookie("role");
     const token = getCookie("token");
 
-    console.log("🔍 [getUserProfileClient] User role from cookies:", role);
-    console.log("🔍 [getUserProfileClient] Token present:", !!token);
-
-    if (!userId) {
-      console.error("🔍 [getUserProfileClient] No userId found in cookies");
+    if (!userId || !token) {
       return {
         success: false,
         data: null,
         message: "User ID not found in cookies. Please log in again.",
-      };
-    }
-
-    if (!token) {
-      console.error("🔍 [getUserProfileClient] No token found in cookies");
-      return {
-        success: false,
-        data: null,
-        message: "Authentication token not found. Please log in again.",
       };
     }
 
@@ -64,7 +49,6 @@ export async function getUserProfileClient() {
 
     return result;
   } catch (error) {
-    console.error("🔍 [getUserProfileClient] Error:", error);
     return {
       success: false,
       data: null,

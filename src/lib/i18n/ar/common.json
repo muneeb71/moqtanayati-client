@@ -5,6 +5,7 @@
     "cart": "السلة",
     "profile": "الملف الشخصي",
     "logout": "تسجيل الخروج",
+    "sign_in": "تسجيل الدخول",
     "error_fetch_user": "خطأ في جلب تفاصيل المستخدم.",
     "error_fetch_cart": "خطأ في جلب السلة."
   },
@@ -818,9 +819,13 @@
       "upcoming": "قريبًا",
       "make_offer": "قدّم عرضًا",
       "auction_sold_error": "هذا المزاد مُباع.",
-      "auction_unavailable_error": "هذا المزاد غير متاح الآن."
+      "auction_unavailable_error": "هذا المزاد غير متاح الآن.",
+      "sign_in_to_add_to_cart": "سجّل الدخول لإضافة عناصر إلى السلة أو الشراء.",
+      "sign_in_to_watchlist": "سجّل الدخول لإضافة عناصر إلى المفضلة.",
+      "sign_in_to_chat": "سجّل الدخول للمحادثة مع البائع."
     },
     "bidders": {
+      "sign_in_to_bid": "سجّل الدخول لتقديم عرض.",
       "place_your_bid": "قدّم عرضك",
       "my_bid": "عرضي",
       "status": "الحالة:",

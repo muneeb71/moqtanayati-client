@@ -2,11 +2,12 @@
 
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { handleFavoriteClient } from "@/lib/api/product/handleFavoriteClient";
 import toast from "react-hot-toast";
 import useTranslation from "@/hooks/useTranslation";
+import { getCookie } from "cookies-next";
 
 const ItemCard = ({
   id = 1,
@@ -22,6 +23,7 @@ const ItemCard = ({
   onNavigate,
 }) => {
   const router = useRouter();
+  const path = usePathname();
   const { t } = useTranslation();
   const [favourite, setFavourite] = useState(isFavourite);
   const [loading, setLoading] = useState(false);
@@ -48,6 +50,13 @@ const ItemCard = ({
   const handleFavoriteClick = async (e) => {
     e.stopPropagation(); // Prevent card click
     if (loading) return;
+
+    const userId = getCookie("userId");
+    if (!userId) {
+      toast.error(t("buyer.product_details.sign_in_to_watchlist"));
+      router.push(`/buyer/login?returnUrl=${encodeURIComponent(path)}`);
+      return;
+    }
 
     setLoading(true);
     try {

@@ -11,7 +11,7 @@ import { useProfileStore } from "@/providers/profile-store-provider";
 import RoundedButton from "../buttons/RoundedButton";
 import CustomLink from "../link/CustomLink";
 import { appName } from "@/lib/app-name";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { loginUser } from "@/lib/api/auth/login";
 import { loginUserWithPhone } from "@/lib/api/auth/phone-login";
 import { sendOtp, verifyOtp } from "@/lib/api/auth/otp";
@@ -27,6 +27,9 @@ import useTranslation from "@/hooks/useTranslation";
 
 const LoginForm = ({ role }) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get("returnUrl");
   const [loginMethod, setLoginMethod] = useState("email");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -37,7 +40,6 @@ const LoginForm = ({ role }) => {
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const [deviceToken, setDeviceToken] = useState("");
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [createLoading, setCreateLoading] = useState(false);
   const { fetchNotifications, setNotifications } =
@@ -223,7 +225,11 @@ const LoginForm = ({ role }) => {
                 : roleLower === "seller"
                   ? "/seller"
                   : "/buyer";
-            router.push(rolePath);
+            if (roleLower === "buyer" && returnUrl && returnUrl.startsWith("/buyer")) {
+              router.push(returnUrl);
+            } else {
+              router.push(rolePath);
+            }
 
             // Establish socket connection
             (() => {
@@ -322,7 +328,11 @@ const LoginForm = ({ role }) => {
             : roleLower === "seller"
               ? "/seller"
               : "/buyer";
-        router.push(rolePath);
+        if (roleLower === "buyer" && returnUrl && returnUrl.startsWith("/buyer")) {
+          router.push(returnUrl);
+        } else {
+          router.push(rolePath);
+        }
 
             (() => {
               const userId = response.data?.user?.id;

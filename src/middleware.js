@@ -8,8 +8,6 @@ export function middleware(request) {
   const role = request.cookies.get("role")?.value;
   const { pathname } = new URL(request.url);
 
-  console.log("Middleware - pathname:", pathname, "role:", role);
-
   const isAdminLogin = pathname.startsWith("/admin/login");
   const isAdminPath = pathname.startsWith("/admin");
   const isAuthPath = pathname.startsWith("/auth");
@@ -17,6 +15,18 @@ export function middleware(request) {
   const isSellerPath = pathname.startsWith("/seller");
   const isSellerOnboarding = pathname.startsWith("/seller/onboarding");
   const roleUpper = (role || "").toUpperCase();
+
+  // Buyer routes that guests can access (browse without signing in)
+  const isBuyerGuestPath =
+    pathname === "/buyer" ||
+    pathname.startsWith("/buyer/category") ||
+    pathname.startsWith("/buyer/product-details") ||
+    pathname.startsWith("/buyer/auctions") ||
+    pathname.startsWith("/buyer/search") ||
+    pathname.startsWith("/buyer/help-center") ||
+    pathname.startsWith("/buyer/login") ||
+    pathname.startsWith("/buyer/sign-up");
+
   const isLoginOrSignupPage =
     pathname.includes("/login") ||
     pathname.includes("/sign-up") ||
@@ -75,8 +85,18 @@ export function middleware(request) {
     if (isAdminPath) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
-    if ((isBuyerPath || isSellerPath) && !isSellerOnboarding) {
+    if (isSellerPath && !isSellerOnboarding) {
       return clearAndRedirectToStart();
+    }
+    // Buyer: allow guests on browsing routes only; require login for cart, profile, etc.
+    if (isBuyerPath) {
+      if (isBuyerGuestPath) {
+        return NextResponse.next();
+      }
+      const returnUrl = encodeURIComponent(pathname);
+      return NextResponse.redirect(
+        new URL(`/buyer/login?returnUrl=${returnUrl}`, request.url),
+      );
     }
   }
 

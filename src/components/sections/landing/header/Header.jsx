@@ -30,42 +30,32 @@ const Header = () => {
   const getUserData = async () => {
     try {
       const res = await getUserProfileClient();
-      console.log("🔍 [Header] User profile response:", res);
       if (res?.success) {
-        console.log("🔍 [Header] User data:", res?.data);
-        console.log("🔍 [Header] User avatar:", res?.data?.avatar);
         setUser(res?.data);
       } else {
-        console.error("🔍 [Header] Error fetching user details:", res);
-        toast.error(res?.message || t("header.error_fetch_user"));
+        setUser(null);
       }
     } catch (error) {
-      console.error("🔍 [Header] Error in getUserData:", error);
-      toast.error(t("header.error_fetch_user"));
+      setUser(null);
     }
   };
 
   const getCartData = async () => {
     try {
       const res = await getCart();
-      console.log("🔍 [Header] Cart response:", res);
       if (res.success) {
         const items = res?.data?.data?.items || [];
         setCartItems(items);
-
-        // Calculate total item count
         const totalCount = items.reduce(
           (total, item) => total + (item.quantity || 0),
           0,
         );
         setCartItemCount(totalCount);
-        console.log("🔍 [Header] Cart item count:", totalCount);
       } else {
         setCartItems([]);
         setCartItemCount(0);
       }
     } catch (error) {
-      console.error("🔍 [Header] Error fetching cart:", error);
       setCartItems([]);
       setCartItemCount(0);
     }
@@ -231,52 +221,63 @@ const Header = () => {
               )}
             </Link>
           </div>
-          <Link
-            href="/buyer/profile"
-            className="relative size-12 overflow-hidden rounded-full"
-            onClick={() => {
-              if (profileLoading) return;
-              setProfileLoading(true);
-            }}
-            aria-busy={profileLoading || undefined}
-          >
-            {user?.avatar && user.avatar.trim() !== "" ? (
-              <Image
-                src={user.avatar}
-                width={250}
-                height={250}
-                loading="lazy"
-                alt="user image"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gray-200">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="text-gray-500"
-                >
-                  <path
-                    d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
-                    fill="currentColor"
+          {user ? (
+            <>
+              <Link
+                href="/buyer/profile"
+                className="relative size-12 overflow-hidden rounded-full"
+                onClick={() => {
+                  if (profileLoading) return;
+                  setProfileLoading(true);
+                }}
+                aria-busy={profileLoading || undefined}
+              >
+                {user?.avatar && user.avatar.trim() !== "" ? (
+                  <Image
+                    src={user.avatar}
+                    width={250}
+                    height={250}
+                    loading="lazy"
+                    alt="user image"
+                    className="h-full w-full object-cover"
                   />
-                  <path
-                    d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </div>
-            )}
-            {profileLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/5">
-                <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              </div>
-            )}
-          </Link>
-          <HeaderDropdown />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="text-gray-500"
+                    >
+                      <path
+                        d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+                        fill="currentColor"
+                      />
+                      <path
+                        d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </div>
+                )}
+                {profileLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/5">
+                    <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  </div>
+                )}
+              </Link>
+              <HeaderDropdown />
+            </>
+          ) : (
+            <Link
+              href="/buyer/login"
+              className="rounded-full border border-moonstone bg-moonstone/10 px-4 py-2 text-sm font-medium text-moonstone hover:bg-moonstone/20"
+            >
+              {t("header.sign_in")}
+            </Link>
+          )}
         </div>
         <div className="flex items-center gap-3 md:hidden">
           <Link
@@ -318,41 +319,50 @@ const Header = () => {
               </span>
             )}
           </Link>
-          <Link
-            href="/buyer/profile"
-            className="size-10 overflow-hidden rounded-full"
-          >
-            {user?.avatar && user.avatar.trim() !== "" ? (
-              <Image
-                src={user.avatar}
-                width={250}
-                height={250}
-                loading="lazy"
-                alt="user image"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gray-200">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="text-gray-500"
-                >
-                  <path
-                    d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
-                    fill="currentColor"
-                  />
-                  <path
-                    d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </div>
-            )}
-          </Link>
+          {user ? (
+            <Link
+              href="/buyer/profile"
+              className="size-10 overflow-hidden rounded-full"
+            >
+              {user?.avatar && user.avatar.trim() !== "" ? (
+                <Image
+                  src={user.avatar}
+                  width={250}
+                  height={250}
+                  loading="lazy"
+                  alt="user image"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="text-gray-500"
+                  >
+                    <path
+                      d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </div>
+              )}
+            </Link>
+          ) : (
+            <Link
+              href="/buyer/login"
+              className="rounded-full border border-moonstone bg-moonstone/10 px-3 py-1.5 text-sm font-medium text-moonstone hover:bg-moonstone/20"
+            >
+              {t("header.sign_in")}
+            </Link>
+          )}
           <MobileSheet />
         </div>
       </div>

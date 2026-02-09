@@ -11,9 +11,12 @@ import {
 } from "@/utils/qaErrorHandler";
 import api from "@/lib/api/axios";
 import useTranslation from "@/hooks/useTranslation";
+import { usePathname, useRouter } from "next/navigation";
 
 const AskQuestion = ({ productId, onQuestionAdded }) => {
   const { t } = useTranslation();
+  const path = usePathname();
+  const router = useRouter();
   const [question, setQuestion] = useState("");
   const [sending, setSending] = useState(false);
 
@@ -31,6 +34,7 @@ const AskQuestion = ({ productId, onQuestionAdded }) => {
 
       if (!userId) {
         toast.error(t("seller.qa.errors.login_to_ask"));
+        router.push(`/buyer/login?returnUrl=${encodeURIComponent(path)}`);
         setSending(false);
         return;
       }

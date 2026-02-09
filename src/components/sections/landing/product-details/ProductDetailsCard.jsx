@@ -7,7 +7,7 @@ import { getCart } from "@/lib/api/cart/getCart";
 import BidPopup from "@/components/popup/BidPopup";
 import { useState, useEffect } from "react";
 import bidOnAuction from "@/lib/api/auctions/bid";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import CheckoutSheet from "@/components/sections/landing/cart/CheckoutSheet";
@@ -23,6 +23,7 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
   const [showOrderPlaced, setShowOrderPlaced] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const path = usePathname();
+  const router = useRouter();
   const id = path.split("/").splice(-1)[0];
   const [bidAmount, setBidAmount] = useState();
   const [orderId, setOrderId] = useState(null);
@@ -66,6 +67,12 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
   }, []);
 
   const addItem = async () => {
+    const userId = getCookie("userId");
+    if (!userId) {
+      toast.error(t("buyer.product_details.sign_in_to_add_to_cart"));
+      router.push(`/buyer/login?returnUrl=${encodeURIComponent(path)}`);
+      return;
+    }
     if (isInCart) {
       toast.error(t("buyer.product_details.already_in_cart_toast"));
       return;
@@ -91,6 +98,12 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
   };
 
   const bid = async () => {
+    const userId = getCookie("userId");
+    if (!userId) {
+      toast.error(t("buyer.bidders.sign_in_to_bid"));
+      router.push(`/buyer/login?returnUrl=${encodeURIComponent(path)}`);
+      return;
+    }
     try {
       // Validate minimum allowed bid based on the value shown above (highest or starting)
       const numericBid = Number(bidAmount);
@@ -195,7 +208,14 @@ const ProductDetailsCard = ({ item, totalBids, bids, fetchData }) => {
   const handleBuyNow = async (e) => {
     e?.preventDefault?.();
     e?.stopPropagation?.();
-    
+
+    const userId = getCookie("userId");
+    if (!userId) {
+      toast.error(t("buyer.product_details.sign_in_to_add_to_cart"));
+      router.push(`/buyer/login?returnUrl=${encodeURIComponent(path)}`);
+      return;
+    }
+
     if (!isInCart) {
       setIsBuyNowLoading(true);
       try {

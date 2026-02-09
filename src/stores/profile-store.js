@@ -109,7 +109,7 @@ export const createProfileStore = (initState = defaultInitState, profile) => {
     setChatsB: (chatsB) => set({ chatsB }),
   }));
 
-  if (profile) {
+  if (profile?.success && profile?.data) {
     store.setState({ ...profile.data });
   }
   return store;

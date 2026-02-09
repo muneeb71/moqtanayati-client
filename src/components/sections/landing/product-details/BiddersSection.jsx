@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import UpdateBidDialog from "./dialogs/UpdateBidDialog";
 import WithdrawBidDialog from "./dialogs/WithdrawBidDialog";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import bidOnAuction from "@/lib/api/auctions/bid";
 import toast from "react-hot-toast";
 import withdrawBidOfUser from "@/lib/api/auctions/withdrawBid";
@@ -20,15 +20,16 @@ function getCookie(name) {
   if (parts.length === 2) return parts.pop().split(";").shift();
   return null;
 }
-const userId = getCookie("userId");
 
 const BiddersSection = ({ data, fetchData, item }) => {
   const { t } = useTranslation();
+  const path = usePathname();
+  const router = useRouter();
+  const userId = getCookie("userId");
   const [selectedBidder, setSelectedBidder] = useState(null);
   const [bidAmount, setBidAmount] = useState(0);
   const [auctionBids, setAuctionBids] = useState([]);
   const [loading, setLoading] = useState(false);
-  const path = usePathname();
   const id = path.split("/").splice(-1)[0];
   const [requestLoading, setRequestLoading] = useState(false);
 
@@ -87,6 +88,11 @@ const BiddersSection = ({ data, fetchData, item }) => {
   }, [item?.pricingFormat, id]);
 
   const handlePlaceBid = async (bypass) => {
+    if (!userId) {
+      toast.error(t("buyer.bidders.sign_in_to_bid"));
+      router.push(`/buyer/login?returnUrl=${encodeURIComponent(path)}`);
+      return;
+    }
     if (!bypass && userId !== selectedBidder?.bidder?.id)
       return toast.error(t("buyer.bidders.not_your_bid"));
     try {

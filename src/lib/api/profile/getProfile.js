@@ -5,19 +5,11 @@ import api from "../axios";
 
 export async function getUserProfile() {
   try {
-    console.log("🔍 [getUserProfile] Starting profile fetch...");
-
     const cookiesStore = await cookies();
-    console.log("🔍 [getUserProfile] Cookies retrieved:", {
-      hasCookies: !!cookiesStore,
-      cookieNames: cookiesStore.getAll().map((c) => c.name),
-    });
-
     const userId = cookiesStore.get("userId")?.value;
     const role = cookiesStore.get("role")?.value;
 
     if (!userId) {
-      console.error("🔍 [getUserProfile] No userId found in cookies");
       return {
         success: false,
         data: null,

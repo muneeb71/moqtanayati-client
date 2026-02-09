@@ -11,7 +11,8 @@ export const metadata = {
 };
 
 const LandingLayout = async ({ children }) => {
-  const profile = await getUserProfile();
+  const profileRes = await getUserProfile();
+  const profile = profileRes?.success ? profileRes : null;
   return (
     <div className="flex w-full flex-col items-center">
       <Header />

@@ -5,6 +5,7 @@
     "cart": "Cart",
     "profile": "Profile",
     "logout": "Logout",
+    "sign_in": "Sign in",
     "error_fetch_user": "Error fetching user details.",
     "error_fetch_cart": "Error fetching cart."
   },
@@ -825,9 +826,13 @@
       "upcoming": "UPCOMING",
       "make_offer": "Make Offer",
       "auction_sold_error": "This auction is sold.",
-      "auction_unavailable_error": "This auction is not available right now."
+      "auction_unavailable_error": "This auction is not available right now.",
+      "sign_in_to_add_to_cart": "Sign in to add items to cart or buy.",
+      "sign_in_to_watchlist": "Sign in to add items to your watchlist.",
+      "sign_in_to_chat": "Sign in to chat with the seller."
     },
     "bidders": {
+      "sign_in_to_bid": "Sign in to place a bid.",
       "place_your_bid": "Place Your Bid",
       "my_bid": "My Bid",
       "status": "Status:",
